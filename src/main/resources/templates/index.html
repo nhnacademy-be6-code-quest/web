@@ -13,24 +13,24 @@
 </head>
 <body>
 
-<div th:replace="~{/layout/header.html :: headerFragment ('user', 'message')}"></div>
+<div th:replace="~{layout/header.html :: headerFragment ('user', 'message')}"></div>
 
 
 
 
 
 <div th:if="${view == null}">
-    <div th:replace="~{/view/home/home.html :: homeFragment}"></div>
+    <div th:replace="~{view/home/home.html :: homeFragment}"></div>
 </div>
 <div th:if="${view != null} and ${#strings.equals(view, 'auth')}">
-    <section th:replace="~{/view/auth/auth.html :: authFragment}"></section>
+    <section th:replace="~{view/auth/auth.html :: authFragment}"></section>
 </div>
 
 
 
 
 
-<div th:replace="~{/layout/footer.html :: footerFragment}"></div>
+<div th:replace="~{layout/footer.html :: footerFragment}"></div>
 
 </body>
 </html>
