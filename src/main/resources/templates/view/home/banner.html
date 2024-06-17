@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="bannerFragment ()">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<section id="banner" style="background: #F9F3EC;">
+    <div class="container">
+        <div class="swiper main-swiper">
+            <div class="swiper-wrapper">
+
+                <div class="swiper-slide py-5">
+                    <div class="row banner-content align-items-center">
+                        <img th:src="@{img/banner/banner_1.png}" class="img-fluid">
+                    </div>
+                </div>
+
+                <div class="swiper-slide py-5">
+                    <div class="row banner-content align-items-center">
+                        <img th:src="@{img/banner/banner_2.png}" class="img-fluid">
+                    </div>
+                </div>
+
+                <div class="swiper-slide py-5">
+                    <div class="row banner-content align-items-center">
+                        <img th:src="@{img/banner/banner_3.png}" class="img-fluid">
+                    </div>
+                </div>
+
+                <div class="swiper-slide py-5">
+                    <div class="row banner-content align-items-center">
+                        <img th:src="@{img/banner/banner_4.png}" class="img-fluid">
+                    </div>
+                </div>
+
+                <div class="swiper-slide py-5">
+                    <div class="row banner-content align-items-center">
+                            <img th:src="@{img/banner/banner_5.png}" class="img-fluid" >
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="swiper-pagination mb-5"></div>
+
+        </div>
+    </div>
+</section>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="authFragment ()">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+
+    <link rel="stylesheet" type="text/css" th:href="@{/css/auth/style.css}">
+</head>
+<section id="auth">
+    <br>
+    <br>
+    <br>
+    <br>
+    <div class="cont">
+        <div class="form sign-in">
+            <h2>로 그 인</h2>
+            <label>
+                <span >Email</span>
+                <input type="email" />
+            </label>
+            <label>
+                <span>Password</span>
+                <input type="password" />
+            </label>
+            <p class="forgot-pass">Forgot password?</p>
+            <button type="button" class="submit">Sign In</button>
+
+        </div>
+        <div class="sub-cont">
+            <div class="img">
+                <div class="img__text m--up">
+                    <h3>Don't have an account? Please Sign up!</h3>
+                </div>
+                <div class="img__text m--in">
+                    <h3>If you already has an account, just sign in.</h3>
+                </div>
+                <div class="img__btn">
+                    <span class="m--up">Sign Up</span>
+                    <span class="m--in">Sign In</span>
+                </div>
+            </div>
+            <form class="form sign-up" action="/register" method="post">
+                <h2>회 원 가 입</h2>
+                <label>
+                    <span>Nickname</span>
+                    <input type="text" name="clientName" />
+                </label>
+                <label>
+                    <span>Email</span>
+                    <input type="email" name="clientEmail" />
+                </label>
+                <label>
+                    <span>Password</span>
+                    <input type="password" name="clientPassword" />
+                </label>
+                <label>
+                    <span>Confirm Password</span>
+                    <input type="password" />
+                </label>
+                <label>
+                    <span>Birthday</span>
+                    <input type="date" name="clientBirth" />
+                </label>
+                <label>
+                    <span>Phone Number</span>
+                    <input type="tel" name="clientPhoneNumber" />
+                </label>
+                <button type="submit" class="submit">Sign Up</button>
+            </form>
+        </div>
+    </div>
+    <br>
+    <br>
+    <br>
+
+<script>
+    document.querySelector('.img__btn').addEventListener('click', function() {
+        const container = document.querySelector('.cont');
+        container.classList.toggle('s--signup');
+        if (container.classList.contains('s--signup')) {
+            container.style.height = '900px';
+        } else {
+            container.style.height = '550px';
+        }
+    });
+</script>
+</section>
+</html>
