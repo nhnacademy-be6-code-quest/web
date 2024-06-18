@@ -10,6 +10,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @FeignClient(name = "register", url = "http://localhost:8001")
 public interface AuthClient {
-    @PostMapping("/client")
+    @PostMapping("/api/client")
     ResponseEntity<ClientRegisterResponseDto> register(@Valid @RequestBody ClientRegisterRequestDto clientRegisterRequestDto);
 }
