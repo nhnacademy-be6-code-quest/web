@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="author" content="">
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <title>Order Page</title>
+    <link rel="stylesheet" href="./order.css">
+</head>
+<body>
+
+<div th:replace="~{layout/header.html :: headerFragment ('user', 'message')}"></div>
+
+<!--달력-->
+<!--<div class="el-col" :span="20">-->
+<!--    <div style="padding: 10px;border-left:1px solid #DCDFE6">-->
+<!--        <input type="date" id="startDate" name="startDate" th:value="${startDate}" />-->
+<!--        <input type="date" id="endDate" name="endDate" th:value="${endDate}" />-->
+<!--        <button type="button" onclick="getOrderStatistics()">설정</button>-->
+<!--        <div id="chart" style="width: 100%; height: 400px;"></div>-->
+<!--    </div>-->
+<!--</div>-->
+
+<div class="container">
+    <div class="sub-container">
+        <h3>주문 목록</h3>
+            <table id="order-item-table" border="1px">
+                <thead>
+                    <tr>
+                        <th style="text-align: center;">상품이미지</th>
+                        <th style="text-align: center;">상품명</th>
+                        <th style="text-align: center;">가격</th>
+                        <th style="text-align: center;">수량</th>
+                        <th style="text-align: center;">포장여부</th>
+                    </tr>
+                </thead>
+                <tbody id="order-item-table-body">
+<!--                    <tr>-->
+                    <tr th:each="productItemDto : ${orderResponseDto.productItemDtoList}">
+                        <td th:text="${productItemDto.imgPath}"></td>
+                        <td th:text="${productItemDto.name}"></td>
+                        <td th:text="${productItemDto.price}"></td>
+                        <td th:text="${productItemDto.quantity}"></td>
+                        <td>a</td>
+                        <td>a</td>
+                        <td>a</td>
+                        <td>a</td>
+                        <td class="el-checkbox-group">
+                            <div>
+                                <form>
+                                    <input type="radio" name="isShipping" value="false" checked>
+                                    <label>no</label></br>
+                                    <input type="radio" name="isShipping" value="yes">
+                                    <label>yes</label></br>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+    </div>
+    <div class="sub-container">
+        <h3>예상가격</h3>
+        <span>배송비</span>
+        <span>총 가격</span>
+    </div>
+    <div class="sub-container">
+        <h3>주문정보</h3>
+        <span>어쩌구</span>
+        <span>저쩌구</span>
+    </div>
+    <div class="sub-container">
+        <h3>배송날지정</h3>
+        <span>배송날짜를 지정하나요?</span>
+    </div>
+</div>
+
+
+<div th:replace="~{layout/footer.html :: footerFragment}"></div>
+
+</body>
+</html>
