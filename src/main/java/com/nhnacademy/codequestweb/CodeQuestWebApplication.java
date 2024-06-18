@@ -11,5 +11,4 @@ public class CodeQuestWebApplication {
     public static void main(String[] args) {
         SpringApplication.run(CodeQuestWebApplication.class, args);
     }
-
 }
