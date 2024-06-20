@@ -7,7 +7,6 @@ import java.util.List;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * 테스트입니다...
@@ -18,14 +17,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class PaymentCreateController {
 
-    @GetMapping("/payment")
-    public String payment(Model model, TempData tempData) {
-        Coupon coupon = new Coupon(1L, "CouponExample");
-        List<Coupon> coupons = new ArrayList<>();
-        coupons.add(coupon);
-        tempData = new TempData(100L, coupons, 100000L, 90000L, 9000L);
-        model.addAttribute("coupons", coupons);
-        model.addAttribute("tempData", tempData);
-        return "view/payment/payment";
-    }
+//    @GetMapping("/payment")
+//    public String payment(Model model, TempData tempData) {
+//        Coupon coupon = new Coupon(1L, "CouponExample");
+//        List<Coupon> coupons = new ArrayList<>();
+//        coupons.add(coupon);
+//        tempData = new TempData(100L, coupons, 100000L, 90000L, 9000L);
+//        model.addAttribute("coupons", coupons);
+//        model.addAttribute("tempData", tempData);
+//        return "createPayment";
+//    }
 }
