@@ -24,4 +24,8 @@ public class NoPhotoReviewRequestDTO {
 
     @NotNull
     private Long orderDetailId;
+
+    @NotNull
+    private Long productId;
+
 }

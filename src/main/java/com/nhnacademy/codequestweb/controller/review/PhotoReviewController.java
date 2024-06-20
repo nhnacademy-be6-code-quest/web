@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -44,8 +43,7 @@ public class PhotoReviewController {
 
     @GetMapping("/view/photo-reviews")
     public String getPhotoReviews(Model model, Pageable pageable) {
-        Pageable pageRequest = PageRequest.of(pageable.getPageNumber(), DEFAULT_PAGE_SIZE, Sort.by(
-            Sort.Direction.DESC, "registerDate"));
+        Pageable pageRequest = PageRequest.of(pageable.getPageNumber(), DEFAULT_PAGE_SIZE);
         ResponseEntity<Page<PhotoReviewResponseDTO>> responseEntity = photoReviewService.getAllReviews(
             pageRequest);
         Page<PhotoReviewResponseDTO> reviews = responseEntity.getBody();
@@ -56,8 +54,7 @@ public class PhotoReviewController {
     @GetMapping("/view/photo-reviews/client/{clientId}")
     public String getPhotoReviewsByClientId(@PathVariable Long clientId, Model model,
         Pageable pageable) {
-        Pageable pageRequest = PageRequest.of(pageable.getPageNumber(), DEFAULT_PAGE_SIZE, Sort.by(
-            Sort.Direction.DESC, "registerDate"));
+        Pageable pageRequest = PageRequest.of(pageable.getPageNumber(), DEFAULT_PAGE_SIZE);
         ResponseEntity<Page<PhotoReviewResponseDTO>> responseEntity = photoReviewService.getAllReviewsByClientId(
             clientId, pageRequest);
         Page<PhotoReviewResponseDTO> reviews = responseEntity.getBody();
@@ -69,8 +66,7 @@ public class PhotoReviewController {
     @GetMapping("/view/photo-reviews/product/{productId}")
     public String getPhotoReviewsByProductId(@PathVariable Long productId, Model model,
         Pageable pageable) {
-        Pageable pageRequest = PageRequest.of(pageable.getPageNumber(), DEFAULT_PAGE_SIZE, Sort.by(
-            Sort.Direction.DESC, "registerDate"));
+        Pageable pageRequest = PageRequest.of(pageable.getPageNumber(), DEFAULT_PAGE_SIZE);
         ResponseEntity<Page<PhotoReviewResponseDTO>> responseEntity = photoReviewService.getAllReviewsByProductId(
             productId, pageRequest);
         Page<PhotoReviewResponseDTO> reviews = responseEntity.getBody();

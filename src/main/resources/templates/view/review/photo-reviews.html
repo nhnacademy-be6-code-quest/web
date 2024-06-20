@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Photo Reviews</title>
-  <link rel="stylesheet"
-        href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
   <style>
     .review-container {
       display: flex;
@@ -67,23 +66,27 @@
 </head>
 <body>
 <div class="container">
-  <h1>Photo Reviews</h1>
-  <div th:each="review : ${reviews}" class="review-container" onclick="expandReview(this)">
+  <div class="d-flex justify-content-between align-items-center">
+    <h1>Photo Reviews</h1>
+    <button type="button" class="btn btn-primary" onclick="window.location.href='/index2'">홈으로</button>
+  </div>
+  <div th:if="${reviews.content.size() == 0}">
+    <p>No reviews available.</p>
+  </div>
+  <div th:each="review : ${reviews.content}" class="review-container" onclick="expandReview(this)">
     <div class="review-content">
       <div class="stars" th:attr="data-score=${review.score}"></div>
       <p>리뷰평: <span th:text="${review.content}"></span></p>
-      <p>작성일: <span
-          th:text="${#temporals.format(review.registerDate, 'yyyy-MM-dd HH:mm:ss')}"></span></p>
-      <p th:if="${review.lastModifyDate != null}">수정일: <span
-          th:text="${#temporals.format(review.lastModifyDate, 'yyyy-MM-dd HH:mm:ss')}"></span></p>
+      <p>작성일: <span th:text="${#temporals.format(review.registerDate, 'yyyy-MM-dd HH:mm:ss')}"></span></p>
+      <p th:if="${review.lastModifyDate != null}">수정일: <span th:text="${#temporals.format(review.lastModifyDate, 'yyyy-MM-dd HH:mm:ss')}"></span></p>
       <p th:if="${review.lastModifyDate == null}">수정일:</p>
       <p>클라이언트 ID: <span th:text="${review.clientId}"></span></p>
       <p>주문 상세 ID: <span th:text="${review.orderDetailId}"></span></p>
+      <p>상품 ID: <span th:text="${review.productId}"></span></p>
       <p>포인트: <span th:text="${review.point}"></span></p>
     </div>
     <div class="photo-container" th:if="${review.photoUrls.size() > 0}">
-      <img th:src="${review.photoUrls[0]}" th:alt="'대표사진'" th:data-photos="${review.photoUrls}"
-           class="thumbnail">
+      <img th:src="${review.photoUrls[0]}" th:alt="'대표사진'" th:data-photos="${review.photoUrls}" class="thumbnail">
       <div class="photo-count" th:if="${review.photoUrls.size() > 1}">
         <span th:text="${review.photoUrls.size()}"></span>
       </div>
@@ -93,15 +96,31 @@
         <img th:src="${photoUrl}" style="width: 100%; max-width: 500px;">
       </div>
     </div>
-    <button type="button" class="btn btn-primary edit-button" onclick="editReview(event)"
-            th:data-review-id="${review.id}">수정
-    </button>
+    <button type="button" class="btn btn-primary edit-button" onclick="editReview(event)" th:data-review-id="${review.id}">수정</button>
   </div>
+
+  <!-- 페이지네이션 -->
+  <nav aria-label="Page navigation" th:if="${reviews.totalPages > 1}">
+    <ul class="pagination justify-content-center">
+      <li class="page-item" th:classappend="${reviews.hasPrevious()} ? '' : 'disabled'">
+        <a class="page-link" th:href="@{${currentPath}(page=${reviews.number - 1}, size=${reviews.size})}" aria-label="Previous">
+          <span aria-hidden="true">&laquo;</span>
+        </a>
+      </li>
+      <li class="page-item" th:each="i : ${#numbers.sequence(1, reviews.totalPages)}" th:classappend="${reviews.number + 1 == i} ? 'active'">
+        <a class="page-link" th:href="@{${currentPath}(page=${i - 1}, size=${reviews.size})}" th:text="${i}">1</a>
+      </li>
+      <li class="page-item" th:classappend="${reviews.hasNext()} ? '' : 'disabled'">
+        <a class="page-link" th:href="@{${currentPath}(page=${reviews.number + 1}, size=${reviews.size})}" aria-label="Next">
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
 </div>
 
 <!-- Modal -->
-<div class="modal fade" id="photoModal" tabindex="-1" role="dialog"
-     aria-labelledby="photoModalLabel" aria-hidden="true">
+<div class="modal fade" id="photoModal" tabindex="-1" role="dialog" aria-labelledby="photoModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-body">
@@ -170,10 +189,8 @@
   function editReview(event) {
     event.stopPropagation();
     const reviewId = event.currentTarget.getAttribute("data-review-id");
-    // 여기에서 reviewId를 사용합니다.
     window.location.href = "/view/edit-photo-review/" + reviewId;
   }
-
 </script>
 </body>
 </html>
