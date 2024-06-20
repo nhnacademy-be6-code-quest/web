@@ -9,6 +9,6 @@ public class PaymentResponseDto {
     private Long orderId;
     private LocalDateTime paymentDate;
     private Long clientDeliveryAddressId;
-    private Long paymentMethodId;
+    private PaymentMethodResponseDto paymentMethod;
     private Long couponId;
 }
