@@ -1,4 +1,4 @@
-package com.nhnacademy.codequestweb.config;
+package com.nhnacademy.codequestweb.config.review;
 
 
 import java.io.File;
