@@ -15,7 +15,5 @@ public class PhotoReviewResponseDTO {
     private int point;
     private Long clientId;
     private Long orderDetailId;
-    private Long productId;
     private List<String> photoUrls;
-
 }
