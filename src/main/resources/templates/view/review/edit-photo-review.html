@@ -3,23 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <title>Edit Photo Review</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <link rel="stylesheet"
+        href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
   <style>
     .file-list {
       list-style: none;
       padding: 0;
     }
+
     .file-list li {
       margin-bottom: 5px;
       display: flex;
       align-items: center;
     }
+
     .file-list button {
       margin-left: 10px;
     }
+
     #photoFiles {
       display: none;
     }
+
     .btn-cancel {
       margin-left: 10px;
     }
@@ -28,26 +33,27 @@
 <body>
 <div class="container">
   <h1>Edit Photo Review</h1>
-  <form th:action="@{/view/edit-photo-review/{id}(id=${review.id})}" method="post" enctype="multipart/form-data" id="reviewForm">
+  <form th:action="@{/view/edit-photo-review/{id}(id=${review.id})}" method="post"
+        enctype="multipart/form-data" id="reviewForm">
     <div class="form-group">
       <label for="score">Score</label>
-      <input type="number" class="form-control" id="score" name="score" min="1" max="5" th:value="${review.score}" required>
+      <input type="number" class="form-control" id="score" name="score" min="1" max="5"
+             th:value="${review.score}" required>
     </div>
     <div class="form-group">
       <label for="content">Content</label>
-      <textarea class="form-control" id="content" name="content" rows="3" required th:text="${review.content}"></textarea>
+      <textarea class="form-control" id="content" name="content" rows="3" required
+                th:text="${review.content}"></textarea>
     </div>
     <div class="form-group">
       <label for="clientId">Client ID</label>
-      <input type="number" class="form-control" id="clientId" name="clientId" th:value="${review.clientId}" readonly>
+      <input type="number" class="form-control" id="clientId" name="clientId"
+             th:value="${review.clientId}" readonly>
     </div>
     <div class="form-group">
       <label for="orderDetailId">Order Detail ID</label>
-      <input type="number" class="form-control" id="orderDetailId" name="orderDetailId" th:value="${review.orderDetailId}" readonly>
-    </div>
-    <div class="form-group">
-      <label for="productId">Product ID</label>
-      <input type="number" class="form-control" id="productId" name="productId" th:value="${review.productId}" readonly>
+      <input type="number" class="form-control" id="orderDetailId" name="orderDetailId"
+             th:value="${review.orderDetailId}" readonly>
     </div>
     <div class="form-group">
       <label for="photoFiles">Photo Files</label>
@@ -56,12 +62,15 @@
       <ul class="file-list" id="fileList">
         <li th:each="photoUrl : ${review.photoUrls}" th:data-url="${photoUrl}">
           <span th:text="${photoUrl}"></span>
-          <button type="button" class="btn btn-danger btn-sm" onclick="removeExistingPhoto(this)">X</button>
+          <button type="button" class="btn btn-danger btn-sm" onclick="removeExistingPhoto(this)">
+            X
+          </button>
         </li>
       </ul>
     </div>
     <button type="submit" class="btn btn-primary">Submit</button>
-    <button type="button" class="btn btn-secondary btn-cancel" onclick="cancelEdit()">Cancel</button>
+    <button type="button" class="btn btn-secondary btn-cancel" onclick="cancelEdit()">Cancel
+    </button>
   </form>
 </div>
 
@@ -107,8 +116,6 @@
       formData.append("content", document.getElementById("content").value);
       formData.append("clientId", document.getElementById("clientId").value);
       formData.append("orderDetailId", document.getElementById("orderDetailId").value);
-      formData.append("productId", document.getElementById("productId").value);
-
       files.forEach(file => {
         formData.append("photoFiles", file);
       });
@@ -145,5 +152,3 @@
 </script>
 </body>
 </html>
-
-
