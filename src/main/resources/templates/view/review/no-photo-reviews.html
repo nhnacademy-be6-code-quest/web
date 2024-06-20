@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>No Photo Reviews</title>
+  <link rel="stylesheet"
+        href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <style>
+    .review-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 20px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      position: relative;
+    }
+
+    .review-content {
+      flex: 1;
+      padding-right: 20px;
+    }
+
+    .stars {
+      color: gold;
+    }
+
+    .edit-button {
+      position: absolute;
+      right: 15px;
+      bottom: 15px;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>No Photo Reviews</h1>
+  <div th:each="review : ${reviews}" class="review-container">
+    <div class="review-content">
+      <div class="stars" th:attr="data-score=${review.score}"></div>
+      <p>리뷰평: <span th:text="${review.content}"></span></p>
+      <p>작성일: <span
+          th:text="${#temporals.format(review.registerDate, 'yyyy-MM-dd HH:mm:ss')}"></span></p>
+      <p th:if="${review.lastModifyDate != null}">수정일: <span
+          th:text="${#temporals.format(review.lastModifyDate, 'yyyy-MM-dd HH:mm:ss')}"></span></p>
+      <p th:if="${review.lastModifyDate == null}">수정일:</p>
+      <p>클라이언트 ID: <span th:text="${review.clientId}"></span></p>
+      <p>주문 상세 ID: <span th:text="${review.orderDetailId}"></span></p>
+      <p>포인트: <span th:text="${review.point}"></span></p>
+    </div>
+    <button type="button" class="btn btn-primary edit-button" onclick="editReview(event)"
+            th:data-review-id="${review.id}">수정
+    </button>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".stars").forEach(function (starContainer) {
+      const score = parseInt(starContainer.getAttribute("data-score"), 10);
+      starContainer.innerHTML = '★'.repeat(score);
+    });
+  });
+
+  function editReview(event) {
+    event.stopPropagation();
+    const reviewId = event.currentTarget.getAttribute("data-review-id");
+    // 여기에서 reviewId를 사용합니다.
+    window.location.href = "/view/edit-no-photo-review/" + reviewId;
+  }
+</script>
+</body>
+</html>

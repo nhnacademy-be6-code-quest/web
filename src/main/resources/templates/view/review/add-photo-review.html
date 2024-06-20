@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Add Photo Review</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <style>
+    .file-list {
+      list-style: none;
+      padding: 0;
+    }
+    .file-list li {
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+    }
+    .file-list button {
+      margin-left: 10px;
+    }
+    #photoFiles {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Add Photo Review</h1>
+  <form th:action="@{/view/add-photo-review}" method="post" enctype="multipart/form-data" id="reviewForm">
+    <div class="form-group">
+      <label for="score">Score</label>
+      <input type="number" class="form-control" id="score" name="score" min="1" max="5" required>
+    </div>
+    <div class="form-group">
+      <label for="content">Content</label>
+      <textarea class="form-control" id="content" name="content" rows="3" required></textarea>
+    </div>
+    <div class="form-group">
+      <label for="clientId">Client ID</label>
+      <input type="number" class="form-control" id="clientId" name="clientId" required>
+    </div>
+    <div class="form-group">
+      <label for="orderDetailId">Order Detail ID</label>
+      <input type="number" class="form-control" id="orderDetailId" name="orderDetailId" required>
+    </div>
+    <div class="form-group">
+      <label for="photoFiles">Photo Files</label>
+      <button type="button" class="btn btn-secondary" id="uploadButton">파일 선택</button>
+      <input type="file" class="form-control-file" id="photoFiles" multiple>
+      <ul class="file-list" id="fileList"></ul>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const photoFilesInput = document.getElementById("photoFiles");
+    const uploadButton = document.getElementById("uploadButton");
+    const fileList = document.getElementById("fileList");
+    let files = [];
+
+    uploadButton.addEventListener("click", function() {
+      photoFilesInput.click();
+    });
+
+    photoFilesInput.addEventListener("change", function(event) {
+      const newFiles = Array.from(event.target.files);
+      files = files.concat(newFiles);
+      renderFileList();
+    });
+
+    function renderFileList() {
+      fileList.innerHTML = "";
+      files.forEach((file, index) => {
+        const li = document.createElement("li");
+        li.textContent = file.name;
+        const removeButton = document.createElement("button");
+        removeButton.textContent = "X";
+        removeButton.type = "button";
+        removeButton.addEventListener("click", () => {
+          files.splice(index, 1);
+          renderFileList();
+        });
+        li.appendChild(removeButton);
+        fileList.appendChild(li);
+      });
+    }
+
+    document.getElementById("reviewForm").addEventListener("submit", function(event) {
+      const formData = new FormData();
+      formData.append("score", document.getElementById("score").value);
+      formData.append("content", document.getElementById("content").value);
+      formData.append("clientId", document.getElementById("clientId").value);
+      formData.append("orderDetailId", document.getElementById("orderDetailId").value);
+      files.forEach(file => {
+        formData.append("photoFiles", file);
+      });
+
+      fetch(this.action, {
+        method: "POST",
+        body: formData
+      }).then(response => {
+        if (response.ok) {
+          window.location.href = "/view/photo-reviews";
+        } else {
+          alert("입력양식이 올바르지 않습니다");
+        }
+      }).catch(error => {
+        console.error("Error:", error);
+      });
+
+      event.preventDefault();
+    });
+  });
+</script>
+</body>
+</html>
