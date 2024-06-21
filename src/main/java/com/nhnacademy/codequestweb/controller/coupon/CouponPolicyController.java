@@ -1,7 +1,6 @@
 package com.nhnacademy.codequestweb.controller.coupon;
 
 import com.nhnacademy.codequestweb.domain.DiscountType;
-import com.nhnacademy.codequestweb.domain.Status;
 import com.nhnacademy.codequestweb.request.coupon.CouponPolicyRequestDto;
 import com.nhnacademy.codequestweb.response.auth.coupon.CouponPolicyResponseDto;
 import com.nhnacademy.codequestweb.service.coupon.CouponPolicyService;
@@ -14,7 +13,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -29,13 +27,13 @@ public class CouponPolicyController {
         Pageable pageRequest = PageRequest.of(pageable.getPageNumber(), DEFAULT_PAGE_SIZE);
         Page<CouponPolicyResponseDto> coupPolicies = couponPolicyService.getAllCouponPolicies(pageRequest);
         model.addAttribute("couponPolicies",coupPolicies);
-        return "/view/coupon/list_couponPolicy";
+        return "admin_policy_list";
     }
     @GetMapping("/admin/coupon/policy/register")
     public String viewRegisterPolicy(Model model){
         List<DiscountType> discountTypes = List.of(DiscountType.AMOUNTDISCOUNT,DiscountType.PERCENTAGEDISCOUNT);
         model.addAttribute("discountTypes",discountTypes);
-        return "/view/coupon/coupon_policy_register";
+        return "admin_policy_register";
     }
     @PostMapping("/admin/coupon/policy/register")
     public String registerPolicy(@ModelAttribute CouponPolicyRequestDto couponPolicyRequestDto){
