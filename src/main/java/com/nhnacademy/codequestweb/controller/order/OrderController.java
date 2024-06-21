@@ -1,7 +1,7 @@
 package com.nhnacademy.codequestweb.controller.order;
 
 import com.nhnacademy.codequestweb.request.order.ClientOrderPostRequestDto;
-import com.nhnacademy.codequestweb.request.order.field.OrderItem;
+import com.nhnacademy.codequestweb.request.order.field.OrderItemDto;
 import com.nhnacademy.codequestweb.response.order.ClientOrderPostResponseDto;
 import com.nhnacademy.codequestweb.service.order.OrderService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,22 +24,20 @@ public class OrderController {
     private final OrderService orderService;
 
     @GetMapping
-    // test
+    // 뷰 화면 테스트용 api입니다. 실제 서비스에서는 하위의 POST api 사용예정입니다.
     public String order(Model model, HttpServletRequest request) {
-        List<OrderItem> orderItemList = new ArrayList<>();
-        orderItemList.add(new OrderItem(1,2));
-        orderItemList.add(new OrderItem(2,3));
-        ClientOrderPostRequestDto orderRequestDto = new ClientOrderPostRequestDto(orderItemList);
+        ClientOrderPostRequestDto orderRequestDto = new ClientOrderPostRequestDto();
         ResponseEntity<ClientOrderPostResponseDto> response = orderService.gotoOrder(orderRequestDto);
         model.addAttribute("orderResponseDto", response.getBody());
         return "view/order/order";
     }
 
-    @PostMapping
-    public String orderView(ClientOrderPostRequestDto orderRequestDto, Model model){
-        ResponseEntity<ClientOrderPostResponseDto> response = orderService.gotoOrder(orderRequestDto);
-        model.addAttribute("orderResponseDto", response.getBody());
-        return "view/order/order";
-    }
+    // 상품페이지 or
+//    @PostMapping
+//    public String orderView(ClientOrderPostRequestDto orderRequestDto, Model model){
+//        ResponseEntity<ClientOrderPostResponseDto> response = orderService.gotoOrder(orderRequestDto);
+//        model.addAttribute("orderResponseDto", response.getBody());
+//        return "view/order/order";
+//    }
 
 }

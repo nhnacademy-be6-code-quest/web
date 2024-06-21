@@ -81,6 +81,19 @@
                 <button type="button" class="btn btn-outline-primary" style="font-size: small; padding: 0; height: 30px; width: 90px">주소등록</button>
                 <button type="button" class="btn btn-outline-primary" style="font-size: small; padding: 0; height: 30px; width: 90px">주소선택</button>
             </span>
+
+                <div class="collapse" id="a">
+                    <div class="card card-body">
+                        aaa
+                    </div>
+                </div>
+                <div class="collapse" id="b">
+                    <div class="card card-body">
+                        bbb
+                    </div>
+                </div>
+
+            </span>
         </div>
         <div> <!--선택된 배송지가 있을 때만 보여주기-->
             <div>배송지: <span>조선대학교</span></div>
@@ -100,7 +113,7 @@
         <h3>배송날짜 지정</h3>
         <div class="form-check form-switch">
             <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
-            <label class="form-check-label" for="flexSwitchCheckDefault">배송날짜를 지정할까요?</label>
+            <label class="form-check-label" for="flexSwitchCheckDefault" th:border="1px">배송날짜를 지정할까요?</label>
         </div>
 <!--        배송날짜 지정 안함일때만 보이게-->
         <div>배송날짜를 지정하지 않았습니다. 가장 빠른 배송일자에 배송됩니다</div>
