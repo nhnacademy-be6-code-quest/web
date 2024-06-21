@@ -1,7 +1,10 @@
 package com.nhnacademy.codequestweb.client.auth;
 
 import com.nhnacademy.codequestweb.request.auth.ClientLoginRequestDto;
+import com.nhnacademy.codequestweb.request.auth.ClientRegisterRequestDto;
 import com.nhnacademy.codequestweb.response.auth.ClientLoginResponseDto;
+import com.nhnacademy.codequestweb.response.auth.ClientRegisterResponseDto;
+import jakarta.validation.Valid;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -17,4 +20,7 @@ public interface AuthClient {
     ResponseEntity<?> logout(@RequestHeader HttpHeaders headers);
     @PostMapping("/reissue")
     ResponseEntity<ClientLoginResponseDto> reissue(@RequestHeader(name = "refresh") String refresh);
+    @PostMapping("/api/client")
+    ResponseEntity<ClientRegisterResponseDto> register(@Valid @RequestBody
+                                                       ClientRegisterRequestDto clientRegisterRequestDto);
 }
