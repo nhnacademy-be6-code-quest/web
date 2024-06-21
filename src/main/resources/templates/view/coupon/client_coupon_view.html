@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coupons</title>
+    <link rel="stylesheet" href="/static/css/coupon/client_coupon_view.css">
+</head>
+
+<body>
+<div class="w-full max-w-4xl mx-auto py-8 px-4 md:px-6">
+    <div class="flex items-center justify-between mb-6">
+        <div class="grid gap-1">
+            <h1 class="text-3xl font-bold text-gray-900">My Coupons</h1>
+        </div>
+        <p class="text-sm text-gray-600">10 Available</p>
+    </div>
+    <div th:each="coupon : ${couponList}">
+        <div class="bg-white shadow-md rounded-lg overflow-hidden">
+            <div class="px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div class="text-lg font-medium text-gray-800" th:text="${coupon.couponType().couponKind()}"></div>
+                    <div
+                            class="px-3 py-1 rounded-full text-sm font-bold"
+                            th:classappend="${coupon.status() == 'Available'} ? 'bg-green-500 text-white' : 'bg-red-500 text-white'"
+                            th:text="${coupon.status()}"></div>
+                </div>
+                <div class="grid grid-cols-2 gap-4 mt-4">
+                    <div>
+                        <div class="text-sm text-gray-600">Discount</div>
+                        <div th:text="${coupon.couponPolicy().getDiscountValue()}"></div>
+                    </div>
+                    <div>
+                        <div class="text-sm text-gray-600">Policy</div>
+                        <div th:text="${coupon.couponPolicy().getCouponPolicyDescription()}"></div>
+                    </div>
+                    <div>
+                        <div class="text-sm text-gray-600">Expires</div>
+                        <div th:text="${coupon.expirationDate()}"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+</html>
