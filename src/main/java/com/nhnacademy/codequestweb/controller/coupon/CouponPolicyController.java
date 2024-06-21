@@ -27,13 +27,13 @@ public class CouponPolicyController {
         Pageable pageRequest = PageRequest.of(pageable.getPageNumber(), DEFAULT_PAGE_SIZE);
         Page<CouponPolicyResponseDto> coupPolicies = couponPolicyService.getAllCouponPolicies(pageRequest);
         model.addAttribute("couponPolicies",coupPolicies);
-        return "admin_policy_list";
+        return "/view/coupon/admin_policy_list";
     }
     @GetMapping("/admin/coupon/policy/register")
     public String viewRegisterPolicy(Model model){
         List<DiscountType> discountTypes = List.of(DiscountType.AMOUNTDISCOUNT,DiscountType.PERCENTAGEDISCOUNT);
         model.addAttribute("discountTypes",discountTypes);
-        return "admin_policy_register";
+        return "/view/coupon/admin_policy_register";
     }
     @PostMapping("/admin/coupon/policy/register")
     public String registerPolicy(@ModelAttribute CouponPolicyRequestDto couponPolicyRequestDto){

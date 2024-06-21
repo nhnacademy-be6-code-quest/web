@@ -32,26 +32,22 @@ public class CouponController {
     @GetMapping("/client/{clientId}")
     public String viewCoupon(@PathVariable long clientId, Model model){
         List<CouponResponseDto> couponList = couponService.findClientCoupon(clientId);
-
-
         model.addAttribute("couponList",couponList);
-
-
         return "/view/coupon/client_coupon_view";
     }
+
     @GetMapping("/admin/coupon/register/{couponPolicyId}")
     public String saveCouponView(Model model, @PathVariable long couponPolicyId){
         List<CouponTypeResponseDto> couponTypes = couponTypeService.getAllCouponTypes();
         CouponPolicyResponseDto couponPolicy = couponPolicyService.getCouponPolicy(couponPolicyId);
         List<Status> statuses = List.of(Status.AVAILABLE, Status.USED,Status.UNAVAILABLE);
-
-
         model.addAttribute("couponTypes",couponTypes);
         model.addAttribute("couponPolicy",couponPolicy);
         model.addAttribute("status",statuses);
         model.addAttribute("couponPolicyId",couponPolicyId);
-        return "admin_coupon_register";
+        return "/view/coupon/admin_policy_register";
     }
+
     @PostMapping("/admin/coupon/register/{couponPolicyId}")
     public String saveCoupon(@PathVariable long couponPolicyId, @ModelAttribute CouponRequestDto couponRequestDto){
       couponService.saveCoupon(couponRequestDto,couponPolicyId);

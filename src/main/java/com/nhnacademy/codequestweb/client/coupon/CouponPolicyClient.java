@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
-@FeignClient(name = "couponPolicyClient", url="http://localhost:8001")
+@FeignClient(name = "couponPolicyClient", url="http://localhost:8006")
 public interface CouponPolicyClient {
 
     @GetMapping("/admin/coupon/policy")
