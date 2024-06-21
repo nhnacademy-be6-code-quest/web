@@ -1,6 +1,22 @@
 package com.nhnacademy.codequestweb.response.auth.coupon;
 
 import com.nhnacademy.codequestweb.domain.DiscountType;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-public record CouponPolicyResponseDto(long couponPolicyId, long productId, long productCategoryId, String couponPolicyDescription, DiscountType discountType, long minPurchaseAmount, long maxDiscountAmount) {
-}
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Getter
+public class CouponPolicyResponseDto {
+    private long couponPolicyId;
+    private long productId;
+    private long productCategoryId;
+    private String couponPolicyDescription;
+    private DiscountType discountType;
+    private long discountValue;
+    private long minPurchaseAmount;
+    private long maxDiscountAmount;
+    }
