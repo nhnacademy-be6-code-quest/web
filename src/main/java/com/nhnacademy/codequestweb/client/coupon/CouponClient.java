@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
-@FeignClient(name = "couponClient", url = "http://localhost:8006")
+@FeignClient(name = "couponClient", url = "http://localhost:8001")
 public interface CouponClient {
 
     @GetMapping("/coupon/{clientId}")
