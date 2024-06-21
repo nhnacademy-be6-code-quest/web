@@ -28,8 +28,15 @@
 <div th:if="${view != null} and ${#strings.equals(view, 'mypage')}">
     <div th:replace="~{view/mypage/mypage :: mypageFragment}"></div>
 </div>
-
-
+<div th:if="${view != null} and ${#strings.equals(view, 'bookProductRegisterForm')}">
+    <section th:replace="~{view/admin/bookProductRegisterForm.html :: bookProductRegisterFragment}"></section>
+</div>
+<div th:if="${view != null} and ${#strings.equals(view, 'categoryRegisterForm')}">
+    <section th:replace="~{view/admin/categoryRegisterForm.html :: categoryRegisterFragment}"></section>
+</div>
+<div th:if="${view != null} and ${#strings.equals(view, 'tagRegisterForm')}">
+    <section th:replace="~{view/admin/tagRegisterForm.html :: tagRegisterFragment}"></section>
+</div>
 
 
 
