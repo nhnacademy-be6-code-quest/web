@@ -15,7 +15,7 @@ public class PaymentService {
 
     // Post
     public void createPayment(PaymentRequestDto paymentRequestDto) {
-        paymentClient.createPayment(paymentRequestDto);
+        paymentClient.createPayment(paymentRequestDto); // 여기까지 들어가는 것 확인했음.
     }
 
     // PaymentId 로 Payment 관련 정보 얻기

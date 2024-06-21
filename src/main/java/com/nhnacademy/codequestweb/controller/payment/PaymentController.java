@@ -38,6 +38,8 @@ public class PaymentController {
     // 사용자에게 결제와 관련된 정보를 입력 받습니다.
     @PostMapping("/payment")
     public void createPayment(@ModelAttribute PaymentRequestDto paymentRequestDto) {
+        paymentRequestDto.setOrderId(1L);
+        paymentRequestDto.setClientDeliveryAddressId(1L);
         paymentService.createPayment(paymentRequestDto);
     }
 
