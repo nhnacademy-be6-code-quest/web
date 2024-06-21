@@ -6,5 +6,5 @@ import com.nhnacademy.codequestweb.response.auth.coupon.CouponTypeResponseDto;
 
 import java.time.LocalDateTime;
 
-public record CouponRequestDto(CouponTypeResponseDto couponTypeId, CouponPolicyResponseDto couponPolicyId, long clientId, LocalDateTime issuedDate, LocalDateTime expirationDate, Status status) {
+public record CouponRequestDto(long couponTypeId, long couponPolicyId, long clientId, LocalDateTime issuedDate, LocalDateTime expirationDate, Status status) {
 }
