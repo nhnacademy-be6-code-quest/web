@@ -19,63 +19,44 @@
     </style>
 </head>
 <body>
-<div class="card">
-    <div class="card-header">
-        <div class="card-title">쿠폰 지급</div>
-        <div class="card-description">관리자가 쿠폰을 생성하고 사용자에게 지급할 수 있습니다.</div>
+<form th:action="@{'/admin/coupon/register/' + ${couponPolicyId}}" method="post">
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">쿠폰 지급</div>
+            <div class="card-description">관리자가 쿠폰을 생성하고 사용자에게 지급할 수 있습니다.</div>
+        </div>
+        <div class="card-content">
+            <div class="grid">
+                <label class="label" for="couponTypeId">쿠폰 타입</label>
+                <select id="couponTypeId" name="couponTypeId">
+                    <option value="">쿠폰 타입 선택</option>
+                    <option th:each="couponType : ${couponTypes}" th:value="${couponType.couponTypeId}"
+                            th:text="${couponType.couponKind}"></option>
+                </select>
+            </div>
+
+            <div class="grid">
+                <label class="label" for="user">사용자</label>
+                <select id="user" name="clientId" class="select">
+                    <option value="">사용자 선택</option>
+                   <option th:each="client : ${clients}" th:value="${client.getClientId()}"
+                                th:text="${client.getClientName()}"></option>
+                    </select>
+            </div>
+            <div class="grid">
+                <label class="label" for="expiration-date">만료일</label>
+                <input type="datetime-local" id="expiration-date" name="expirationDate" class="select">
+            </div>
+            <div class="grid">
+                <label class="label" for="status">상태</label>
+                <select id="status" name="status" class="select">
+                    <option value="">상태 선택</option>
+                    <option th:each="statu : ${status}" th:text="${statu}"></option>
+                </select>
+            </div>
+        </div>
+        <button type="submit" class="button">쿠폰 지급</button>
     </div>
-    <div class="card-content">
-        <div class="grid">
-            <label class="label" for="coupon-type">쿠폰 타입</label>
-            <label for="milestoneInput">마일스톤</label>
-            <select id="milestoneInput" name="milestone">
-                <option value="">마일스톤 선택</option>
-                <option th:each="coupontype : ${couponType}" th:value="${coupontype}"
-                        th:text="${coupontype.couponKind()}"
-                        th:selected="${coupontype.couponKind().equals(coupon.couponTypeId().couponKind())}"></option>
-            </select>
-            <select id="coupon-type" class="select">
-                <option value="">쿠폰 타입 선택</option>
-                <option value="percentage">퍼센트 할인</option>
-                <option value="fixed_amount">고정 금액 할인</option>
-                <option value="free_shipping">무료 배송</option>
-            </select>
-        </div>
-        <div class="grid">
-            <label class="label" for="coupon-policy">쿠폰 정책</label>
-            <select id="coupon-policy" class="select">
-                <option value="">쿠폰 정책 선택</option>
-                <option value="new_user">신규 가입자</option>
-                <option value="repeat_customer">재구매 고객</option>
-                <option value="birthday">생일 축하</option>
-                <option value="holiday">휴일 프로모션</option>
-            </select>
-        </div>
-        <div class="grid">
-            <label class="label" for="user">사용자</label>
-            <select id="user" class="select">
-                <option value="">사용자 선택</option>
-                <option value="user1">User 1</option>
-                <option value="user2">User 2</option>
-                <option value="user3">User 3</option>
-            </select>
-        </div>
-        <div class="grid">
-            <label class="label" for="expiration-date">만료일</label>
-            <input type="date" id="expiration-date" class="select">
-        </div>
-        <div class="grid">
-            <label class="label" for="status">상태</label>
-            <select id="status" class="select">
-                <option value="">상태 선택</option>
-                <option value="active">활성</option>
-                <option value="inactive">비활성</option>
-            </select>
-        </div>
-    </div>
-    <div class="card-footer">
-        <div class="button">쿠폰 지급</div>
-    </div>
-</div>
+</form>
 </body>
 </html>
