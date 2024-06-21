@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "orderClient", url = "http://localhost:8008")
+@FeignClient(name = "orderClient", url = "http://localhost:8001")
 public interface OrderClient {
     @PostMapping("/client/order")
     ResponseEntity<ClientOrderPostResponseDto> tryOrder(@RequestBody ClientOrderPostRequestDto orderRequestDto);
