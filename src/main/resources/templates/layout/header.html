@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="headerFragment ('user', 'message')">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="headerFragment ('isLogin', 'message')">
 <head>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
 
@@ -54,7 +54,8 @@
             <div
                     class="col-sm-8 col-lg-4 d-flex justify-content-end gap-5 align-items-center mt-4 mt-sm-0 justify-content-center justify-content-sm-end">
                 <div class="support-box text-end d-none d-xl-block">
-                    <span class="fs-6 secondary-font text-muted"><a href="/auth">로그인 / 회원가입</a></span>
+                    <span th:if="${isLogin == null}" class="fs-6 secondary-font text-muted" ><a href="/auth">로그인 / 회원가입</a></span>
+                    <span th:if="${isLogin != null}" class="fs-6 secondary-font text-muted" ><a href="/logout">로그아웃</a></span>
                 </div>
 
             </div>
@@ -71,7 +72,10 @@
             <div class="d-flex d-lg-none align-items-end mt-3">
                 <ul class="d-flex justify-content-end list-unstyled m-0">
                     <li>
-                        <a href="account.html" class="mx-3">
+<!--                        <a href="account.html" class="mx-3">-->
+<!--                            <iconify-icon icon="healthicons:person" class="fs-4"></iconify-icon>-->
+<!--                        </a>-->
+                        <a th:href="${isLogin == null ? '/auth' : '/mypage'}" class="mx-3">
                             <iconify-icon icon="healthicons:person" class="fs-4"></iconify-icon>
                         </a>
                     </li>
@@ -180,7 +184,7 @@
                     <div class="d-none d-lg-flex align-items-end">
                         <ul class="d-flex justify-content-end list-unstyled m-0">
                             <li>
-                                <a href="account.html" class="mx-3">
+                                <a th:href="${isLogin == null ? '/auth' : '/mypage'}" class="mx-3">
                                     <iconify-icon icon="healthicons:person" class="fs-4"></iconify-icon>
                                 </a>
                             </li>
