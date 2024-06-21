@@ -19,7 +19,7 @@ public class MyPageController {
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
         headers.set("refresh", CookieUtils.getCookieValue(req, "refresh"));
-        userClient.test(headers);
+//        userClient.test(headers);
         req.setAttribute("view", "mypage");
         return "index";
     }
