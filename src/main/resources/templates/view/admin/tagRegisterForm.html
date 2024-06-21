@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="categoryRegisterFragment ()">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form action="/admin/tags" method="post">
+    <input type="text" name="tagName" placeholder="태그명"/>
+    <button type="submit" value="등록"><span th:text="등록"></span></button>
+</form>
+</body>
+</html>
