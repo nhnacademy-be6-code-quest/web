@@ -1,8 +1,9 @@
 package com.nhnacademy.codequestweb.service.order;
 
 import com.nhnacademy.codequestweb.client.order.OrderClient;
-import com.nhnacademy.codequestweb.request.order.OrderRequestDto;
-import com.nhnacademy.codequestweb.response.order.OrderResponseDto;
+import com.nhnacademy.codequestweb.request.order.ClientOrderPostRequestDto;
+import com.nhnacademy.codequestweb.response.order.ClientOrderPostResponseDto;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Service;
 public class OrderService {
     private OrderClient orderClient;
 
-    public ResponseEntity<OrderResponseDto> gotoOrder(OrderRequestDto orderRequestDto){
+    public ResponseEntity<ClientOrderPostResponseDto> gotoOrder(ClientOrderPostRequestDto orderRequestDto){
         return orderClient.tryOrder(orderRequestDto);
     }
 }
