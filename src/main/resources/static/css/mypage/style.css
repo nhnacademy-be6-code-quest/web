@@ -1,0 +1,208 @@
+/* Custom sidebar styling */
+.mypage-sidebar {
+    width: 240px;
+    background-color: #606060; /* Dark background color */
+    padding: 1rem;
+    color: #fff; /* White text color */
+}
+
+.content-wrapper {
+    display: flex;
+}
+
+.content {
+    flex-grow: 1;
+    padding: 1rem;
+    background-color: #ffffff;
+}
+
+.mypage-sidebar .nav {
+    display: flex;
+    flex-direction: column;
+}
+
+.mypage-sidebar .nav-link {
+    color: #fff; /* White text color */
+    padding: 0.75rem 1.25rem;
+    transition: background-color 0.2s;
+    font-size: 14px;
+    border: none; /* Remove border */
+}
+
+.mypage-sidebar .nav-link:hover {
+    background-color: #3C3A39; /* Darker hover background color */
+    color: #fff; /* White text color */
+}
+
+.mypage-sidebar .accordion-button {
+    color: #fff; /* White text color */
+    background-color: #606060; /* Dark background color */
+    border: none; /* Remove border */
+}
+
+.mypage-sidebar .accordion-button:hover {
+    background-color: #3C3A39; /* Darker hover background color */
+}
+
+.mypage-sidebar .accordion-header {
+    border: none; /* Remove border */
+}
+
+.mypage-sidebar .accordion-item {
+    border: none; /* Remove border */
+}
+
+.mypage-sidebar .accordion-button:not(.collapsed)::after {
+    filter: invert(100%); /* Invert color of arrow icon */
+}
+
+.mypage-sidebar .accordion-button.collapsed::after {
+    filter: invert(100%); /* Invert color of arrow icon */
+}
+
+.flex {
+    display: flex;
+}
+
+.h-16 {
+    height: 4rem;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.border-b {
+    border-bottom: 1px solid #e9ecef;
+}
+
+.bg-muted {
+    background-color: #f8f9fa;
+}
+
+.px-6 {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+}
+
+.ml-auto {
+    margin-left: auto;
+}
+
+.text-muted-foreground {
+    color: #6c757d;
+}
+
+.grid {
+    display: grid;
+}
+
+.gap-4 {
+    gap: 1rem;
+}
+
+.p-4 {
+    padding: 1rem;
+}
+
+.overflow-auto {
+    overflow: auto;
+}
+
+.mx-auto {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.max-w-4xl {
+    max-width: 56rem;
+}
+
+.p-6 {
+    padding: 1.5rem;
+}
+
+.text-2xl {
+    font-size: 1.5rem;
+}
+
+.font-bold {
+    font-weight: 700;
+}
+
+.text-lg {
+    font-size: 1.125rem;
+}
+
+.font-semibold {
+    font-weight: 600;
+}
+
+.gap-2 {
+    gap: 0.5rem;
+}
+
+.sm\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.border-t {
+    border-top: 1px solid #e9ecef;
+}
+
+.justify-end {
+    justify-content: flex-end;
+}
+
+.gap-2 {
+    gap: 0.5rem;
+}
+
+.btn {
+    padding: 0.375rem 0.75rem;
+    border: 1px solid transparent;
+    border-radius: 0.375rem;
+    transition: all 0.15s ease-in-out;
+}
+
+.btn-outline-secondary {
+    color: #6c757d;
+    background-color: transparent;
+    background-image: none;
+    border-color: #6c757d;
+}
+
+.btn-outline-secondary:hover {
+    color: #ffffff;
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+.btn-primary {
+    color: #ffffff;
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.btn-primary:hover {
+    color: #ffffff;
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+.main-content {
+    flex-grow: 1;
+    padding: 2rem;
+}
+
+.mypage-container {
+    display: flex;
+}
+
+.accordion-button::after {
+    transform: rotate(-90deg);
+}
+
+.accordion-button:not(.collapsed)::after {
+    transform: rotate(0deg);
+}
