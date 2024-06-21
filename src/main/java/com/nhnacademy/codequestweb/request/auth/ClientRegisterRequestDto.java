@@ -28,7 +28,7 @@ public class ClientRegisterRequestDto {
 
     @NotNull
     @NotBlank(message = "전화번호는 필수 입력 항목입니다.")
-    @Size(min = 10, max = 11)
+    @Size(min = 10, max = 11, message = "전화번호는 '-'없이 10 또는 11자리의 수 이어야합니다.")
     @Digits(integer = 11, fraction = 0)
     private String clientPhoneNumber;
 }
