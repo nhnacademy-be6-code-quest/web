@@ -1,12 +1,10 @@
 .container{
+    background: #8fa1c7;
     display: flex;
     flex-direction: column;
+    align-items: center;
 }
 
 .sub-container{
 
-}
-
-.out-border {
-    border: 1px solid #DCDFE6;
 }
