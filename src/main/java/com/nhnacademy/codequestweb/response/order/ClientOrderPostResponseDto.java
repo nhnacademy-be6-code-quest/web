@@ -9,10 +9,10 @@ import java.util.List;
 
 @Getter
 @NoArgsConstructor
-public class OrderResponseDto { // view에 뿌려질 dto
+public class ClientOrderPostResponseDto { // view에 뿌려질 dto
     private List<ProductItemDto> productItemDtoList;
     private List<PackageItemDto> packageItemDtoList;
-    private long shippingPrice;
+    private long shippingFee;
     private long minPurchasePrice;
     private String shippingPolicyName;
 }
