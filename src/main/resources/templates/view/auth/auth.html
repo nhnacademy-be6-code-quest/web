@@ -1,10 +1,63 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="authFragment ()">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="authFragment ('login_message', 'register_message', 'form', 'prev_data')">
 <head>
     <meta charset="UTF-8">
     <title></title>
 
     <link rel="stylesheet" type="text/css" th:href="@{/css/auth/style.css}">
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const form = /*[[${form}]]*/ 'login';
+
+            if (form === 'register') {
+                const container = document.querySelector('.cont');
+                container.classList.toggle('s--signup');
+                if (container.classList.contains('s--signup')) {
+                    container.style.height = '900px';
+                } else {
+                    container.style.height = '550px';
+                }
+            }
+        });
+        document.getElementById('loginForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ clientEmail: email, clientPassword: password })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                localStorage.setItem('accessToken', data.accessToken);
+                alert('Login successful!');
+            } else {
+                alert('Login failed!');
+            }
+        });
+        /*]]>*/
+    </script>
+<!--    <script type="text/javascript">-->
+<!--        function validation() {-->
+<!--            var p1 = document.getElementById('password').value;-->
+<!--            var p2 = document.getElementById('confirm-password').value;-->
+<!--            if (p1 !== p2) {-->
+<!--                alert("비밀번호가 일치 하지 않습니다")-->
+<!--                return false;-->
+<!--            } else {-->
+<!--                alert("비밀번호가 일치합니다.")-->
+<!--                return true;-->
+<!--            }-->
+<!--        }-->
+<!--    </script>-->
 </head>
 <section id="auth">
     <br>
@@ -12,20 +65,20 @@
     <br>
     <br>
     <div class="cont">
-        <div class="form sign-in">
+        <form id = "loginForm" class="form sign-in" action="/login" method="post">
             <h2>로 그 인</h2>
             <label>
                 <span >Email</span>
-                <input type="email" />
+                <input type="email" name="clientEmail" required="required" />
             </label>
             <label>
                 <span>Password</span>
-                <input type="password" />
+                <input type="password" name="clientPassword" required="required" />
             </label>
             <p class="forgot-pass">Forgot password?</p>
-            <button type="button" class="submit">Sign In</button>
-
-        </div>
+            <button type="submit" class="submit">Sign In</button>
+            <span th:if="${login_message != null}" class="error-message" th:text="${login_message}" />
+        </form>
         <div class="sub-cont">
             <div class="img">
                 <div class="img__text m--up">
@@ -39,39 +92,56 @@
                     <span class="m--in">Sign In</span>
                 </div>
             </div>
-            <form class="form sign-up" action="/register" method="post">
+            <form id="registerForm" class="form sign-up" action="/register" method="post">
                 <h2>회 원 가 입</h2>
                 <label>
                     <span>Nickname</span>
-                    <input type="text" name="clientName" />
+                    <input type="text" name="clientName" th:value="${prev_data != null ? prev_data.clientName : ''}" />
                 </label>
                 <label>
                     <span>Email</span>
-                    <input type="email" name="clientEmail" />
+                    <input type="email" name="clientEmail" th:value="${prev_data != null ? prev_data.clientEmail : ''}" />
                 </label>
                 <label>
                     <span>Password</span>
-                    <input type="password" name="clientPassword" />
+                    <input id="password" type="password" name="clientPassword" th:value="${prev_data != null ? prev_data.clientPassword : ''}" />
                 </label>
                 <label>
                     <span>Confirm Password</span>
-                    <input type="password" />
+                    <input id="confirm-password" type="password" th:value="${prev_data != null ? prev_data.clientPassword : ''}" />
                 </label>
                 <label>
                     <span>Birthday</span>
-                    <input type="date" name="clientBirth" />
+                    <input type="date" name="clientBirth" th:value="${prev_data != null ? prev_data.clientBirth : ''}" />
                 </label>
                 <label>
                     <span>Phone Number</span>
-                    <input type="tel" name="clientPhoneNumber" />
+                    <input type="tel" name="clientPhoneNumber" th:value="${prev_data != null ? prev_data.clientPhoneNumber : ''}" />
                 </label>
                 <button type="submit" class="submit">Sign Up</button>
+                <span th:if="${register_message != null}" class="error-message" th:text="${register_message}" />
             </form>
         </div>
     </div>
     <br>
     <br>
     <br>
+
+    <script>
+        var password = document.getElementById("password")
+        var confirm_password = document.getElementById("confirm-password");
+
+        function validatePassword(){
+            if(password.value !== confirm_password.value) {
+                confirm_password.setCustomValidity("Passwords Don't Match");
+            } else {
+                confirm_password.setCustomValidity('');
+            }
+        }
+
+        password.onchange = validatePassword;
+        confirm_password.onkeyup = validatePassword;
+    </script>
 
 <script>
     document.querySelector('.img__btn').addEventListener('click', function() {
