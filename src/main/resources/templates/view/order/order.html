@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>Order Page</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.3/css/bootstrap.min.css">
+    <style>
+        h3 {
+            color: #ecb54f !important; /* !important를 사용하여 우선순위를 높입니다 */
+        }
+        .sub-container{
+            margin-top: 50px;
+            margin-bottom: 50px;
+        }
+    </style>
+</head>
+<body>
+
+<div th:replace="~{layout/header.html :: headerFragment ('user', 'message')}"></div>
+
+<!--달력-->
+<!--<div class="el-col" :span="20">-->
+<!--    <div style="padding: 10px;border-left:1px solid #DCDFE6">-->
+<!--        <input type="date" id="startDate" name="startDate" th:value="${startDate}" />-->
+<!--        <input type="date" id="endDate" name="endDate" th:value="${endDate}" />-->
+<!--        <button type="button" onclick="getOrderStatistics()">설정</button>-->
+<!--        <div id="chart" style="width: 100%; height: 400px;"></div>-->
+<!--    </div>-->
+<!--</div>-->
+
+<div class="container" >
+    <div class="sub-container">
+        <h3>주문 목록</h3>
+        <table class="table table-striped" id="order-item-table" th:border="1">
+            <thead>
+            <tr>
+                <th style="width: 10%">상품이미지</th>
+                <th style="width: 40%">상품명</th>
+                <th style="width: 10%">상품가격</th>
+                <th style="width: 10%">수량</th>
+                <th style="width: 30%">포장여부</th>
+            </tr>
+            </thead>
+            <tbody id="orderItemList">
+                <tr th:each="productItemDto, iterStat : ${orderResponseDto.productItemDtoList}">
+                    <td th:text="${productItemDto.imgPath}"></td>
+                    <td th:text="${productItemDto.name}"></td>
+                    <td th:text="${productItemDto.price}"></td>
+                    <td th:text="${productItemDto.quantity}"></td>
+                    <td>
+                        <label>
+                            <input type="checkbox" onclick="handleOnChange()"> 포장지선택
+                        </label>
+                        <div>
+                            <select class="form-select form-select-sm" aria-label=".form-select-sm example" onchange="handleOnChange()" hidden="hidden">
+                                <option value="0">== 포장지 선택 ==</option>
+                                <option th:each="packageItemDto : ${orderResponseDto.packageItemDtoList}" th:id="${packageItemDto.id}" th:value= "${packageItemDto.price}" th:text="${packageItemDto.name} + ' - ' + ${packageItemDto.price} + '원'"></option>
+                            </select>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="sub-container">
+        <h3>예상가격</h3>
+        <div>무료배송 기준 금액: <span id="minPurchasePrice" th:text="${orderResponseDto.minPurchasePrice}"></span>원</div>
+        <div>배송비: <span id="shippingFee" th:text="${orderResponseDto.shippingFee}"></span>원</div>
+        <div>상품 총 금액: <span id="totalProductPrice"></span>원</div>
+        <div class="text-nowrap bd-highlight fs-5" style="width: 8rem;">총 금액(예상 결제 금액): <span  id="totalPrice">0</span>원</div>
+    </div>
+
+    <div class="sub-container">
+        <h3>주문정보</h3>
+        <div>구매자 성함: <span>코드퀘스트</span></div>
+        <div>구매자 이메일: <span>cq@codequest.com</span></div>
+        <div>배송지
+            <span class="btn-group" role="group" aria-label="Basic outlined example">
+                <button type="button" class="btn btn-outline-primary" style="font-size: small; padding: 0; height: 30px; width: 90px">주소등록</button>
+                <button type="button" class="btn btn-outline-primary" style="font-size: small; padding: 0; height: 30px; width: 90px">주소선택</button>
+            </span>
+        </div>
+        <div> <!--선택된 배송지가 있을 때만 보여주기-->
+            <div>배송지: <span>조선대학교</span></div>
+            <div>우편번호: <span>61452</span></div>
+            <div>주소: <span>광주광역시 동구 필문대로 309</span></div>
+        </div>
+        <div>전화번호
+            <span class="btn-group" role="group" aria-label="Basic outlined example">
+                <button type="button" class="btn btn-outline-primary" style="font-size: small; padding: 0; height: 30px; width: 90px">번호등록</button>
+                <button type="button" class="btn btn-outline-primary" style="font-size: small; padding: 0; height: 30px; width: 90px">번호선택</button>
+            </span>
+        </div>
+        <div>tel: <span>062-230-7114</span></div>
+        <div></div>
+    </div>
+    <div class="sub-container">
+        <h3>배송날짜 지정</h3>
+        <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+            <label class="form-check-label" for="flexSwitchCheckDefault">배송날짜를 지정할까요?</label>
+        </div>
+<!--        배송날짜 지정 안함일때만 보이게-->
+        <div>배송날짜를 지정하지 않았습니다. 가장 빠른 배송일자에 배송됩니다</div>
+<!--        배송날짜 지정할때만 보이게-->
+        <div>
+
+            배송날짜: <span>0000년 00월 00일</span>
+        </div>
+    </div>
+
+    <form class="sub-container" method="get" action="/">
+        <button class="btn" style="background-color:#ecb54f">다음단계</button>
+    </form>
+</div>
+
+<script th:inline="javascript">
+
+    const shippingFee = [[${orderResponseDto.shippingFee}]];
+    const minPurchasePrice = [[${orderResponseDto.minPurchasePrice}]];
+    let currentShippingFee;
+    let currentTotalProductPrice;
+
+    // 로딩될때
+    document.addEventListener('DOMContentLoaded', function() {
+        updateCurrentData();
+        processUpdatePriceRelatedState();
+    });
+
+    function handleOnChange(){
+        updateCurrentData();
+        processUpdatePriceRelatedState();
+    }
+
+    function updateCurrentData(){
+        currentTotalProductPrice = getTotalProductPrice();
+
+        if(minPurchasePrice <= currentTotalProductPrice){
+            currentShippingFee = 0;
+        }
+        else{
+            currentShippingFee = shippingFee;
+        }
+    }
+
+    function processUpdatePriceRelatedState(){
+        updateCurrentShippingFee(); // 배송비 업데이트
+        updateTotalProductPrice(); // 포장지 가격을 고려한 전체 상품 가격 업데이트
+        updateTotalPrice(); // 합산 전체 가격 업데이트
+    }
+
+    function updateTotalPrice() {
+        const totalPriceElement = document.getElementById('totalPrice');
+        totalPriceElement.innerText = currentTotalProductPrice + currentShippingFee;
+    }
+
+    function updateCurrentShippingFee() {
+        const shippingFeeElement = document.getElementById('shippingFee');
+        shippingFeeElement.innerText = currentShippingFee;
+    }
+
+    function updateTotalProductPrice(){
+        const totalProductPriceElement = document.getElementById('totalProductPrice');
+        totalProductPriceElement.innerText = currentTotalProductPrice;
+    }
+
+    function getTotalProductPrice(){
+
+        const rows = document.querySelectorAll('#orderItemList tr');
+        let totalAmount = 0;
+        rows.forEach(row => {
+
+            const price = parseFloat(row.cells[2].innerText); // price
+            const quantity = parseInt(row.cells[3].innerText); // quantity
+            totalAmount += price * quantity;
+
+            const checkbox = row.querySelector('input[type="checkbox"]');
+            const select = row.querySelector('select');
+
+            select.hidden = !checkbox.checked;
+
+            if(checkbox.checked){
+                const option = select.options[select.selectedIndex];
+                const packagePrice = parseInt(option.value);
+                totalAmount += packagePrice * quantity;
+            }
+
+        });
+
+        return totalAmount
+
+    }
+
+</script>
+
+
+<div th:replace="~{layout/footer.html :: footerFragment}"></div>
+
+
+</body>
+</html>
