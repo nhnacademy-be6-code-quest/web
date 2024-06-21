@@ -13,7 +13,7 @@
 </head>
 <body>
 
-<div th:replace="~{layout/header.html :: headerFragment ('user', 'message')}"></div>
+<div th:replace="~{layout/header.html :: headerFragment ('isLogin', 'message')}"></div>
 
 
 
@@ -23,7 +23,10 @@
     <div th:replace="~{view/home/home.html :: homeFragment}"></div>
 </div>
 <div th:if="${view != null} and ${#strings.equals(view, 'auth')}">
-    <section th:replace="~{view/auth/auth.html :: authFragment}"></section>
+    <section th:replace="~{view/auth/auth.html :: authFragment ('login_message', 'register_message', 'form', 'prev_data')}"></section>
+</div>
+<div th:if="${view != null} and ${#strings.equals(view, 'mypage')}">
+    <div th:replace="~{view/mypage/mypage :: mypageFragment}"></div>
 </div>
 
 
