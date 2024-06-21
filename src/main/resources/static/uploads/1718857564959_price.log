@@ -1,0 +1,14 @@
+2024-05-20 01:31:53,903 INFO [main] c.e.d.p.a.PriceAop [PriceAop.java:36] ----- 선도형 class com.example.demo.shell.MyCommands.sector([동두천시]) ----->
+2024-05-20 01:31:53,906 INFO [main] c.e.d.p.a.PriceAop [PriceAop.java:38] <----- 선도형 class com.example.demo.shell.MyCommands.sector([]) -----
+2024-05-20 01:32:34,291 INFO [main] c.e.d.p.a.PriceAop [PriceAop.java:36] ----- 선도형 class com.example.demo.shell.MyCommands.sector([동두천시]) ----->
+2024-05-20 01:32:34,300 INFO [main] c.e.d.p.a.PriceAop [PriceAop.java:38] <----- 선도형 class com.example.demo.shell.MyCommands.sector([가정용, 일반용, 일반용(미), 전용공업용, 발전용]) -----
+2024-05-21 12:10:45,831 INFO [main] c.e.d.p.a.PriceAop [PriceAop.java:36] ----- 선도형 class com.example.demo.shell.MyCommands.sector([동두천시]) ----->
+2024-05-21 12:11:08,931 INFO [main] c.e.d.p.a.PriceAop [PriceAop.java:36] ----- 선도형 class com.example.demo.shell.MyCommands.sector([동두천시]) ----->
+2024-05-21 12:11:46,014 INFO [main] c.e.d.p.a.PriceAop [PriceAop.java:36] ----- 선도형 class com.example.demo.shell.MyCommands.sector([동두천시]) ----->
+2024-05-21 12:11:46,024 INFO [main] c.e.d.p.a.PriceAop [PriceAop.java:38] <----- 선도형 class com.example.demo.shell.MyCommands.sector([가정용, 일반용, 일반용(미), 전용공업용, 발전용]) -----
+2024-05-21 12:12:26,797 INFO [main] c.e.d.p.a.PriceAop [PriceAop.java:36] ----- 선도형 class com.example.demo.shell.MyCommands.sector([동두천시]) ----->
+2024-05-21 12:12:26,806 INFO [main] c.e.d.p.a.PriceAop [PriceAop.java:38] <----- 선도형 class com.example.demo.shell.MyCommands.sector([가정용, 일반용, 일반용(미), 전용공업용, 발전용]) -----
+2024-05-21 12:13:19,765 INFO [main] c.e.d.p.a.PriceAop [PriceAop.java:36] ----- 선도형 class com.example.demo.shell.MyCommands.billTotal([동두천시, 가정용, 10]) ----->
+2024-05-21 12:13:19,773 INFO [main] c.e.d.p.a.PriceAop [PriceAop.java:38] <----- 선도형 class com.example.demo.shell.MyCommands.billTotal(city: 동두천시, sector: 가정용, unit price(won) : 690, bill total(won): 4761000) -----
+2024-05-21 12:14:02,240 INFO [main] c.e.d.p.a.PriceAop [PriceAop.java:36] ----- 선도형 class com.example.demo.shell.MyCommands.billTotal([동두천시, 가정용, 10]) ----->
+2024-05-21 12:14:02,254 INFO [main] c.e.d.p.a.PriceAop [PriceAop.java:38] <----- 선도형 class com.example.demo.shell.MyCommands.billTotal(지자체명: 동두천시, 업종: 가정용, 구간금액(원) : 690, 총금액(원): 4761000) -----

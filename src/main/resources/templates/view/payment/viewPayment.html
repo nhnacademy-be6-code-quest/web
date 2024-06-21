@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="author" content="">
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <title>결제 페이지</title>
+
+    <!-- css -->
+    <link rel="stylesheet" href="/css/payment/style.css">
+    <!-- css -->
+
+</head>
+<body>
+
+<!-- header -->
+<div th:replace="~{layout/header.html :: headerFragment ('user', 'message')}"></div>
+<!-- header -->
+
+<div class="container">
+    <h1>결제 페이지</h1>
+    <div class="payment-info">
+        <div class="remaining-points">
+            <label for="remaining-points">잔여 포인트:</label>
+            <span id="remaining-points" th:text="${tempData.remainingPoints}">0</span>
+        </div>
+        <div class="use-points">
+            <label for="use-points">사용할 포인트:</label>
+            <input type="number" id="use-points" min="0" th:value="${usePoints}">
+        </div>
+        <div class="coupons">
+            <button id="use-coupon">쿠폰 사용</button>
+            <div class="coupon-list" style="display: none;">
+                <ul>
+                    <li th:each="coupon : ${coupons}">
+                        <input type="radio" th:id="${coupon.id}" th:value="${coupon.id}">
+                        <label th:for="${coupon.id}" th:text="${coupon.name}">쿠폰 이름</label>
+                    </li>
+                </ul>
+                <button id="apply-coupon">쿠폰 적용</button>
+            </div>
+        </div>
+        <div class="payment-amounts">
+            <div>결제 금액: <span id="original-amount" th:text="${tempData.originalAmount}">0</span>원</div>
+            <div>총 결제 금액: <span id="final-amount" th:text="${tempData.finalAmount}">0</span>원</div>
+            <div>예상 포인트 적립: <span id="expected-points" th:text="${tempData.expectedPoints}">0</span>P</div>
+        </div>
+    </div>
+    <div class="payment-method">
+        <button id="select-payment-method">결제 방식 지정</button>
+        <div class="payment-method-modal" style="display: none;">
+            <h2>결제 방식 선택</h2>
+            <ul>
+                <li><input type="radio" id="payment-method-card" name="payment-method" value="card"> <label for="payment-method-card">신용카드</label></li>
+                <li><input type="radio" id="payment-method-bank" name="payment-method" value="bank"> <label for="payment-method-bank">계좌이체</label></li>
+                <li><input type="radio" id="payment-method-phone" name="payment-method" value="phone"> <label for="payment-method-phone">휴대폰 결제</label></li>
+            </ul>
+            <button id="confirm-payment-method">결제하기</button>
+        </div>
+    </div>
+</div>
+
+<!-- footer -->
+<div th:replace="~{layout/footer.html :: footerFragment}"></div>
+<!-- footer -->
+
+<!-- js -->
+<script src="/js/payment/script.js"></script>
+<!-- js -->
+
+</body>
+</html>
