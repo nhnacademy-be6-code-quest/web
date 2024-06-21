@@ -13,8 +13,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
+
 
 
 @Controller
@@ -50,7 +50,7 @@ public class CouponController {
         model.addAttribute("couponPolicy",couponPolicy);
         model.addAttribute("status",statuses);
         model.addAttribute("couponPolicyId",couponPolicyId);
-        return "/view/coupon/register_coupon";
+        return "admin_coupon_register";
     }
     @PostMapping("/admin/coupon/register/{couponPolicyId}")
     public String saveCoupon(@PathVariable long couponPolicyId, @ModelAttribute CouponRequestDto couponRequestDto){
