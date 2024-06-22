@@ -1,8 +1,24 @@
 package com.nhnacademy.codequestweb.response.auth.coupon;
 
 import com.nhnacademy.codequestweb.domain.Status;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-public record CouponResponseDto(long couponId, CouponTypeResponseDto couponType, CouponPolicyResponseDto couponPolicy, LocalDateTime issuedDate, LocalDateTime expirationDate, LocalDateTime usedDate, Status status) {
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class CouponResponseDto {
+    private long couponId;
+    private CouponTypeResponseDto couponType;
+    private CouponPolicyResponseDto couponPolicy;
+    private LocalDateTime issuedDate;
+    private long clientId;
+    private LocalDateTime expirationDate;
+    private LocalDateTime usedDate;
+    private Status status;
 }

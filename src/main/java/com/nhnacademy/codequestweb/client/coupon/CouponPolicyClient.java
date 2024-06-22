@@ -16,13 +16,13 @@ import java.util.List;
 @FeignClient(name = "couponPolicyClient", url="http://localhost:8006")
 public interface CouponPolicyClient {
 
-    @GetMapping("/admin/coupon/policy")
+    @GetMapping("/api/coupon/policy")
     Page<CouponPolicyResponseDto> getAllCouponPolices(Pageable pageable);
 
-    @GetMapping("/admin/coupon/policy/{couponPolicyId}")
+    @GetMapping("/api/coupon/policy/{couponPolicyId}")
     CouponPolicyResponseDto getCouponPolicy(@PathVariable long couponPolicyId);
 
-    @PostMapping("/admin/coupon/policy/register")
+    @PostMapping("/api/coupon/policy/register")
     ResponseEntity<CouponPolicyRequestDto> savePolicy(@RequestBody CouponPolicyRequestDto couponPolicyRequestDto);
 
 

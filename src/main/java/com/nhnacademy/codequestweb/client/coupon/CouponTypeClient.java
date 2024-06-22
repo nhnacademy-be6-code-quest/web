@@ -9,6 +9,6 @@ import java.util.List;
 @FeignClient(name="couponTypeClient", url = "http://localhost:8006")
 public interface CouponTypeClient {
 
-    @GetMapping("/admin/coupon/type")
+    @GetMapping("/api/coupon/type")
     List<CouponTypeResponseDto> findAllType();
 }

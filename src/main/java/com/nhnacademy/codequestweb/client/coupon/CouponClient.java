@@ -17,6 +17,6 @@ public interface CouponClient {
     @GetMapping("/coupon/{clientId}")
     List<CouponResponseDto> viewCoupons(@PathVariable long clientId);
 
-    @PostMapping("/admin/coupon/register/{couponPolicyId}")
+    @PostMapping("/api/coupon/register/{couponPolicyId}")
     ResponseEntity<CouponRequestDto> saveCoupon(@PathVariable long couponPolicyId, @RequestBody CouponRequestDto couponRequestDto);
 }

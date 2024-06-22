@@ -1,6 +1,12 @@
 package com.nhnacademy.codequestweb.response.auth.coupon;
 
 import com.nhnacademy.codequestweb.domain.CouponKind;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-public record CouponTypeResponseDto(long couponTypeId, CouponKind couponKind) {
+@Getter
+@AllArgsConstructor
+public class CouponTypeResponseDto {
+    long couponTypeId;
+    CouponKind couponKind;
 }

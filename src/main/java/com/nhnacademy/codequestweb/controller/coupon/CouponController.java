@@ -1,5 +1,6 @@
 package com.nhnacademy.codequestweb.controller.coupon;
 
+import com.nhnacademy.codequestweb.domain.Client;
 import com.nhnacademy.codequestweb.domain.Status;
 import com.nhnacademy.codequestweb.request.coupon.CouponRequestDto;
 import com.nhnacademy.codequestweb.response.auth.coupon.CouponPolicyResponseDto;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -41,11 +43,15 @@ public class CouponController {
         List<CouponTypeResponseDto> couponTypes = couponTypeService.getAllCouponTypes();
         CouponPolicyResponseDto couponPolicy = couponPolicyService.getCouponPolicy(couponPolicyId);
         List<Status> statuses = List.of(Status.AVAILABLE, Status.USED,Status.UNAVAILABLE);
+        List<Client> clients = new ArrayList<>();
+        clients.add(new Client(1L,"김채호"));
+        clients.add(new Client(2L,"전민선"));
+        model.addAttribute("clients",clients);
         model.addAttribute("couponTypes",couponTypes);
         model.addAttribute("couponPolicy",couponPolicy);
         model.addAttribute("status",statuses);
         model.addAttribute("couponPolicyId",couponPolicyId);
-        return "/view/coupon/admin_policy_register";
+        return "/view/coupon/admin_coupon_register";
     }
 
     @PostMapping("/admin/coupon/register/{couponPolicyId}")
