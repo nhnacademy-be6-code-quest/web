@@ -41,9 +41,7 @@ public class CouponPolicyController {
     @PostMapping("/api/coupon/policy/register")
     public String registerPolicy(@Valid @ModelAttribute CouponPolicyRequestDto couponPolicyRequestDto){
         couponPolicyService.savePolicy(couponPolicyRequestDto);
-        return "redirect:/admin/coupon/policy";
+        return "redirect:/api/coupon/policy";
     }
-    @ExceptionHandler()
 
-    {}
 }

@@ -43,14 +43,13 @@ public class CouponController {
     @GetMapping("/api/coupon/register/{couponPolicyId}")
     public String saveCouponView(Model model, @PathVariable long couponPolicyId){
         List<CouponTypeResponseDto> couponTypes = couponTypeService.getAllCouponTypes();
-        CouponPolicyResponseDto couponPolicy = couponPolicyService.getCouponPolicy(couponPolicyId);
+        couponPolicyService.getCouponPolicy(couponPolicyId);
         List<Status> statuses = List.of(Status.AVAILABLE, Status.USED,Status.UNAVAILABLE);
         List<Client> clients = new ArrayList<>();
         clients.add(new Client(1L,"김채호"));
         clients.add(new Client(2L,"전민선"));
         model.addAttribute("clients",clients);
         model.addAttribute("couponTypes",couponTypes);
-        model.addAttribute("couponPolicy",couponPolicy);
         model.addAttribute("status",statuses);
         model.addAttribute("couponPolicyId",couponPolicyId);
         return "/view/coupon/admin_coupon_register";
