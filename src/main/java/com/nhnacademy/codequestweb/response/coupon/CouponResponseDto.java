@@ -1,4 +1,4 @@
-package com.nhnacademy.codequestweb.response.auth.coupon;
+package com.nhnacademy.codequestweb.response.coupon;
 
 import com.nhnacademy.codequestweb.domain.Status;
 import lombok.AllArgsConstructor;

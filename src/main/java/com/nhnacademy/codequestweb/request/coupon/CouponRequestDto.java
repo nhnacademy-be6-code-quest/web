@@ -1,8 +1,6 @@
 package com.nhnacademy.codequestweb.request.coupon;
 
 import com.nhnacademy.codequestweb.domain.Status;
-import com.nhnacademy.codequestweb.response.auth.coupon.CouponPolicyResponseDto;
-import com.nhnacademy.codequestweb.response.auth.coupon.CouponTypeResponseDto;
 
 import java.time.LocalDateTime;
 

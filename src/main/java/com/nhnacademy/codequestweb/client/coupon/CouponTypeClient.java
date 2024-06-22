@@ -1,6 +1,6 @@
 package com.nhnacademy.codequestweb.client.coupon;
 
-import com.nhnacademy.codequestweb.response.auth.coupon.CouponTypeResponseDto;
+import com.nhnacademy.codequestweb.response.coupon.CouponTypeResponseDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 
