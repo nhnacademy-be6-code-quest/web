@@ -14,7 +14,7 @@ import java.util.List;
 @FeignClient(name = "couponClient", url = "http://localhost:8006")
 public interface CouponClient {
 
-    @GetMapping("/coupon/{clientId}")
+    @GetMapping("/api/coupon/{clientId}")
     List<CouponResponseDto> viewCoupons(@PathVariable long clientId);
 
     @PostMapping("/api/coupon/register/{couponPolicyId}")
