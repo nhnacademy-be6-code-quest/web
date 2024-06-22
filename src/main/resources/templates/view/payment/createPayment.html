@@ -21,7 +21,7 @@
 <div th:replace="~{layout/header.html :: headerFragment ('user', 'message')}"></div>
 <!-- header -->
 
-<form action="/payment" method="post">
+<form action="/client/order/payment/tossPayment" method="post">
     <div class="container">
         <h1>결제 페이지</h1>
         <div class="payment-info">
@@ -38,8 +38,8 @@
                 <div class="coupon-list" style="display: none;">
                     <ul>
                         <li th:each="coupon : ${coupons}">
-                            <input type="radio" th:id="${coupon.getId()}" th:value="${coupon.getId()}" name="couponId" onchange="updatePaymentAmount()">
-                            <label th:for="${coupon.getId()}" th:text="${coupon.getName()}">쿠폰 이름</label>
+                            <input type="radio" th:id="${coupon.couponId()}" th:value="${coupon.couponId()}" name="couponId" onchange="updatePaymentAmount()">
+                            <label th:for="${coupon.couponId()}" th:text="${coupon.couponPolicy().getCouponPolicyDescription()}">쿠폰 이름</label>
                         </li>
                     </ul>
                 </div>
@@ -54,7 +54,7 @@
             <h2>결제 수단 선택</h2>
             <div class="payment-options">
                 <label>
-                    <input type="radio" name="paymentMethodId" value="toss"> 토스 페이먼츠
+                    <input type="radio" name="paymentMethodId" value=1> 토스 페이먼츠
                 </label>
             </div>
             <button type="submit" id="select-payment-method">결제하기</button>

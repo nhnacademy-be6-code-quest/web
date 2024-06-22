@@ -1,13 +1,12 @@
 package com.nhnacademy.codequestweb.controller.payment;
 
 import com.nhnacademy.codequestweb.request.payment.PaymentRequestDto;
-import com.nhnacademy.codequestweb.response.auth.coupon.CouponResponseDto;
+import com.nhnacademy.codequestweb.response.coupon.CouponResponseDto;
 import com.nhnacademy.codequestweb.response.payment.PaymentResponseDto;
 import com.nhnacademy.codequestweb.service.coupon.CouponService;
 import com.nhnacademy.codequestweb.service.order.OrderService;
 import com.nhnacademy.codequestweb.service.payment.PaymentService;
-import com.nhnacademy.codequestweb.temp.Coupon;
-import java.util.ArrayList;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -25,17 +24,26 @@ public class PaymentController {
     private final PaymentService paymentService;
     private final CouponService couponService;
     private final OrderService orderService; // ResponseDto -> 주문 총 금액
+//    private final ClientService clientService;
 
     // 사용자에게 결제와 관련된 정보를 보여줍니다.
-    @GetMapping("{clientId}/payment")
-    public String createPayment(Model model, @PathVariable Long clientId) {
+    @GetMapping("client/order/payment")
+    public String createPayment(Model model, HttpServletRequest httpServletRequest) {
+//        String email = httpServletRequest.getHeader("email");
+//        Long clientId = clientService.findClientIdByEmail(email);
+
+        Long clientId = 1L;
         List<CouponResponseDto> coupons = couponService.findClientCoupon(clientId);
+//        List<Coupon> coupons = new ArrayList<>();
+//        coupons.add(new Coupon(1L, "첫 번째 쿠폰"));
+//        coupons.add(new Coupon(2L, "두 번째 쿠폰"));
         model.addAttribute("coupons", coupons);
 
         // 포인트에서 받아 올 것
         model.addAttribute("remainingPoint", 10000);
 
         // 주문에서 받아 올 것
+        Long orderId = 1L;
         model.addAttribute("originalAmount", 20000);
 
         // 주문에서 받아 올 것을 토대로
@@ -47,7 +55,7 @@ public class PaymentController {
     }
 
     // 사용자에게 결제와 관련된 정보를 입력 받습니다.
-    @PostMapping("/payment")
+    @PostMapping("client/order/payment")
     public void createPayment(@ModelAttribute PaymentRequestDto paymentRequestDto) {
         paymentRequestDto.setOrderId(1L);
         paymentRequestDto.setClientDeliveryAddressId(1L);

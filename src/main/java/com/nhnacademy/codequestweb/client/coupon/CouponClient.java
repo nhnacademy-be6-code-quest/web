@@ -1,7 +1,7 @@
 package com.nhnacademy.codequestweb.client.coupon;
 
 import com.nhnacademy.codequestweb.request.coupon.CouponRequestDto;
-import com.nhnacademy.codequestweb.response.auth.coupon.CouponResponseDto;
+import com.nhnacademy.codequestweb.response.coupon.CouponResponseDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
-@FeignClient(name = "couponClient", url = "http://localhost:8001")
+@FeignClient(name = "couponClient", url = "http://localhost:8006")
 public interface CouponClient {
 
     @GetMapping("/coupon/{clientId}")
