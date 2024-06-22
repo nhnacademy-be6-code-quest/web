@@ -2,6 +2,7 @@ package com.nhnacademy.codequestweb.client.auth;
 
 import com.nhnacademy.codequestweb.request.auth.ClientRegisterRequestDto;
 import com.nhnacademy.codequestweb.response.auth.ClientRegisterResponseDto;
+import com.nhnacademy.codequestweb.response.mypage.ClientPrivacyResponseDto;
 import jakarta.validation.Valid;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpHeaders;
@@ -16,6 +17,6 @@ public interface UserClient {
     @PostMapping("/api/client")
     ResponseEntity<ClientRegisterResponseDto> register(@Valid @RequestBody ClientRegisterRequestDto clientRegisterRequestDto);
 
-    @GetMapping("/api/test")
-    ResponseEntity<String> test(@RequestHeader HttpHeaders headers);
+    @GetMapping("/api/client")
+    ResponseEntity<ClientPrivacyResponseDto> getPrivacy(@RequestHeader HttpHeaders headers);
 }
