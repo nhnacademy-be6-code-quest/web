@@ -9,9 +9,7 @@ import lombok.Setter;
 @Setter
 @Builder
 @AllArgsConstructor
-public class ClientLoginResponseDto {
-    private Role role;
-    private String clientEmail;
-    private String clientPassword;
-    private String clientName;
+public class TokenResponseDto {
+    private String access;
+    private String refresh;
 }

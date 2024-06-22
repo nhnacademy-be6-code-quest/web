@@ -4,8 +4,8 @@ import com.nhnacademy.codequestweb.client.auth.AuthClient;
 import com.nhnacademy.codequestweb.client.auth.UserClient;
 import com.nhnacademy.codequestweb.request.auth.ClientLoginRequestDto;
 import com.nhnacademy.codequestweb.request.auth.ClientRegisterRequestDto;
-import com.nhnacademy.codequestweb.response.auth.ClientLoginResponseDto;
 import com.nhnacademy.codequestweb.response.auth.ClientRegisterResponseDto;
+import com.nhnacademy.codequestweb.response.auth.TokenResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -20,11 +20,11 @@ public class AuthService {
         return userClient.register(clientRegisterRequestDto);
     }
 
-    public ResponseEntity<ClientLoginResponseDto> login(ClientLoginRequestDto clientLoginRequestDto) {
+    public ResponseEntity<TokenResponseDto> login(ClientLoginRequestDto clientLoginRequestDto) {
         return authClient.login(clientLoginRequestDto);
     }
 
-    public ResponseEntity<ClientLoginResponseDto> reissue(String refreshToken) {
+    public ResponseEntity<TokenResponseDto> reissue(String refreshToken) {
         return authClient.reissue(refreshToken);
     }
 }

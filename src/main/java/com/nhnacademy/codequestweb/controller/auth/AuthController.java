@@ -3,8 +3,7 @@ package com.nhnacademy.codequestweb.controller.auth;
 import com.nhnacademy.codequestweb.client.auth.AuthClient;
 import com.nhnacademy.codequestweb.request.auth.ClientLoginRequestDto;
 import com.nhnacademy.codequestweb.request.auth.ClientRegisterRequestDto;
-import com.nhnacademy.codequestweb.response.auth.ClientLoginResponseDto;
-import com.nhnacademy.codequestweb.response.auth.ClientRegisterResponseDto;
+import com.nhnacademy.codequestweb.response.auth.TokenResponseDto;
 import com.nhnacademy.codequestweb.service.auth.AuthService;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
 import feign.FeignException;
@@ -16,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
@@ -42,30 +40,29 @@ public class AuthController {
 
     @PostMapping("/register")
     public String authPost(@Valid @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @ModelAttribute ClientRegisterRequestDto clientRegisterRequestDto, HttpServletRequest req) {
-        ResponseEntity<ClientRegisterResponseDto> response = authService.register(clientRegisterRequestDto);
-        if (!response.getStatusCode().is2xxSuccessful()) {
-            req.setAttribute("register_message", "이미 존재하는 이메일입니다.");
-        }
+        authService.register(clientRegisterRequestDto);
         req.setAttribute("view", "auth");
         return "index";
     }
 
     @PostMapping("/login")
-    public String loginPost(@Valid @ModelAttribute ClientLoginRequestDto clientLoginRequestDto, HttpServletRequest req, HttpServletResponse res) {
-        ResponseEntity<ClientLoginResponseDto> response = authService.login(clientLoginRequestDto);
-        Cookie cookie = new Cookie("access", response.getHeaders().getValuesAsList("access").getFirst());
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(60 * 60 * 2);
-        res.addCookie(cookie);
+    public String loginPost(@Valid @ModelAttribute ClientLoginRequestDto clientLoginRequestDto, HttpServletResponse res) {
+        TokenResponseDto response = authService.login(clientLoginRequestDto).getBody();
+        if (response != null) {
+            Cookie cookie = new Cookie("access", response.getAccess());
+            cookie.setHttpOnly(true);
+            cookie.setSecure(true);
+            cookie.setPath("/");
+            cookie.setMaxAge(60 * 60 * 2);
+            res.addCookie(cookie);
 
-        cookie = new Cookie("refresh", response.getHeaders().getValuesAsList("refresh").getFirst());
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(60 * 60 * 24 * 14);
-        res.addCookie(cookie);
+            cookie = new Cookie("refresh", response.getRefresh());
+            cookie.setHttpOnly(true);
+            cookie.setSecure(true);
+            cookie.setPath("/");
+            cookie.setMaxAge(60 * 60 * 24 * 14);
+            res.addCookie(cookie);
+        }
         return "redirect:/";
     }
 
@@ -94,11 +91,7 @@ public class AuthController {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public String validationError(MethodArgumentNotValidException e, HttpServletRequest req) {
-        ClientRegisterRequestDto requestDto = new ClientRegisterRequestDto();
-        requestDto.setClientName(req.getParameter("clientName"));
-        requestDto.setClientEmail(req.getParameter("clientEmail"));
-        requestDto.setClientPassword(req.getParameter("clientPassword"));
-        requestDto.setClientPhoneNumber(req.getParameter("clientPhoneNumber"));
+        ClientRegisterRequestDto requestDto = getRequestDto(req);
         try {
             requestDto.setClientBirth(LocalDate.parse(req.getParameter("clientBirth"), DateTimeFormatter.ISO_DATE));
         } catch (DateTimeParseException dtpe) {
@@ -113,11 +106,7 @@ public class AuthController {
 
     @ExceptionHandler(FeignException.Conflict.class)
     public String validationError(FeignException.Conflict e, HttpServletRequest req) {
-        ClientRegisterRequestDto requestDto = new ClientRegisterRequestDto();
-        requestDto.setClientName(req.getParameter("clientName"));
-        requestDto.setClientEmail(req.getParameter("clientEmail"));
-        requestDto.setClientPassword(req.getParameter("clientPassword"));
-        requestDto.setClientPhoneNumber(req.getParameter("clientPhoneNumber"));
+        ClientRegisterRequestDto requestDto = getRequestDto(req);
         try {
             requestDto.setClientBirth(LocalDate.parse(req.getParameter("clientBirth"), DateTimeFormatter.ISO_DATE));
         } catch (DateTimeParseException dtpe) {
@@ -128,5 +117,14 @@ public class AuthController {
         req.setAttribute("view", "auth");
         req.setAttribute("form", "register");
         return "index";
+    }
+
+    private ClientRegisterRequestDto getRequestDto(HttpServletRequest req) {
+        ClientRegisterRequestDto requestDto = new ClientRegisterRequestDto();
+        requestDto.setClientName(req.getParameter("clientName"));
+        requestDto.setClientEmail(req.getParameter("clientEmail"));
+        requestDto.setClientPassword(req.getParameter("clientPassword"));
+        requestDto.setClientPhoneNumber(req.getParameter("clientPhoneNumber"));
+        return requestDto;
     }
 }
