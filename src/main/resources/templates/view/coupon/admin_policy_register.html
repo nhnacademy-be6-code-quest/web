@@ -77,6 +77,7 @@
                 <option value="">할인 유형 선택</option>
                 <option th:each="discountType : ${discountTypes}" th:text="${discountType}"></option>
             </select>
+            <div class="error-class" th:errors="*{discountTypes}"></div>
         </div>
         <div class="mb-4">
             <label class="block text-gray-700 font-bold mb-2">
