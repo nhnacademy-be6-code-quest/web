@@ -8,7 +8,7 @@
 </head>
 <body>
 <div class="container">
-    <a class="create-btn" href="/admin/coupon/policy/register">쿠폰 정책 생성</a>
+    <a class="create-btn" href="/api/coupon/policy/register">쿠폰 정책 생성</a>
     <h1 class="text-2xl font-bold mb-6">Coupon Policies</h1>
     <div class="grid">
         <div th:each="couponPolicy : ${couponPolicies}">
@@ -19,7 +19,7 @@
                 <p th:text="${couponPolicy.couponPolicyDescription}">Coupon Policy Description</p>
                 <p class="discount" th:text="'할인금액: ' + ${couponPolicy.discountValue} + '원 할인최소금액: ' + ${couponPolicy.minPurchaseAmount} + ', 할인최대금액: ' + ${couponPolicy.maxDiscountAmount}"></p>
                 <div class="flex justify-end">
-                    <a th:href="'/admin/coupon/register/' + ${couponPolicy.couponPolicyId}" target="_blank" class="btn">쿠폰 선택</a>
+                    <a th:href="'/api/coupon/register/' + ${couponPolicy.couponPolicyId}" target="_blank" class="btn">쿠폰 선택</a>
                 </div>
             </div>
         </div>

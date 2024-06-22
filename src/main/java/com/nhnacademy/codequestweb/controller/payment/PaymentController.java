@@ -27,7 +27,7 @@ public class PaymentController {
 //    private final ClientService clientService;
 
     // 사용자에게 결제와 관련된 정보를 보여줍니다.
-    @GetMapping("client/order/payment")
+    @GetMapping("/client/order/payment")
     public String createPayment(Model model, HttpServletRequest httpServletRequest) {
 //        String email = httpServletRequest.getHeader("email");
 //        Long clientId = clientService.findClientIdByEmail(email);

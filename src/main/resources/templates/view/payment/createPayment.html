@@ -38,8 +38,8 @@
                 <div class="coupon-list" style="display: none;">
                     <ul>
                         <li th:each="coupon : ${coupons}">
-                            <input type="radio" th:id="${coupon.couponId()}" th:value="${coupon.couponId()}" name="couponId" onchange="updatePaymentAmount()">
-                            <label th:for="${coupon.couponId()}" th:text="${coupon.couponPolicy().getCouponPolicyDescription()}">쿠폰 이름</label>
+                            <input type="radio" th:id="${coupon.couponId}" th:value="${coupon.couponId}" name="couponId" onchange="updatePaymentAmount()">
+                            <label th:for="${coupon.couponId}" th:text="${coupon.couponPolicy.couponPolicyDescription}">쿠폰 이름</label>
                         </li>
                     </ul>
                 </div>
