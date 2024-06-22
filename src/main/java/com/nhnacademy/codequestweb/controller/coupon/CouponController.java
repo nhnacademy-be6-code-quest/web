@@ -9,7 +9,9 @@ import com.nhnacademy.codequestweb.response.coupon.CouponTypeResponseDto;
 import com.nhnacademy.codequestweb.service.coupon.CouponPolicyService;
 import com.nhnacademy.codequestweb.service.coupon.CouponService;
 import com.nhnacademy.codequestweb.service.coupon.CouponTypeService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -55,9 +57,9 @@ public class CouponController {
     }
 
     @PostMapping("/api/coupon/register/{couponPolicyId}")
-    public String saveCoupon(@PathVariable long couponPolicyId, @ModelAttribute CouponRequestDto couponRequestDto){
+    public String saveCoupon(@Valid @PathVariable long couponPolicyId, @ModelAttribute CouponRequestDto couponRequestDto){
       couponService.saveCoupon(couponRequestDto,couponPolicyId);
-        return "redirect:/admin/coupon/policy";
+        return "redirect:/api/coupon/policy";
 
     }
 }
