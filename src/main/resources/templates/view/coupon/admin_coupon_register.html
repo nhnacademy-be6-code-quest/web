@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>쿠폰 지급</title>
+    <link rel="stylesheet" href="/css/coupon/admin_coupon_register.css">
+
+</head>
+<body>
+<form th:action="@{'/admin/coupon/register/' + ${couponPolicyId}}" method="post">
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">쿠폰 지급</div>
+            <div class="card-description">관리자가 쿠폰을 생성하고 사용자에게 지급할 수 있습니다.</div>
+        </div>
+        <div class="card-content">
+            <div class="grid">
+                <label class="label" for="couponTypeId">쿠폰 타입</label>
+                <select id="couponTypeId" name="couponTypeId">
+                    <option value="">쿠폰 타입 선택</option>
+                    <option th:each="couponType : ${couponTypes}" th:value="${couponType.couponTypeId}"
+                            th:text="${couponType.couponKind}"></option>
+                </select>
+            </div>
+
+            <div class="grid">
+                <label class="label" for="user">사용자</label>
+                <select id="user" name="clientId" class="select">
+                    <option value="">사용자 선택</option>
+                   <option th:each="client : ${clients}" th:value="${client.getClientId()}"
+                                th:text="${client.getClientName()}"></option>
+                    </select>
+            </div>
+            <div class="grid">
+                <label class="label" for="expiration-date">만료일</label>
+                <input type="datetime-local" id="expiration-date" name="expirationDate" class="select">
+            </div>
+            <div class="grid">
+                <label class="label" for="status">상태</label>
+                <select id="status" name="status" class="select">
+                    <option value="">상태 선택</option>
+                    <option th:each="statu : ${status}" th:text="${statu}"></option>
+                </select>
+            </div>
+        </div>
+        <button type="submit" class="button">쿠폰 지급</button>
+    </div>
+</form>
+</body>
+</html>
