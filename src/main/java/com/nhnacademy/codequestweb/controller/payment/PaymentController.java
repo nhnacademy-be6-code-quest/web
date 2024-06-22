@@ -1,7 +1,10 @@
 package com.nhnacademy.codequestweb.controller.payment;
 
 import com.nhnacademy.codequestweb.request.payment.PaymentRequestDto;
+import com.nhnacademy.codequestweb.response.auth.coupon.CouponResponseDto;
 import com.nhnacademy.codequestweb.response.payment.PaymentResponseDto;
+import com.nhnacademy.codequestweb.service.coupon.CouponService;
+import com.nhnacademy.codequestweb.service.order.OrderService;
 import com.nhnacademy.codequestweb.service.payment.PaymentService;
 import com.nhnacademy.codequestweb.temp.Coupon;
 import java.util.ArrayList;
@@ -20,17 +23,25 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class PaymentController {
 
     private final PaymentService paymentService;
+    private final CouponService couponService;
+    private final OrderService orderService; // ResponseDto -> 주문 총 금액
 
     // 사용자에게 결제와 관련된 정보를 보여줍니다.
-    @GetMapping("/payment")
-    public String createPayment(Model model) {
-        List<Coupon> coupons = new ArrayList<>();
-        coupons.add(new Coupon(1L, "testCoupon1"));
-        coupons.add(new Coupon(2L, "testCoupon2"));
+    @GetMapping("{clientId}/payment")
+    public String createPayment(Model model, @PathVariable Long clientId) {
+        List<CouponResponseDto> coupons = couponService.findClientCoupon(clientId);
         model.addAttribute("coupons", coupons);
+
+        // 포인트에서 받아 올 것
         model.addAttribute("remainingPoint", 10000);
+
+        // 주문에서 받아 올 것
         model.addAttribute("originalAmount", 20000);
+
+        // 주문에서 받아 올 것을 토대로
         model.addAttribute("finalAmount", 18000);
+
+        // 포인트 정책하고 같이 생각할 것.
         model.addAttribute("expectedPoints", 1800);
         return "/view/payment/createPayment";
     }

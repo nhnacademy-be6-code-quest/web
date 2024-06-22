@@ -46,19 +46,13 @@
             </div>
             <div class="payment-amounts">
                 <div>결제 금액: <span id="original-amount" th:text="${originalAmount}">0</span>원</div>
-                <div>총 결제 금액: <span id="final-amount" th:text="${finalAmount}">0</span>원</div>
+                <div>총 결제 금액: <span id="final-amount" name = "payAmount" th:text="${finalAmount}">0</span>원</div>
                 <div>예상 포인트 적립: <span id="expected-points" th:text="${expectedPoints}">0</span>P</div>
             </div>
         </div>
         <div class="payment-method">
             <h2>결제 수단 선택</h2>
             <div class="payment-options">
-                <label>
-                    <input type="radio" name="paymentMethodId" value="card" checked> 카드 결제
-                </label>
-                <label>
-                    <input type="radio" name="paymentMethodId" value="account"> 계좌 이체
-                </label>
                 <label>
                     <input type="radio" name="paymentMethodId" value="toss"> 토스 페이먼츠
                 </label>
