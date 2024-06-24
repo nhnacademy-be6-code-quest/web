@@ -37,9 +37,9 @@
                     <ul>
                         <li th:each="coupon : ${coupons}">
                             <input type="radio" th:id="${coupon.couponId}" th:value="${coupon.couponId}" name="couponId" onchange="updatePaymentAmount()"
-                                   th:data-discount-type="${coupon.couponPolicy.discountType}"
-                                   th:data-discount-value="${coupon.couponPolicy.discountValue}"
-                                   th:data-min-purchase-amount="${coupon.couponPolicy.minPurchaseAmount}">
+                                   data-discount-type="${coupon.couponPolicy.discountType}"
+                                   data-discount-value="${coupon.couponPolicy.discountValue}"
+                                   data-min-purchase-amount="${coupon.couponPolicy.minPurchaseAmount}">
                             <label th:for="${coupon.couponId}" th:text="${coupon.couponPolicy.policyDescription}">쿠폰 이름</label>
                         </li>
                     </ul>
@@ -48,6 +48,7 @@
             <div class="payment-amounts">
                 <div>주문하신 금액: <span id="totalPrice" th:text="${orderPaymentRequestDtoResponseEntity.body.totalPrice}">0</span>원</div>
                 <div>총 결제 금액: <span id="payAmount" name="payAmount" th:text="${payAmount}">payAmount</span>원</div>
+                <input type="hidden" id="hiddenPayAmount" name="payAmount" th:value="${payAmount}">
                 <div>예상 포인트 적립: <span id="expected-points" th:text="${expectedPoints}">0</span>P</div>
             </div>
         </div>
@@ -77,16 +78,10 @@
         const selectedCoupon = document.querySelector('input[name="couponId"]:checked');
         if (!selectedCoupon) return;
 
-        const discountType = parseInt(selectedCoupon.getAttribute('data-discount-type'));
+        const discountType = parseInt(selectedCoupon.getAttribute('data-discount-type')); //
         const discountValue = parseFloat(selectedCoupon.getAttribute('data-discount-value'));
         const minPurchaseAmount = parseFloat(selectedCoupon.getAttribute('data-min-purchase-amount'));
         const originalAmount = parseFloat(document.getElementById('totalPrice').textContent);
-
-        console.log(`Selected Coupon ID: ${selectedCoupon.value}`);
-        console.log(`Discount Type: ${discountType}`);
-        console.log(`Discount Value: ${discountValue}`);
-        console.log(`Min Purchase Amount: ${minPurchaseAmount}`);
-        console.log(`Original Amount: ${originalAmount}`);
 
         let finalAmount = originalAmount;
 
@@ -98,14 +93,17 @@
             }
         }
 
-        console.log(`Final Amount: ${finalAmount.toFixed(2)}`);
+        // Ensure finalAmount is a whole number
+        finalAmount = Math.round(finalAmount);
 
-        document.getElementById('payAmount').textContent = finalAmount.toFixed(2);
+        document.getElementById('payAmount').textContent = finalAmount;
+        document.getElementById('hiddenPayAmount').value = finalAmount;
     }
 
     function initializePaymentAmount() {
-        const originalAmount = document.getElementById('totalPrice').textContent;
+        const originalAmount = Math.round(parseFloat(document.getElementById('totalPrice').textContent));
         document.getElementById('payAmount').textContent = originalAmount;
+        document.getElementById('hiddenPayAmount').value = originalAmount;
     }
 
     function updatePaymentMethod() {
@@ -117,6 +115,7 @@
         radio.addEventListener('change', updatePaymentMethod);
     });
 </script>
+
 <!-- js -->
 </body>
 </html>
