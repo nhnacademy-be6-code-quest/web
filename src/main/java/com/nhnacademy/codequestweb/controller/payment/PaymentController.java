@@ -1,6 +1,6 @@
 package com.nhnacademy.codequestweb.controller.payment;
 
-import com.nhnacademy.codequestweb.request.payment.OrderPaymentRequestDto;
+import com.nhnacademy.codequestweb.response.payment.OrderPaymentResponseDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentRequestDto;
 import com.nhnacademy.codequestweb.response.coupon.CouponResponseDto;
 import com.nhnacademy.codequestweb.response.payment.PaymentResponseDto;
@@ -48,7 +48,7 @@ public class PaymentController {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "application/json");
         HttpStatus httpStatus = HttpStatus.OK;
-        ResponseEntity<OrderPaymentRequestDto> orderPaymentRequestDtoResponseEntity = new ResponseEntity<>(new OrderPaymentRequestDto(1L, 20000L), headers, httpStatus);
+        ResponseEntity<OrderPaymentResponseDto> orderPaymentRequestDtoResponseEntity = new ResponseEntity<>(new OrderPaymentResponseDto(1L, 20000L), headers, httpStatus);
         model.addAttribute("orderPaymentRequestDtoResponseEntity", orderPaymentRequestDtoResponseEntity);
 
         // 주문에서 받아 올 것을 토대로
