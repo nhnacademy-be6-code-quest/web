@@ -39,7 +39,7 @@
                             <input type="radio" th:id="${coupon.couponId}" th:value="${coupon.couponId}" name="couponId" onchange="updatePaymentAmount()"
                                    th:data-discount-type="${coupon.couponPolicy.discountType}"
                                    th:data-discount-value="${coupon.couponPolicy.discountValue}"
-                                   th:ata-min-purchase-amount="${coupon.couponPolicy.minPurchaseAmount}">
+                                   th:data-min-purchase-amount="${coupon.couponPolicy.minPurchaseAmount}">
                             <label th:for="${coupon.couponId}" th:text="${coupon.couponPolicy.policyDescription}">쿠폰 이름</label>
                         </li>
                     </ul>
@@ -82,15 +82,23 @@
         const minPurchaseAmount = parseFloat(selectedCoupon.getAttribute('data-min-purchase-amount'));
         const originalAmount = parseFloat(document.getElementById('totalPrice').textContent);
 
+        console.log(`Selected Coupon ID: ${selectedCoupon.value}`);
+        console.log(`Discount Type: ${discountType}`);
+        console.log(`Discount Value: ${discountValue}`);
+        console.log(`Min Purchase Amount: ${minPurchaseAmount}`);
+        console.log(`Original Amount: ${originalAmount}`);
+
         let finalAmount = originalAmount;
 
-        if (originalAmount > minPurchaseAmount) {
+        if (originalAmount >= minPurchaseAmount) {
             if (discountType === 0) {
                 finalAmount = originalAmount - discountValue;
             } else if (discountType === 1) {
                 finalAmount = originalAmount - (originalAmount * discountValue / 100);
             }
         }
+
+        console.log(`Final Amount: ${finalAmount.toFixed(2)}`);
 
         document.getElementById('payAmount').textContent = finalAmount.toFixed(2);
     }
