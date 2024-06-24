@@ -2,6 +2,7 @@ package com.nhnacademy.codequestweb.request.coupon;
 
 import com.nhnacademy.codequestweb.domain.Status;
 import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
@@ -11,7 +12,6 @@ public record CouponRequestDto(
         long couponPolicyId,
         @NotNull
         long clientId,
-        LocalDateTime issuedDate,
         LocalDateTime expirationDate,
         @NotNull
         Status status) {
