@@ -2,7 +2,8 @@ package com.nhnacademy.codequestweb.client.order;
 
 import com.nhnacademy.codequestweb.request.order.ClientViewOrderPostRequestDto;
 import com.nhnacademy.codequestweb.request.order.client.ClientOrderPostRequestDto;
-import com.nhnacademy.codequestweb.response.order.ClientViewOrderPostResponseDto;
+import com.nhnacademy.codequestweb.response.order.client.ClientOrderPostResponseDto;
+import com.nhnacademy.codequestweb.response.order.client.ClientViewOrderPostResponseDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,5 +16,5 @@ public interface OrderClient {
     ResponseEntity<ClientViewOrderPostResponseDto> viewOrder(ClientViewOrderPostRequestDto orderRequestDto);
 
     @PostMapping("/client/order")
-    ResponseEntity<String> createOrder(ClientOrderPostRequestDto clientOrderPostRequestDto);
+    ResponseEntity<ClientOrderPostResponseDto> createOrder(ClientOrderPostRequestDto clientOrderPostRequestDto);
 }
