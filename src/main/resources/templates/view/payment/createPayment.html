@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,13 +10,11 @@
     <meta name="keywords" content="">
     <meta name="description" content="">
     <title>결제 페이지</title>
-
     <!-- css -->
     <link rel="stylesheet" href="/css/payment/style.css">
     <!-- css -->
-
 </head>
-<body>
+<body onload="initializePaymentAmount()">
 <!-- header -->
 <div th:replace="~{layout/header.html :: headerFragment ('user', 'message')}"></div>
 <!-- header -->
@@ -38,22 +36,18 @@
                 <div class="coupon-list" style="display: none;">
                     <ul>
                         <li th:each="coupon : ${coupons}">
-                            <input type="radio" th:id="${coupon.couponId}" th:value="${coupon.couponId}" name="couponId" onchange="updatePaymentAmount()">
+                            <input type="radio" th:id="${coupon.couponId}" th:value="${coupon.couponId}" name="couponId" onchange="updatePaymentAmount()"
+                                   th:data-discount-type="${coupon.couponPolicy.discountType}"
+                                   th:data-discount-value="${coupon.couponPolicy.discountValue}"
+                                   th:ata-min-purchase-amount="${coupon.couponPolicy.minPurchaseAmount}">
                             <label th:for="${coupon.couponId}" th:text="${coupon.couponPolicy.policyDescription}">쿠폰 이름</label>
                         </li>
                     </ul>
                 </div>
             </div>
             <div class="payment-amounts">
-                <div>주문하신 금액: <span id="original-amount" th:text="${orderPaymentRequestDtoResponseEntity.body.totalPrice}">0</span>원</div>
-                <div>총 결제 금액: <span id="final-amount" name = "payAmount" th:text="${finalAmount}">0</span>원</div>
-
-                <!-- 1. '쿠폰 종류에 따라 총 결제 금액 바꾸기' -->
-
-                <!-- 쿠폰이 결제 금액을 차감하는 쿠폰이라면 => 결제 금액을 차감하기 -->
-
-                <!-- 쿠폰이 결제 금액을 퍼센트 단위로 할인하는 쿠폰이라면 => 정책에 맞추어 결제 금액을 차감하기 -->
-
+                <div>주문하신 금액: <span id="totalPrice" th:text="${orderPaymentRequestDtoResponseEntity.body.totalPrice}">0</span>원</div>
+                <div>총 결제 금액: <span id="payAmount" name="payAmount" th:text="${payAmount}">payAmount</span>원</div>
                 <div>예상 포인트 적립: <span id="expected-points" th:text="${expectedPoints}">0</span>P</div>
             </div>
         </div>
@@ -80,41 +74,37 @@
     });
 
     function updatePaymentAmount() {
-        // 선택된 쿠폰 ID 가져오기
-        const selectedCouponId = document.querySelector('input[name="couponId"]:checked')?.value;
+        const selectedCoupon = document.querySelector('input[name="couponId"]:checked');
+        if (!selectedCoupon) return;
 
-        // 선택된 쿠폰에 따라 결제 금액 업데이트
-        if (selectedCouponId) {
-            // 서버에 AJAX 요청을 보내 결제 금액 업데이트
-            fetch('/update-payment-amount', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ couponId: selectedCouponId })
-            })
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('final-amount').textContent = data.finalAmount;
-                document.getElementById('expected-points').textContent = data.expectedPoints;
-            })
-            .catch(error => {
-                console.error('Error updating payment amount:', error);
-            });
-        } else {
-            // 쿠폰이 선택되지 않은 경우, 원래 금액 표시
-            document.getElementById('final-amount').textContent = document.getElementById('original-amount').textContent;
-            document.getElementById('expected-points').textContent = document.getElementById('expectedPoints').textContent;
+        const discountType = parseInt(selectedCoupon.getAttribute('data-discount-type'));
+        const discountValue = parseFloat(selectedCoupon.getAttribute('data-discount-value'));
+        const minPurchaseAmount = parseFloat(selectedCoupon.getAttribute('data-min-purchase-amount'));
+        const originalAmount = parseFloat(document.getElementById('totalPrice').textContent);
+
+        let finalAmount = originalAmount;
+
+        if (originalAmount > minPurchaseAmount) {
+            if (discountType === 0) {
+                finalAmount = originalAmount - discountValue;
+            } else if (discountType === 1) {
+                finalAmount = originalAmount - (originalAmount * discountValue / 100);
+            }
         }
+
+        document.getElementById('payAmount').textContent = finalAmount.toFixed(2);
     }
-    // 결제 수단 선택 변경 시 실행되는 함수
+
+    function initializePaymentAmount() {
+        const originalAmount = document.getElementById('totalPrice').textContent;
+        document.getElementById('payAmount').textContent = originalAmount;
+    }
+
     function updatePaymentMethod() {
         const selectedPaymentMethod = document.querySelector('input[name="paymentMethodId"]:checked').value;
-        // 선택된 결제 수단에 따라 추가 작업 수행
         console.log('Selected payment method:', selectedPaymentMethod);
     }
 
-    // 결제 수단 선택 라디오 버튼에 이벤트 리스너 등록
     document.querySelectorAll('input[name="paymentMethodId"]').forEach(radio => {
         radio.addEventListener('change', updatePaymentMethod);
     });
