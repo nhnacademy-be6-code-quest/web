@@ -5,7 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>쿠폰 지급</title>
     <link rel="stylesheet" href="/css/coupon/admin_coupon_register.css">
+    <script>
+        function openUserSelectWindow() {
+            window.open('/processUserSelection', 'selectUserWindow', 'width=600,height=400');
+        }
 
+        // 새 창에서 메시지 받기
+        window.addEventListener('message', function(event) {
+            // 선택된 사용자 정보 처리
+            console.log()
+            document.getElementById('selectedUserName').innerText = event.data.clientName;
+            document.getElementById('selectedUserEmail').innerText = event.data.clientEmail;
+
+            // 필요시 hidden input에 값 설정
+            document.getElementById('clientId').value = event.data.clientId;
+            document.getElementById('clientName').value = event.data.clientName;
+            document.getElementById('clientEmail').value = event.data.clientEmail;
+
+            // 새 창 닫기
+            childWindow.close();
+        });
+    </script>
 </head>
 <body>
 <form th:action="@{'/api/coupon/register/' + ${couponPolicyId}}" method="post">
@@ -24,14 +44,17 @@
                 </select>
             </div>
 
-            <div class="grid">
-                <label class="label" for="user">사용자</label>
-                <select id="user" name="clientId" class="select">
-                    <option value="">사용자 선택</option>
-                   <option th:each="client : ${clients}" th:value="${client.getClientId()}"
-                                th:text="${client.getClientName()}"></option>
-                    </select>
+            <button type="button" onclick="openUserSelectWindow()">사용자 선택</button>
+
+            <div>
+                <h3>선택된 사용자:</h3>
+                <p>사용자 이름: <span id="selectedUserName"></span></p>
             </div>
+
+            <!-- 숨겨진 필드로 선택된 사용자의 ID와 이름을 전달 -->
+            <input type="hidden" id="clientId" name="clientId">
+            <input type="hidden" id="clientName" name="clientName">
+
             <div class="grid">
                 <label class="label" for="expiration-date">만료일</label>
                 <input type="datetime-local" id="expiration-date" name="expirationDate" class="select">

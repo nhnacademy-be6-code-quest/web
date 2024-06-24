@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>쿠폰 결제</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+        .header h1 {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        .search {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .search input {
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            border: 1px solid #d1d5db;
+            outline: none;
+        }
+        .search button {
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .search button:hover {
+            background-color: #2563eb;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 1rem;
+        }
+        @media (min-width: 640px) {
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (min-width: 768px) {
+            .grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        @media (min-width: 1024px) {
+            .grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        .card {
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+        }
+        .card .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        .card .header .client-id {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        .card .name {
+            font-weight: 500;
+        }
+        .card .email {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        .footer {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+        }
+        .footer button {
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .footer button:hover {
+            background-color: #2563eb;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2rem;
+        }
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #d1d5db;
+        }
+        th {
+            background-color: #f3f4f6;
+        }
+        tbody tr:hover {
+            background-color: #f1f5f9;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>쿠폰 결제</h1>
+
+    <form id="userForm">
+        <button type="button" onclick="selectUsers()">선택 완료</button>
+    </form>
+
+    <table>
+        <thead>
+        <tr>
+            <th>선택</th>
+            <th>고객 ID</th>
+            <th>고객 이름</th>
+            <th>이메일</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Thymeleaf를 사용해 couponPayments를 순회하면서 각 고객 정보를 출력합니다 -->
+        <!-- Thymeleaf의 경우, 데이터 바인딩은 서버 측에서 이루어집니다 -->
+        <tr th:each="couponPayment : ${couponPayments}">
+            <td><input type="checkbox" name="selectedUsers" th:value="${couponPayment.getClientId()} +' ' +${couponPayment.getClientName()}"></td>
+            <td th:text="${couponPayment.clientId}"></td>
+            <td th:text="${couponPayment.clientName}"></td>
+            <td th:text="${couponPayment.email}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function selectUsers() {
+        var selectedUsers = document.querySelectorAll('input[name="selectedUsers"]:checked');
+        var selectedUserDetails = [];
+
+
+        selectedUsers.forEach(function(user) {
+            console.log(user)
+            const value = user.value.split(' ');
+
+            var clientId = user.value;
+            var clientName = value[0]; // 같은 행의 다음 셀에서 고객 이름을 가져옵니다
+            var clientEmail = value[1]; // 같은 행의 그 다음 셀에서 이메일을 가져옵니다
+
+            selectedUserDetails.push({
+                clientId: clientId,
+                clientName: clientName,
+                clientEmail: clientEmail
+            });
+        });
+        function selectClient(clientId, clientName, clientEmail){
+            var selectUsers = {
+                clientId: clientId,
+                clientName: clientName,
+                clientEmail: clientEmail
+            }
+        };
+
+        // 선택된 사용자 정보 표시
+        if (selectedUserDetails.length > 0) {
+            var selectedUserMessage = '선택된 사용자:\n';
+            selectedUserDetails.forEach(function(user) {
+                selectedUserMessage += `ID: ${user.clientId}, Name: ${user.clientName}, Email: ${user.clientEmail}\n`;
+            });
+            alert(selectedUserMessage);
+
+            // 선택된 사용자 정보를 메인 창으로 전송
+            window.opener.postMessage(selectedUserDetails, window.location.origin);
+
+            // 새 창 닫기
+            window.close();
+        } else {
+            alert('선택된 사용자가 없습니다.');
+        }
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Users</title>
+    <style>
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+        .header h1 {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        .search {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .search input {
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            border: 1px solid #d1d5db;
+            outline: none;
+        }
+        .search button {
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .search button:hover {
+            background-color: #2563eb;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 1rem;
+        }
+        @media (min-width: 640px) {
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (min-width: 768px) {
+            .grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        @media (min-width: 1024px) {
+            .grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        .card {
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+        }
+        .card .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        .card .header .client-id {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        .card .name {
+            font-weight: 500;
+        }
+        .card .email {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        .footer {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+        }
+        .footer button {
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .footer button:hover {
+            background-color: #2563eb;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>Select Users</h1>
+        <div class="search">
+            <input type="text" placeholder="Search by name or email" />
+            <button>Search</button>
+        </div>
+    </div>
+    <div class="grid">
+        <div class="card">
+            <div class="header">
+                <input type="checkbox" id="user-1" />
+                <div class="client-id">Client ID: 1</div>
+            </div>
+            <div class="name">John Doe</div>
+            <div class="email">john.doe@example.com</div>
+        </div>
+        <div class="card">
+            <div class="header">
+                <input type="checkbox" id="user-2" />
+                <div class="client-id">Client ID: 2</div>
+            </div>
+            <div class="name">Jane Smith</div>
+            <div class="email">jane.smith@example.com</div>
+        </div>
+        <div class="card">
+            <div class="header">
+                <input type="checkbox" id="user-3" />
+                <div class="client-id">Client ID: 3</div>
+            </div>
+            <div class="name">Bob Johnson</div>
+            <div class="email">bob.johnson@example.com</div>
+        </div>
+        <div class="card">
+            <div class="header">
+                <input type="checkbox" id="user-4" />
+                <div class="client-id">Client ID: 4</div>
+            </div>
+            <div class="name">Sarah Lee</div>
+            <div class="email">sarah.lee@example.com</div>
+        </div>
+        <div class="card">
+            <div class="header">
+                <input type="checkbox" id="user-5" />
+                <div class="client-id">Client ID: 5</div>
+            </div>
+            <div class="name">Tom Wilson</div>
+            <div class="email">tom.wilson@example.com</div>
+        </div>
+        <div class="card">
+            <div class="header">
+                <input type="checkbox" id="user-6" />
+                <div class="client-id">Client ID: 6</div>
+            </div>
+            <div class="name">Emily Davis</div>
+            <div class="email">emily.davis@example.com</div>
+        </div>
+        <div class="card">
+            <div class="header">
+                <input type="checkbox" id="user-7" />
+                <div class="client-id">Client ID: 7</div>
+            </div>
+            <div class="name">Michael Brown</div>
+            <div class="email">michael.brown@example.com</div>
+        </div>
+        <div class="card">
+            <div class="header">
+                <input type="checkbox" id="user-8" />
+                <div class="client-id">Client ID: 8</div>
+            </div>
+            <div class="name">Jessica Thompson</div>
+            <div class="email">jessica.thompson@example.com</div>
+        </div>
+        <div class="card">
+            <div class="header">
+                <input type="checkbox" id="user-9" />
+                <div class="client-id">Client ID: 9</div>
+            </div>
+            <div class="name">David Anderson</div>
+            <div class="email">david.anderson@example.com</div>
+        </div>
+        <div class="card">
+            <div class="header">
+                <input type="checkbox" id="user-10" />
+                <div class="client-id">Client ID: 10</div>
+            </div>
+            <div class="name">Olivia Martinez</div>
+            <div class="email">olivia.martinez@example.com</div>
+        </div>
+    </div>
+    <div class="footer">
+        <button>Select Users</button>
+    </div>
+</div>
+</body>
+</html>
