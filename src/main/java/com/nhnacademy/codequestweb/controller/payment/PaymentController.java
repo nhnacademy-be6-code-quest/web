@@ -1,5 +1,6 @@
 package com.nhnacademy.codequestweb.controller.payment;
 
+import com.nhnacademy.codequestweb.request.payment.OrderPaymentRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentRequestDto;
 import com.nhnacademy.codequestweb.response.coupon.CouponResponseDto;
 import com.nhnacademy.codequestweb.response.payment.PaymentResponseDto;
@@ -9,6 +10,8 @@ import com.nhnacademy.codequestweb.service.payment.PaymentService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -41,7 +44,12 @@ public class PaymentController {
 
         // 주문에서 받아 올 것
         Long orderId = 1L;
-        model.addAttribute("originalAmount", 20000);
+//        ResponseEntity<OrderPaymentRequestDto> orderPaymentRequestDtoResponseEntity = orderService.findByOrderId(orderId);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
+        HttpStatus httpStatus = HttpStatus.OK;
+        ResponseEntity<OrderPaymentRequestDto> orderPaymentRequestDtoResponseEntity = new ResponseEntity<>(new OrderPaymentRequestDto(1L, 20000L), headers, httpStatus);
+        model.addAttribute("orderPaymentRequestDtoResponseEntity", orderPaymentRequestDtoResponseEntity);
 
         // 주문에서 받아 올 것을 토대로
 //        model.addAttribute("finalAmount", 18000);
@@ -55,7 +63,6 @@ public class PaymentController {
     @PostMapping("client/order/payment")
     public void createPayment(@ModelAttribute PaymentRequestDto paymentRequestDto) {
         paymentRequestDto.setOrderId(1L);
-        paymentRequestDto.setClientDeliveryAddressId(1L);
         paymentService.createPayment(paymentRequestDto);
     }
 
