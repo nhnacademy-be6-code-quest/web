@@ -14,7 +14,7 @@ public class CouponPolicyResponseDto {
     private long couponPolicyId;
     private long productId;
     private long productCategoryId;
-    private String couponPolicyDescription;
+    private String policyDescription;
     private DiscountType discountType;
     private long discountValue;
     private long minPurchaseAmount;

@@ -39,7 +39,7 @@
                     <ul>
                         <li th:each="coupon : ${coupons}">
                             <input type="radio" th:id="${coupon.couponId}" th:value="${coupon.couponId}" name="couponId" onchange="updatePaymentAmount()">
-                            <label th:for="${coupon.couponId}" th:text="${coupon.couponPolicy.couponPolicyDescription}">쿠폰 이름</label>
+                            <label th:for="${coupon.couponId}" th:text="${coupon.couponPolicy.policyDescription}">쿠폰 이름</label>
                         </li>
                     </ul>
                 </div>
