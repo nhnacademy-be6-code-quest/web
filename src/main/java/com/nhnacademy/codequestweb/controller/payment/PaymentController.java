@@ -66,6 +66,12 @@ public class PaymentController {
         paymentService.createPayment(paymentRequestDto);
     }
 
+    // test
+    @GetMapping("client/order/payment/tossPayment")
+    public String tossPayment() {
+        return "/view/payment/tossPayment";
+    }
+
     // 결제 정보를 단일로 조회할 수 있습니다.
     @GetMapping("payment/{paymentId}")
     public ResponseEntity<PaymentResponseDto> payment(@PathVariable("paymentId") Long paymentId) {
