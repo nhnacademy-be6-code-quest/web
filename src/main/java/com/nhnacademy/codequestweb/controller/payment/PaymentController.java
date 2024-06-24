@@ -10,6 +10,7 @@ import com.nhnacademy.codequestweb.service.payment.PaymentService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -61,21 +62,23 @@ public class PaymentController {
 
     // 사용자에게 결제와 관련된 정보를 입력 받습니다.
     @PostMapping("client/order/payment")
-    public void createPayment(@ModelAttribute PaymentRequestDto paymentRequestDto) {
+    public String createPayment(@ModelAttribute PaymentRequestDto paymentRequestDto) {
         paymentRequestDto.setOrderId(1L);
         paymentService.createPayment(paymentRequestDto);
+        return "redirect:/client/order/payment/tossPayment";
     }
 
     // test
-    @GetMapping("client/order/payment/tossPayment")
+    @GetMapping("/client/order/payment/tossPayment")
     public String tossPayment() {
         return "/view/payment/tossPayment";
     }
 
     // 결제 정보를 단일로 조회할 수 있습니다.
-    @GetMapping("payment/{paymentId}")
-    public ResponseEntity<PaymentResponseDto> payment(@PathVariable("paymentId") Long paymentId) {
+    @GetMapping("/client/order/payment/{paymentId}")
+    public String payment(@PathVariable("paymentId") Long paymentId, Model model) {
         ResponseEntity<PaymentResponseDto> paymentResponseDtoResponseEntity = paymentService.findPaymentByPaymentId(paymentId);
-        return paymentResponseDtoResponseEntity;
+        model.addAttribute("paymentResponseDtoResponseEntity", paymentResponseDtoResponseEntity);
+        return "/view/payment/viewPayment";
     }
 }
