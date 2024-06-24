@@ -27,6 +27,7 @@ public class PaymentController {
     private final PaymentService paymentService;
     private final CouponService couponService;
     private final OrderService orderService; // ResponseDto -> 주문 총 금액
+//    private final PointService pointService;
 //    private final ClientService clientService;
 
     // 사용자에게 결제와 관련된 정보를 보여줍니다.
@@ -40,7 +41,9 @@ public class PaymentController {
         model.addAttribute("coupons", coupons);
 
         // 포인트에서 받아 올 것
-        model.addAttribute("remainingPoint", 10000);
+        Long remainingPoint = 10000L;
+//        Long remainingPoint = pointService.findByClientId(clientId);
+        model.addAttribute("remainingPoint", remainingPoint);
 
         // 주문에서 받아 올 것
         Long orderId = 1L;
@@ -51,10 +54,7 @@ public class PaymentController {
         ResponseEntity<OrderPaymentResponseDto> orderPaymentRequestDtoResponseEntity = new ResponseEntity<>(new OrderPaymentResponseDto(1L, 20000L), headers, httpStatus);
         model.addAttribute("orderPaymentRequestDtoResponseEntity", orderPaymentRequestDtoResponseEntity);
 
-        // 주문에서 받아 올 것을 토대로
-//        model.addAttribute("finalAmount", 18000);
-
-        // 포인트 정책하고 같이 생각할 것.
+        // 포인트 정책하고 같이 생각할 것. (일단 10퍼센트로 생각)
         model.addAttribute("expectedPoints", 1800);
         return "/view/payment/createPayment";
     }
