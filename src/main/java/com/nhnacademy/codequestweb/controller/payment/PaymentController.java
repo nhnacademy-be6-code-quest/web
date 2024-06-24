@@ -34,9 +34,6 @@ public class PaymentController {
 
         Long clientId = 1L;
         List<CouponResponseDto> coupons = couponService.findClientCoupon(clientId);
-//        List<Coupon> coupons = new ArrayList<>();
-//        coupons.add(new Coupon(1L, "첫 번째 쿠폰"));
-//        coupons.add(new Coupon(2L, "두 번째 쿠폰"));
         model.addAttribute("coupons", coupons);
 
         // 포인트에서 받아 올 것
@@ -47,7 +44,7 @@ public class PaymentController {
         model.addAttribute("originalAmount", 20000);
 
         // 주문에서 받아 올 것을 토대로
-        model.addAttribute("finalAmount", 18000);
+//        model.addAttribute("finalAmount", 18000);
 
         // 포인트 정책하고 같이 생각할 것.
         model.addAttribute("expectedPoints", 1800);

@@ -47,6 +47,15 @@
             <div class="payment-amounts">
                 <div>결제 금액: <span id="original-amount" th:text="${originalAmount}">0</span>원</div>
                 <div>총 결제 금액: <span id="final-amount" name = "payAmount" th:text="${finalAmount}">0</span>원</div>
+
+                <!-- 1. '쿠폰 종류에 따라 총 결제 금액 바꾸기' -->
+
+                <!-- 2. '사용할 포인트' 에 입력한 값에 따라 총 결제 금액 차감하기 -->
+
+                <!-- 2-1) 퍼센트 할인의 종류라면 : 곱하기 연산으로 처리하기 -->
+
+                <!-- 2-2) 금액 차감의 할인 종류라면 : 빼기 연산으로 처리하기 -->
+
                 <div>예상 포인트 적립: <span id="expected-points" th:text="${expectedPoints}">0</span>P</div>
             </div>
         </div>
