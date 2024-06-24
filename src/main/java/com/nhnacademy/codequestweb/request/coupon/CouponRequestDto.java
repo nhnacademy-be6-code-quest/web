@@ -15,4 +15,5 @@ public record CouponRequestDto(
         LocalDateTime expirationDate,
         @NotNull
         Status status) {
+
 }
