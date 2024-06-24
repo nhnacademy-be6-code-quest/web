@@ -1,6 +1,7 @@
 package com.nhnacademy.codequestweb.controller.mypage;
 
 import com.nhnacademy.codequestweb.client.auth.UserClient;
+import com.nhnacademy.codequestweb.request.mypage.ClientRegisterAddressRequestDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientDeliveryAddressResponseDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientPrivacyResponseDto;
 import com.nhnacademy.codequestweb.service.mypage.MyPageService;
@@ -12,8 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -39,7 +39,7 @@ public class MyPageController {
     }
 
     @GetMapping("/mypage/delivary")
-    public String mypageDelivery(HttpServletRequest req, HttpServletResponse res) {
+    public String mypageDelivery( HttpServletRequest req) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
         headers.set("refresh", CookieUtils.getCookieValue(req, "refresh"));
@@ -53,9 +53,27 @@ public class MyPageController {
         return "index";
     }
 
-    @ExceptionHandler(Exception.class)
-    public String handleException(Exception e) {
-        log.error(e.getMessage(), e);
-        return "redirect:/auth";
+    @PostMapping("/mypage/delivary")
+    public String registerDeliveryAddress(@ModelAttribute ClientRegisterAddressRequestDto clientRegisterAddressRequestDto, HttpServletRequest req) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("access", CookieUtils.getCookieValue(req, "access"));
+        headers.set("refresh", CookieUtils.getCookieValue(req, "refresh"));
+
+        ResponseEntity<String> response = myPageService.registerAddress(headers, clientRegisterAddressRequestDto);
+        log.info("/mypage/delivary post response: {}", response.getBody());
+
+        return "redirect:/mypage/delivary";
+    }
+
+    @DeleteMapping("/mypage/delivary/{deliveryAddressId}")
+    public ResponseEntity<String> deleteDeliveryAddress(@PathVariable Long deliveryAddressId, HttpServletRequest req) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("access", CookieUtils.getCookieValue(req, "access"));
+        headers.set("refresh", CookieUtils.getCookieValue(req, "refresh"));
+
+        ResponseEntity<String> response = myPageService.deleteDeliveryAddress(headers, deliveryAddressId);
+        log.info("/mypage/delivary post response: {}", response.getBody());
+
+        return ResponseEntity.ok("Successfully deleted delivery address");
     }
 }

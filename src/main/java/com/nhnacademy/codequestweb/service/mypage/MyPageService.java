@@ -2,6 +2,7 @@ package com.nhnacademy.codequestweb.service.mypage;
 
 import com.nhnacademy.codequestweb.client.auth.UserClient;
 import com.nhnacademy.codequestweb.request.auth.ClientRegisterRequestDto;
+import com.nhnacademy.codequestweb.request.mypage.ClientRegisterAddressRequestDto;
 import com.nhnacademy.codequestweb.response.auth.ClientRegisterResponseDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientDeliveryAddressResponseDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientPrivacyResponseDto;
@@ -22,11 +23,19 @@ public class MyPageService {
         return client.register(clientRegisterRequestDto);
     }
 
-    public ResponseEntity<ClientPrivacyResponseDto> getPrivacy(@RequestHeader HttpHeaders headers) {
+    public ResponseEntity<ClientPrivacyResponseDto> getPrivacy(HttpHeaders headers) {
         return client.getPrivacy(headers);
     }
 
-    public ResponseEntity<List<ClientDeliveryAddressResponseDto>> getDeliveryAddresses(@RequestHeader HttpHeaders headers) {
+    public ResponseEntity<List<ClientDeliveryAddressResponseDto>> getDeliveryAddresses(HttpHeaders headers) {
         return client.getDeliveryAddresses(headers);
+    }
+
+    public ResponseEntity<String> registerAddress(HttpHeaders headers, ClientRegisterAddressRequestDto clientRegisterAddressRequestDto) {
+        return client.registerAddress(headers, clientRegisterAddressRequestDto);
+    }
+
+    public ResponseEntity<String> deleteDeliveryAddress(HttpHeaders headers, Long deliveryAddressId) {
+        return client.deleteAddress(headers, deliveryAddressId);
     }
 }

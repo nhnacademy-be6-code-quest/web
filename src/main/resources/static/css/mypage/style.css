@@ -23,7 +23,7 @@
 
 .mypage-sidebar {
 
-    background-color: #606060; /* Dark background color */
+    background-color: #2C3E50; /* Dark background color */
     padding: 20px;
     color: #fff; /* White text color */
     height: 100vh;
@@ -53,18 +53,18 @@
 }
 
 .mypage-sidebar .nav-link:hover {
-    background-color: #3C3A39; /* Darker hover background color */
+    background-color: #34495E; /* Darker hover background color */
     color: #fff; /* White text color */
 }
 
 .mypage-sidebar .accordion-button {
     color: #fff; /* White text color */
-    background-color: #606060; /* Dark background color */
+    background-color: #2C3E50; /* Dark background color */
     border: none; /* Remove border */
 }
 
 .mypage-sidebar .accordion-button:hover {
-    background-color: #3C3A39; /* Darker hover background color */
+    background-color: #34495E; /* Darker hover background color */
 }
 
 .mypage-sidebar .accordion-header {

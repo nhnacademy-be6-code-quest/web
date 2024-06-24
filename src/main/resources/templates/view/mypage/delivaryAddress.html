@@ -25,10 +25,6 @@
         .mypage-delivary-address-add-btn:hover {
             background-color: #0056b3; /* Darker Blue */
         }
-
-        .mypage-delivary-address-remove-btn {
-
-        }
     </style>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
@@ -57,7 +53,31 @@
                 width : '100%',
                 height : '100%'
             }).embed(document.getElementById('postcodeModal'));
-            document.getElementById('postcodeModal').style.display = 'block'; // 모달 열기
+            document.getElementById('postcodeModal').style.display = 'flex'; // 모달 열기
+        }
+
+        function closePostcodeModal() {
+            document.getElementById('postcodeModal').style.display = 'none'; // 모달 닫기
+        }
+    </script>
+    <script>
+        function deleteAddress(addressId) {
+            if (confirm('해당 주소를 삭제하시겠습니까?')) {
+                fetch(`/mypage/delivary/` + addressId, {
+                    method: 'DELETE'
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            location.reload();
+                        } else {
+                            alert('Failed to delete the address.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while deleting the address.');
+                    });
+            }
         }
     </script>
 </head>
@@ -72,11 +92,11 @@
                 <div class="mb-4">
                     <div class="mypage-delivary-address-header-container">
                         <h2 class="text-lg font-semibold" style="display: inline-block">주소</h2>
-                        <button class="mypage-delivary-address-add-btn" data-bs-toggle="modal" data-bs-target="#addAddressModal"> Add </button>
+                        <button class="mypage-delivary-address-add-btn" data-bs-toggle="modal" data-bs-target="#addAddressModal"> Add + </button>
                     </div>
                     <div class="mb-3" th:each="address : ${clientDeliveryAddresses}">
                         <label>Address</label>
-                        <button class="mypage-delivary-address-remove-btn"> 삭제 </button>
+                        <button class="btn btn-secondary" style="font-size: 12px;" th:onclick="|deleteAddress('${address.clientDeliveryAddressId}')|"> Del - </button>
                         <textarea rows="3" class="form-control" readonly
                                   th:attr="data-content=${address.clientDeliveryAddressNickname} + '<br>' + ${address.clientDeliveryAddress} + '<br>' + ${address.clientDeliveryAddressDetail}"
                                   style="resize: none">
@@ -95,34 +115,39 @@
                 <h5 class="modal-title" id="addAddressModalLabel">Add Address</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+            <form action="/mypage/delivary" method="post">
             <div class="modal-body">
-                <form>
+
                     <div class="form-group">
                         <label for="postcode">우편번호</label>
                         <div class="input-group">
-                            <input type="text" class="form-control" id="postcode" placeholder="우편번호">
+                            <input type="text" class="form-control" id="postcode" placeholder="우편번호" name="clientDeliveryZipCode" required="required">
                             <button type="button" class="btn btn-secondary" onclick="daumPost()">찾기</button>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="address">주소</label>
-                        <input type="text" class="form-control" id="address" placeholder="주소">
+                        <input type="text" class="form-control" id="address" placeholder="주소" name="clientDeliveryAddress" required="required">
                     </div>
                     <div class="form-group">
                         <label for="detailAddress">상세 주소</label>
-                        <input type="text" class="form-control" id="detailAddress" placeholder="상세 주소">
+                        <input type="text" class="form-control" id="detailAddress" placeholder="상세 주소" name="clientDeliveryAddressDetail" required="required">
                     </div>
                     <div class="form-group">
                         <label for="nickname">주소 별칭</label>
-                        <input type="text" class="form-control" id="nickname" placeholder="주소 별칭">
+                        <input type="text" class="form-control" id="nickname" placeholder="주소 별칭" name="clientDeliveryAddressNickname" required="required">
                     </div>
-                </form>
-                <div id="postcodeModal" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:white; z-index:1050;"></div>
+
+                <div id="postcodeModal" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:white; z-index:1050;">
+                        <div id="postcodeEmbed" style="display: block;"></div>
+                        <button type="button" class="btn btn-secondary" onclick="closePostcodeModal()">취소</button>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-                <button type="button" class="btn btn-primary">저장</button>
+                <button type="submit" class="btn btn-primary">저장</button>
             </div>
+            </form>
         </div>
     </div>
 </div>
