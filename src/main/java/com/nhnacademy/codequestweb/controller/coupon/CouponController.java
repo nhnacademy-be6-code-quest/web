@@ -95,9 +95,9 @@ public class CouponController {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public String validationError(MethodArgumentNotValidException e, HttpServletRequest req) {
         CouponRequestDto requestDto = getRequestDto(req);
-
+        req.setAttribute("prev_data", requestDto);
         req.setAttribute("register_message", e.getBindingResult().getAllErrors().get(0).getDefaultMessage());
-        return "index";
+        return "common";
     }
     private CouponRequestDto getRequestDto(HttpServletRequest req){
         CouponRequestDto requestDto = new CouponRequestDto(Long.parseLong(req.getParameter("couponTypeId")), Long.parseLong(req.getParameter("couponPolicyId")), Long.parseLong(req.getParameter("clientId")), LocalDateTime.parse(req.getParameter("expirationDate")), Status.valueOf(req.getParameter("status")));

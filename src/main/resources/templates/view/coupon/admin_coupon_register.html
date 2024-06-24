@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="couponFragment ('register_message', 'prev_data')">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -57,6 +58,7 @@
                     <option th:each="couponType : ${couponTypes}" th:value="${couponType.couponTypeId}"
                             th:text="${couponType.couponKind}"></option>
                 </select>
+
             </div>
 
             <button type="button" onclick="openUserSelectWindow()">사용자 선택</button>
@@ -81,6 +83,7 @@
                 </select>
             </div>
         </div>
+        <span th:if="${register_message != null}" class="error-message" th:text="${register_message}" />
         <button type="submit" class="button">쿠폰 지급</button>
     </div>
 </form>

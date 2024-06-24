@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 public record CouponRequestDto(
         @NotNull(message = "쿠폰 타입은 비어있을수 없습니다.")
         long couponTypeId,
+
         long couponPolicyId,
         @NotNull
         long clientId,
