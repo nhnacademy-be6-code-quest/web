@@ -2,7 +2,7 @@ package com.nhnacademy.codequestweb.controller.coupon;
 
 import com.nhnacademy.codequestweb.domain.DiscountType;
 import com.nhnacademy.codequestweb.request.coupon.CouponPolicyRequestDto;
-import com.nhnacademy.codequestweb.response.auth.coupon.CouponPolicyResponseDto;
+import com.nhnacademy.codequestweb.response.coupon.CouponPolicyResponseDto;
 import com.nhnacademy.codequestweb.service.coupon.CouponPolicyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,20 +22,20 @@ public class CouponPolicyController {
     @Autowired
     private CouponPolicyService couponPolicyService;
 
-    @GetMapping("/admin/coupon/policy")
+    @GetMapping("/api/coupon/policy")
     public String viewPolicy(Model model, Pageable pageable){
         Pageable pageRequest = PageRequest.of(pageable.getPageNumber(), DEFAULT_PAGE_SIZE);
         Page<CouponPolicyResponseDto> coupPolicies = couponPolicyService.getAllCouponPolicies(pageRequest);
         model.addAttribute("couponPolicies",coupPolicies);
-        return "admin_policy_list";
+        return "/view/coupon/admin_policy_list";
     }
-    @GetMapping("/admin/coupon/policy/register")
+    @GetMapping("/api/coupon/policy/register")
     public String viewRegisterPolicy(Model model){
         List<DiscountType> discountTypes = List.of(DiscountType.AMOUNTDISCOUNT,DiscountType.PERCENTAGEDISCOUNT);
         model.addAttribute("discountTypes",discountTypes);
-        return "admin_policy_register";
+        return "/view/coupon/admin_policy_register";
     }
-    @PostMapping("/admin/coupon/policy/register")
+    @PostMapping("/api/coupon/policy/register")
     public String registerPolicy(@ModelAttribute CouponPolicyRequestDto couponPolicyRequestDto){
         couponPolicyService.savePolicy(couponPolicyRequestDto);
         return "redirect:/admin/coupon/policy";

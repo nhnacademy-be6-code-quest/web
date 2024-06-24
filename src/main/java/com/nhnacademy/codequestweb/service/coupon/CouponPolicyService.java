@@ -2,7 +2,7 @@ package com.nhnacademy.codequestweb.service.coupon;
 
 import com.nhnacademy.codequestweb.client.coupon.CouponPolicyClient;
 import com.nhnacademy.codequestweb.request.coupon.CouponPolicyRequestDto;
-import com.nhnacademy.codequestweb.response.auth.coupon.CouponPolicyResponseDto;
+import com.nhnacademy.codequestweb.response.coupon.CouponPolicyResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

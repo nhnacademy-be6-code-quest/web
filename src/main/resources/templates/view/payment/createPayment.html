@@ -17,63 +17,110 @@
 
 </head>
 <body>
-
 <!-- header -->
 <div th:replace="~{layout/header.html :: headerFragment ('user', 'message')}"></div>
 <!-- header -->
 
-<div class="container">
-    <h1>결제 페이지</h1>
-    <div class="payment-info">
-        <div class="remaining-points">
-            <label for="remaining-points">잔여 포인트:</label>
-            <span id="remaining-points" th:text="${remainingPoint}">0</span>
-        </div>
-        <div class="use-points">
-            <label for="use-points">사용할 포인트:</label>
-            <input type="number" id="use-points" name="pointToUse" min="0" th:value="${remainingPoint}">
-        </div>
-        <div class="coupons">
-            <button id="use-coupon">쿠폰 사용</button>
-            <div class="coupon-list" style="display: none;">
-                <ul>
-                    <li th:each="coupon : ${coupons}">
-                        <input type="radio" th:id="${coupon.getId()}" th:value="${coupon.getId()}">
-                        <label th:for="${coupon.getId()}" th:text="${coupon.getName()}">쿠폰 이름</label>
-                    </li>
-                </ul>
-                <button id="apply-coupon">쿠폰 적용</button>
+<form action="/client/order/payment/tossPayment" method="post">
+    <div class="container">
+        <h1>결제 페이지</h1>
+        <div class="payment-info">
+            <div class="remaining-points">
+                <label for="remaining-points">잔여 포인트:</label>
+                <span id="remaining-points" th:text="${remainingPoint}">0</span>
+            </div>
+            <div class="use-points">
+                <label for="use-points">사용할 포인트:</label>
+                <input type="number" id="use-points" name="pointToUse" min="0" th:value="${remainingPoint}">
+            </div>
+            <div class="coupons">
+                <button type="button" id="use-coupon">쿠폰 사용</button>
+                <div class="coupon-list" style="display: none;">
+                    <ul>
+                        <li th:each="coupon : ${coupons}">
+                            <input type="radio" th:id="${coupon.couponId}" th:value="${coupon.couponId}" name="couponId" onchange="updatePaymentAmount()">
+                            <label th:for="${coupon.couponId}" th:text="${coupon.couponPolicy.couponPolicyDescription}">쿠폰 이름</label>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="payment-amounts">
+                <div>결제 금액: <span id="original-amount" th:text="${originalAmount}">0</span>원</div>
+                <div>총 결제 금액: <span id="final-amount" name = "payAmount" th:text="${finalAmount}">0</span>원</div>
+
+                <!-- 1. '쿠폰 종류에 따라 총 결제 금액 바꾸기' -->
+
+                <!-- 2. '사용할 포인트' 에 입력한 값에 따라 총 결제 금액 차감하기 -->
+
+                <!-- 2-1) 퍼센트 할인의 종류라면 : 곱하기 연산으로 처리하기 -->
+
+                <!-- 2-2) 금액 차감의 할인 종류라면 : 빼기 연산으로 처리하기 -->
+
+                <div>예상 포인트 적립: <span id="expected-points" th:text="${expectedPoints}">0</span>P</div>
             </div>
         </div>
-        <div class="payment-amounts">
-            <div>결제 금액: <span id="original-amount" th:text="${originalAmount}">0</span>원</div>
-            <div>총 결제 금액: <span id="final-amount" th:text="${finalAmount}">0</span>원</div>
-            <div>예상 포인트 적립: <span id="expected-points" th:text="${expectedPoints}">0</span>P</div>
+        <div class="payment-method">
+            <h2>결제 수단 선택</h2>
+            <div class="payment-options">
+                <label>
+                    <input type="radio" name="paymentMethodId" value=1> 토스 페이먼츠
+                </label>
+            </div>
+            <button type="submit" id="select-payment-method">결제하기</button>
         </div>
     </div>
-    <div class="payment-method">
-        <form action="/payment" method = "post">
-            <button id="select-payment-method">결제하기</button>
-        </form>
-<!--        <div class="payment-method-modal" style="display: none;">-->
-<!--            <h2>결제 방식 선택</h2>-->
-<!--            <ul>-->
-<!--                <li><input type="radio" id="payment-method-card" name="payment-method" value="card"> <label for="payment-method-card">신용카드</label></li>-->
-<!--                <li><input type="radio" id="payment-method-bank" name="payment-method" value="bank"> <label for="payment-method-bank">계좌이체</label></li>-->
-<!--                <li><input type="radio" id="payment-method-phone" name="payment-method" value="phone"> <label for="payment-method-phone">휴대폰 결제</label></li>-->
-<!--            </ul>-->
-<!--            <button id="confirm-payment-method">결제하기</button>-->
-<!--        </div>-->
-    </div>
-</div>
+</form>
 
 <!-- footer -->
 <div th:replace="~{layout/footer.html :: footerFragment}"></div>
 <!-- footer -->
 
 <!-- js -->
-<script src="/js/payment/script.js"></script>
-<!-- js -->
+<script>
+    document.getElementById("use-coupon").addEventListener("click", function() {
+        document.querySelector(".coupon-list").style.display = "block";
+    });
 
+    function updatePaymentAmount() {
+        // 선택된 쿠폰 ID 가져오기
+        const selectedCouponId = document.querySelector('input[name="couponId"]:checked')?.value;
+
+        // 선택된 쿠폰에 따라 결제 금액 업데이트
+        if (selectedCouponId) {
+            // 서버에 AJAX 요청을 보내 결제 금액 업데이트
+            fetch('/update-payment-amount', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ couponId: selectedCouponId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('final-amount').textContent = data.finalAmount;
+                document.getElementById('expected-points').textContent = data.expectedPoints;
+            })
+            .catch(error => {
+                console.error('Error updating payment amount:', error);
+            });
+        } else {
+            // 쿠폰이 선택되지 않은 경우, 원래 금액 표시
+            document.getElementById('final-amount').textContent = document.getElementById('original-amount').textContent;
+            document.getElementById('expected-points').textContent = document.getElementById('expectedPoints').textContent;
+        }
+    }
+    // 결제 수단 선택 변경 시 실행되는 함수
+    function updatePaymentMethod() {
+        const selectedPaymentMethod = document.querySelector('input[name="paymentMethodId"]:checked').value;
+        // 선택된 결제 수단에 따라 추가 작업 수행
+        console.log('Selected payment method:', selectedPaymentMethod);
+    }
+
+    // 결제 수단 선택 라디오 버튼에 이벤트 리스너 등록
+    document.querySelectorAll('input[name="paymentMethodId"]').forEach(radio => {
+        radio.addEventListener('change', updatePaymentMethod);
+    });
+</script>
+<!-- js -->
 </body>
 </html>
