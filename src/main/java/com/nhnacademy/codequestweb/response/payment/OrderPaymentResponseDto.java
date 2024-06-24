@@ -1,11 +1,11 @@
-package com.nhnacademy.codequestweb.request.payment;
+package com.nhnacademy.codequestweb.response.payment;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class OrderPaymentRequestDto {
+public class OrderPaymentResponseDto {
     Long orderId;
     Long totalPrice;
 }
