@@ -3,7 +3,7 @@ package com.nhnacademy.codequestweb.response.order.admin;
 import com.nhnacademy.codequestweb.response.order.field.OrderedProductDto;
 import lombok.Builder;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Builder
@@ -11,7 +11,7 @@ import java.util.List;
 public record AdminAllOrdersGetResponseDto(
         long clientId, // 회원 아이디
         String clientEmail, // 회원 이메일
-        ZonedDateTime orderDate, // 주문날짜
+        LocalDateTime orderDate, // 주문날짜
         List<OrderedProductDto> orderedProductDtoList // 주문한 상품정보들
 )
 {
