@@ -1,15 +1,13 @@
 package com.nhnacademy.codequestweb.response.mypage;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 @Getter
 @Setter
 @ToString
-@NoArgsConstructor
-public class ClientDeliveryAddressDto {
+@AllArgsConstructor
+public class ClientDeliveryAddressResponseDto {
+    private Long clientDeliveryAddressId;
     private String clientDeliveryAddress;
     private String clientDeliveryAddressDetail;
     private String clientDeliveryAddressNickname;
