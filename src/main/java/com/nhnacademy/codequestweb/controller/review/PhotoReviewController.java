@@ -9,6 +9,7 @@ import com.nhnacademy.codequestweb.exception.review.ReviewPhotoProcessingExcepti
 import com.nhnacademy.codequestweb.exception.review.ReviewUpdateException;
 import com.nhnacademy.codequestweb.request.review.PhotoReviewRequestDTO;
 import com.nhnacademy.codequestweb.response.review.PhotoReviewResponseDTO;
+import com.nhnacademy.codequestweb.service.order.OrderService;
 import com.nhnacademy.codequestweb.service.review.PhotoReviewService;
 import jakarta.validation.Valid;
 import java.io.File;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -34,12 +36,14 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 public class PhotoReviewController {
 
     private static final int DEFAULT_PAGE_SIZE = 5;
     private final PhotoReviewService photoReviewService;
+    private final OrderService orderService;
 
 
     @GetMapping("/view/photo-reviews")
@@ -83,6 +87,24 @@ public class PhotoReviewController {
     public String addPhotoReviewForm(Model model) {
         model.addAttribute("review", new PhotoReviewRequestDTO());
         return "/view/review/add-photo-review";
+    }
+
+    @GetMapping("/view/add-photo-review/{orderDetailId}")
+    public String addPhotoReviewFormOrderDetailId (Model model, @PathVariable Long orderDetailId) {
+        String status = orderService.getOrderStatus(orderDetailId).getBody();
+
+        if(Boolean.FALSE.equals(photoReviewService.hasWrittenReview(orderDetailId).getBody()) && status.equals("DELIVERY_COMPLETE")){
+            model.addAttribute("review", new PhotoReviewRequestDTO());
+            return "/view/review/add-photo-review";
+        } else {
+            if (status.equals("DELIVERY_COMPLETE")) {
+                log.error("리뷰가 이미 작성됨");
+            } else {
+                log.error("status : " + status);
+            }
+
+            return "redirect:/index2";
+        }
     }
 
     @PostMapping("/view/add-photo-review")
