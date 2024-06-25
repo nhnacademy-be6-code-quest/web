@@ -97,12 +97,15 @@ public class PhotoReviewController {
             model.addAttribute("review", new PhotoReviewRequestDTO());
             return "/view/review/add-photo-review";
         } else {
-            log.error("status : " + status);
+            if (status.equals("DELIVERY_COMPLETE")) {
+                log.error("리뷰가 이미 작성됨");
+            } else {
+                log.error("status : " + status);
+            }
+
             return "redirect:/index2";
         }
-
     }
-    
 
     @PostMapping("/view/add-photo-review")
     public String createReview(

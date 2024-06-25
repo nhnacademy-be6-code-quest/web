@@ -81,11 +81,16 @@ public class NoPhotoReviewController {
     public String addNoPhotoReviewFormOrderDetailId(Model model, @PathVariable Long orderDetailId) {
         String status = orderService.getOrderStatus(orderDetailId).getBody();
 
-        if(Boolean.FALSE.equals(noPhotoReviewService.hasWrittenReview(orderDetailId).getBody()) && status.equals("DELIVERY_COMPLETE")){
+        if (Boolean.FALSE.equals(noPhotoReviewService.hasWrittenReview(orderDetailId).getBody())
+            && status.equals("DELIVERY_COMPLETE")) {
             model.addAttribute("review", new NoPhotoReviewRequestDTO());
             return "/view/review/add-no-photo-review";
         } else {
-            log.error("status : " + status);
+            if (status.equals("DELIVERY_COMPLETE")) {
+                log.error("리뷰가 이미 작성됨");
+            } else {
+                log.error("status : " + status);
+            }
             return "redirect:/index2";
         }
 
