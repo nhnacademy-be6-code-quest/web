@@ -32,7 +32,7 @@ public class AuthController {
 
     @GetMapping("/auth")
     public String auth(HttpServletRequest req) {
-        if (req.getAttribute("isLogin") == null) {
+        if (CookieUtils.getCookieValue(req, "access") == null) {
             req.setAttribute("view", "auth");
         }
         return "index";
