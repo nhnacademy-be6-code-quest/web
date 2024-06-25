@@ -1,21 +1,17 @@
 package com.nhnacademy.codequestweb.controller.coupon;
 
 import com.nhnacademy.codequestweb.domain.Status;
-import com.nhnacademy.codequestweb.request.auth.ClientRegisterRequestDto;
 import com.nhnacademy.codequestweb.request.coupon.CouponRequestDto;
 import com.nhnacademy.codequestweb.response.coupon.CouponResponseDto;
 import com.nhnacademy.codequestweb.response.coupon.CouponTypeResponseDto;
 import com.nhnacademy.codequestweb.service.coupon.CouponPolicyService;
 import com.nhnacademy.codequestweb.service.coupon.CouponService;
 import com.nhnacademy.codequestweb.service.coupon.CouponTypeService;
-import com.nhnacademy.codequestweb.test.Client;
-import com.nhnacademy.codequestweb.test.ClientCouponPaymentResponseDto;
-import com.nhnacademy.codequestweb.test.TestClient;
-import com.nhnacademy.codequestweb.test.TestService;
+import com.nhnacademy.codequestweb.response.coupon.ClientCouponPaymentResponseDto;
+import com.nhnacademy.codequestweb.service.coupon.ClientCouponService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
@@ -23,13 +19,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -45,7 +36,7 @@ public class CouponController {
 
 
     @Autowired
-    private TestService testService;
+    private ClientCouponService clientCouponService;
 
 
 
@@ -68,9 +59,9 @@ public class CouponController {
 
         //httpHeaders.set("access", CookieUtils);
         //httpHeaders.set("refesh",CookiUtils);
-        Page<ClientCouponPaymentResponseDto> coupons = testService.getClient(httpHeaders, size, page);
+        Page<ClientCouponPaymentResponseDto> coupons = clientCouponService.getClient(httpHeaders, size, page);
         model.addAttribute("couponPayments",coupons);
-        return "/view/coupon/test";
+        return "coupon_client";
     }
 
     @GetMapping("/api/coupon/register/{couponPolicyId}")

@@ -1,4 +1,4 @@
-package com.nhnacademy.codequestweb.test;
+package com.nhnacademy.codequestweb.response.coupon;
 
 import lombok.Builder;
 import lombok.Data;

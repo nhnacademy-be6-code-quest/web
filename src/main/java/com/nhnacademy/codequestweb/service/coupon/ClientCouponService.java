@@ -1,5 +1,7 @@
-package com.nhnacademy.codequestweb.test;
+package com.nhnacademy.codequestweb.service.coupon;
 
+import com.nhnacademy.codequestweb.client.coupon.ClientCouponClient;
+import com.nhnacademy.codequestweb.response.coupon.ClientCouponPaymentResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -9,15 +11,15 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class TestService {
+public class ClientCouponService {
 
 
     @Autowired
-    private TestClient testClient;
+    private ClientCouponClient clientCouponClient;
 
 
     public Page<ClientCouponPaymentResponseDto> getClient(HttpHeaders httpHeaders, int page, int size){
-        return testClient.getCouponClient(httpHeaders, page,size).getBody();
+        return clientCouponClient.getCouponClient(httpHeaders, page,size).getBody();
 
     }
 }
