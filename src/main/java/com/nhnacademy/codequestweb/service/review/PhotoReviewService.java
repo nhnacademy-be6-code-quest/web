@@ -48,4 +48,8 @@ public class PhotoReviewService {
         return photoReviewClient.deleteReview(id);
     }
 
+    public ResponseEntity<Boolean> hasWrittenReview(Long orderDetailId) {
+        return photoReviewClient.hasWrittenReview(orderDetailId);
+    }
+
 }

@@ -5,9 +5,11 @@ import com.nhnacademy.codequestweb.exception.review.ReviewCreationException;
 import com.nhnacademy.codequestweb.exception.review.ReviewUpdateException;
 import com.nhnacademy.codequestweb.request.review.NoPhotoReviewRequestDTO;
 import com.nhnacademy.codequestweb.response.review.NoPhotoReviewResponseDTO;
+import com.nhnacademy.codequestweb.service.order.OrderService;
 import com.nhnacademy.codequestweb.service.review.NoPhotoReviewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,13 +23,14 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
-
+@Slf4j
 @RequiredArgsConstructor
 @Controller
 public class NoPhotoReviewController {
 
     private static final int DEFAULT_PAGE_SIZE = 5;
     private final NoPhotoReviewService noPhotoReviewService;
+    private final OrderService orderService;
 
 
     @GetMapping("/view/no-photo-reviews")
@@ -72,6 +75,20 @@ public class NoPhotoReviewController {
     public String addNoPhotoReviewForm(Model model) {
         model.addAttribute("review", new NoPhotoReviewRequestDTO());
         return "/view/review/add-no-photo-review";
+    }
+
+    @GetMapping("/view/add-no-photo-review/{orderDetailId}")
+    public String addNoPhotoReviewFormOrderDetailId(Model model, @PathVariable Long orderDetailId) {
+        String status = orderService.getOrderStatus(orderDetailId).getBody();
+
+        if(Boolean.FALSE.equals(noPhotoReviewService.hasWrittenReview(orderDetailId).getBody()) && status.equals("DELIVERY_COMPLETE")){
+            model.addAttribute("review", new NoPhotoReviewRequestDTO());
+            return "/view/review/add-no-photo-review";
+        } else {
+            log.error("status : " + status);
+            return "redirect:/index2";
+        }
+
     }
 
     @PostMapping("/view/add-no-photo-review")

@@ -43,4 +43,7 @@ public interface NoPhotoReviewClient {
     @DeleteMapping("/{id}")
     ResponseEntity<Void> deleteReview(@PathVariable Long id);
 
+    @GetMapping("/has-written/{orderDetailId}")
+    ResponseEntity<Boolean> hasWrittenReview(@PathVariable Long orderDetailId);
+
 }

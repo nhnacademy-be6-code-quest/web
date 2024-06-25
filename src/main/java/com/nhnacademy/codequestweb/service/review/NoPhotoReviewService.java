@@ -50,4 +50,8 @@ public class NoPhotoReviewService {
         return noPhotoReviewClient.deleteReview(id);
     }
 
+    public ResponseEntity<Boolean> hasWrittenReview(Long orderDetailId) {
+        return noPhotoReviewClient.hasWrittenReview(orderDetailId);
+    }
+
 }
