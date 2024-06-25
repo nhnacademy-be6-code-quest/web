@@ -19,7 +19,7 @@ public class PaymentService {
     }
 
     // PaymentId 로 Payment 관련 정보 얻기
-    public ResponseEntity<PaymentResponseDto> findPaymentByPaymentId(Long paymentId) {
-        return paymentClient.findPaymentByPaymentId(paymentId);
+    public ResponseEntity<PaymentResponseDto> findByPaymentId(Long paymentId) {
+        return paymentClient.findByPaymentId(paymentId);
     }
 }

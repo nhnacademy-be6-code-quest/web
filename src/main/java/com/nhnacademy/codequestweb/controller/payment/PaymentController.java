@@ -32,7 +32,7 @@ public class PaymentController {
 
     // 사용자에게 결제와 관련된 정보를 보여줍니다.
     @GetMapping("/client/order/payment")
-    public String createPayment(Model model, HttpServletRequest httpServletRequest) {
+    public String createPayment(@ModelAttribute OrderPaymentResponseDto orderPaymentResponseDto, Model model, HttpServletRequest httpServletRequest) {
 //        String email = httpServletRequest.getHeader("email");
 //        Long clientId = clientService.findClientIdByEmail(email);
 
@@ -47,7 +47,7 @@ public class PaymentController {
 
         // 주문에서 받아 올 것
         Long orderId = 1L;
-//        ResponseEntity<OrderPaymentRequestDto> orderPaymentRequestDtoResponseEntity = orderService.findByOrderId(orderId);
+//        ResponseEntity<OrderPaymentResponseDto> orderPaymentResponseDtoResponseEntity = orderService.findOrderPaymentResponseDtoByOrderId(orderId);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "application/json");
         HttpStatus httpStatus = HttpStatus.OK;
@@ -75,8 +75,8 @@ public class PaymentController {
 
     // 결제 정보를 단일로 조회할 수 있습니다.
     @GetMapping("/client/order/payment/{paymentId}")
-    public String payment(@PathVariable("paymentId") Long paymentId, Model model) {
-        ResponseEntity<PaymentResponseDto> paymentResponseDtoResponseEntity = paymentService.findPaymentByPaymentId(paymentId);
+    public String findPaymentByPaymentId(@PathVariable("paymentId") Long paymentId, Model model) {
+        ResponseEntity<PaymentResponseDto> paymentResponseDtoResponseEntity = paymentService.findByPaymentId(paymentId);
         model.addAttribute("paymentResponseDtoResponseEntity", paymentResponseDtoResponseEntity);
         return "/view/payment/viewPayment";
     }
