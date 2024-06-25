@@ -10,6 +10,7 @@ import com.nhnacademy.codequestweb.service.payment.PaymentService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +20,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 public class PaymentController {
 
     private final PaymentService paymentService;
@@ -51,9 +55,9 @@ public class PaymentController {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "application/json");
         HttpStatus httpStatus = HttpStatus.OK;
-        ResponseEntity<OrderPaymentResponseDto> orderPaymentRequestDtoResponseEntity = new ResponseEntity<>(new OrderPaymentResponseDto(1L, 20000L), headers, httpStatus);
-        model.addAttribute("orderPaymentRequestDtoResponseEntity", orderPaymentRequestDtoResponseEntity);
-
+        orderPaymentResponseDto = new OrderPaymentResponseDto(1L, 20000L);
+        model.addAttribute("orderPaymentResponseDto", orderPaymentResponseDto);
+        log.error("orderPaymentResponseDto: {}", orderPaymentResponseDto);
         // 포인트 정책하고 같이 생각할 것. (일단 10퍼센트로 생각)
         model.addAttribute("expectedPoints", 1800);
         return "/view/payment/createPayment";
@@ -62,7 +66,7 @@ public class PaymentController {
     // 사용자에게 결제와 관련된 정보를 입력 받습니다.
     @PostMapping("client/order/payment")
     public String createPayment(@ModelAttribute PaymentRequestDto paymentRequestDto) {
-        paymentRequestDto.setOrderId(1L);
+//        paymentRequestDto.setOrderId(1L); // hidden input 으로 가져 왔음.
         paymentService.createPayment(paymentRequestDto);
         return "redirect:/client/order/payment/tossPayment";
     }
@@ -75,9 +79,10 @@ public class PaymentController {
 
     // 결제 정보를 단일로 조회할 수 있습니다.
     @GetMapping("/client/order/payment/{paymentId}")
-    public String findPaymentByPaymentId(@PathVariable("paymentId") Long paymentId, Model model) {
+    @ResponseBody
+    public String findPaymentByPaymentId(@PathVariable Long paymentId, Model model) {
         ResponseEntity<PaymentResponseDto> paymentResponseDtoResponseEntity = paymentService.findByPaymentId(paymentId);
         model.addAttribute("paymentResponseDtoResponseEntity", paymentResponseDtoResponseEntity);
-        return "/view/payment/viewPayment";
+        return paymentResponseDtoResponseEntity.getBody().toString();
     }
 }

@@ -46,10 +46,11 @@
                 </div>
             </div>
             <div class="payment-amounts">
-                <div>주문하신 금액: <span id="totalPrice" th:text="${orderPaymentRequestDtoResponseEntity.body.totalPrice}">0</span>원</div>
+                <div>주문하신 금액: <span id="totalPrice" th:text="${orderPaymentResponseDto.totalPrice}">0</span>원</div>
                 <div>총 결제 금액: <span id="payAmount" name="payAmount" th:text="${payAmount}">payAmount</span>원</div>
                 <input type="hidden" id="hiddenPayAmount" name="payAmount" th:value="${payAmount}">
                 <div>예상 포인트 적립: <span id="expected-points" th:text="${expectedPoints}">0</span>P</div>
+                <input type = "hidden" th:id = "${orderPaymentResponseDto.getOrderId()}" th:name ="orderId" th:value = "${orderPaymentResponseDto.getOrderId()}">
             </div>
         </div>
         <div class="payment-method">
