@@ -1,5 +1,6 @@
 package com.nhnacademy.codequestweb.controller.payment;
 
+import com.nhnacademy.codequestweb.request.payment.OrderPaymentRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentRequestDto;
 import com.nhnacademy.codequestweb.response.coupon.CouponResponseDto;
 import com.nhnacademy.codequestweb.response.payment.PaymentResponseDto;
@@ -28,9 +29,9 @@ public class PaymentController {
 
     // 사용자에게 결제와 관련된 정보를 보여줍니다.
     @GetMapping("/client/order/payment")
-    public String createPayment(Model model, HttpServletRequest httpServletRequest) {
+    public String createPayment(@ModelAttribute OrderPaymentRequestDto orderPaymentRequestDto, Model model, HttpServletRequest httpServletRequest) {
 //        String email = httpServletRequest.getHeader("email");
-//        Long clientId = clientService.findClientIdByEmail(email);
+//        Long clientId = clientService.findClientIdByEmail(email);x
 
         Long clientId = 1L;
         List<CouponResponseDto> coupons = couponService.findClientCoupon(clientId);
@@ -40,8 +41,11 @@ public class PaymentController {
         model.addAttribute("remainingPoint", 10000);
 
         // 주문에서 받아 올 것
-        Long orderId = 1L;
-        model.addAttribute("originalAmount", 20000);
+        //Long orderId = 1L;
+        long orderId = Long.parseLong(httpServletRequest.getParameter("orderId"));
+        long totalPrice = Long.parseLong(httpServletRequest.getParameter("totalPrice"));
+
+        model.addAttribute("totalPrice", totalPrice);
 
         // 주문에서 받아 올 것을 토대로
 //        model.addAttribute("finalAmount", 18000);
