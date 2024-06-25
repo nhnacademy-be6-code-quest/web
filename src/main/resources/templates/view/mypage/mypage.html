@@ -16,5 +16,9 @@
     <div class="mypage-wrapper" th:if="${mypage != null} and ${#strings.equals(mypage, 'delivaryaddress')}">
         <div th:replace="~{view/mypage/delivaryAddress :: delivaryAddressFragment ('clientDeliveryAddresses')}"></div>
     </div>
+
+    <div class="mypage-wrapper" th:if="${mypage != null} and ${#strings.equals(mypage, 'withdrawal')}">
+        <div th:replace="~{view/mypage/withdrawal :: withdrawalFragment}"></div>
+    </div>
 </div>
 </html>
