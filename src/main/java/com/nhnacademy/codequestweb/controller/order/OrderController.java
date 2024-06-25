@@ -1,5 +1,6 @@
 package com.nhnacademy.codequestweb.controller.order;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhnacademy.codequestweb.request.order.ClientViewOrderPostRequestDto;
 import com.nhnacademy.codequestweb.request.order.client.ClientOrderPostRequestDto;
 import com.nhnacademy.codequestweb.response.order.client.ClientOrderPostResponseDto;
@@ -22,7 +23,7 @@ import java.util.ArrayList;
 @AllArgsConstructor
 public class OrderController {
 
-    private final OrderService orderService;
+    private OrderService orderService;
 
     @GetMapping("/views/order")
     // 뷰 화면 테스트용 api입니다. 실제 서비스에서는 하위의 POST api 사용예정입니다.
