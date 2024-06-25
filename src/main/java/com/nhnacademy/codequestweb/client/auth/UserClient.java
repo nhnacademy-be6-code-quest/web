@@ -33,4 +33,7 @@ public interface UserClient {
     ResponseEntity<String> deleteAddress(
             @RequestHeader HttpHeaders headers,
             @RequestParam Long addressId);
+
+    @DeleteMapping("/api/client")
+    ResponseEntity<String> deleteClient(@RequestHeader HttpHeaders httpHeaders);
 }

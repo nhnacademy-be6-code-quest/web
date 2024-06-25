@@ -38,4 +38,8 @@ public class MyPageService {
     public ResponseEntity<String> deleteDeliveryAddress(HttpHeaders headers, Long deliveryAddressId) {
         return client.deleteAddress(headers, deliveryAddressId);
     }
+
+    public ResponseEntity<String> deleteClient(HttpHeaders headers) {
+        return client.deleteClient(headers);
+    }
 }

@@ -6,6 +6,7 @@ import com.nhnacademy.codequestweb.response.mypage.ClientDeliveryAddressResponse
 import com.nhnacademy.codequestweb.response.mypage.ClientPrivacyResponseDto;
 import com.nhnacademy.codequestweb.service.mypage.MyPageService;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
+import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +41,9 @@ public class MyPageController {
 
     @GetMapping("/mypage/delivary")
     public String mypageDelivery( HttpServletRequest req) {
+        if (CookieUtils.getCookieValue(req, "refresh") == null) {
+            return "redirect:/auth";
+        }
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
         headers.set("refresh", CookieUtils.getCookieValue(req, "refresh"));
@@ -75,5 +79,33 @@ public class MyPageController {
         log.info("/mypage/delivary post response: {}", response.getBody());
 
         return ResponseEntity.ok("Successfully deleted delivery address");
+    }
+
+    @GetMapping("/mypage/withdrawal")
+    public String withdrawal(HttpServletRequest req) {
+        if (CookieUtils.getCookieValue(req, "refresh") == null) {
+            return "redirect:/auth";
+        }
+        req.setAttribute("view", "mypage");
+        req.setAttribute("mypage", "withdrawal");
+        return "index";
+    }
+
+    @DeleteMapping("/mypage/withdrawal")
+    public ResponseEntity<String> withdrawal(@RequestParam("pw") String pw, HttpServletRequest req) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("access", CookieUtils.getCookieValue(req, "access"));
+        headers.set("refresh", CookieUtils.getCookieValue(req, "refresh"));
+        headers.set("password", pw);
+
+        ResponseEntity<String> response = myPageService.deleteClient(headers);
+        log.info("/mypage/withdrawal post response: {}", response.getBody());
+
+        return ResponseEntity.ok("Successfully deleted delivery address");
+    }
+
+    @ExceptionHandler(FeignException.NotFound.class)
+    public String notFound(HttpServletRequest req, Exception e) {
+        return "redirect:/auth";
     }
 }
