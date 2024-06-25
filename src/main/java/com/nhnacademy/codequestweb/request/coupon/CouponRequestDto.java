@@ -1,10 +1,20 @@
 package com.nhnacademy.codequestweb.request.coupon;
 
 import com.nhnacademy.codequestweb.domain.Status;
-import com.nhnacademy.codequestweb.response.auth.coupon.CouponPolicyResponseDto;
-import com.nhnacademy.codequestweb.response.auth.coupon.CouponTypeResponseDto;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
-public record CouponRequestDto(long couponTypeId, long couponPolicyId, long clientId, LocalDateTime issuedDate, LocalDateTime expirationDate, Status status) {
+public record CouponRequestDto(
+        @NotNull(message = "쿠폰 타입은 비어있을수 없습니다.")
+        long couponTypeId,
+
+        long couponPolicyId,
+        @NotNull
+        long clientId,
+        LocalDateTime expirationDate,
+        @NotNull
+        Status status) {
+
 }
