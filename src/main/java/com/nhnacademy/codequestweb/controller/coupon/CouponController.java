@@ -9,8 +9,11 @@ import com.nhnacademy.codequestweb.service.coupon.CouponPolicyService;
 import com.nhnacademy.codequestweb.service.coupon.CouponService;
 import com.nhnacademy.codequestweb.service.coupon.CouponTypeService;
 import com.nhnacademy.codequestweb.temp.Client;
+import com.nhnacademy.codequestweb.utils.CookieUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -26,10 +29,13 @@ public class CouponController {
     @Autowired
     private CouponTypeService couponTypeService;
 
-    @GetMapping("/api/client/{clientId}")
-    public String viewCoupon(@PathVariable long clientId, Model model){
-//        List<CouponResponseDto> couponList = couponService.findClientCoupon(clientId);
-//        model.addAttribute("couponList",couponList);
+    @GetMapping("/api/client")
+    public String viewCoupon(@PathVariable long clientId, Model model, HttpServletRequest httpServletRequest){
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("access", CookieUtils.getCookieValue(httpServletRequest, "access"));
+        headers.set("refresh", CookieUtils.getCookieValue(httpServletRequest, "refresh"));
+        List<CouponResponseDto> couponList = couponService.findClientCoupon(headers);
+        model.addAttribute("couponList", couponList);
         return "/view/coupon/client_coupon_view";
     }
 
