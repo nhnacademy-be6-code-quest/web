@@ -7,7 +7,9 @@ import com.nhnacademy.codequestweb.response.payment.PaymentResponseDto;
 import com.nhnacademy.codequestweb.service.coupon.CouponService;
 import com.nhnacademy.codequestweb.service.order.OrderService;
 import com.nhnacademy.codequestweb.service.payment.PaymentService;
+import com.nhnacademy.codequestweb.utils.CookieUtils;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,11 +39,12 @@ public class PaymentController {
     // 사용자에게 결제와 관련된 정보를 보여줍니다.
     @GetMapping("/client/order/payment")
     public String createPayment(@ModelAttribute OrderPaymentResponseDto orderPaymentResponseDto, Model model, HttpServletRequest httpServletRequest) {
-//        String email = httpServletRequest.getHeader("email");
-//        Long clientId = clientService.findClientIdByEmail(email);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("access", CookieUtils.getCookieValue(httpServletRequest, "access"));
+        headers.set("refresh", CookieUtils.getCookieValue(httpServletRequest, "refresh"));
 
         Long clientId = 1L;
-        List<CouponResponseDto> coupons = couponService.findClientCoupon(clientId);
+        List<CouponResponseDto> coupons = couponService.findClientCoupon(headers);
         model.addAttribute("coupons", coupons);
 
         // 포인트에서 받아 올 것
@@ -52,12 +55,13 @@ public class PaymentController {
         // 주문에서 받아 올 것
         Long orderId = 1L;
 //        ResponseEntity<OrderPaymentResponseDto> orderPaymentResponseDtoResponseEntity = orderService.findOrderPaymentResponseDtoByOrderId(orderId);
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Content-Type", "application/json");
+        HttpHeaders orderHeaders = new HttpHeaders();
+        orderHeaders.set("Content-Type", "application/json");
         HttpStatus httpStatus = HttpStatus.OK;
         orderPaymentResponseDto = new OrderPaymentResponseDto(1L, 20000L);
         model.addAttribute("orderPaymentResponseDto", orderPaymentResponseDto);
         log.error("orderPaymentResponseDto: {}", orderPaymentResponseDto);
+
         // 포인트 정책하고 같이 생각할 것. (일단 10퍼센트로 생각)
         model.addAttribute("expectedPoints", 1800);
         return "/view/payment/createPayment";
