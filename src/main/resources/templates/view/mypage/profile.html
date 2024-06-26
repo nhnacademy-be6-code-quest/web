@@ -3,6 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <title>Client Privacy</title>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        function enableEditing() {
+            const clientName = document.getElementById('clientName');
+            const clientBirth = document.getElementById('clientBirth');
+            clientBirth.removeAttribute('readonly');
+            clientName.removeAttribute('readonly');
+
+
+            document.getElementById('editButton').style.display = 'none';
+            document.getElementById('saveButton').style.display = 'inline-block';
+            document.getElementById('cancelButton').style.display = 'inline-block';
+        }
+
+        function cancelEditing() {
+            // Reload the page or reset form to cancel editing
+            location.reload();
+        }
+
+        function formatDateToInput(dateString) {
+            const date = new Date(dateString);
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        window.onload = function() {
+            const clientBirthInput = document.getElementById('clientBirth');
+            /*[[${profile.clientBirth}]]*/
+            const clientBirthValue = /*[[${profile.clientBirth}]]*/ '1970-01-01T00:00:00';  // 초기값 설정
+            clientBirthInput.value = formatDateToInput(clientBirthValue);
+        }
+        /*]]>*/
+    </script>
 </head>
 <body>
 <main class="main-content flex-grow-1" style="padding-top: 50px; padding-bottom: 50px;">
@@ -12,28 +47,32 @@
                 <h1 class="text-2xl font-bold">Profile</h1>
             </div>
             <div class="card-body">
-                <div class="mb-4">
-                    <div class="mb-3">
-                        <label for="clientGrade">회원 등급</label>
-                        <input id="clientGrade" th:value="${profile.clientGrade}" class="form-control" readonly />
+                <form action="/mypage" method="POST">
+                    <input type="hidden" name="_method" id="_method" value="PUT"/>
+                    <div class="mb-4">
+                        <div class="mb-3">
+                            <label for="clientGrade">회원 등급</label>
+                            <input id="clientGrade" th:value="${profile.clientGrade}" class="form-control" readonly />
+                        </div>
+                        <div class="mb-3">
+                            <label for="clientEmail">이메일</label>
+                            <input id="clientEmail" th:value="${profile.clientEmail}" class="form-control" readonly />
+                        </div>
+                        <div class="mb-3">
+                            <label for="clientName">닉네임</label>
+                            <input id="clientName" name="clientName" th:value="${profile.clientName}" class="form-control" readonly />
+                        </div>
+                        <div class="mb-3">
+                            <label for="clientBirth">생일</label>
+                            <input id="clientBirth" name="clientBirth" type="date" class="form-control" data-value="${profile.clientBirth}" readonly />
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="clientEmail">이메일</label>
-                        <input id="clientEmail" th:value="${profile.clientEmail}" class="form-control" readonly />
+                    <div class="d-flex justify-content-end gap-2">
+                        <button id="editButton" type="button" class="btn btn-primary" onclick="enableEditing()">Edit</button>
+                        <button id="cancelButton" type="button" class="btn btn-outline-secondary" onclick="cancelEditing()" style="display: none;">Cancel</button>
+                        <button id="saveButton" type="submit" class="btn btn-primary" style="display: none;">Save Changes</button>
                     </div>
-                    <div class="mb-3">
-                        <label for="clientName">닉네임</label>
-                        <input id="clientName" th:value="${profile.clientName}" class="form-control" readonly />
-                    </div>
-                    <div class="mb-3">
-                        <label for="clientBirth">생일</label>
-                        <input id="clientBirth" th:value="${profile.clientBirth}" class="form-control" readonly />
-                    </div>
-                </div>
-                <div class="d-flex justify-content-end gap-2">
-                    <button class="btn btn-outline-secondary">Cancel</button>
-                    <button class="btn btn-primary">Save Changes</button>
-                </div>
+                </form>
             </div>
         </div>
     </div>

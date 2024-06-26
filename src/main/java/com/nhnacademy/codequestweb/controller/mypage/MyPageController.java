@@ -3,6 +3,7 @@ package com.nhnacademy.codequestweb.controller.mypage;
 import com.nhnacademy.codequestweb.client.auth.UserClient;
 import com.nhnacademy.codequestweb.request.mypage.ClientRegisterAddressRequestDto;
 import com.nhnacademy.codequestweb.request.mypage.ClientRegisterPhoneNumberRequestDto;
+import com.nhnacademy.codequestweb.request.mypage.ClientUpdatePrivacyRequestDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientDeliveryAddressResponseDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientPhoneNumberResponseDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientPrivacyResponseDto;
@@ -150,9 +151,15 @@ public class MyPageController {
         return ResponseEntity.ok("Successfully deleted phone number");
     }
 
-    @DeleteMapping("/mypage/phone")
-    public ResponseEntity<String> deletePhone() {
-        return ResponseEntity.ok("Successfully deleted phone number");
+    @PutMapping("/mypage")
+    public String updateProfile(@ModelAttribute ClientUpdatePrivacyRequestDto clientUpdatePrivacyRequestDto, HttpServletRequest req) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("access", CookieUtils.getCookieValue(req, "access"));
+        headers.set("refresh", CookieUtils.getCookieValue(req, "refresh"));
+
+        ResponseEntity<String> response = myPageService.updateClient(headers, clientUpdatePrivacyRequestDto);
+        log.info("response: {}", response.getBody());
+        return "redirect:/mypage";
     }
 
     @ExceptionHandler(FeignException.NotFound.class)
