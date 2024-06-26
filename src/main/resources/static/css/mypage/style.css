@@ -22,11 +22,10 @@
 }
 
 .mypage-sidebar {
-
+    display: flex;
     background-color: #2C3E50; /* Dark background color */
     padding: 20px;
     color: #fff; /* White text color */
-    height: 100vh;
 }
 
 .content-wrapper {

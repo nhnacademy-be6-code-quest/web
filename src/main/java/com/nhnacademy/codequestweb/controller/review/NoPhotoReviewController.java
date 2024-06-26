@@ -22,13 +22,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Slf4j
 @RequiredArgsConstructor
 @Controller
 public class NoPhotoReviewController {
 
-    private static final int DEFAULT_PAGE_SIZE = 5;
+    private static final int DEFAULT_PAGE_SIZE = 3;
     private final NoPhotoReviewService noPhotoReviewService;
     private final OrderService orderService;
 
@@ -57,6 +58,7 @@ public class NoPhotoReviewController {
         model.addAttribute("currentPath", "/view/no-photo-reviews/client/" + clientId);
         return "/view/review/no-photo-reviews";
     }
+
 
     @GetMapping("/view/no-photo-reviews/product/{productId}")
     public String getNoPhotoReviewsByProductId(@PathVariable Long productId, Model model,

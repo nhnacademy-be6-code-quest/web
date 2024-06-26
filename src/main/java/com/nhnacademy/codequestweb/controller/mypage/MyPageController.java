@@ -1,19 +1,30 @@
 package com.nhnacademy.codequestweb.controller.mypage;
 
+import static org.springframework.beans.support.PagedListHolder.DEFAULT_PAGE_SIZE;
+
 import com.nhnacademy.codequestweb.client.auth.UserClient;
 import com.nhnacademy.codequestweb.request.mypage.ClientRegisterAddressRequestDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientDeliveryAddressResponseDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientPrivacyResponseDto;
+import com.nhnacademy.codequestweb.response.review.NoPhotoReviewResponseDTO;
+import com.nhnacademy.codequestweb.response.review.PhotoReviewResponseDTO;
 import com.nhnacademy.codequestweb.service.mypage.MyPageService;
+import com.nhnacademy.codequestweb.service.review.NoPhotoReviewService;
+import com.nhnacademy.codequestweb.service.review.PhotoReviewService;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
 import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,7 +33,11 @@ import java.util.List;
 @Controller
 @RequiredArgsConstructor
 public class MyPageController {
+
     private final MyPageService myPageService;
+
+    private final NoPhotoReviewService noPhotoReviewService;
+    private final PhotoReviewService photoReviewService;
 
     @GetMapping("/mypage")
     public String mypageMain(HttpServletRequest req, HttpServletResponse res) {
@@ -108,4 +123,57 @@ public class MyPageController {
     public String notFound(HttpServletRequest req, Exception e) {
         return "redirect:/auth";
     }
+
+    @GetMapping("/mypage/reviews/no-photo")
+    public String getNoPhotoReviews(HttpServletRequest req, Model model, Pageable pageable) {
+        if (CookieUtils.getCookieValue(req, "refresh") == null) {
+            return "redirect:/auth";
+        }
+
+        req.setAttribute("view", "mypage");
+        req.setAttribute("mypage", "noPhotoReviews");
+
+        final int DEFAULT_PAGE_SIZE = 3;
+        Long clientId = 5L;
+
+        Pageable pageRequest = PageRequest.of(pageable.getPageNumber(), DEFAULT_PAGE_SIZE, Sort.by(
+            Sort.Direction.DESC, "registerDate"));
+
+        ResponseEntity<Page<NoPhotoReviewResponseDTO>> noPhotoResponseEntity = noPhotoReviewService.getAllReviewsByClientId(
+            clientId, pageRequest);
+        
+        Page<NoPhotoReviewResponseDTO> noPhotoReviews = noPhotoResponseEntity.getBody();
+        model.addAttribute("reviews", noPhotoReviews);
+        
+        return "index";
+    }
+
+    @GetMapping("/mypage/reviews/photo")
+    public String getPhotoReviews(HttpServletRequest req, Model model, Pageable pageable) {
+        if (CookieUtils.getCookieValue(req, "refresh") == null) {
+            return "redirect:/auth";
+        }
+
+        req.setAttribute("view", "mypage");
+        req.setAttribute("mypage", "photoReviews");
+
+        final int DEFAULT_PAGE_SIZE = 3;
+        Long clientId = 5L;
+
+        Pageable pageRequest = PageRequest.of(pageable.getPageNumber(), DEFAULT_PAGE_SIZE, Sort.by(
+            Sort.Direction.DESC, "registerDate"));
+        
+
+        ResponseEntity<Page<PhotoReviewResponseDTO>> photoResponseEntity = photoReviewService.getAllReviewsByClientId(
+            clientId, pageRequest);
+        
+
+        Page<PhotoReviewResponseDTO> photoReviews = photoResponseEntity.getBody();
+        model.addAttribute("reviews", photoReviews);
+
+        return "index";
+    }
+
+
+
 }
