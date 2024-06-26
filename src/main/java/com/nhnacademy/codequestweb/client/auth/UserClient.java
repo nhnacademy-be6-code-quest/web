@@ -2,8 +2,10 @@ package com.nhnacademy.codequestweb.client.auth;
 
 import com.nhnacademy.codequestweb.request.auth.ClientRegisterRequestDto;
 import com.nhnacademy.codequestweb.request.mypage.ClientRegisterAddressRequestDto;
+import com.nhnacademy.codequestweb.request.mypage.ClientRegisterPhoneNumberRequestDto;
 import com.nhnacademy.codequestweb.response.auth.ClientRegisterResponseDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientDeliveryAddressResponseDto;
+import com.nhnacademy.codequestweb.response.mypage.ClientPhoneNumberResponseDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientPrivacyResponseDto;
 import jakarta.validation.Valid;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -36,4 +38,13 @@ public interface UserClient {
 
     @DeleteMapping("/api/client")
     ResponseEntity<String> deleteClient(@RequestHeader HttpHeaders httpHeaders);
+
+    @GetMapping("/api/client/phone")
+    ResponseEntity<List<ClientPhoneNumberResponseDto>> getPhoneNumber(@RequestHeader HttpHeaders headers);
+
+    @PostMapping("/api/client/phone")
+    ResponseEntity<String> registerPhoneNumber(@RequestHeader HttpHeaders headers, @RequestBody ClientRegisterPhoneNumberRequestDto clientRegisterPhoneNumberDto);
+
+    @DeleteMapping("/api/client/phone")
+    ResponseEntity<String> deletePhoneNumber(@RequestHeader HttpHeaders headers, @RequestParam Long phoneNumberId);
 }
