@@ -9,7 +9,6 @@ import com.nhnacademy.codequestweb.service.order.OrderService;
 import com.nhnacademy.codequestweb.service.payment.PaymentService;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +41,10 @@ public class PaymentController {
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(httpServletRequest, "access"));
         headers.set("refresh", CookieUtils.getCookieValue(httpServletRequest, "refresh"));
+        List<CouponResponseDto> couponList = couponService.findClientCoupon(headers);
+
+//        String email = httpServletRequest.getHeader("email");
+//        Long clientId = clientService.findClientIdByEmail(email);
 
         Long clientId = 1L;
         List<CouponResponseDto> coupons = couponService.findClientCoupon(headers);

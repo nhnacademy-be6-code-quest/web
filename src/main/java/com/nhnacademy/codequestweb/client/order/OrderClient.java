@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "order", url = "http://localhost:8008")
+@FeignClient(name = "order", url = "http://localhost:8001")
 public interface OrderClient {
 
     @PostMapping("/api/client/views/order")

@@ -28,8 +28,8 @@ public class CouponController {
 
     @GetMapping("/api/client/{clientId}")
     public String viewCoupon(@PathVariable long clientId, Model model){
-        List<CouponResponseDto> couponList = couponService.findClientCoupon(clientId);
-        model.addAttribute("couponList",couponList);
+//        List<CouponResponseDto> couponList = couponService.findClientCoupon(clientId);
+//        model.addAttribute("couponList",couponList);
         return "/view/coupon/client_coupon_view";
     }
 

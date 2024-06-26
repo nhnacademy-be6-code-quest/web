@@ -14,7 +14,7 @@ import java.util.List;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-@FeignClient(name = "couponClient", url = "http://localhost:8006")
+@FeignClient(name = "couponClient", url = "http://localhost:8001")
 public interface CouponClient {
 
     @GetMapping("/api/coupon")

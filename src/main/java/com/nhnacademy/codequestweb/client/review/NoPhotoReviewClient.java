@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 
-@FeignClient(name = "noPhotoReviewClient", url = "http://localhost:8007/no-photo-reviews")
+@FeignClient(name = "noPhotoReviewClient", url = "http://localhost:8001/no-photo-reviews")
 public interface NoPhotoReviewClient {
 
     @PostMapping
