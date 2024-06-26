@@ -11,7 +11,7 @@ import java.util.List;
 @Builder
 // 회원이 주문한 주문 내역 건
 public record ClientAllOrderGetResponseDto (
-        //@JsonDeserialize(using = DateToLocalDateTimeDeserializer.class)
+        @JsonDeserialize(using = DateToLocalDateTimeDeserializer.class)
         LocalDateTime orderDate, // 주문날짜
         String address, // 배송지
         List<OrderedProductDto> orderedProductDtoList, // 주문한 상품정보들

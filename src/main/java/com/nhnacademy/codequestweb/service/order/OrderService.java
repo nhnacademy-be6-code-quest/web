@@ -19,8 +19,10 @@ public class OrderService {
         return orderClient.viewOrder(orderRequestDto);
     }
 
-    public ResponseEntity<ClientOrderPostResponseDto> createOrder(ClientOrderPostRequestDto clientOrderPostRequestDto){
-        return orderClient.createOrder(clientOrderPostRequestDto);
+    public long createOrder(ClientOrderPostRequestDto clientOrderPostRequestDto){
+        return orderClient.createOrder(clientOrderPostRequestDto).getBody().orderId();
     }
 
+// 이걸 거치면(feign) cors 방지!! cors란? 호출하는 ip와 호출되는 ip가 다를 때 브라우저 단에서 보안적으로 호출을 막는것!
+// service 계층에서는 필요한 dto를 (필요에 따라 가공?) 반환한다!! 반환 값이 http status code를 가지고 있으니깐, 에러 나도 알 길이 없어!!!!
 }

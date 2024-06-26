@@ -1,6 +1,5 @@
 package com.nhnacademy.codequestweb.controller.order;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhnacademy.codequestweb.request.order.ClientViewOrderPostRequestDto;
 import com.nhnacademy.codequestweb.request.order.client.ClientOrderPostRequestDto;
 import com.nhnacademy.codequestweb.response.order.client.ClientOrderPostResponseDto;
@@ -8,7 +7,6 @@ import com.nhnacademy.codequestweb.response.order.client.ClientViewOrderPostResp
 import com.nhnacademy.codequestweb.service.order.OrderService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,8 +14,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
 
 @Controller
 @AllArgsConstructor
@@ -35,7 +36,6 @@ public class OrderController {
         return "view/order/order";
     }
 
-
 //    @PostMapping("/views/order")
 //    public String orderView(ClientOrderPostRequestDto orderRequestDto, Model model){
 //        ResponseEntity<ClientOrderPostResponseDto> response = orderService.gotoOrder(orderRequestDto);
@@ -43,9 +43,9 @@ public class OrderController {
 //        return "view/order/order";
 //    }
 
-    @PostMapping("/client/order")
     @ResponseBody
-    public ResponseEntity<ClientOrderPostResponseDto> createOrder(@RequestBody ClientOrderPostRequestDto clientOrderPostRequestDto){ // order 생성 요청
+    @PostMapping("/client/order")
+    public long createOrder(@RequestBody ClientOrderPostRequestDto clientOrderPostRequestDto, RedirectAttributes redirectAttributes) throws IOException { // order 생성 요청
         return orderService.createOrder(clientOrderPostRequestDto);
     }
 

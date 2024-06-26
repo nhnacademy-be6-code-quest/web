@@ -13,7 +13,7 @@ import java.util.List;
 public record ClientOrderPostRequestDto (
     long clientId,
     List<OrderDetailDto> orderDetailDtoList,
-    //@JsonDeserialize(using = DateToLocalDateTimeDeserializer.class)
+    @JsonDeserialize(using = DateToLocalDateTimeDeserializer.class)
     LocalDateTime deliveryDate,
     long totalPrice,
     int shippingFee,

@@ -326,49 +326,32 @@
         };
     });
 
-    async function getClientOrderPostRequestDto() {
-        return {
-            "clientId": [[${clientId}]],
-            "orderDetailDtoList": orderDetailDtoList,
-            "deliveryDate": document.getElementById("isSelectDeliveryDate").checked ? document.getElementById("deliveryDate").value : null,
-            "totalPrice": document.getElementById("totalPrice").innerText,
-            "shippingFee": document.getElementById("shippingFee").innerText,
-            "phoneNumber": document.getElementById("selectedPhoneNumber").innerText,
-            "deliveryAddress": document.getElementById("selectedAddressZipCode").innerText + ', ' + document.getElementById("selectedDeliveryAddress").innerText
-        };
-    };
-
     async function nextStep(){
         try{
 
             // order 생성 요청
-            const clientOrderPostRequestDto = await getClientOrderPostRequestDto();
+            const clientOrderPostRequestDto = {
+                "clientId": [[${clientId}]],
+                "orderDetailDtoList": orderDetailDtoList,
+                "deliveryDate": document.getElementById("isSelectDeliveryDate").checked ? document.getElementById("deliveryDate").value : null,
+                "totalPrice": document.getElementById("totalPrice").innerText,
+                "shippingFee": document.getElementById("shippingFee").innerText,
+                "phoneNumber": document.getElementById("selectedPhoneNumber").innerText,
+                "deliveryAddress": document.getElementById("selectedAddressZipCode").innerText + ', ' + document.getElementById("selectedDeliveryAddress").innerText
+            };
+
             const clientOrderPostResponse = await axios.post('/client/order', clientOrderPostRequestDto, {
                 header: {
                     "Content-type": "application/json"
                 }
             });
 
-            console.log(clientOrderPostResponse);
-
-            const orderIdVal = clientOrderPostResponse.data.orderId;
-            const totalProductPriceVal = clientOrderPostResponse.data.totalProductPrice;
-
-            // 결제페이지 이동
-            const paymentPage = await axios.get('/client/order/payment',
-                {
-                    params:{
-                        orderId : orderIdVal,
-                        totalPrice : totalProductPriceVal
-                    }
-                }
-            );
+            location.href = `/client/order/${clientOrderPostResponse.data}/payment`;
 
         }
         catch(error){
             console.error(error);
         }
-
 
     }
 
