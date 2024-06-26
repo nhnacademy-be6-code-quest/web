@@ -22,7 +22,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(new LoginInfoInterceptor())
                 .addPathPatterns("/**");
         registry.addInterceptor(new TokenReissueInterceptor(authClient))
-                .addPathPatterns("/mypage");
+                .addPathPatterns("/**");
     }
 
 }

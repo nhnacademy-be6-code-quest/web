@@ -19,5 +19,4 @@ public class ClientPrivacyResponseDto {
     private String clientName;
     private LocalDateTime clientBirth;
     private List<String> clientNumbers;
-    private List<ClientDeliveryAddressDto> clientDeliveryAddresses;
 }

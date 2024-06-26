@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="withdrawalFragment ()">
+<head>
+    <meta charset="UTF-8">
+    <title>회원 탈퇴</title>
+    <style>
+        .withdrawal-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding-top: 20vh;
+        }
+
+        .withdrawal-card {
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .withdrawal-btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        .withdrawal-btn-danger:hover {
+            background-color: #c82333;
+            border-color: #bd2130;
+        }
+    </style>
+    <script>
+        function deleteUser() {
+            const password = document.getElementById('password').value;
+            if (password === '') {
+                alert('비밀번호를 입력해주세요.');
+                return;
+            }
+            if (confirm('정말로 회원 탈퇴를 하시겠습니까?')) {
+                fetch('/mypage/withdrawal?pw=' + password, {
+                    method: 'DELETE'
+                })
+                    .then(response => {
+                    if (response.ok) {
+                        alert('회원 탈퇴가 완료되었습니다.');
+                        window.location.href = '/logout';
+                    } else {
+                        alert('회원 탈퇴에 실패했습니다.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('회원 탈퇴 중 오류가 발생했습니다.');
+                });
+            }
+        }
+    </script>
+</head>
+<body>
+<main class="withdrawal-container">
+    <div class="withdrawal-card">
+        <h2 class="text-center">회원 탈퇴</h2>
+        <p class="text-center">회원 탈퇴를 진행하시겠습니까? 이 작업은 되돌릴 수 없습니다.</p>
+        <div class="form-group">
+            <label for="password">비밀번호</label>
+            <input type="password" class="form-control" id="password" placeholder="비밀번호를 입력해주세요">
+        </div>
+        <div class="text-center mt-3">
+            <button class="btn withdrawal-btn-danger" onclick="deleteUser()">회원 탈퇴</button>
+            <a href="/mypage" class="btn btn-secondary">취소</a>
+        </div>
+    </div>
+</main>
+</body>
+</html>
