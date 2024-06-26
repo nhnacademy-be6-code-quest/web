@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="mypageFragment ('mypage', 'profile', 'clientDeliveryAddresses')">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="mypageFragment ('mypage', 'profile', 'clientDeliveryAddresses', 'clientPhoneNumber')">
 <head>
     <meta charset="UTF-8">
     <title>Account Page</title>
@@ -15,6 +15,10 @@
 
     <div class="mypage-wrapper" th:if="${mypage != null} and ${#strings.equals(mypage, 'delivaryaddress')}">
         <div th:replace="~{view/mypage/delivaryAddress :: delivaryAddressFragment ('clientDeliveryAddresses')}"></div>
+    </div>
+
+    <div class="mypage-wrapper" th:if="${mypage != null} and ${#strings.equals(mypage, 'phoneNumber')}">
+        <div th:replace="~{view/mypage/phoneNumber :: phoneNumberFragment ('clientPhoneNumber')}"></div>
     </div>
 
     <div class="mypage-wrapper" th:if="${mypage != null} and ${#strings.equals(mypage, 'withdrawal')}">
