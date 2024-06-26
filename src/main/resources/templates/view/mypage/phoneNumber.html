@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="phoneNumberFragment ('clientPhoneNumber')">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        .mypage-phone-number-header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .mypage-phone-number-add-btn {
+            background-color: #007BFF; /* Blue */
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            font-size: 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .mypage-phone-number-add-btn:hover {
+            background-color: #0056b3; /* Darker Blue */
+        }
+    </style>
+    <script>
+        function deleteNumber(phoneId) {
+            if (confirm('해당 번호를 삭제하시겠습니까?')) {
+                fetch(`/mypage/phone/` + phoneId, {
+                    method: 'DELETE'
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            location.reload();
+                        } else {
+                            alert('Failed to delete the phone number.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while deleting the phone number..');
+                    });
+            }
+        }
+    </script>
+</head>
+<body>
+
+<main class="main-content flex-grow-1" style="padding-top: 50px; padding-bottom: 50px;">
+    <div class="container mx-auto max-w5xl">
+        <div class="card shadow-sm">
+            <h1 class="text-2xl font-bold">Phone Numbers</h1>
+        </div>
+        <div class="card-body">
+            <div class="mb-4">
+                <div class="mypage-phone-number-header-container">
+                    <h2 class="text-lg font-semibold" style="display: inline-block">연락처</h2>
+                    <div class="mypage-phone-number-add-btn" data-bs-toggle="modal" data-bs-target="#addPhoneNumberModal"> Add + </div>
+                </div>
+                <div class="mb-3" th:each="number : ${clientPhoneNumber}">
+                    <label>Number</label>
+                    <button class="btn btn-secondary" style="font-size: 12px;" th:onclick="|deleteNumber('${number.clientNumberId}')|"> Del - </button>
+                    <textarea class="form-control" th:text="${number.clientPhoneNumber}" style="resize: none" readonly></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+</body>
+
+<div class="modal fade" id="addPhoneNumberModal" tabindex="-1" aria-labelledby="addPhoneNumberModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addAddressModalLabel">Add Number</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="/mypage/phone" method="post">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>핸드폰 번호</label>
+                        <input type="text" class="form-control" name="phoneNumber" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');" required />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    <button type="submit" class="btn btn-primary">저장</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</html>

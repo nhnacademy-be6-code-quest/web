@@ -3,13 +3,16 @@ package com.nhnacademy.codequestweb.service.mypage;
 import com.nhnacademy.codequestweb.client.auth.UserClient;
 import com.nhnacademy.codequestweb.request.auth.ClientRegisterRequestDto;
 import com.nhnacademy.codequestweb.request.mypage.ClientRegisterAddressRequestDto;
+import com.nhnacademy.codequestweb.request.mypage.ClientRegisterPhoneNumberRequestDto;
 import com.nhnacademy.codequestweb.response.auth.ClientRegisterResponseDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientDeliveryAddressResponseDto;
+import com.nhnacademy.codequestweb.response.mypage.ClientPhoneNumberResponseDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientPrivacyResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.List;
@@ -41,5 +44,17 @@ public class MyPageService {
 
     public ResponseEntity<String> deleteClient(HttpHeaders headers) {
         return client.deleteClient(headers);
+    }
+
+    public ResponseEntity<List<ClientPhoneNumberResponseDto>> getPhoneNumbers(HttpHeaders headers) {
+        return client.getPhoneNumber(headers);
+    }
+
+    public ResponseEntity<String> registerPhoneNumbers(HttpHeaders headers, @RequestBody ClientRegisterPhoneNumberRequestDto clientRegisterPhoneNumberDto) {
+        return client.registerPhoneNumber(headers, clientRegisterPhoneNumberDto);
+    }
+
+    public ResponseEntity<String> deletePhoneNumber(HttpHeaders headers, Long phoneNumberId) {
+        return client.deletePhoneNumber(headers, phoneNumberId);
     }
 }
