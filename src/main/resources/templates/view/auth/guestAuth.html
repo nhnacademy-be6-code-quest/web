@@ -52,8 +52,8 @@
     <br>
     <br>
     <div class="cont">
-        <form id = "loginForm" class="form sign-in" action="/login" method="post">
-            <h2>로 그 인</h2>
+        <form id = "loginForm" class="form sign-in" action="/guest/login" method="post">
+            <h2>비회원 로 그 인</h2>
             <label>
                 <span >Email</span>
                 <input type="email" name="clientEmail" required="required" />
@@ -80,7 +80,7 @@
                 </div>
             </div>
             <form id="registerForm" class="form sign-up" action="/register" method="post">
-                <h2>회 원 가 입</h2>
+                <h2>비회원 회 원 가 입</h2>
                 <label>
                     <span>Nickname</span>
                     <input type="text" name="clientName" th:value="${prev_data != null ? prev_data.clientName : ''}" />
@@ -96,14 +96,6 @@
                 <label>
                     <span>Confirm Password</span>
                     <input id="confirm-password" type="password" th:value="${prev_data != null ? prev_data.clientPassword : ''}" />
-                </label>
-                <label>
-                    <span>Birthday</span>
-                    <input type="date" name="clientBirth" th:value="${prev_data != null ? prev_data.clientBirth : ''}" />
-                </label>
-                <label>
-                    <span>Phone Number</span>
-                    <input type="tel" name="clientPhoneNumber" th:value="${prev_data != null ? prev_data.clientPhoneNumber : ''}" />
                 </label>
                 <button type="submit" class="submit">Sign Up</button>
                 <span th:if="${register_message != null}" class="error-message" th:text="${register_message}" />
@@ -130,16 +122,16 @@
         confirm_password.onkeyup = validatePassword;
     </script>
 
-<script>
-    document.querySelector('.img__btn').addEventListener('click', function() {
-        const container = document.querySelector('.cont');
-        container.classList.toggle('s--signup');
-        if (container.classList.contains('s--signup')) {
-            container.style.height = '900px';
-        } else {
-            container.style.height = '550px';
-        }
-    });
-</script>
+    <script>
+        document.querySelector('.img__btn').addEventListener('click', function() {
+            const container = document.querySelector('.cont');
+            container.classList.toggle('s--signup');
+            if (container.classList.contains('s--signup')) {
+                container.style.height = '900px';
+            } else {
+                container.style.height = '550px';
+            }
+        });
+    </script>
 </section>
 </html>
