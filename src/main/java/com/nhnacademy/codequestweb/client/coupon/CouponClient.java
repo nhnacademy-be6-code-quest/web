@@ -5,21 +5,18 @@ import com.nhnacademy.codequestweb.response.coupon.CouponResponseDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-@FeignClient(name = "couponClient", url = "http://localhost:8006")
+@FeignClient(name = "couponClient", url = "http://localhost:8001")
 public interface CouponClient {
 
     @GetMapping("/api/coupon")
-    List<CouponResponseDto> viewCoupons(@RequestHeader HttpHeaders httpHeaders);
+    List<CouponResponseDto> viewCoupons(@RequestHeader HttpHeaders headers);
 
     @PostMapping("/api/coupon/register/{couponPolicyId}")
     ResponseEntity<CouponRequestDto> saveCoupon(@PathVariable long couponPolicyId, @RequestBody CouponRequestDto couponRequestDto);
+    // @RequestBody : Object -> Json
+
 }

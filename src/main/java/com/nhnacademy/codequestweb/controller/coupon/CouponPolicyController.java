@@ -4,12 +4,15 @@ import com.nhnacademy.codequestweb.domain.DiscountType;
 import com.nhnacademy.codequestweb.request.coupon.CouponPolicyRequestDto;
 import com.nhnacademy.codequestweb.response.coupon.CouponPolicyResponseDto;
 import com.nhnacademy.codequestweb.service.coupon.CouponPolicyService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.bind.BindResult;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,8 +39,9 @@ public class CouponPolicyController {
         return "/view/coupon/admin_policy_register";
     }
     @PostMapping("/api/coupon/policy/register")
-    public String registerPolicy(@ModelAttribute CouponPolicyRequestDto couponPolicyRequestDto){
+    public String registerPolicy(@Valid @ModelAttribute CouponPolicyRequestDto couponPolicyRequestDto){
         couponPolicyService.savePolicy(couponPolicyRequestDto);
-        return "redirect:/admin/coupon/policy";
+        return "redirect:/api/coupon/policy";
     }
+
 }
