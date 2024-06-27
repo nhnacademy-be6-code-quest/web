@@ -1,25 +1,32 @@
 package com.nhnacademy.codequestweb.controller.admin;
 
 
-import com.nhnacademy.codequestweb.client.product.bookProduct.BookProductRegisterClient;
-import com.nhnacademy.codequestweb.request.bookProduct.BookProductRegisterRequestDto;
-import com.nhnacademy.codequestweb.response.product.AladinBookListResponseDto;
-import com.nhnacademy.codequestweb.response.product.AladinBookResponseDto;
-import com.nhnacademy.codequestweb.response.product.BookProductRegisterResponseDto;
-import com.nhnacademy.codequestweb.response.product.Category;
-import com.nhnacademy.codequestweb.response.product.CategoryGetResponseDto;
-import com.nhnacademy.codequestweb.response.product.Tag;
-import com.nhnacademy.codequestweb.response.product.TagGetResponseDto;
-import com.nhnacademy.codequestweb.service.admin.BookProductRegisterService;
-import com.nhnacademy.codequestweb.service.admin.CategoryRegisterService;
-import java.util.ArrayList;
+import com.nhnacademy.codequestweb.request.product.bookProduct.BookProductRegisterRequestDto;
+import com.nhnacademy.codequestweb.request.product.bookProduct.BookProductUpdateRequestDto;
+import com.nhnacademy.codequestweb.response.product.book.AladinBookResponseDto;
+import com.nhnacademy.codequestweb.response.product.common.ProductRegisterResponseDto;
+import com.nhnacademy.codequestweb.response.product.common.ProductUpdateResponseDto;
+import com.nhnacademy.codequestweb.service.product.BookProductService;
+import jakarta.validation.Valid;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,17 +37,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequiredArgsConstructor
 @RequestMapping("/admin/products/book")
 public class BookController {
-    private final BookProductRegisterService bookProductRegisterService;
+    private final BookProductService bookProductService;
 
+    private final MessageSource messageSource;
+
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
+    }
 
     @GetMapping("/register")
     public String registerForm(Model model){
-        List<CategoryGetResponseDto> categoryList = bookProductRegisterService.getCategories().getBody();
-        model.addAttribute("categoryList", categoryList);
-        log.warn("categoryList: {}", categoryList);
 
-        List<TagGetResponseDto> tagList = bookProductRegisterService.getTags().getBody();
-        model.addAttribute("tagList", tagList);
         model.addAttribute("view", "bookProductRegisterForm");
 
         return "index";
@@ -49,24 +57,67 @@ public class BookController {
     //register form 외에서는 호출 불가함. 자바스크립트로 통제해놓음
     @GetMapping
     @RequestMapping("/aladinList")
-    public String getAladinBookList(@RequestParam("title")String title, Model model) {
-        log.error("test called + title : {}", title);
-        ResponseEntity<AladinBookListResponseDto> aladinBookListResponseDtoResponseEntity = bookProductRegisterService.getBookList(title);
+    public String getAladinBookList(@RequestParam(name = "page", required = false)Integer page, @RequestParam("title")String title, Model model) {
 
-        AladinBookListResponseDto aladinBookListResponseDto = aladinBookListResponseDtoResponseEntity.getBody();
-        if (aladinBookListResponseDto != null) {
-            List<AladinBookResponseDto> bookList = aladinBookListResponseDto.getBooks();
-            model.addAttribute("bookList", bookList);
+        ResponseEntity<Page<AladinBookResponseDto>> aladinBookPageResponse = bookProductService.getBookList(page, title);
+
+        Page<AladinBookResponseDto> aladinBooks = aladinBookPageResponse.getBody();
+        if(aladinBooks != null){
+            long totalElements = aladinBooks.getTotalElements();
+            int totalPages = aladinBooks.getTotalPages();
+            if (totalPages != 0){
+                List<AladinBookResponseDto> aladinBookList = aladinBooks.getContent();
+                model.addAttribute("bookList", aladinBookList);
+                Set<Integer> pageNumSet = new LinkedHashSet<>();
+                for (int i = 1; i <= totalPages; i++){
+                    if (i == 1 || (page - 2 <= i && i <= page + 2) || i == totalPages){
+                        pageNumSet.add(i);
+                    }
+                }
+                model.addAttribute("pageNumSet", pageNumSet);
+            } else {
+                model.addAttribute("emptyListImg", "");
+            }
+            if (totalElements == 100){
+                model.addAttribute("warning", true);
+            }
+        }else {
+            model.addAttribute("emptyListImg", "");
+            model.addAttribute("view","error");
+            return "index";
         }
 
+        log.info("page : {}, size: {} , tatal page : {}, total elements : {}", page, aladinBooks.getSize(), aladinBooks.getTotalPages(), aladinBooks.getTotalElements());
+
+        model.addAttribute("title",title);
         return "view/admin/aladinBookList";
     }
 
 
     @PostMapping("/register")
-    public String saveBook(@ModelAttribute BookProductRegisterRequestDto dto){
-        log.info("add book called save book");
-        ResponseEntity<BookProductRegisterResponseDto> responseEntity = bookProductRegisterService.saveBook(dto);
+    public String saveBook(@ModelAttribute @Valid BookProductRegisterRequestDto dto, BindingResult bindingResult){
+        log.error("product name : {},", dto.productName());
+        log.error("isbn 13: {}", dto.isbn13());
+        log.error("isbn 10: {}", dto.isbn());
+        if (bindingResult.hasErrors()){
+            StringBuilder stringBuilder = new StringBuilder();
+            List<ObjectError> errors = bindingResult.getAllErrors();
+            for (ObjectError error : errors){
+                String errorCode = error.getCode();
+                log.error("errorCode : {}, locale : {}", errorCode, LocaleContextHolder.getLocale());
+                String errorMessage = messageSource.getMessage(Objects.requireNonNull(errorCode), null, error.getDefaultMessage(), LocaleContextHolder.getLocale());
+                stringBuilder.append(errorMessage);
+            }
+            throw new RuntimeException("errors : " + stringBuilder.toString());
+        }
+        ResponseEntity<ProductRegisterResponseDto> responseEntity = bookProductService.saveBook(dto);
+        return "redirect:/";
+    }
+
+    @PostMapping("/update")
+    public String updateBook(@ModelAttribute @Valid BookProductUpdateRequestDto dto){
+        log.info("update book called save book");
+        ResponseEntity<ProductUpdateResponseDto> responseEntity = bookProductService.updateBook(dto);
         log.info("status code : {}",responseEntity.getStatusCode().value());
         return "redirect:/";
     }

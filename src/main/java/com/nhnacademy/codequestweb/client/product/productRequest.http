@@ -22,11 +22,17 @@ Content-Type: application/json
 }
 
 ###
-POST localhost:8080/admin/categories
+POST localhost:8080/admin/categories/register?categoryName=카테고리123
+Cookie: access=1; refresh=2;
+
+
+
+###
+POST localhost:8001/api/product/admin/tags/register
 Content-Type: application/json
 
 {
-  "categoryName": "카테고리3"
+  "tagName" : "tagTag1"
 }
 
 ###

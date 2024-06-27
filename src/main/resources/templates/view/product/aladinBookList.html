@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .book-button {
+        display: flex;
+        align-items: center;
+        border: 1px solid bisque;
+        background: none;
+        padding: 10px;
+        cursor: pointer;
+        width: 550px;
+        }
+
+        .book-info {
+        display: flex;
+        flex-direction: column;
+        margin-left: 30px;
+        text-align: left;
+        }
+
+        .book-info span {
+        margin-bottom: 5px;
+        }
+
+        .book-container {
+        width: 530px;
+        display: flex; /* Flexbox를 사용하여 요소들을 배치합니다 */
+        align-items: center; /* 요소들을 수직 가운데 정렬합니다 */
+        padding: 10px; /* 각 요소 주위에 여백을 줍니다 */
+        border: 1px solid bisque; /* 네모 테두리를 추가합니다 */
+        background-color: bisque;
+        border-radius: 5px; /* 모서리를 둥글게 만듭니다 */
+        }
+
+         .pagination-container {
+             text-align: center; /* 컨테이너를 가운데 정렬 */
+         }
+        .pagination-form {
+            display: inline-block; /* 폼을 인라인 블록으로 배치 */
+            margin: 5px; /* 각 폼 간의 간격 */
+        }
+    </style>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        if (!window.opener || window.opener.location.href !== 'http://localhost:8080/admin/products/book/register') {
+            alert('잘못된 접근입니다.');
+            if(!window.opener){
+                history.go(-1);
+            }else{
+                window.close(); // 자식 창 닫기 예시
+            }
+        }
+
+        function sendSelectedBookTitle(title, Author, publisher, cover, pubDate, isbn, isbn13, priceStandard) {
+
+            const data = {
+                title: title,
+                author: Author,
+                publisher: publisher,
+                cover: cover,
+                pubDate: pubDate,
+                isbn: isbn,
+                isbn13: isbn13,
+                priceStandard: priceStandard
+            };
+
+            for (const [key, value] of Object.entries(data)) {
+                window.opener.postMessage({ type: key, data: value }, '*');
+            }
+
+            //버튼 클릭시 창 종료.
+            window.close();
+        }
+        /*]]>*/
+    </script>
+</head>
+<body>
+<div th:if="${warning}"><span th:text="'100개라 원하는 책이 없을 수 있습니다. 더 상세히 적어서 검색하세요'"></span></div>
+<div th:each="book : ${bookList}">
+
+
+    <div>
+        <button
+                type="button"
+                class="book-button"
+                th:bookTitle="${book.title}"
+                th:author="${book.author}"
+                th:publisher="${book.publisher}"
+                th:cover="${book.cover}"
+                th:temp="${book.pubDate}"
+                th:isbn="${book.isbn}"
+                th:isbn13="${book.isbn13}"
+                th:priceStandard="${book.priceStandard}"
+                onclick="sendSelectedBookTitle(
+            this.getAttribute('bookTitle'),
+            this.getAttribute('author'),
+            this.getAttribute('publisher'),
+            this.getAttribute('cover'),
+            this.getAttribute('temp'),
+            this.getAttribute('isbn'),
+            this.getAttribute('isbn13'),
+            this.getAttribute('priceStandard')
+        );"
+        >
+            <div class="book-container">
+
+                <img th:src="${book.cover}" alt="" width="80px" height="120px">
+                <div class="book-info">
+                    <span th:text="'제목: ' + ${book.title}"></span>
+                    <span th:text="'출판사: ' + ${book.publisher}"></span>
+                    <span th:text="'작가: ' + ${book.author}"></span>
+                    <span th:text="'정가: ' + ${book.priceStandard}"></span>
+                    <span th:text="'알라딘 판매가(할인가): ' + ${book.priceSales}"></span>
+                </div>
+            </div>
+        </button>
+    </div>
+</div>
+<div class="pagination-container">
+    <span th:each="page : ${pageNumSet}">
+        <form action="/admin/products/book/aladinList" method="get" target="_self" class="pagination-form">
+            <input type="hidden" name="title" th:value="${title}">
+            <input type="hidden" name="page" th:value="${page}">
+            <input type="submit" th:value="${page}">
+        </form>
+    </span>
+</div>
+</body>
+</html>

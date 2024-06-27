@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="bookProductRegisterFragment ()">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Title</title>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+
+        function formValidation(event){
+            event.preventDefault(); // 폼 제출을 막음
+
+            // 여기서 추가적인 처리를 수행할 수 있음
+
+            // 폼을 제출하거나 다른 동작을 수행하도록 원하는 경우
+            var title = document.getElementById('title').value;
+            var productName = document.getElementById('productName').value;
+            var priceSales = document.getElementById('priceSales').value;
+            var inventory = document.getElementById('productInventory').value;
+
+            if (!title) {
+                alert('도서를 선택하세요.');
+                return; // 유효하지 않으면 제출하지 않음
+            }
+            if (inventory < 0){
+                alert('재고는 음수일 수 없습니다.');
+                return; // 유효하지 않으면 제출하지 않음
+            }
+            if (priceSales < 0){
+                alert('판매가는 음수일 수 없습니다.');
+                return; // 유효하지 않으면 제출하지 않음
+            }
+            if (!productName){
+                alert('상품명을 입력하세요.');
+                return; // 유효하지 않으면 제출하지 않음
+            }
+            event.target.submit(); // 폼 제출
+
+        }
+
+
+
+        function openNewWindowWithParam() {
+            // 파라미터 값을 가져옵니다 (여기서는 input의 값을 사용합니다)
+            var inputValue = document.getElementById("inputValue").value;
+
+            if (inputValue.trim() === '') {
+                // 값이 비어있을 경우 메시지 표시
+                document.getElementById('errorMessage').innerText = '값을 입력하세요';
+                return;
+            }
+
+            var newWindowWidth = 600;  // 새 창의 너비
+            var newWindowHeight = 750; // 새 창의 높이
+
+            var availWidth = screen.availWidth;
+            var availHeight = screen.availHeight;
+            var left = Math.max(0, (availWidth - newWindowWidth) / 2);
+            var top = Math.max(0, (availHeight - newWindowHeight) / 2);
+
+            // URL에 포함될 파라미터 문자열 생성
+            var url = "/admin/products/book/aladinList?title=" + encodeURIComponent(inputValue);
+
+            // 새 창 열기
+            var newWindow = window.open(url, "_blank", "width=" + newWindowWidth + ",height=" + newWindowHeight + ",top=" + top + ",left=" + left);
+
+
+            newWindow.focus();
+
+
+
+
+            window.addEventListener('message', function(event) {
+                // 자식 창이 보낸 메시지 처리
+                switch (event.data.type){
+                    case 'title':
+                        document.getElementById('title').value = event.data.data;
+                        break;
+                    case 'author':
+                        document.getElementById('author').value = event.data.data;
+                        break;
+                    case 'publisher':
+                        document.getElementById('publisher').value = event.data.data;
+                        break;
+                    case 'cover':
+                        document.getElementById('cover').src = event.data.data; // Assuming you want to set the source of an image element
+                        document.getElementById('coverURL').value = event.data.data; // Assuming you want to set the source of an image element
+                        break;
+                    case 'pubDate':
+                        if(event.data.data !== null){
+                            const date = new Date(event.data.data);
+                            // LocalDate 형식으로 변환 (yyyy-MM-dd)
+                            const localDate = date.toISOString().split('T')[0];
+                            document.getElementById('pubDate').value = localDate;
+                        }else{
+                            document.getElementById('pubDate').value = null;
+                        }
+                        break;
+                    case 'isbn':
+                        document.getElementById('isbn').value = event.data.data;
+                        break;
+                    case 'isbn13':
+                        document.getElementById('isbn13').value = event.data.data;
+                        break;
+                    case 'priceStandard':
+                        document.getElementById('priceStandard').value = event.data.data;
+                        break;
+                    default:
+                        console.warn('Unhandled event type:', event.data.type);
+                }
+            });
+        }
+        function calculateDiscount() {
+            let priceStandard = parseFloat(document.getElementById('priceStandard').value);
+            let priceSales = parseFloat(document.getElementById('priceSales').value);
+
+            // 정가와 판매가가 비어있지 않은 경우에만 할인율 계산
+            if (!isNaN(priceStandard) && !isNaN(priceSales) && priceStandard !== 0) {
+                let discount = (1 - (priceSales / priceStandard)) * 100;
+
+                // 할인율이 NaN이거나 Infinity인 경우 처리
+                if (isNaN(discount) || !isFinite(discount)) {
+                    discount = 0; // 기본값 0으로 설정
+                }
+
+                document.getElementById('discount').value = discount.toFixed(2); // 소수점 둘째자리까지 표시
+            } else {
+                // 정가나 판매가가 비어있는 경우 할인율 input을 비움
+                document.getElementById('discount').value = 0;
+            }
+        }
+        /*]]>*/
+    </script>
+</head>
+<body>
+<label for="inputValue">Input Value:</label>
+<input type="text" id="inputValue" name="inputValue" required>
+<button onclick="openNewWindowWithParam()">Open New Window</button>
+<div id="errorMessage" style="color: red;"></div>
+
+<form action="/admin/products/book/register" id="bookProductRegister" method="post" onsubmit="formValidation(event)">
+    <label for="title">제목 </label><input type="text" name="title" id="title" readonly/><br>
+    <label for="author">작가 </label><input type="text" id="author" name="author" th:text="'hello world author'" readonly/><br>
+    <label for="publisher">출판사 </label><input type="text" name="publisher" id="publisher" readonly/><br>
+    <input type="image" id="cover" src="https://i.postimg.cc/fbT2n5jH/Pngtree-man-face-6836758.png" style="cursor: default;" width="300px" height="420px" readonly/><br>
+    <input type="hidden" name="cover" id="coverURL" readonly/><br>
+    <label for="pubDate">출판일 </label><input type="text" name="pubDate" id="pubDate" readonly/><br>
+    <input type="hidden" name="isbn" id="isbn" readonly/><br>
+    <input type="hidden" name="isbn13" id="isbn13" readonly/><br>
+    <label for="productName">상품명 </label><input type="text" name="productName" id="productName"/><br>
+    <label for="priceStandard">정가 </label><input type="number" name="productPriceStandard" id="priceStandard" readonly/><br>
+    <label for="priceSales">판매가 </label><input type="number" name="productPriceSales" id="priceSales" onchange="calculateDiscount()" required/><br>
+    <label for="discount">할인율 </label><input type="number" name="discount" id="discount" readonly/><br>
+    <label>
+        포장 가능 여부
+        <input type="radio" name="packable" value="true">
+    </label><span th:text="가능"></span>
+    <label>
+        <input type="radio" name="packable" value="false" checked>
+    </label><span th:text="불가능"></span>
+    <input type="number" name="productInventory" id="productInventory" placeholder="재고" th:default="0">
+    <input type="text" name="productDescription" id="productDescription" placeholder="설명">
+
+    <div th:each="tag : ${tagList}">
+        <label>
+            <input type="checkbox" name="tags" th:value="${tag.tagName}"/>
+            <span th:text="${tag.tagName}"></span>
+        </label>
+    </div>
+    <div th:each="category : ${categoryList}">
+        <label>
+            <input type="checkbox" name="categories" th:value="${category.categroyName()}"/>
+            <span th:text="${category.categoryName()}"></span>
+        </label>
+    </div>
+
+    <button type="submit">등록</button>
+
+</form>
+</body>
+</html>

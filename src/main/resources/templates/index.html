@@ -29,13 +29,13 @@
     <div th:replace="~{view/mypage/mypage :: mypageFragment ('mypage', 'profile', 'delivaryaddress','clientPhoneNumber')}"></div>
 </div>
 <div th:if="${view != null} and ${#strings.equals(view, 'bookProductRegisterForm')}">
-    <section th:replace="~{view/admin/bookProductRegisterForm.html :: bookProductRegisterFragment}"></section>
+    <section th:replace="~{view/product/bookProductRegisterForm.html :: bookProductRegisterFragment}"></section>
 </div>
 <div th:if="${view != null} and ${#strings.equals(view, 'categoryRegisterForm')}">
-    <section th:replace="~{view/admin/categoryRegisterForm.html :: categoryRegisterFragment}"></section>
+    <section th:replace="~{view/product/categoryRegisterForm.html :: categoryRegisterFragment}"></section>
 </div>
 <div th:if="${view != null} and ${#strings.equals(view, 'tagRegisterForm')}">
-    <section th:replace="~{view/admin/tagRegisterForm.html :: tagRegisterFragment}"></section>
+    <section th:replace="~{view/product/tagRegisterForm.html :: tagRegisterFragment}"></section>
 </div>
 
 
