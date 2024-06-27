@@ -1,28 +1,23 @@
 package com.nhnacademy.codequestweb.controller.coupon;
 
-import com.nhnacademy.codequestweb.client.auth.UserClient;
 import com.nhnacademy.codequestweb.domain.Status;
 import com.nhnacademy.codequestweb.request.coupon.CouponRequestDto;
+import com.nhnacademy.codequestweb.response.coupon.ClientCouponPaymentResponseDto;
 import com.nhnacademy.codequestweb.response.coupon.CouponResponseDto;
 import com.nhnacademy.codequestweb.response.coupon.CouponTypeResponseDto;
-import com.nhnacademy.codequestweb.service.coupon.CouponPolicyService;
+import com.nhnacademy.codequestweb.service.coupon.ClientCouponService;
 import com.nhnacademy.codequestweb.service.coupon.CouponService;
 import com.nhnacademy.codequestweb.service.coupon.CouponTypeService;
-import com.nhnacademy.codequestweb.response.coupon.ClientCouponPaymentResponseDto;
-import com.nhnacademy.codequestweb.service.coupon.ClientCouponService;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -62,7 +57,7 @@ public class CouponController {
     }
 
     @GetMapping("/api/coupon/register/{couponPolicyId}")
-    public String saveCouponView(Model model, @PathVariable long couponPolicyId, HttpSession httpSession){
+    public String saveCouponView(Model model, @PathVariable long couponPolicyId){
         List<CouponTypeResponseDto> couponTypes = couponTypeService.getAllCouponTypes();
 
         List<Status> statuses = List.of(Status.AVAILABLE, Status.USED,Status.UNAVAILABLE);
