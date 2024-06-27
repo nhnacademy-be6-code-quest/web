@@ -13,8 +13,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface PaymentClient {
 
     @PostMapping
-    void createPayment(@RequestBody PaymentRequestDto paymentRequestDto);
+    void savePayment(@RequestBody PaymentRequestDto paymentRequestDto);
 
     @GetMapping("/{paymentId}")
     ResponseEntity<PaymentResponseDto> findByPaymentId(@PathVariable Long paymentId);
+
+    @GetMapping("/api/client/order/{orderId}/payment")
+    long findTotalPriceByOrderId(@PathVariable Long orderId);
 }
