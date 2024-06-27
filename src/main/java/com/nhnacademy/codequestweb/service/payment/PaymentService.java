@@ -2,6 +2,7 @@ package com.nhnacademy.codequestweb.service.payment;
 
 import com.nhnacademy.codequestweb.client.payment.PaymentClient;
 import com.nhnacademy.codequestweb.request.payment.PaymentRequestDto;
+import com.nhnacademy.codequestweb.response.payment.OrderPaymentResponseDto;
 import com.nhnacademy.codequestweb.response.payment.PaymentResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,7 @@ public class PaymentService {
         return paymentClient.findByPaymentId(paymentId);
     }
 
-    public long findTotalPriceByOrderId(Long orderId) {
-        return paymentClient.findTotalPriceByOrderId(orderId);
+    public OrderPaymentResponseDto findOrderPaymentResponseDtoByOrderId(long orderId) {
+        return paymentClient.findOrderPaymentResponseDtoByOrderId(orderId);
     }
 }

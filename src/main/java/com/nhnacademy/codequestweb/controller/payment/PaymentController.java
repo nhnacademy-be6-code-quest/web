@@ -2,6 +2,7 @@ package com.nhnacademy.codequestweb.controller.payment;
 
 import com.nhnacademy.codequestweb.request.payment.PaymentRequestDto;
 import com.nhnacademy.codequestweb.response.coupon.CouponResponseDto;
+import com.nhnacademy.codequestweb.response.payment.OrderPaymentResponseDto;
 import com.nhnacademy.codequestweb.response.payment.PaymentResponseDto;
 import com.nhnacademy.codequestweb.service.coupon.CouponService;
 import com.nhnacademy.codequestweb.service.order.OrderService;
@@ -41,6 +42,7 @@ public class PaymentController {
         headers.set("access", CookieUtils.getCookieValue(httpServletRequest, "access"));
         headers.set("refresh", CookieUtils.getCookieValue(httpServletRequest, "refresh"));
         long clientId = Long.valueOf(new HttpHeaders().getFirst(ID_HEADER));
+
         List<CouponResponseDto> coupons = couponService.findClientCoupon(Long.valueOf(clientId));
         model.addAttribute("coupons", coupons);
 
@@ -50,9 +52,8 @@ public class PaymentController {
         model.addAttribute("remainingPoint", remainingPoint);
 
 //        주문에서 받아 올 것
-        long totalPrice = paymentService.findTotalPriceByOrderId(orderId);
-        model.addAttribute("totalPrice", totalPrice);
-
+        OrderPaymentResponseDto orderPaymentResponseDto = paymentService.findOrderPaymentResponseDtoByOrderId(orderId);
+        model.addAttribute("orderPaymentResponseDto", orderPaymentResponseDto);
 
         /*
             내가 표현해야 할 것
@@ -66,10 +67,10 @@ public class PaymentController {
                 : @PathVariable long orderId
 
                 orderId를 통해 가져 와야 할 것.
-                : shippingFeeOfOrderDate (주문 당시 배송비), ProductOrderDetailDto (상품 주문 상세)
+                : totalPrice (총 주문 금액), List<ProductOrderDetailDto> (상품 주문 상세)
 
                 ProductOrderDetailDto 에 필요한 것
-                : productId (특정 상품 쿠폰 적용 위해), productCategoryId (특정 카테고리 쿠폰 적용 위해)
+                : productId (특정 상품 쿠폰 적용 위해), quantity, pricePerProduct, <상품 쪽에 API 요청해야 함>productCategoryId (특정 카테고리 쿠폰 적용 위해)
 
                     - 2-1. 쿠폰 관련 정보 가져오기
 
