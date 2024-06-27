@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @FeignClient(name = "order", url = "http://localhost:8001")
 public interface OrderClient {
 
-    @PostMapping("/api/client/views/order")
+    @GetMapping("/api/client/views/order")
     ResponseEntity<ClientViewOrderPostResponseDto> viewOrder(ClientViewOrderPostRequestDto orderRequestDto);
 
     @PostMapping("/api/client/order")
