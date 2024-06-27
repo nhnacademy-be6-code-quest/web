@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="noPhotoReviewsFragment()">
+<head>
+  <meta charset="UTF-8">
+  <title>Reviews</title>
+  <style>
+    .review-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 20px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .review-content {
+      flex: 1;
+      padding-right: 20px;
+    }
+
+    .photo-container {
+      position: relative;
+      width: 150px;
+      height: 150px;
+    }
+
+    .photo-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .photo-count {
+      position: absolute;
+      bottom: 5px;
+      right: 5px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 2px 5px;
+      border-radius: 5px;
+    }
+
+    .modal-content img {
+      width: 100%;
+    }
+
+    .stars {
+      color: gold;
+    }
+
+    .expanded-review {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .edit-button {
+      position: absolute;
+      right: 15px;
+      bottom: 15px;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="tab-content mt-3">
+    <div class="tab-pane fade show active" id="no-photo-reviews" role="tabpanel"
+         aria-labelledby="no-photo-tab">
+      <div th:if="${reviews.content.size() == 0}">
+        <p>No reviews available.</p>
+      </div>
+      <div th:each="review : ${reviews.content}" class="review-container">
+        <div class="review-content">
+          <div class="stars" th:attr="data-score=${review.score}"></div>
+          <p>리뷰평: <span th:text="${review.content}"></span></p>
+          <p>작성일: <span
+              th:text="${#temporals.format(review.registerDate, 'yyyy-MM-dd HH:mm:ss')}"></span></p>
+          <p th:if="${review.lastModifyDate != null}">수정일: <span
+              th:text="${#temporals.format(review.lastModifyDate, 'yyyy-MM-dd HH:mm:ss')}"></span>
+          </p>
+          <p th:if="${review.lastModifyDate == null}">수정일:</p>
+          <p>클라이언트 ID: <span th:text="${review.clientId}"></span></p>
+          <p>주문 상세 ID: <span th:text="${review.orderDetailId}"></span></p>
+          <p>상품 ID: <span th:text="${review.productId}"></span></p>
+          <p>포인트: <span th:text="${review.point}"></span></p>
+        </div>
+        <button type="button" class="btn btn-primary edit-button" onclick="editNoPhotoReview(event)"
+                th:data-review-id="${review.id}">수정
+        </button>
+      </div>
+      <!-- Pagination Controls -->
+      <nav aria-label="Page navigation" th:if="${reviews.totalPages > 1}">
+        <ul class="pagination justify-content-center">
+          <li class="page-item" th:classappend="${reviews.hasPrevious()} ? '' : 'disabled'">
+            <a class="page-link"
+               th:href="@{/mypage/reviews/no-photo(page=${reviews.number - 1}, size=${reviews.size})}"
+               aria-label="Previous">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+          <li class="page-item" th:each="i : ${#numbers.sequence(1, reviews.totalPages)}"
+              th:classappend="${reviews.number + 1 == i} ? 'active'">
+            <a class="page-link"
+               th:href="@{/mypage/reviews/no-photo(page=${i - 1}, size=${reviews.size})}" th:text="${i}">1</a>
+          </li>
+          <li class="page-item" th:classappend="${reviews.hasNext()} ? '' : 'disabled'">
+            <a class="page-link"
+               th:href="@{/mypage/reviews/no-photo(page=${reviews.number + 1}, size=${reviews.size})}"
+               aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".stars").forEach(function (starContainer) {
+      const score = parseInt(starContainer.getAttribute("data-score"), 10);
+      starContainer.innerHTML = '★'.repeat(score);
+    });
+  });
+
+  function expandReview(reviewElement) {
+    const expandedReview = reviewElement.querySelector(".expanded-review");
+    const thumbnail = reviewElement.querySelector(".thumbnail");
+    const photoCount = reviewElement.querySelector(".photo-count");
+    const editButton = reviewElement.querySelector(".edit-button");
+    if (expandedReview.style.display === "none" || expandedReview.style.display === "") {
+      expandedReview.style.display = "block";
+      if (thumbnail) {
+        thumbnail.style.display = "none";
+      }
+      if (photoCount) {
+        photoCount.style.display = "none";
+      }
+      if (editButton) {
+        editButton.style.display = "none";
+      }
+    } else {
+      expandedReview.style.display = "none";
+      if (thumbnail) {
+        thumbnail.style.display = "block";
+      }
+      if (photoCount) {
+        photoCount.style.display = "block";
+      }
+      if (editButton) {
+        editButton.style.display = "block";
+      }
+    }
+  }
+
+  function editNoPhotoReview(event) {
+    event.stopPropagation();
+    const reviewId = event.currentTarget.getAttribute("data-review-id");
+    window.location.href = "/view/edit-no-photo-review/" + reviewId;
+  }
+
+  function editPhotoReview(event) {
+    event.stopPropagation();
+    const reviewId = event.currentTarget.getAttribute("data-review-id");
+    window.location.href = "/view/edit-photo-review/" + reviewId;
+  }
+</script>
+</body>
+</html>
+
