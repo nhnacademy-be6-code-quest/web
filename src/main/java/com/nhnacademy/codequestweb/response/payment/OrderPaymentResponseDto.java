@@ -1,11 +1,10 @@
 package com.nhnacademy.codequestweb.response.payment;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import java.util.List;
+import lombok.Builder;
 
-@AllArgsConstructor
-@Getter
+@Builder
 public class OrderPaymentResponseDto {
-    Long orderId;
-    Long totalPrice;
+    long totalPrice;
+    List<ProductOrderDetailResponseDto> productOrderDetailDtoList;
 }
