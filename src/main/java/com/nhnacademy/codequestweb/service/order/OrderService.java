@@ -15,8 +15,8 @@ public class OrderService {
 
     private OrderClient orderClient;
 
-    public ResponseEntity<ClientViewOrderPostResponseDto> viewOrder(ClientViewOrderPostRequestDto orderRequestDto){
-        return orderClient.viewOrder(orderRequestDto);
+    public ClientViewOrderPostResponseDto viewOrder(ClientViewOrderPostRequestDto orderRequestDto){
+        return orderClient.viewOrder(orderRequestDto).getBody();
     }
 
     public long createOrder(ClientOrderPostRequestDto clientOrderPostRequestDto){

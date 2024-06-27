@@ -30,8 +30,8 @@ public class OrderController {
     // 뷰 화면 테스트용 api입니다. 실제 서비스에서는 하위의 POST api 사용예정입니다.
     public String order(Model model, HttpServletRequest request) {
         ClientViewOrderPostRequestDto orderRequestDto = new ClientViewOrderPostRequestDto(new ArrayList<>());
-        ResponseEntity<ClientViewOrderPostResponseDto> response = orderService.viewOrder(orderRequestDto);
-        model.addAttribute("orderResponseDto", response.getBody());
+        ClientViewOrderPostResponseDto response = orderService.viewOrder(orderRequestDto);
+        model.addAttribute("orderResponseDto", response);
         model.addAttribute("clientId", 1L);
         return "view/order/order";
     }
