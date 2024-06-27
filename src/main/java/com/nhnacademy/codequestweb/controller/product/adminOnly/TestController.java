@@ -1,4 +1,4 @@
-package com.nhnacademy.codequestweb.controller.admin;
+package com.nhnacademy.codequestweb.controller.product.adminOnly;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

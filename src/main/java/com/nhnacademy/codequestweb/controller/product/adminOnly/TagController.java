@@ -1,6 +1,5 @@
-package com.nhnacademy.codequestweb.controller.admin;
+package com.nhnacademy.codequestweb.controller.product.adminOnly;
 
-import com.nhnacademy.codequestweb.request.product.PageRequestDto;
 import com.nhnacademy.codequestweb.request.product.tag.TagRegisterRequestDto;
 import com.nhnacademy.codequestweb.response.product.tag.TagGetResponseDto;
 import com.nhnacademy.codequestweb.response.product.tag.TagRegisterResponseDto;
@@ -14,7 +13,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Slf4j

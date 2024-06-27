@@ -22,8 +22,8 @@ Content-Type: application/json
 }
 
 ###
-POST localhost:8080/admin/categories/register?categoryName=카테고리123
-Cookie: access=1; refresh=2;
+POST localhost:8080/product/client/5/like
+Cookie: JSESSIONID=75E29E91D2805BC070421DEA6FE8A48F; access=eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsInV1aWQiOiIwZTA1N2MwMy1mZTBlLTQxMjgtOWNjMi01MjFmZjc4M2E0ZTgiLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWF0IjoxNzE5NDQ5ODkxLCJleHAiOjE3MTk0NTcwOTF9.FRVyK9WW0PS899EeytZlGiSQEhhOne2LlhyGQr6sA7s; refresh=eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6InJlZnJlc2giLCJ1dWlkIjoiMGUwNTdjMDMtZmUwZS00MTI4LTljYzItNTIxZmY3ODNhNGU4Iiwicm9sZSI6IlJPTEVfVVNFUiIsImlhdCI6MTcxOTQ0OTg5MSwiZXhwIjoxNzIwNjU5NDkxfQ.uxdgooiBBVV4_FTyPEBk1YV80UfshLlET_dWFZR5STc;
 
 
 

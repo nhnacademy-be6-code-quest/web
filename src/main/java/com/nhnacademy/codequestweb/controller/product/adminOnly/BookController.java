@@ -1,4 +1,4 @@
-package com.nhnacademy.codequestweb.controller.admin;
+package com.nhnacademy.codequestweb.controller.product.adminOnly;
 
 
 import com.nhnacademy.codequestweb.request.product.bookProduct.BookProductRegisterRequestDto;
@@ -23,7 +23,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;

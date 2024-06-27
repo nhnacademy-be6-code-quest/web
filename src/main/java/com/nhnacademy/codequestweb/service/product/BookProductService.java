@@ -10,6 +10,7 @@ import com.nhnacademy.codequestweb.response.product.common.ProductUpdateResponse
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -39,5 +40,9 @@ public class BookProductService {
 
     public ResponseEntity<BookProductGetResponseDto> getSingleBookInfo(long id) {
         return bookProductClient.getSingleBookInfo(id);
+    }
+
+    public ResponseEntity<Void> saveBookLike(HttpHeaders headers, long productId) {
+        return bookProductClient.saveBookProductLike(headers, productId);
     }
 }
