@@ -1,11 +1,47 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="couponFragment ('register_message', 'prev_data')">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>쿠폰 지급</title>
-    <link rel="stylesheet" href="/static/css/coupon/admin_coupon_register.css">
+    <link rel="stylesheet" href="/css/coupon/admin_coupon_register.css">
+    <script>
+        function openUserSelectWindow() {
+            window.open('/processUserSelection', 'selectUserWindow', 'width=600,height=400');
+        }
 
+        // 새 창에서 메시지 받기
+        window.addEventListener('message', function(event) {
+            if (event.origin !== window.location.origin) {
+                return;
+            }
+
+            // 전송된 데이터 받아오기
+            var data = event.data;
+            var selectedUsers = data.selectedUsers; // 선택된 사용자 배열
+            var clientIds = data.clientIds;         // 클라이언트 ID 배열
+
+            // 선택된 사용자 정보를 출력합니다
+            var selectedUsersList = document.getElementById('selectedUsersList');
+            selectedUsersList.innerHTML = ''; // 기존 목록 초기화
+
+            var selectedClientIds = []; // 클라이언트 ID 배열 초기화
+
+            selectedUsers.forEach(function(user) {
+                var listItem = document.createElement('div');
+                listItem.textContent = `ID: ${user.clientId}, Name: ${user.clientName}, Email: ${user.clientEmail}`;
+                selectedUsersList.appendChild(listItem);
+
+                // 클라이언트 ID를 배열에 추가
+                selectedClientIds.push(user.clientId);
+            });
+
+            // 선택된 클라이언트 ID들을 hidden input에 설정하여 서버로 전송
+            var clientIdInput = document.getElementById('clientIdInput');
+            clientIdInput.value = selectedClientIds.join(','); // 배열을 문자열로 변환하여 설정
+        });
+    </script>
 </head>
 <body>
 <form th:action="@{'/api/coupon/register/' + ${couponPolicyId}}" method="post">
@@ -22,16 +58,19 @@
                     <option th:each="couponType : ${couponTypes}" th:value="${couponType.couponTypeId}"
                             th:text="${couponType.couponKind}"></option>
                 </select>
+
             </div>
 
-            <div class="grid">
-                <label class="label" for="user">사용자</label>
-                <select id="user" name="clientId" class="select">
-                    <option value="">사용자 선택</option>
-                   <option th:each="client : ${clients}" th:value="${client.getClientId()}"
-                                th:text="${client.getClientName()}"></option>
-                    </select>
+            <button type="button" onclick="openUserSelectWindow()">사용자 선택</button>
+
+            <div>
+                <h3>선택된 사용자:</h3>
+                <p>사용자 이름: <span id="selectedUsersList"></span></p>
             </div>
+
+            <!-- 숨겨진 필드로 선택된 사용자의 ID와 이름을 전달 -->
+            <input type="hidden" id="clientIdInput" name="clientId" value=clientIds>
+
             <div class="grid">
                 <label class="label" for="expiration-date">만료일</label>
                 <input type="datetime-local" id="expiration-date" name="expirationDate" class="select">
@@ -44,6 +83,7 @@
                 </select>
             </div>
         </div>
+        <span th:if="${register_message != null}" class="error-message" th:text="${register_message}" />
         <button type="submit" class="button">쿠폰 지급</button>
     </div>
 </form>

@@ -4,6 +4,7 @@ import com.nhnacademy.codequestweb.client.auth.UserClient;
 import com.nhnacademy.codequestweb.request.auth.ClientRegisterRequestDto;
 import com.nhnacademy.codequestweb.request.mypage.ClientRegisterAddressRequestDto;
 import com.nhnacademy.codequestweb.request.mypage.ClientRegisterPhoneNumberRequestDto;
+import com.nhnacademy.codequestweb.request.mypage.ClientUpdatePrivacyRequestDto;
 import com.nhnacademy.codequestweb.response.auth.ClientRegisterResponseDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientDeliveryAddressResponseDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientPhoneNumberResponseDto;
@@ -56,5 +57,9 @@ public class MyPageService {
 
     public ResponseEntity<String> deletePhoneNumber(HttpHeaders headers, Long phoneNumberId) {
         return client.deletePhoneNumber(headers, phoneNumberId);
+    }
+
+    public ResponseEntity<String> updateClient(HttpHeaders headers, ClientUpdatePrivacyRequestDto clientUpdatePrivacyRequestDto) {
+        return client.updateClient(headers, clientUpdatePrivacyRequestDto);
     }
 }

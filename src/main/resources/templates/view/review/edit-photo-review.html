@@ -122,7 +122,7 @@
         body: formData
       }).then(response => {
         if (response.ok) {
-          window.location.href = "/view/photo-reviews";
+          window.location.href = "/mypage/reviews/photo";
         } else {
           alert("입력양식이 올바르지 않습니다");
         }
@@ -140,7 +140,7 @@
   }
 
   function cancelEdit() {
-    window.location.href = "/view/photo-reviews";
+    window.location.href = "/mypage/reviews/photo";
   }
 </script>
 </body>

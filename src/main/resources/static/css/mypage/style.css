@@ -1,5 +1,5 @@
 /* Custom sidebar styling */
-.mypage-wrapper {;
+.mypage-wrapper {
     background-color: #fbf9fe;
     width: 100%;
     height: 100%;
@@ -22,10 +22,10 @@
 }
 
 .mypage-sidebar {
+    display: flex;
     background-color: #2C3E50; /* Dark background color */
     padding: 20px;
     color: #fff; /* White text color */
-    display: flex;
 }
 
 .content-wrapper {

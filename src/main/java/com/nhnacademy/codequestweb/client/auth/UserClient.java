@@ -3,6 +3,7 @@ package com.nhnacademy.codequestweb.client.auth;
 import com.nhnacademy.codequestweb.request.auth.ClientRegisterRequestDto;
 import com.nhnacademy.codequestweb.request.mypage.ClientRegisterAddressRequestDto;
 import com.nhnacademy.codequestweb.request.mypage.ClientRegisterPhoneNumberRequestDto;
+import com.nhnacademy.codequestweb.request.mypage.ClientUpdatePrivacyRequestDto;
 import com.nhnacademy.codequestweb.response.auth.ClientRegisterResponseDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientDeliveryAddressResponseDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientPhoneNumberResponseDto;
@@ -47,4 +48,7 @@ public interface UserClient {
 
     @DeleteMapping("/api/client/phone")
     ResponseEntity<String> deletePhoneNumber(@RequestHeader HttpHeaders headers, @RequestParam Long phoneNumberId);
+
+    @PutMapping("/api/client")
+    ResponseEntity<String> updateClient(@RequestHeader HttpHeaders httpHeaders, @RequestBody ClientUpdatePrivacyRequestDto clientUpdatePrivacyRequestDto);
 }
