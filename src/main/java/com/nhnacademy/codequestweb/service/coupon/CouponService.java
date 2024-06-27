@@ -28,6 +28,6 @@ public class CouponService {
         return couponClient.saveCoupon(couponPolicyId, couponRequestDto);
     }
     public List<CouponResponseDto> findClientCoupon(HttpHeaders headers){
-        return couponClient.viewCoupons(headers);
+        return couponClient.viewCoupons(Long.valueOf(headers.getFirst(ID_HEADER)));
     }
 }

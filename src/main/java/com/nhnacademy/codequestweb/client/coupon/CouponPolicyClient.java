@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "couponPolicyClient", url="http://10.220.222.49:8001")
+@FeignClient(name = "couponPolicyClient", url="http://localhost:8001")
 public interface CouponPolicyClient {
 
     @GetMapping("/api/coupon/policy")

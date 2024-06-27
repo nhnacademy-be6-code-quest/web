@@ -9,11 +9,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@FeignClient(name = "couponClient", url = "http://10.220.222.49:8001")
+@FeignClient(name = "couponClient", url = "http://localhost:8001")
 public interface CouponClient {
 
     @GetMapping("/api/coupon")
-    List<CouponResponseDto> viewCoupons(HttpHeaders headers);
+    List<CouponResponseDto> viewCoupons(long clientId);
 
     @PostMapping("/api/coupon/register/{couponPolicyId}")
     ResponseEntity<CouponRequestDto> saveCoupon(@PathVariable long couponPolicyId, @RequestBody CouponRequestDto couponRequestDto);
