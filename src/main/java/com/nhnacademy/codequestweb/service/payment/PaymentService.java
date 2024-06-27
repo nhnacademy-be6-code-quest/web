@@ -1,6 +1,5 @@
 package com.nhnacademy.codequestweb.service.payment;
 
-import com.nhnacademy.codequestweb.client.order.OrderClient;
 import com.nhnacademy.codequestweb.client.payment.PaymentClient;
 import com.nhnacademy.codequestweb.request.payment.PaymentRequestDto;
 import com.nhnacademy.codequestweb.response.payment.PaymentResponseDto;
