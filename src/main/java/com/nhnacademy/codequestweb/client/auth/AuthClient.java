@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 @FeignClient(name = "auth", url = "http://localhost:8001")
 public interface AuthClient {
-    @PostMapping("/login")
+    @PostMapping("/api/login")
     ResponseEntity<TokenResponseDto> login(@RequestBody ClientLoginRequestDto clientLoginRequestDto);
-    @PostMapping("/logout")
-    ResponseEntity<?> logout(@RequestHeader HttpHeaders headers);
-    @PostMapping("/reissue")
+    @PostMapping("/api/logout")
+    ResponseEntity<String> logout(@RequestHeader HttpHeaders headers);
+    @PostMapping("/api/reissue")
     ResponseEntity<TokenResponseDto> reissue(@RequestHeader(name = "refresh") String refresh);
 }
