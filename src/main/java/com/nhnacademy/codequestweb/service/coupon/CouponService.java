@@ -20,7 +20,7 @@ public class CouponService {
     public ResponseEntity<CouponRequestDto> saveCoupon(CouponRequestDto couponRequestDto, long couponPolicyId){
         return couponClient.saveCoupon(couponPolicyId, couponRequestDto);
     }
-    public List<CouponResponseDto> findClientCoupon(HttpHeaders httpHeaders){
-        return couponClient.viewCoupons(httpHeaders);
+    public List<CouponResponseDto> findClientCoupon(long clientId){
+        return couponClient.viewCoupons(clientId);
     }
 }
