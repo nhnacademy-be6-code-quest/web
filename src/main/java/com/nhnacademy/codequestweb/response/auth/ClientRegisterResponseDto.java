@@ -11,5 +11,5 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class ClientRegisterResponseDto {
     private String clientEmail;
-    private LocalDate clientCreatedAt;
+    private LocalDateTime clientCreatedAt;
 }

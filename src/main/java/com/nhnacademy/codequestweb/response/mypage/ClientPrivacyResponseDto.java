@@ -6,8 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -17,5 +16,5 @@ public class ClientPrivacyResponseDto {
     private String clientGrade;
     private String clientEmail;
     private String clientName;
-    private LocalDateTime clientBirth;
+    private LocalDate clientBirth;
 }
