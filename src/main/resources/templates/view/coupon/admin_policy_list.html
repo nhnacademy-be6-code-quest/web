@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coupon Policies</title>
-    <link rel="stylesheet" href="/static/css/coupon/admin_policy_list.css">
+    <link rel="stylesheet" th:href="@{/css/coupon/admin_policy_list.css}">
 </head>
 <body>
 <div class="container">
@@ -25,8 +25,8 @@
         </div>
     </div>
     <!-- Pagination controls -->
-    <div class="pagination">
-        <a th:href="@{/admin/coupon/policy(page=${couponPolicies.number - 1})}" th:if="${couponPolicies.hasPrevious()}" id="prevBtn">&laquo; Previous</a>
+    <div th:if="${couponPolicies.totalPages > 1}"class="pagination">
+        <a th:href="@{/admin/coupon/policy(page=${couponPolicies.number - 1})}" th:if="${couponPolicies.hasPrevious()}"  id="prevBtn">&laquo; Previous</a>
         <a th:each="pageNum : ${#numbers.sequence(0, couponPolicies.totalPages - 1)}"
            th:classappend="${pageNum == couponPolicies.number} ? 'active'"
            th:href="@{/admin/coupon/policy(page=${pageNum})}" th:text="${pageNum + 1}">1</a>
@@ -35,7 +35,7 @@
 </div>
 <script>
     function navigateToPolicyRegistration() {
-        window.location.href = '/admin/coupon/policy/register';
+        window.location.href = '/api/coupon/policy/register';
     }
 </script>
 </body>
