@@ -51,7 +51,8 @@ public class PaymentController {
 //        Long remainingPoint = pointService.findByClientId(headers);
         model.addAttribute("remainingPoint", remainingPoint);
 
-//        주문에서 받아 올 것
+//        주문에서 받아 올 것 : totalPrice + List<ProductOrderDetailResponseDto>
+        // TODO : 추가적으로 구현해야 함.
         OrderPaymentResponseDto orderPaymentResponseDto = paymentService.findOrderPaymentResponseDtoByOrderId(orderId);
         model.addAttribute("orderPaymentResponseDto", orderPaymentResponseDto);
 
