@@ -19,9 +19,6 @@ public class CouponPolicyService {
        return couponPolicyClient.getAllCouponPolices(pageable);
     }
 
-//    public CouponPolicyResponseDto getCouponPolicy(long couponPolicyId){
-//        return couponPolicyClient.getCouponPolicy(couponPolicyId);
-//    }
     public ResponseEntity<CouponPolicyRequestDto> savePolicy(CouponPolicyRequestDto couponPolicyRequestDto){
        return couponPolicyClient.savePolicy(couponPolicyRequestDto);
     }

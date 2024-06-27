@@ -8,7 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@FeignClient(name = "auth", url = "http://localhost:8001")
+@FeignClient(name = "auth", url = "http://10.220.222.49:8001")
 public interface AuthClient {
     @PostMapping("/api/login")
     ResponseEntity<TokenResponseDto> login(@RequestBody ClientLoginRequestDto clientLoginRequestDto);
