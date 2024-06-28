@@ -20,12 +20,14 @@ public class CouponService {
     @Autowired
     private CouponClient couponClient;
 
+    private static final String ID_HEADER = "X-User-Id";
+
     public ResponseEntity<CouponRequestDto> saveCoupon(CouponRequestDto couponRequestDto, long couponPolicyId){
         log.error("{}",couponRequestDto);
 
         return couponClient.saveCoupon(couponPolicyId, couponRequestDto);
     }
     public List<CouponResponseDto> findClientCoupon(HttpHeaders headers){
-        return couponClient.viewCoupons(headers);
+        return couponClient.viewCoupons(Long.valueOf(headers.getFirst(ID_HEADER)));
     }
 }

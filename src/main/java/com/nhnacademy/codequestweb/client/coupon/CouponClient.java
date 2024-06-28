@@ -13,7 +13,7 @@ import java.util.List;
 public interface CouponClient {
 
     @GetMapping("/api/coupon")
-    List<CouponResponseDto> viewCoupons(@RequestHeader HttpHeaders headers);
+    List<CouponResponseDto> viewCoupons(long clientId);
 
     @PostMapping("/api/coupon/register/{couponPolicyId}")
     ResponseEntity<CouponRequestDto> saveCoupon(@PathVariable long couponPolicyId, @RequestBody CouponRequestDto couponRequestDto);
