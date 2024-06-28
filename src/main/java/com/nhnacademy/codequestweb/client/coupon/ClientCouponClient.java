@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
+//@FeignClient(name="clientCoupon", url="http://10.220.222.13:8001")
 @FeignClient(name="clientCoupon", url="http://localhost:8001")
 public interface ClientCouponClient {
 

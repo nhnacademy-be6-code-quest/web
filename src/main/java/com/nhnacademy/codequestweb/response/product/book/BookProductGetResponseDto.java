@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Builder;
+import lombok.Getter;
 import org.hibernate.validator.constraints.Length;
 
 @Builder

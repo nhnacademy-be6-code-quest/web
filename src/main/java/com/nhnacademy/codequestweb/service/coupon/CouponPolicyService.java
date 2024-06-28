@@ -1,7 +1,7 @@
 package com.nhnacademy.codequestweb.service.coupon;
 
 import com.nhnacademy.codequestweb.client.coupon.CouponPolicyClient;
-import com.nhnacademy.codequestweb.request.coupon.CouponPolicyRequestDto;
+import com.nhnacademy.codequestweb.request.coupon.CouponPolicyRegisterRequestDto;
 import com.nhnacademy.codequestweb.response.coupon.CouponPolicyResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,8 +19,8 @@ public class CouponPolicyService {
        return couponPolicyClient.getAllCouponPolices(pageable);
     }
 
-    public ResponseEntity<CouponPolicyRequestDto> savePolicy(CouponPolicyRequestDto couponPolicyRequestDto){
-       return couponPolicyClient.savePolicy(couponPolicyRequestDto);
+    public ResponseEntity<CouponPolicyRegisterRequestDto> savePolicy(CouponPolicyRegisterRequestDto couponPolicyRegisterRequestDto){
+       return couponPolicyClient.savePolicy(couponPolicyRegisterRequestDto);
     }
 
 }
