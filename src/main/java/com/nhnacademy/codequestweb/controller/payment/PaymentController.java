@@ -41,9 +41,8 @@ public class PaymentController {
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(httpServletRequest, "access"));
         headers.set("refresh", CookieUtils.getCookieValue(httpServletRequest, "refresh"));
-        long clientId = Long.valueOf(new HttpHeaders().getFirst(ID_HEADER));
 
-        List<CouponResponseDto> coupons = couponService.findClientCoupon(Long.valueOf(clientId));
+        List<CouponResponseDto> coupons = couponService.findClientCoupon(headers);
         model.addAttribute("coupons", coupons);
 
 //        포인트에서 받아 올 것
