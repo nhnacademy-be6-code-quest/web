@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
 
-@FeignClient(name = "noPhotoReviewClient", url = "http://localhost:8001/no-photo-reviews")
+@FeignClient(name = "noPhotoReviewClient", url = "http://10.220.222.13:8001/no-photo-reviews")
 public interface NoPhotoReviewClient {
 
     @PostMapping
