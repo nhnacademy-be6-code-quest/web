@@ -22,6 +22,8 @@
     <script th:src="@{js/plugins.js}"></script>
     <script th:src="@{js/script.js}"></script>
     <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <script type="text/javascript" th:src="@{/js/message/message.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/message/style.css}">
 </head>
 <div th:replace="~{icon/icon :: iconAsset}"></div>
 
@@ -213,7 +215,9 @@
 
         </nav>
 
-
+        <div th:if="${message}" class="message-box" id="messageBox">
+            <span> message : </span><span th:text="${message}"></span>
+        </div>
 
     </div>
 </header>

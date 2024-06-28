@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+
+        window.onload = function() {
+            let books = /*[[${books}]]*/ [];
+            books.forEach(book => {
+                calculateDiscount(book.bookId);
+            });
+        };
+
+        function calculateDiscount(bookId) {
+            let priceStandard = parseFloat(document.getElementById('priceStandard-' + bookId).innerText);
+            let priceSales = parseFloat(document.getElementById('priceSales-' + bookId).innerText);
+
+            // 정가와 판매가가 비어있지 않은 경우에만 할인율 계산
+            if (!isNaN(priceStandard) && !isNaN(priceSales) && priceStandard !== 0) {
+                let discount = (1 - (priceSales / priceStandard)) * 100;
+
+                // 할인율이 NaN이거나 Infinity인 경우 처리
+                if (isNaN(discount) || !isFinite(discount)) {
+                    discount = 0; // 기본값 0으로 설정
+                }
+
+                document.getElementById('discount-' + bookId).innerText = discount.toFixed(2) + "%"; // 소수점 둘째자리까지 표시
+            } else {
+                // 정가나 판매가가 비어있는 경우 할인율 input을 비움
+                document.getElementById('discount-' + bookId).innerText = "0%";
+            }
+        }
+        /*]]>*/
+    </script>
+</head>
+<body>
+    <div th:each="book: ${books}">
+        <a th:href="'/product/books/' + ${book.bookId()}">
+            <img th:src="${book.cover()}" alt="">
+            <span th:text="'도서명 : ' + ${book.title()}"></span>
+            <span th:text="'상품명 : ' + ${book.productName()}"></span>
+            <span th:text="'isbn : ' + ${book.isbn()}"></span>
+            <span th:text="'재고 :  ' + ${book.productInventory()}"></span>
+            <span th:text="'정가 : ' + ${book.productPriceStandard()}" th:id="'priceStandard-' + ${book.bookId()}"></span>
+            <span th:text="'판매가 : ' + ${book.productPriceSales()}" th:id="'priceSales-' + ${book.bookId()}"></span>
+            <span th:text="'할인율'" th:id="'discount-' + ${book.bookId()}"></span>
+        </a>
+    </div>
+</body>
+</html>
