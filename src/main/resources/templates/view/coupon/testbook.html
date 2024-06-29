@@ -140,13 +140,13 @@
         <!-- Thymeleaf를 사용해 couponPayments를 순회하면서 각 고객 정보를 출력합니다 -->
         <!-- Thymeleaf의 경우, 데이터 바인딩은 서버 측에서 이루어집니다 -->
         <tr th:each="book : ${books}">
-            <td><input type="checkbox" name="selectedUsers" th:value="${book.bookId()} +' ' +${book.title()}+' ' + ${book.author}"></td>
-            <td th:text="${book.bookId()}"></td>
-            <td th:text="${book.title()}"></td>
-            <td th:text="${book.author()}"></td>
-            <td th:text="${book.productRegisterDate}"></td>
-            <td th:text="${book.categories}"></td>
-            <td th:text="${book.}"></td>
+            <td><input type="checkbox" name="selectedUsers" th:value="${book.productId()} +' ' +${book.productId()}"></td>
+            <td th:text="${book.productId()}"></td>
+            <td th:text="${book.productName()}"></td>
+            <td th:text="${book.productPriceSales()}"></td>
+            <td th:text="${book.productPriceStandard()}"></td>
+            <td th:text="${book.productState()}"></td>
+            <td th:text="${book.productThumbNailImage()}"></td>
         </tr>
         </tbody>
     </table>

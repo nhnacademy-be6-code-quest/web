@@ -44,14 +44,16 @@ public class CouponController {
     }
 
     @GetMapping("/processUserSelection")
-    public String view(
+    public String view(HttpServletRequest req,
             Model model, @RequestParam(defaultValue = "10") int page, @RequestParam(defaultValue = "0") int size){
 
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.set("X-User-Id","1");
-        httpHeaders.set("X-User-Role","ROLE_ADMIN");
-
-        Page<ClientCouponPaymentResponseDto> coupons = clientCouponService.getClient(httpHeaders, size, page);
+//        HttpHeaders httpHeaders = new HttpHeaders();
+//        httpHeaders.set("X-User-Id","1");
+//        httpHeaders.set("X-User-Role","ROLE_ADMIN");
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("access", CookieUtils.getCookieValue(req, "access"));
+        headers.set("refresh", CookieUtils.getCookieValue(req, "refresh"));
+        Page<ClientCouponPaymentResponseDto> coupons = clientCouponService.getClient(headers, size, page);
         model.addAttribute("couponPayments",coupons);
         return "/view/coupon/coupon_client";
     }

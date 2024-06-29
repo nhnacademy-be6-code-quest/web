@@ -2,8 +2,10 @@ package com.nhnacademy.codequestweb.service.coupon;
 
 import com.nhnacademy.codequestweb.client.coupon.ClientCouponClient;
 import com.nhnacademy.codequestweb.client.product.bookProduct.BookProductClient;
+import com.nhnacademy.codequestweb.request.product.PageRequestDto;
 import com.nhnacademy.codequestweb.response.coupon.ClientCouponPaymentResponseDto;
 import com.nhnacademy.codequestweb.response.product.book.BookProductGetResponseDto;
+import com.nhnacademy.codequestweb.test.ProductGetResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -25,12 +27,10 @@ public class ClientCouponService {
     private BookProductClient bookProductClient;
 
 
-    public Page<BookProductGetResponseDto> getAllBookPage(
-            @RequestParam(value = "page", required = false) Integer page,
-            @RequestParam(name = "sort", required = false)String sort,
-            @RequestParam(name = "desc", required = false)Boolean desc
+    public Page<ProductGetResponseDto> getAllBookPage(
+            PageRequestDto pageRequestDto
     ){
-        return bookProductClient.getAllBookPage(page,sort,desc).getBody();
+        return clientCouponClient.getAllProducts(pageRequestDto).getBody();
 
 
     }
@@ -39,4 +39,6 @@ public class ClientCouponService {
         return clientCouponClient.getCouponClient(httpHeaders, page,size).getBody();
 
     }
+
+
 }
