@@ -21,6 +21,6 @@ public interface ClientCouponClient {
 
 
     @GetMapping("/api/product/admin/page/all")
-    ResponseEntity<Page<ProductGetResponseDto>> getAllProducts(@ModelAttribute PageRequestDto pageRequestDto);
+    ResponseEntity<Page<ProductGetResponseDto>> getAllProducts(@RequestHeader HttpHeaders headers,@ModelAttribute PageRequestDto pageRequestDto);
 
 }

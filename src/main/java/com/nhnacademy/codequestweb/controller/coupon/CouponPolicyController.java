@@ -14,13 +14,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -36,13 +34,13 @@ public class CouponPolicyController {
 
 
     @GetMapping("/coupon/books")
-    public String bookView(PageRequestDto pageRequestDto, Model model){
-//
-//        HttpHeaders httpHeaders = new HttpHeaders();
-//        httpHeaders.set("X-User-Id","1");
-//        httpHeaders.set("X-User-Role","ROLE_ADMIN");
+    public String bookView( PageRequestDto pageRequestDto, Model model){
 
-        Page<ProductGetResponseDto> books = clientCouponService.getAllBookPage(pageRequestDto);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-User-Id","1");
+        headers.set("X-User-Role","ROLE_ADMIN");
+
+        Page<ProductGetResponseDto> books = clientCouponService.getAllBookPage(headers,pageRequestDto);
         model.addAttribute("books",books);
         return "/view/coupon/testbook";
     }
