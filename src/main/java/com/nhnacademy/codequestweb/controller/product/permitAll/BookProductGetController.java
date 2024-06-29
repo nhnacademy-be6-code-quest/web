@@ -37,7 +37,7 @@ public class BookProductGetController {
         ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getAllBooks(page, sort, desc);
         model.addAttribute("books", response.getBody());
 //        model.addAttribute("view", "bookPage");
-        return "/view/admin/bookPage";
+        return "/view/product/bookPage";
     }
 
     @GetMapping("/product/books/{bookId}")

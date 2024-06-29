@@ -2,12 +2,13 @@ package com.nhnacademy.codequestweb.controller.coupon;
 
 import com.nhnacademy.codequestweb.domain.DiscountType;
 import com.nhnacademy.codequestweb.request.coupon.CouponPolicyRegisterRequestDto;
+import com.nhnacademy.codequestweb.request.product.PageRequestDto;
 import com.nhnacademy.codequestweb.response.coupon.CouponPolicyResponseDto;
-import com.nhnacademy.codequestweb.response.product.book.BookProductGetResponseDto;
 import com.nhnacademy.codequestweb.response.product.productCategory.CategoryGetResponseDto;
 import com.nhnacademy.codequestweb.service.coupon.ClientCouponService;
 import com.nhnacademy.codequestweb.service.coupon.CouponPolicyService;
 import com.nhnacademy.codequestweb.service.product.CategoryService;
+import com.nhnacademy.codequestweb.test.ProductGetResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -35,18 +36,15 @@ public class CouponPolicyController {
 
 
     @GetMapping("/coupon/books")
-    public String bookView( @RequestParam(name = "page", required = false)Integer page,
-                        @RequestParam(name = "sort", required = false)String sort,
-                        @RequestParam(name = "desc", required = false)Boolean desc ,
-                        Model model){
+    public String bookView(PageRequestDto pageRequestDto, Model model){
 //
 //        HttpHeaders httpHeaders = new HttpHeaders();
 //        httpHeaders.set("X-User-Id","1");
 //        httpHeaders.set("X-User-Role","ROLE_ADMIN");
 
-        Page<BookProductGetResponseDto> books = clientCouponService.getAllBookPage(page, sort, desc);
+        Page<ProductGetResponseDto> books = clientCouponService.getAllBookPage(pageRequestDto);
         model.addAttribute("books",books);
-        return "testbook";
+        return "/view/coupon/testbook";
     }
 
     @GetMapping("/coupon/categories")
