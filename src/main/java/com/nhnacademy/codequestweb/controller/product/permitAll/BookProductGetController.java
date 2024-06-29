@@ -7,6 +7,7 @@ import com.nhnacademy.codequestweb.service.product.BookProductService;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 public class BookProductGetController {
@@ -36,15 +38,16 @@ public class BookProductGetController {
 //        }
         ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getAllBooks(page, sort, desc);
         model.addAttribute("books", response.getBody());
+        log.warn("response: {}", response.getBody().getContent());
 //        model.addAttribute("view", "bookPage");
-        return "/view/admin/bookPage";
+        return "/view/product/bookPage";
     }
 
     @GetMapping("/product/books/{bookId}")
     public String book(@PathVariable long bookId, Model model) {
         ResponseEntity<BookProductGetResponseDto> response = bookProductService.getSingleBookInfo(bookId);
         model.addAttribute("book", response.getBody());
-        return "/view/admin/singleBookInfo";
+        return "/view/product/singleBookInfo";
     }
 
     @PostMapping("/product/client/{productId}/like")
