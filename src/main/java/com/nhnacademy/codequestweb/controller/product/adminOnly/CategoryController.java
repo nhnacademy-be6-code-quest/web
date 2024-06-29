@@ -65,14 +65,19 @@ public class CategoryController {
         redirectAttributes.addFlashAttribute("message", "category saved successfully");
         return "redirect:/";
     }
-
+@GetMapping("/all")
+public String getView() {
+        return "/test/main";
+}
     @GetMapping("/categories/all")
     public String getAllCategoriesPage(@RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "desc", required = false) Boolean desc, @RequestParam(name = "sort", required = false) String sort, Model model) {
         ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getCategories(page, desc, sort);
         List<String> categoryNamePage = getCategoryPathNameList(response);
 
         model.addAttribute("categoryNamePage", categoryNamePage);
-        return "/view/product/categoryPage";
+        //return "/view/product/categoryPage";
+        return "/test/first_popup";
+
     }
 
     private String getAllCategoryPathName(CategoryGetResponseDto category) {
@@ -112,6 +117,7 @@ public class CategoryController {
 
         model.addAttribute("view", "categories");
         return "/view/product/categoryPage";
+
     }
 
     @GetMapping("/categories/sub")
@@ -119,7 +125,8 @@ public class CategoryController {
         ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getSubCategories(page, desc, sort, categoryName);
         List<String> categoryNamePage = getCategoryPathNameList(response);
         model.addAttribute("categoryNamePage", categoryNamePage);
-        return "/view/product/categoryPage";
+       // return "/view/product/categoryPage";
+        return "/test/second_popup";
     }
 
     @GetMapping("/categories/search")

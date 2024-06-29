@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Window</title>
+</head>
+<body>
+<button onclick="openFirstPopup()">Open First Popup</button>
+<p id="result"></p>
+
+<script>
+    let firstPopup;
+    let secondPopup;
+
+    function openFirstPopup() {
+        firstPopup = window.open('/categories/all', 'First Popup', 'width=600,height=400');
+    }
+
+    function receiveCategoryName(categoryName) {
+        document.getElementById('result').innerText = 'name'+ categoryName;
+        if (firstPopup) firstPopup.close();
+        if (secondPopup) secondPopup.close();
+    }
+</script>
+</body>
+</html>

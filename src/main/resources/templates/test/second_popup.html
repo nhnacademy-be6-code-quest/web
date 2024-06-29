@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Second Popup</title>
+</head>
+<body>
+<script>
+    function selectCategoryName(categoryName) {
+        opener.opener.receiveCategoryName(categoryName);
+        window.close();
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const links = document.querySelectorAll('.category-link');
+        links.forEach(function(link) {
+            link.addEventListener('click', function(event) {
+                event.preventDefault();
+                const categoryName = link.getAttribute('data-category-name');
+                selectCategoryName(categoryName);
+            });
+        });
+    });
+</script>
+
+<div th:each="categoryName : ${categoryNamePage}">
+    <a href="#" class="category-link" th:attr="data-category-name=${categoryName}">
+        <span th:text="${categoryName}"></span>
+    </a>
+</div>
+
+</body>
+</html>

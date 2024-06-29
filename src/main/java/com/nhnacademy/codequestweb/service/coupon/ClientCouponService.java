@@ -23,14 +23,13 @@ public class ClientCouponService {
     @Autowired
     private ClientCouponClient clientCouponClient;
 
-    @Autowired
-    private BookProductClient bookProductClient;
 
 
     public Page<ProductGetResponseDto> getAllBookPage(
+            HttpHeaders headers,
             PageRequestDto pageRequestDto
     ){
-        return clientCouponClient.getAllProducts(pageRequestDto).getBody();
+        return clientCouponClient.getAllProducts(headers, pageRequestDto).getBody();
 
 
     }

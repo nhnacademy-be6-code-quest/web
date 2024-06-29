@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(name = "category", url = "http://10.220.222.13:8001/api")
-//@FeignClient(name = "category", url = "http://localhost:8004/api")
+//@FeignClient(name = "category", url = "http://10.220.222.13:8001/api")
+@FeignClient(name = "category", url = "http://localhost:8004/api")
 public interface CategoryClient {
 
     @PostMapping("/product/admin/category/register")

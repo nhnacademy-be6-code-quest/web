@@ -11,7 +11,7 @@ public record CouponPolicyRegisterRequestDto(
         long discountValue,
         long minPurchaseAmount,
         long maxDiscountAmount,
-        long id,
+        Long id,
         String typeName
 ) {
 }
