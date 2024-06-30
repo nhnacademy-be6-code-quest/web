@@ -1,6 +1,7 @@
 package com.nhnacademy.codequestweb.controller.payment;
 
 import com.nhnacademy.codequestweb.response.payment.OrderPaymentResponseDto;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -9,7 +10,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
 @RequiredArgsConstructor
@@ -30,14 +30,21 @@ public class PaymentController {
 
     @GetMapping("/client/order/payment")
     public String savePayment(
-        @PathVariable long orderId, Model model,
+        // TODO: 나중에 주석 풀기 @PathVariable long orderId,
+        Model model,
         @ModelAttribute OrderPaymentResponseDto orderPaymentResponseDto) {
+
+        long payAmount = 2000L;
+        model.addAttribute("payAmount", payAmount);
+
+        String customerKey = UUID.randomUUID().toString();
+        model.addAttribute("customerKey", customerKey);
 
         return "/view/payment/checkout";
     }
 
     // 사용자에게 결제와 관련된 정보를 입력 받습니다.
     @PostMapping("client/order/payment")
-    public void savePayment(/* @PathVariable long orderId */) {
+    public void savePayment(/* TODO: 나중에 주석 풀기 @PathVariable long orderId */) {
     }
 }
