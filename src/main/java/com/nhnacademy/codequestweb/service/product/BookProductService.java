@@ -26,8 +26,8 @@ public class BookProductService {
         return bookProductClient.saveBook(bookProductRegisterRequestDto);
     }
 
-    public ResponseEntity<Page<AladinBookResponseDto>> getBookList(Integer page, String title) {
-        return bookProductClient.getBookList(page, title);
+    public ResponseEntity<Page<AladinBookResponseDto>> getBookList(HttpHeaders headers, Integer page, String title) {
+        return bookProductClient.getBookList(headers, page, title);
     }
 
     public ResponseEntity<ProductUpdateResponseDto> updateBook(BookProductUpdateRequestDto bookProductUpdateRequestDto) {

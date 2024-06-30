@@ -34,13 +34,16 @@ public class CouponPolicyController {
 
 
     @GetMapping("/coupon/books")
-    public String bookView( PageRequestDto pageRequestDto, Model model){
+    public String bookView( @RequestParam(name = "page", required = false)Integer page,
+                            @RequestParam(name = "sort", required = false)String sort,
+                            @RequestParam(name = "desc", required = false)Boolean desc ,
+                            Model model){
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-User-Id","1");
         headers.set("X-User-Role","ROLE_ADMIN");
 
-        Page<ProductGetResponseDto> books = clientCouponService.getAllBookPage(headers,pageRequestDto);
+        Page<ProductGetResponseDto> books = clientCouponService.getAllBooks(headers, page ,sort, desc);
         model.addAttribute("books",books);
         return "/view/coupon/testbook";
     }

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Category List</title>
+    <style>
+        .category-level {
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>카테고리 목록</h1>
+
+<ul>
+    <!-- Iterate over each category in categoryDetails -->
+    <th:block th:each="category : ${categoryDetails}">
+        <li>
+            <!-- Display the current category link -->
+            <a href="#" class="category-link" th:text="${category.categoryName}"></a>
+
+            <!-- Check if there is a parent category -->
+            <th:block th:if="${category.parentProductCategory != null}">
+                <!-- Display the parent category link with '>' separator -->
+                <span class="category-level">&gt;</span>
+                <a href="#" class="category-link" th:text="${category.parentProductCategory.categoryName}"></a>
+
+                <!-- Check if there is a grandparent category -->
+                <th:block th:if="${category.parentProductCategory.parentProductCategory != null}">
+                    <!-- Display the grandparent category link with '>' separator -->
+                    <span class="category-level">&gt;</span>
+                    <a href="#" class="category-link" th:text="${category.parentProductCategory.parentProductCategory.categoryName}"></a>
+                </th:block>
+            </th:block>
+        </li>
+    </th:block>
+</ul>
+
+</body>
+</html>

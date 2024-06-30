@@ -13,12 +13,11 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
 //@FeignClient(name="clientCoupon", url="http://10.220.222.13:8001")
-@FeignClient(name="clientCoupon", url="http://localhost:800")
-public interface ClientCouponClient {
-
-    @GetMapping("/api/client/coupon-payment")
-    ResponseEntity<Page<ClientCouponPaymentResponseDto>> getCouponClient(@RequestHeader HttpHeaders httpHeaders, @RequestParam int page, @RequestParam int size);
+@FeignClient(name="bookCouponClient", url="http://localhost:8004")
+public interface BookCouponClient {
 
 
+    @GetMapping("/api/product/admin/page/all")
+    ResponseEntity<Page<ProductGetResponseDto>> getAllProducts(@RequestHeader HttpHeaders headers,@RequestParam Integer page,@RequestParam String sort,@RequestParam Boolean desc);
 
 }

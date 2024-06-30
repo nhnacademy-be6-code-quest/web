@@ -1,13 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Second Popup</title>
+    <title>Reverse 카테고리 목록</title>
+    <style>
+
+    </style>
 </head>
 <body>
 <script>
-    function selectCategoryName(categoryName) {
-        opener.opener.receiveCategoryName(categoryName);
+    function selectCategory(categoryId, categoryName){
+        opener.opener.receiveCategory(categoryId, categoryName);
         window.close();
     }
 
@@ -16,18 +19,23 @@
         links.forEach(function(link) {
             link.addEventListener('click', function(event) {
                 event.preventDefault();
+                const categoryId = link.getAttribute('data-category-id');
                 const categoryName = link.getAttribute('data-category-name');
-                selectCategoryName(categoryName);
+                selectCategory(categoryId,categoryName);
             });
         });
     });
 </script>
+<h1>Reverse 카테고리 목록</h1>
 
-<div th:each="categoryName : ${categoryNamePage}">
-    <a href="#" class="category-link" th:attr="data-category-name=${categoryName}">
-        <span th:text="${categoryName}"></span>
-    </a>
-</div>
+<ul>
+    <li th:each="categoryPath : ${categoryDetails}">
+        <a href="#" class="category-link" th:attr ="data-category-id=${categoryPath.productCategoryId},data-category-name=${categoryPath.categoryName}">
+        <span th:text="${categoryPath.categoryName()}"></span>
+            </a>
+    </li>
+</ul>
+
 
 </body>
 </html>

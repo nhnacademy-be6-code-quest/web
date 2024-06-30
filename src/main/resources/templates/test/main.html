@@ -17,8 +17,8 @@
         firstPopup = window.open('/categories/all', 'First Popup', 'width=600,height=400');
     }
 
-    function receiveCategoryName(categoryName) {
-        document.getElementById('result').innerText = 'name'+ categoryName;
+    function receiveCategory(categoryId, categoryName) {
+        document.getElementById('result').innerText = 'id'+categoryId +'name'+ categoryName;
         if (firstPopup) firstPopup.close();
         if (secondPopup) secondPopup.close();
     }

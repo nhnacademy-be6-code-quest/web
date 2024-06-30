@@ -1,5 +1,6 @@
 package com.nhnacademy.codequestweb.service.coupon;
 
+import com.nhnacademy.codequestweb.client.coupon.BookCouponClient;
 import com.nhnacademy.codequestweb.client.coupon.ClientCouponClient;
 import com.nhnacademy.codequestweb.client.product.bookProduct.BookProductClient;
 import com.nhnacademy.codequestweb.request.product.PageRequestDto;
@@ -21,17 +22,14 @@ public class ClientCouponService {
 
 
     @Autowired
-    private ClientCouponClient clientCouponClient;
+    private  ClientCouponClient clientCouponClient;
+    @Autowired
+    private  BookCouponClient bookCouponClient;
 
 
 
-    public Page<ProductGetResponseDto> getAllBookPage(
-            HttpHeaders headers,
-            PageRequestDto pageRequestDto
-    ){
-        return clientCouponClient.getAllProducts(headers, pageRequestDto).getBody();
-
-
+    public Page<ProductGetResponseDto> getAllBooks(HttpHeaders headers, Integer page, String sort, Boolean desc){
+        return bookCouponClient.getAllProducts(headers, page, sort, desc).getBody();
     }
 
     public Page<ClientCouponPaymentResponseDto> getClient(HttpHeaders httpHeaders, int page, int size){
