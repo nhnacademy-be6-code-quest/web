@@ -4,5 +4,6 @@ public record ProductCategory(
         Long productCategoryId,
         String categoryName,
         ProductCategory parentProductCategory
+
 ) {
 }

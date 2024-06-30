@@ -21,12 +21,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(name = "book", url = "http://10.220.222.13:8001")
-//@FeignClient(name = "book", url = "http://localhost:8004")
+//@FeignClient(name = "book", url = "http://10.220.222.13:8001")
+@FeignClient(name = "book", url = "http://localhost:8004")
 public interface BookProductClient {
 
         @GetMapping("/api/product/admin/book")
-        ResponseEntity<Page<AladinBookResponseDto>> getBookList(@RequestParam(value = "page", required = false) Integer page, @RequestParam("title") String title);
+        ResponseEntity<Page<AladinBookResponseDto>> getBookList(@RequestHeader HttpHeaders headers, @RequestParam(value = "page", required = false) Integer page, @RequestParam("title") String title);
 
         @PostMapping("/api/product/admin/book/register")
         ResponseEntity<ProductRegisterResponseDto> saveBook(@RequestBody BookProductRegisterRequestDto bookProductRegisterRequestDto);
