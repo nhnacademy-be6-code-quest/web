@@ -1,8 +1,8 @@
 package com.nhnacademy.codequestweb.controller.auth;
 
-import com.nhnacademy.codequestweb.client.auth.AuthClient;
 import com.nhnacademy.codequestweb.request.auth.ClientLoginRequestDto;
 import com.nhnacademy.codequestweb.request.auth.ClientRegisterRequestDto;
+import com.nhnacademy.codequestweb.request.auth.OAuthRegisterRequestDto;
 import com.nhnacademy.codequestweb.response.auth.TokenResponseDto;
 import com.nhnacademy.codequestweb.service.auth.AuthService;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
@@ -19,6 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -28,11 +29,10 @@ import java.time.format.DateTimeParseException;
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
-    private final AuthClient authClient;
 
     @GetMapping("/auth")
     public String auth(HttpServletRequest req) {
-        if (CookieUtils.getCookieValue(req, "access") == null) {
+        if (CookieUtils.getCookieValue(req, "refresh") == null) {
             req.setAttribute("view", "auth");
         }
         return "index";
@@ -41,8 +41,7 @@ public class AuthController {
     @PostMapping("/register")
     public String authPost(@Valid @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @ModelAttribute ClientRegisterRequestDto clientRegisterRequestDto, HttpServletRequest req) {
         authService.register(clientRegisterRequestDto);
-        req.setAttribute("view", "auth");
-        return "index";
+        return "redirect:/auth";
     }
 
     @PostMapping("/login")
@@ -70,7 +69,7 @@ public class AuthController {
     public String logout(HttpServletRequest req, HttpServletResponse res) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("refresh", CookieUtils.getCookieValue(req, "refresh"));
-        authClient.logout(headers);
+        authService.logout(headers);
         Cookie access = new Cookie("access", null);
         Cookie refresh = new Cookie("refresh", null);
         access.setMaxAge(0);
@@ -79,6 +78,72 @@ public class AuthController {
         refresh.setPath("/");
         res.addCookie(access);
         res.addCookie(refresh);
+        return "redirect:/";
+    }
+
+    @GetMapping("/payco/login")
+    public void paycoLogin(HttpServletRequest req, HttpServletResponse res) {
+        try {
+            res.sendRedirect(authService.getPaycoLoginURL());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @GetMapping("/payco/login/callback")
+    public String paycoLoginCallback(@RequestParam(required = false) String code,
+                                     @RequestParam(required = false) String error,
+                                     HttpServletRequest req, HttpServletResponse res) {
+        if (error != null) {
+            log.error("Payco login error: {}", error);
+        }
+
+        if (code != null) {
+            log.info("Received Payco auth code: {}", code);
+            TokenResponseDto tokenInfo = authService.paycoLoginCallback(code).getBody();
+            Cookie cookie = new Cookie("access", tokenInfo.getAccess());
+            cookie.setHttpOnly(true);
+            cookie.setSecure(true);
+            cookie.setPath("/");
+            cookie.setMaxAge(60 * 60 * 2);
+            res.addCookie(cookie);
+
+            if (tokenInfo.getRefresh() == null) {
+                req.setAttribute("view", "oauth");
+                return "index";
+            }
+
+            cookie = new Cookie("refresh", tokenInfo.getRefresh());
+            cookie.setHttpOnly(true);
+            cookie.setSecure(true);
+            cookie.setPath("/");
+            cookie.setMaxAge(60 * 60 * 24 * 14);
+            res.addCookie(cookie);
+        } else {
+            log.warn("No code received from Payco");
+        }
+        return "redirect:/";
+    }
+
+    @PostMapping("/oauth/register")
+    public String oauthRegister(@ModelAttribute OAuthRegisterRequestDto oAuthRegisterRequestDto, HttpServletRequest req, HttpServletResponse res) {
+        oAuthRegisterRequestDto.setAccess(CookieUtils.getCookieValue(req, "access"));
+        TokenResponseDto response = authService.oAuthRegister(oAuthRegisterRequestDto).getBody();
+        if (response != null) {
+            Cookie cookie = new Cookie("access", response.getAccess());
+            cookie.setHttpOnly(true);
+            cookie.setSecure(true);
+            cookie.setPath("/");
+            cookie.setMaxAge(60 * 60 * 2);
+            res.addCookie(cookie);
+
+            cookie = new Cookie("refresh", response.getRefresh());
+            cookie.setHttpOnly(true);
+            cookie.setSecure(true);
+            cookie.setPath("/");
+            cookie.setMaxAge(60 * 60 * 24 * 14);
+            res.addCookie(cookie);
+        }
         return "redirect:/";
     }
 

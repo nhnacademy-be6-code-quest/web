@@ -21,30 +21,21 @@
                 }
             }
         });
-        // document.getElementById('loginForm').addEventListener('submit', async (event) => {
-        //     event.preventDefault();
-        //
-        //     const email = document.getElementById('email').value;
-        //     const password = document.getElementById('password').value;
-        //
-        //     const response = await fetch('/api/auth/login', {
-        //         method: 'POST',
-        //         headers: {
-        //             'Content-Type': 'application/json'
-        //         },
-        //         body: JSON.stringify({ clientEmail: email, clientPassword: password })
-        //     });
-        //
-        //     if (response.ok) {
-        //         const data = await response.json();
-        //         localStorage.setItem('accessToken', data.accessToken);
-        //         alert('Login successful!');
-        //     } else {
-        //         alert('Login failed!');
-        //     }
-        // });
         /*]]>*/
     </script>
+    <style>
+        .payco-login {
+            margin-top: 10px;
+            display: block;
+            background-color: #ff684b;
+            cursor: pointer;
+            color: #FFFFFF;
+        }
+
+        .payco-login:hover {
+            background-color: #ff582b;
+        }
+    </style>
 </head>
 <section id="auth">
     <br>
@@ -64,6 +55,8 @@
             </label>
             <p class="forgot-pass">Forgot password?</p>
             <button type="submit" class="submit">Sign In</button>
+            <button type="button" class="submit payco-login" th:onclick="|location.href='@{/payco/login}'|">Payco</button>
+<!--            <button type="button" class="submit payco-login" th:onclick="|location.href='@{https://id.payco.com/oauth2.0/authorize?client_id=3RDkRhlndPoNojD5rfh0Joe&redirect_uri=http%3A%2F%2Ftest.com%3A8009%2Fapi%2Fpayco%2Flogin%2Fcallback&response_type=code&serviceProviderCode=FRIENDS&userLocale=ko_KR}'|">Payco</button>-->
             <span th:if="${login_message != null}" class="error-message" th:text="${login_message}" />
         </form>
         <div class="sub-cont">
