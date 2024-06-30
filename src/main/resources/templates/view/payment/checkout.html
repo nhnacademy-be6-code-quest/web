@@ -26,9 +26,6 @@
 <script>
     const button = document.getElementById("payment-button");
 
-    // TODO : customerKey 에 사용되니 알고 있을 것.
-    const generateRandomString = () => window.btoa(Math.random()).slice(0, 20);
-
     // ------  결제위젯 초기화 ------
     // TODO: clientKey는 개발자센터의 결제위젯 연동 키 > 클라이언트 키로 바꾸세요.
     // TODO: 구매자의 고유 아이디를 불러와서 customerKey로 설정하세요. 이메일・전화번호와 같이 유추가 가능한 값은 안전하지 않습니다.
@@ -46,7 +43,7 @@
         - 비회원 결제에는 PaymentWidget.ANONYMOUS 를 사용할 것.
     */
     // TODO : 고민해 보기
-    const customerKey = generateRandomString();
+    const customerKey = [[${payAmount}]]
 
     // 1. 회원 결제
     const paymentWidget = PaymentWidget(clientKey, customerKey);
@@ -59,17 +56,14 @@
 
     var amount = [[${payAmount}]]
     paymentMethodWidget = paymentWidget.renderPaymentMethods(
-        "#payment-method",
+        "#payment-method", // 렌더링할 위치를 정함.
         {
-            value: amount,
+            value: amount, // 결제될 금액
             currency: 'KRW',    // default : KRW
             country: 'KR',      // default : KR
         },
-        // 렌더링하고 싶은 결제 UI의 variantKey
-        // 결제 수단 및 스타일이 다른 멀티 UI를 직접 만들고 싶다면 계약이 필요해요. -> 건들 일 없음.
-        {
-            variantKey: "DEFAULT"
-        }
+        // 멀티 UI를 직접 만들고 싶다면 사용하며, 사용하려면 토스 페이먼츠와 계약이 필요함. 건들 일 없음.
+        { variantKey: "DEFAULT" }
     );
     // ------  이용약관 UI 렌더링 ------
     // @docs https://docs.tosspayments.com/reference/widget-sdk#renderagreement선택자-옵션 -> 건들 일 없음.
