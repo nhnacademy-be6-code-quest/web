@@ -19,11 +19,13 @@
         <div id="payment-method"></div>
         <!-- 이용약관 UI -->
         <div id="agreement"></div>
-        <!-- 쿠폰 체크박스 -->
+        <!-- 쿠폰 체크박스 TODO : 이거 다 없애면 결제 수단이 안 보임 -->
         <div class="checkable typography--p" style="padding-left: 25px">
-            <label for="coupon-box" class="checkable__label typography--regular"
-            ><input id="coupon-box" class="checkable__input" type="checkbox" aria-checked="true" disabled /><span class="checkable__label-text">5,000원 쿠폰 적용</span></label
-            >
+            <label for="coupon-box" class="checkable__label typography--regular">
+                <input id="coupon-box" class="checkable__input" type="checkbox" aria-checked="true" disabled />
+                <!-- TODO : Toss Payments 에서 쿠폰이 필요한지 고민해 보기 -->
+<!--                <span class="checkable__label-text">5,000원 쿠폰 적용</span>-->
+            </label>
         </div>
         <!-- 결제하기 버튼 -->
         <button class="button" id="payment-button" style="margin-top: 30px" disabled>결제하기</button>
@@ -31,30 +33,55 @@
 </div>
 <script>
     const button = document.getElementById("payment-button");
-    const coupon = document.getElementById("coupon-box");
+    const coupon = document.getElementById("coupon-box"); // TODO : 필요한지 고민해 보기
+
+    // TODO : customerKey 에 사용되니 알고 있을 것.
     const generateRandomString = () => window.btoa(Math.random()).slice(0, 20);
-    var amount = 50000;
+
     // ------  결제위젯 초기화 ------
     // TODO: clientKey는 개발자센터의 결제위젯 연동 키 > 클라이언트 키로 바꾸세요.
     // TODO: 구매자의 고유 아이디를 불러와서 customerKey로 설정하세요. 이메일・전화번호와 같이 유추가 가능한 값은 안전하지 않습니다.
     // @docs https://docs.tosspayments.com/reference/widget-sdk#sdk-설치-및-초기화
+
+    // TODO : 토스에서 기능 구현 다 해서 준 clientKey. 개발자의 서비스를 구별하기 위한 Key 임.
     const clientKey = "test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm";
+
+    // TODO : 내가 직접 추가해야 하는 clientKey. 개발자의 서비스를 구별하기 위한 Key 임.
+    // const clientKey = "test_ck_ZLKGPx4M3MGB26lk0XkqrBaWypv1";
+
+    /* TODO
+        - 구매자 ID. 자동 증가 숫자 or 이메일, 이름, 전화번호처럼 유추 가능한 값은 안전하지 않음.
+        - 영문 대소문자, 숫자, 특수문자(-, _, =, ., @)를 최소 한 개 이상 포함한 최소 2자 이상 ~ 최대 50자 이하의 문자열로 만들 것. (UUID 같이 충분히 무작위한 고유 값)
+        - 비회원 결제에는 PaymentWidget.ANONYMOUS 를 사용할 것.
+    */
+    // TODO : 고민해 보기
     const customerKey = generateRandomString();
-    const paymentWidget = PaymentWidget(clientKey, customerKey); // 회원 결제
-    // const paymentWidget = PaymentWidget(clientKey, PaymentWidget.ANONYMOUS); // 비회원 결제
+
+    // 1. 회원 결제
+    const paymentWidget = PaymentWidget(clientKey, customerKey);
+
+    // 2. 비회원 결제
+    // const paymentWidget = PaymentWidget(clientKey, PaymentWidget.ANONYMOUS);
 
     // ------  결제 UI 렌더링 ------
-    // @docs https://docs.tosspayments.com/reference/widget-sdk#renderpaymentmethods선택자-결제-금액-옵션
+    // TODO: 결제 UI를 렌더링하는 메서드.
+
+    var amount = 9999999999; // TODO : 바꿔 주기
     paymentMethodWidget = paymentWidget.renderPaymentMethods(
         "#payment-method",
-        { value: amount },
+        {
+            value: amount,
+            currency: 'KRW',    // default : KRW
+            country: 'KR',      // default : KR
+        },
         // 렌더링하고 싶은 결제 UI의 variantKey
-        // 결제 수단 및 스타일이 다른 멀티 UI를 직접 만들고 싶다면 계약이 필요해요.
-        // @docs https://docs.tosspayments.com/guides/payment-widget/admin#멀티-결제-ui
-        { variantKey: "DEFAULT" }
+        // 결제 수단 및 스타일이 다른 멀티 UI를 직접 만들고 싶다면 계약이 필요해요. -> 건들 일 없음.
+        {
+            variantKey: "DEFAULT"
+        }
     );
     // ------  이용약관 UI 렌더링 ------
-    // @docs https://docs.tosspayments.com/reference/widget-sdk#renderagreement선택자-옵션
+    // @docs https://docs.tosspayments.com/reference/widget-sdk#renderagreement선택자-옵션 -> 건들 일 없음.
     paymentWidget.renderAgreement("#agreement", { variantKey: "AGREEMENT" });
 
     //  ------  결제 UI 렌더링 완료 이벤트 ------
@@ -65,6 +92,7 @@
 
     // ------  결제 금액 업데이트 ------
     // @docs https://docs.tosspayments.com/reference/widget-sdk#updateamount결제-금액
+    // TODO : 이것도 필요 없으니 지워야 할 듯
     coupon.addEventListener("change", function () {
         if (coupon.checked) {
             paymentMethodWidget.updateAmount(amount - 5000);
@@ -76,16 +104,16 @@
     // ------ '결제하기' 버튼 누르면 결제창 띄우기 ------
     // @docs https://docs.tosspayments.com/reference/widget-sdk#requestpayment결제-정보
     button.addEventListener("click", function () {
-        // 결제를 요청하기 전에 orderId, amount를 서버에 저장하세요.
+        // TODO : 결제를 요청하기 전에 orderId, amount를 서버에 저장하세요.
         // 결제 과정에서 악의적으로 결제 금액이 바뀌는 것을 확인하는 용도입니다.
         paymentWidget.requestPayment({
-            orderId: generateRandomString(),
-            orderName: "토스 티셔츠 외 2건",
-            successUrl: window.location.origin + "/success",
-            failUrl: window.location.origin + "/fail",
-            customerEmail: "customer123@gmail.com",
-            customerName: "김토스",
-            customerMobilePhone: "01012341234",
+            orderId: generateRandomString(),                    // TODO : 우리 orderId 로 만들기
+            orderName: "NHN Academy 에서 살아남기 외 2건",          // TODO : 상품 아이디로 가져오기
+            successUrl: window.location.origin + "/success",    // TODO : 고민해 보기
+            failUrl: window.location.origin + "/fail",          // TODO : 고민해 보기
+            customerEmail: "customer123@gmail.com",             // TODO : 고민해 보기
+            customerName: "김토스",                                // TODO : 고민해 보기
+            customerMobilePhone: "01012341234",                 // TODO : 고민해 보기
         });
     });
 </script>
