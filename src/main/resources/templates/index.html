@@ -25,6 +25,9 @@
 <div th:if="${view != null} and ${#strings.equals(view, 'auth')}">
     <section th:replace="~{view/auth/auth.html :: authFragment ('login_message', 'register_message', 'form', 'prev_data')}"></section>
 </div>
+<div th:if="${view != null} and ${#strings.equals(view, 'oauth')}">
+    <section th:replace="~{view/auth/OAuth.html :: oauthFragment}"></section>
+</div>
 <div th:if="${view != null} and ${#strings.equals(view, 'mypage')}">
     <div th:replace="~{view/mypage/mypage :: mypageFragment ('mypage', 'profile', 'delivaryaddress','clientPhoneNumber')}"></div>
 </div>

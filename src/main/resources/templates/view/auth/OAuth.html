@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="oauthFragment ()">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원 정보 입력</title>
+    <style>
+        .oauth-main {
+            display: flex;
+            background-color: #fff9e6;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .oauth-form-container {
+            background-color: #ffffff;
+            padding: 50px;
+            border-radius: 25px;
+            box-shadow: 0 0 30px rgba(255, 223, 128, 0.3);
+            width: 50%;
+            max-width: 600px;
+        }
+        h2 {
+            color: #ffd180;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        .oauth-input-group, .-oauth-input-group {
+            margin-bottom: 30px;
+        }
+        .oauth-label {
+            display: block;
+            margin-bottom: 10px;
+            color: #ffc107;
+            font-size: 18px;
+        }
+        .oauth-input, input[type="date"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ffe0b2;
+            border-radius: 10px;
+            font-size: 18px;
+            color: #555;
+            box-sizing: border-box;
+        }
+        .oauth-input:focus, input[type="date"]:focus {
+            outline: none;
+            border-color: #ffd180;
+            box-shadow: 0 0 10px rgba(255, 209, 128, 0.5);
+        }
+        .oauth-submit {
+            width: 100%;
+            padding: 15px;
+            background-color: #ffd180;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+        }
+        .oauth-submit:hover {
+            background-color: #ffab40;
+        }
+        .oauth-submit:active {
+            transform: scale(0.98);
+        }
+        @media (max-width: 768px) {
+            .oauth-form-container {
+                width: 90%;
+                padding: 30px;
+            }
+        }
+    </style>
+</head>
+<main class="oauth-main">
+    <div class="oauth-form-container">
+        <h2>회원 정보 입력</h2>
+        <form action="/oauth/register" method="post">
+            <input name="access" hidden="hidden">
+            <div class="oauth-input-group">
+                <label class="oauth-label" for="nickname">닉네임</label>
+                <input class="oauth-input" type="text" id="nickname" name="name" required>
+            </div>
+            <div class="-oauth-input-group">
+                <label class="oauth-label" for="birthday">생일</label>
+                <input type="date" id="birthday" name="birth" required>
+            </div>
+            <button class="oauth-submit" type="submit">시작하기</button>
+        </form>
+    </div>
+</main>
+</html>
