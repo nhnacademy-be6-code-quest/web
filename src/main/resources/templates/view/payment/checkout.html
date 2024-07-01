@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8" />
     <link rel="icon" href="https://static.toss.im/icons/png/4x/icon-toss-logo.png" />
@@ -27,8 +27,6 @@
     const button = document.getElementById("payment-button");
 
     // ------  결제위젯 초기화 ------
-    // TODO: clientKey는 개발자센터의 결제위젯 연동 키 > 클라이언트 키로 바꾸세요.
-    // TODO: 구매자의 고유 아이디를 불러와서 customerKey로 설정하세요. 이메일・전화번호와 같이 유추가 가능한 값은 안전하지 않습니다.
     // @docs https://docs.tosspayments.com/reference/widget-sdk#sdk-설치-및-초기화
 
     // TODO : 토스에서 기능 구현 다 해서 준 clientKey. 개발자의 서비스를 구별하기 위한 Key 임.
@@ -37,13 +35,14 @@
     // TODO : 내가 직접 추가해야 하는 clientKey. 개발자의 서비스를 구별하기 위한 Key 임.
     // const clientKey = "test_ck_ZLKGPx4M3MGB26lk0XkqrBaWypv1";
 
+
     /* TODO
         - 구매자 ID. 자동 증가 숫자 or 이메일, 이름, 전화번호처럼 유추 가능한 값은 안전하지 않음.
         - 영문 대소문자, 숫자, 특수문자(-, _, =, ., @)를 최소 한 개 이상 포함한 최소 2자 이상 ~ 최대 50자 이하의 문자열로 만들 것. (UUID 같이 충분히 무작위한 고유 값)
         - 비회원 결제에는 PaymentWidget.ANONYMOUS 를 사용할 것.
     */
-    // TODO : 고민해 보기
-    const customerKey = [[${payAmount}]]
+    let customerKey = `[[${customerKey}]]`;
+
 
     // 1. 회원 결제
     const paymentWidget = PaymentWidget(clientKey, customerKey);

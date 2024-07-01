@@ -34,13 +34,35 @@ public class PaymentController {
         Model model,
         @ModelAttribute OrderPaymentResponseDto orderPaymentResponseDto) {
 
-        long payAmount = 2000L;
+        long payAmount = 99999L;
         model.addAttribute("payAmount", payAmount);
 
-        String customerKey = UUID.randomUUID().toString();
-        model.addAttribute("customerKey", customerKey);
+        String tossOrderId = UUID.randomUUID().toString();
+        model.addAttribute("tossOrderId", tossOrderId);
 
-        return "/view/payment/checkout";
+        String orderName = "초코파이 외 10건";
+        model.addAttribute("orderName", orderName);
+
+        String customerName = "김채호";
+        model.addAttribute("customerName", customerName);
+
+        String successUrl = "https://localhost:8080/client/order/payment/success";
+        model.addAttribute("successUrl", successUrl);
+
+        String failUrl = "https://localhost:8080/client/order/payment/fail";
+        model.addAttribute("failUrl", failUrl);
+
+        return "/view/payment/tossPage";
+    }
+
+    @GetMapping("/client/order/payment/success")
+    public String successPayment() {
+        return "view/payment/success";
+    }
+
+    @GetMapping("/client/order/payment/fail")
+    public String failedPayment() {
+        return "view/payment/failed";
     }
 
     // 사용자에게 결제와 관련된 정보를 입력 받습니다.
