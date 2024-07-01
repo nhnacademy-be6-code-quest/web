@@ -20,8 +20,9 @@
             <label class="block text-gray-700 font-bold mb-2" for="bookType">
                 Book Type
             </label>
-            <input type="hidden" id="selectedId" name="id">
-            <input type="hidden" id="selectedName" name="name">
+<!--            <input type="hidden" id="selectedId" name="id">-->
+
+            <input type="hidden" id="selectedName" name="typeName">
             <select class="input" id="bookType" onchange="toggleInput(this.value)" name="bookType">
                 <option value="">Select Book Type</option>
                 <option value="none">선택안함</option>
@@ -55,7 +56,7 @@
             <label class="block text-gray-700 font-bold mb-2" for="PolicyDescription">
                 쿠폰 정책 설명
             </label>
-            <textarea class="input" id="PolicyDescription" name="PolicyDescription" rows="3" placeholder="쿠폰 정책 설명을 입력하세요."></textarea>
+            <textarea class="input" id="PolicyDescription" name="couponPolicyDescription" rows="3" placeholder="쿠폰 정책 설명을 입력하세요."></textarea>
         </div>
 
         <div class="mb-4">
@@ -144,10 +145,10 @@
     let firstPopup;
     let secondPopup;
     function receiveCategory(categoryId, categoryName) {
-        document.getElementById("selectedId").value = categoryId;
-        document.getElementById("selectedCategoryName").textContent = categoryName;
+        document.getElementById('selectedId').value = categoryId;
+        document.getElementById('selectedCategoryName').textContent = categoryName;
         document.getElementById('selectedCategoryInfo').style.display = 'block';
-        document.getElementById("selectedName").value = "카테고리";
+        document.getElementById('selectedName').value = "카테고리";
         if (firstPopup) firstPopup.close();
         if (secondPopup) secondPopup.close();
     }
@@ -160,7 +161,7 @@
                 document.getElementById('selectedId').value = selectedBook.productId;
                 document.getElementById('selectedBookName').textContent = selectedBook.productName;
                 document.getElementById('selectedBookInfo').style.display = 'block';
-                document.getElementById("selectedName").value = "상품";
+                document.getElementById('selectedName').value = "상품";
             }
         }
     });

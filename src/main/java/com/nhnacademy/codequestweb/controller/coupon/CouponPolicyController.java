@@ -3,6 +3,7 @@ package com.nhnacademy.codequestweb.controller.coupon;
 import com.nhnacademy.codequestweb.domain.DiscountType;
 import com.nhnacademy.codequestweb.request.coupon.CouponPolicyRegisterRequestDto;
 import com.nhnacademy.codequestweb.request.product.PageRequestDto;
+import com.nhnacademy.codequestweb.response.coupon.CouponPolicyListResponseDto;
 import com.nhnacademy.codequestweb.response.coupon.CouponPolicyResponseDto;
 import com.nhnacademy.codequestweb.response.product.productCategory.CategoryGetResponseDto;
 import com.nhnacademy.codequestweb.service.coupon.ClientCouponService;
@@ -62,9 +63,7 @@ public class CouponPolicyController {
     @GetMapping("/api/coupon/policy")
     public String viewPolicy(Model model, Pageable pageable){
         Pageable pageRequest = PageRequest.of(pageable.getPageNumber(), DEFAULT_PAGE_SIZE);
-        Page<CouponPolicyResponseDto> coupPolicies = couponPolicyService.getAllCouponPolicies(pageRequest);
-
-
+        Page<CouponPolicyListResponseDto> coupPolicies = couponPolicyService.getAllCouponPolicies(pageRequest);
 
         model.addAttribute("couponPolicies",coupPolicies);
         return "/view/coupon/admin_policy_list";
@@ -78,6 +77,7 @@ public class CouponPolicyController {
     @PostMapping("/api/coupon/policy/register")
     public String registerPolicy(@Valid @ModelAttribute CouponPolicyRegisterRequestDto couponPolicyRegisterRequestDto){
         couponPolicyService.savePolicy(couponPolicyRegisterRequestDto);
+        //return "redirect:/api/coupon/policy";
         return "redirect:/api/coupon/policy";
     }
 

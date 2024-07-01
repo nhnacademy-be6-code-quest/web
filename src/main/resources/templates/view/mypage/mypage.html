@@ -33,5 +33,9 @@
         <div th:replace="~{view/mypage/photoReviews :: photoReviewsFragment}"></div>
     </div>
 
+    <div class="mypage-wrapper" th:if="${mypage != null} and ${#strings.equals(mypage, 'coupons')}">
+        <div th:replace="~{view/mypage/noPhotoReviews :: couponsFragment}"></div>
+    </div>
+
 </div>
 </html>

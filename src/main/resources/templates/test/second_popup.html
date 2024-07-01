@@ -31,8 +31,8 @@
 <ul>
     <li th:each="categoryPath : ${categoryDetails}">
         <a href="#" class="category-link" th:attr ="data-category-id=${categoryPath.productCategoryId},data-category-name=${categoryPath.categoryName}">
-        <span th:text="${categoryPath.categoryName()}"></span>
-            </a>
+            <span th:text="${categoryPath.categoryName()}"></span>
+        </a>
     </li>
 </ul>
 

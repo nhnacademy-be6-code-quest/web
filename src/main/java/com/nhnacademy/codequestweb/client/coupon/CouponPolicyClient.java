@@ -1,6 +1,7 @@
 package com.nhnacademy.codequestweb.client.coupon;
 
 import com.nhnacademy.codequestweb.request.coupon.CouponPolicyRegisterRequestDto;
+import com.nhnacademy.codequestweb.response.coupon.CouponPolicyListResponseDto;
 import com.nhnacademy.codequestweb.response.coupon.CouponPolicyResponseDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.domain.Page;
@@ -14,8 +15,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface CouponPolicyClient {
 
     @GetMapping("/api/coupon/policy")
-    Page<CouponPolicyResponseDto> getAllCouponPolices(Pageable pageable);
+    Page<CouponPolicyListResponseDto> getAllCouponPolices(Pageable pageable);
 
     @PostMapping("/api/coupon/policy/register")
     ResponseEntity<CouponPolicyRegisterRequestDto> savePolicy(@RequestBody CouponPolicyRegisterRequestDto couponPolicyRegisterRequestDto);
 }
+
+

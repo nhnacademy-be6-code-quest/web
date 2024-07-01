@@ -6,11 +6,13 @@ import com.nhnacademy.codequestweb.client.auth.UserClient;
 import com.nhnacademy.codequestweb.request.mypage.ClientRegisterAddressRequestDto;
 import com.nhnacademy.codequestweb.request.mypage.ClientRegisterPhoneNumberRequestDto;
 import com.nhnacademy.codequestweb.request.mypage.ClientUpdatePrivacyRequestDto;
+import com.nhnacademy.codequestweb.response.coupon.CouponResponseDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientDeliveryAddressResponseDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientPhoneNumberResponseDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientPrivacyResponseDto;
 import com.nhnacademy.codequestweb.response.review.NoPhotoReviewResponseDTO;
 import com.nhnacademy.codequestweb.response.review.PhotoReviewResponseDTO;
+import com.nhnacademy.codequestweb.service.coupon.CouponService;
 import com.nhnacademy.codequestweb.service.mypage.MyPageService;
 import com.nhnacademy.codequestweb.service.review.NoPhotoReviewService;
 import com.nhnacademy.codequestweb.service.review.PhotoReviewService;
@@ -42,7 +44,7 @@ public class MyPageController {
     private final MyPageService myPageService;
     private final NoPhotoReviewService noPhotoReviewService;
     private final PhotoReviewService photoReviewService;
-
+    private final CouponService couponService;
     @GetMapping("/mypage")
     public String mypageMain(HttpServletRequest req, HttpServletResponse res) {
         HttpHeaders headers = new HttpHeaders();
@@ -240,6 +242,40 @@ public class MyPageController {
         model.addAttribute("reviews", photoReviews);
 
         return "index";
+    }
+
+
+    @GetMapping("/mypage/coupon")
+    public String getCoupon(HttpServletRequest req, Model model, Pageable pageable) {
+//        if (CookieUtils.getCookieValue(req, "refresh") == null) {
+//            return "redirect:/auth";
+//        }
+
+//
+        HttpHeaders headers = new HttpHeaders();
+//        headers.set("access", CookieUtils.getCookieValue(req, "access"));
+//        headers.set("refresh", CookieUtils.getCookieValue(req, "refresh"));
+headers.set("X-User-id","1");
+        req.setAttribute("view", "mypage");
+        req.setAttribute("mypage", "coupon");
+
+        Pageable pageRequest = PageRequest.of(pageable.getPageNumber(), DEFAULT_PAGE_SIZE, Sort.by(
+                Sort.Direction.DESC, "registerDate"));
+
+        List<CouponResponseDto> couponList = couponService.findClientCoupon(headers);
+        //TODO pageable 고려
+        model.addAttribute("coupons", couponList);
+        return "index";
+    }
+
+    @GetMapping("/api/client/coupon")
+    public String viewCoupon(Model model,HttpServletRequest req){
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("access", CookieUtils.getCookieValue(req, "access"));
+        headers.set("refresh", CookieUtils.getCookieValue(req, "refresh"));
+        List<CouponResponseDto> couponList = couponService.findClientCoupon(headers);
+        model.addAttribute("couponList",couponList);
+        return "/view/coupon/client_coupon_view";
     }
 
 
