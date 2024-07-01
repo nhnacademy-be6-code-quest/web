@@ -33,15 +33,6 @@ public class CouponController {
     @Autowired
     private ClientCouponService clientCouponService;
 
-    @GetMapping("/api/client/coupon")
-    public String viewCoupon(Model model,HttpServletRequest req){
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("access", CookieUtils.getCookieValue(req, "access"));
-        headers.set("refresh", CookieUtils.getCookieValue(req, "refresh"));
-        List<CouponResponseDto> couponList = couponService.findClientCoupon(headers);
-        model.addAttribute("couponList",couponList);
-        return "/view/coupon/client_coupon_view";
-    }
 
     @GetMapping("/processUserSelection")
     public String view(HttpServletRequest req,
