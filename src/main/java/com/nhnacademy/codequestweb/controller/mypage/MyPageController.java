@@ -245,7 +245,7 @@ public class MyPageController {
     }
 
 
-    @GetMapping("/mypage/coupon")
+    @GetMapping("/mypage/coupons")
     public String getCoupon(HttpServletRequest req, Model model, Pageable pageable) {
 //        if (CookieUtils.getCookieValue(req, "refresh") == null) {
 //            return "redirect:/auth";
@@ -253,9 +253,8 @@ public class MyPageController {
 
 //
         HttpHeaders headers = new HttpHeaders();
-//        headers.set("access", CookieUtils.getCookieValue(req, "access"));
-//        headers.set("refresh", CookieUtils.getCookieValue(req, "refresh"));
-headers.set("X-User-id","1");
+        headers.set("access", CookieUtils.getCookieValue(req, "access"));
+        headers.set("refresh", CookieUtils.getCookieValue(req, "refresh"));
         req.setAttribute("view", "mypage");
         req.setAttribute("mypage", "coupon");
 

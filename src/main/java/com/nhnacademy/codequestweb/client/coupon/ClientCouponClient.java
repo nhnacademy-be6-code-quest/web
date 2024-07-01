@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface ClientCouponClient {
 
     @GetMapping("/api/client/coupon-payment")
-    ResponseEntity<Page<ClientCouponPaymentResponseDto>> getCouponClient(@RequestHeader HttpHeaders httpHeaders, @RequestParam int page, @RequestParam int size);
+    ResponseEntity<Page<ClientCouponPaymentResponseDto>> getCouponPaymentsClient(@RequestHeader HttpHeaders httpHeaders, @RequestParam int page, @RequestParam int size);
 
 
 

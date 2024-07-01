@@ -128,7 +128,6 @@
     function selectUsers() {
         var selectedUsers = document.querySelectorAll('input[name="selectedUsers"]:checked');
         var selectedUserDetails = [];
-        var selectClientIds = [];
 
         selectedUsers.forEach(function(user) {
             const value = user.value.split(' ');
@@ -136,9 +135,6 @@
             let clientId = value[0]; // clientId를 문자열로 가져옵니다
             let clientName = value[1]; // 고객 이름을 가져옵니다
             let clientEmail = value[2]; // 이메일을 가져옵니다
-
-            // 클라이언트 ID를 배열에 추가
-            selectClientIds.push(clientId);
 
             // 선택된 사용자 정보 객체를 배열에 추가
             selectedUserDetails.push({
@@ -157,11 +153,11 @@
             alert(selectedUserMessage);
 
             // 선택된 사용자 정보와 클라이언트 ID를 메인 창으로 전송
-            window.opener.postMessage({ selectedUsers: selectedUserDetails, clientIds: selectClientIds }, window.location.origin);
-            console.log(selectClientIds)
+            window.opener.postMessage({ selectedUsers: selectedUserDetails}, window.location.origin);
+            console.log(selectedUserDetails)
 
             // 새 창 닫기
-            window.close();
+            //window.close();
         } else {
             alert('선택된 사용자가 없습니다.');
         }
