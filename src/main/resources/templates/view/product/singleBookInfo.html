@@ -6,6 +6,9 @@
 </head>
 <body>
     <img th:src="${book.cover()}" alt="">
+
+<div th:text="${book.cover()}" />
+
     <div th:text="${book.productDescription()}"></div>
 </body>
 </html>

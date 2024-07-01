@@ -54,8 +54,7 @@ public class BookController {
     }
 
     //register form 외에서는 호출 불가함. 자바스크립트로 통제해놓음
-    @GetMapping
-    @RequestMapping("/aladinList")
+    @GetMapping("/aladinList")
     public String getAladinBookList(@RequestParam(name = "page", required = false)Integer page, @RequestParam("title")String title, Model model) {
 
         ResponseEntity<Page<AladinBookResponseDto>> aladinBookPageResponse = bookProductService.getBookList(page, title);
@@ -68,6 +67,9 @@ public class BookController {
                 List<AladinBookResponseDto> aladinBookList = aladinBooks.getContent();
                 model.addAttribute("bookList", aladinBookList);
                 Set<Integer> pageNumSet = new LinkedHashSet<>();
+                if (page == null){
+                    page = 1;
+                }
                 for (int i = 1; i <= totalPages; i++){
                     if (i == 1 || (page - 2 <= i && i <= page + 2) || i == totalPages){
                         pageNumSet.add(i);
@@ -75,21 +77,20 @@ public class BookController {
                 }
                 model.addAttribute("pageNumSet", pageNumSet);
             } else {
-                model.addAttribute("emptyListImg", "");
+                model.addAttribute("empty", true);
             }
             if (totalElements == 100){
                 model.addAttribute("warning", true);
             }
         }else {
-            model.addAttribute("emptyListImg", "");
-            model.addAttribute("view","error");
+            model.addAttribute("empty", true);
             return "index";
         }
 
         log.info("page : {}, size: {} , tatal page : {}, total elements : {}", page, aladinBooks.getSize(), aladinBooks.getTotalPages(), aladinBooks.getTotalElements());
 
         model.addAttribute("title",title);
-        return "view/admin/aladinBookList";
+        return "view/product/aladinBookList";
     }
 
 

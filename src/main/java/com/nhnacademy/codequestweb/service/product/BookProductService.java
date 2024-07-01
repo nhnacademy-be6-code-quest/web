@@ -1,6 +1,7 @@
 package com.nhnacademy.codequestweb.service.product;
 
 import com.nhnacademy.codequestweb.client.product.bookProduct.BookProductClient;
+import com.nhnacademy.codequestweb.request.product.ProductLikeRequestDto;
 import com.nhnacademy.codequestweb.request.product.bookProduct.BookProductRegisterRequestDto;
 import com.nhnacademy.codequestweb.request.product.bookProduct.BookProductUpdateRequestDto;
 import com.nhnacademy.codequestweb.response.product.book.AladinBookResponseDto;
@@ -34,15 +35,15 @@ public class BookProductService {
         return bookProductClient.updateBook(bookProductUpdateRequestDto);
     }
 
-    public ResponseEntity<Page<BookProductGetResponseDto>> getAllBooks(Integer page, String sort, Boolean desc) {
-        return bookProductClient.getAllBookPage(page, sort, desc);
+    public ResponseEntity<Page<BookProductGetResponseDto>> getAllBooks(Integer page, Integer size, String sort, Boolean desc) {
+        return bookProductClient.getAllBookPage(page, size, sort, desc);
     }
 
     public ResponseEntity<BookProductGetResponseDto> getSingleBookInfo(long id) {
         return bookProductClient.getSingleBookInfo(id);
     }
 
-    public ResponseEntity<Void> saveBookLike(HttpHeaders headers, long productId) {
-        return bookProductClient.saveBookProductLike(headers, productId);
+    public ResponseEntity<Void> saveBookLike(HttpHeaders headers, ProductLikeRequestDto productLikeRequestDto) {
+        return bookProductClient.saveBookProductLike(headers, productLikeRequestDto);
     }
 }

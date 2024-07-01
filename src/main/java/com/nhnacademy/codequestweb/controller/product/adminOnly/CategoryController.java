@@ -66,61 +66,63 @@ public class CategoryController {
         return "redirect:/";
     }
 
-    @GetMapping("/categories/all")
-    public String getAllCategoriesPage(@RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "desc", required = false) Boolean desc, @RequestParam(name = "sort", required = false) String sort, Model model) {
-        ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getCategories(page, desc, sort);
-        List<String> categoryNamePage = getCategoryPathNameList(response);
-
-        model.addAttribute("categoryNamePage", categoryNamePage);
-        return "/view/product/categoryPage";
-    }
-
-    private String getAllCategoryPathName(CategoryGetResponseDto category) {
-        StringBuilder stringBuilder = new StringBuilder();
-        ProductCategory parentCategory = category.parentProductCategory();
-        Stack<String> categoryStack = new Stack<>();
-        while (parentCategory != null){
-            categoryStack.push(parentCategory.categoryName());
-            parentCategory = parentCategory.parentProductCategory();
-        }
-        while (!categoryStack.isEmpty()) {
-            stringBuilder.append(categoryStack.pop());
-            stringBuilder.append("  >  ");
-        }
-        stringBuilder.append(category.categoryName());
-        return stringBuilder.toString();
-    }
-
-    private List<String> getCategoryPathNameList(ResponseEntity<Page<CategoryGetResponseDto>> response) {
-        List<String> categoryNamePage = new ArrayList<>();
-        if (response.getBody() != null) {
-            List<CategoryGetResponseDto> categoryList = response.getBody().getContent();
-            for (CategoryGetResponseDto category : categoryList) {
-                log.error("category id : {}",category.productCategoryId());
-                categoryNamePage.add(getAllCategoryPathName(category));
-            }
-        }
-        return categoryNamePage;
-    }
-
-    @GetMapping("/categories/containing")
-    public String getCategoryContainingPage(@RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "desc", required = false) Boolean desc, @RequestParam(name = "sort", required = false) String sort, @RequestParam("categoryName") String categoryName, Model model) {
-        ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getNameContainingCategories(page, desc, sort, categoryName);
-        List<String> categoryNamePage = getCategoryPathNameList(response);
-
-        model.addAttribute("categoryNamePage", categoryNamePage);
-
-        model.addAttribute("view", "categories");
-        return "/view/product/categoryPage";
-    }
-
-    @GetMapping("/categories/sub")
-    public String getCategorySubPage(@RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "desc", required = false) Boolean desc, @RequestParam(name = "sort", required = false) String sort, @RequestParam("categoryName") String categoryName, Model model) {
-        ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getSubCategories(page, desc, sort, categoryName);
-        List<String> categoryNamePage = getCategoryPathNameList(response);
-        model.addAttribute("categoryNamePage", categoryNamePage);
-        return "/view/product/categoryPage";
-    }
+//    @GetMapping("/categories/all")
+//    public String getAllCategoriesPage(@RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "desc", required = false) Boolean desc, @RequestParam(name = "sort", required = false) String sort, Model model) {
+//        ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getCategories(page, desc, sort);
+//        List<String> categoryNamePage = getCategoryPathNameList(response);
+//
+//        model.addAttribute("categoryNamePage", categoryNamePage);
+//        return "/view/product/categoryPage";
+//    }
+//
+//    private String getAllCategoryPathName(CategoryGetResponseDto category) {
+//        StringBuilder stringBuilder = new StringBuilder();
+//        ProductCategory parentCategory = category.parentProductCategory();
+//        Stack<String> categoryStack = new Stack<>();
+//        while (parentCategory != null){
+//            categoryStack.push(parentCategory.categoryName());
+//            parentCategory = parentCategory.parentProductCategory();
+//        }
+//        while (!categoryStack.isEmpty()) {
+//            stringBuilder.append(categoryStack.pop());
+//            stringBuilder.append("  >  ");
+//        }
+//        stringBuilder.append(category.categoryName());
+//        return stringBuilder.toString();
+//    }
+//
+//    private List<CategoryGetResponseDto> getCategoryPathNameList(ResponseEntity<Page<CategoryGetResponseDto>> response) {
+////        List<String> categoryNamePage = new ArrayList<>();
+//        if (response.getBody() != null) {
+//            return response.getBody().getContent();
+////            for (CategoryGetResponseDto category : categoryList) {
+////                log.error("category id : {}",category.productCategoryId());
+////                categoryNamePage.add(getAllCategoryPathName(category));
+////            }
+//        }else{
+//            return null
+//        }
+//        return categoryNamePage;
+//    }
+//
+//    @GetMapping("/categories/containing")
+//    public String getCategoryContainingPage(@RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "desc", required = false) Boolean desc, @RequestParam(name = "sort", required = false) String sort, @RequestParam("categoryName") String categoryName, Model model) {
+//        ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getNameContainingCategories(page, desc, sort, categoryName);
+//        List<String> categoryNamePage = getCategoryPathNameList(response);
+//
+//        model.addAttribute("categoryNamePage", categoryNamePage);
+//        model.addAttribute("view", "categories");
+//        return "/view/product/categoryPage";
+//    }
+//
+//    @GetMapping("/categories/sub")
+//    public String getCategorySubPage(@RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "desc", required = false) Boolean desc, @RequestParam(name = "sort", required = false) String sort, @RequestParam("categoryName") String categoryName, Model model) {
+//        ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getSubCategories(page, desc, sort, categoryName);
+//        List<String> categoryNamePage = getCategoryPathNameList(response);
+//        model.addAttribute("test", true);
+//        model.addAttribute("categoryNamePage", categoryNamePage);
+//        return "/view/product/categoryPage";
+//    }
 
     @GetMapping("/categories/search")
     public String test() {

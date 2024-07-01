@@ -2,6 +2,7 @@ package com.nhnacademy.codequestweb.controller.product.permitAll;
 
 
 import com.nhnacademy.codequestweb.request.product.PageRequestDto;
+import com.nhnacademy.codequestweb.request.product.ProductLikeRequestDto;
 import com.nhnacademy.codequestweb.response.product.book.BookProductGetResponseDto;
 import com.nhnacademy.codequestweb.service.product.BookProductService;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
@@ -30,16 +31,16 @@ public class BookProductGetController {
     @GetMapping("/product/books/all")
     public String books(
             @RequestParam(name = "page", required = false)Integer page,
+            @RequestParam(name= "size", required = false)Integer size,
             @RequestParam(name = "sort", required = false)String sort,
-            @RequestParam(name = "desc", required = false)Boolean desc ,
+            @RequestParam(name = "desc", required = false)Boolean desc,
             Model model) {
-//        if (page == null){
-//            page = 1;
-//        }
-        ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getAllBooks(page, sort, desc);
-        model.addAttribute("books", response.getBody());
+        ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getAllBooks(page, size, sort, desc);
+        model.addAttribute("books", response.getBody().getContent());
+        for(BookProductGetResponseDto book : response.getBody()) {
+            log.info("cover : {}",book.cover());
+        }
         log.warn("response: {}", response.getBody().getContent());
-//        model.addAttribute("view", "bookPage");
         return "/view/product/bookPage";
     }
 
@@ -50,13 +51,13 @@ public class BookProductGetController {
         return "/view/product/singleBookInfo";
     }
 
-    @PostMapping("/product/client/{productId}/like")
-    public String like(@PathVariable long productId, HttpServletRequest req, Model model) {
+    @PostMapping("/product/client/like")
+    public String like(HttpServletRequest req, Model model, @ModelAttribute ProductLikeRequestDto productLikeRequestDto) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(req,"access"));
         headers.set("refresh", CookieUtils.getCookieValue(req, "refresh"));
 
-        ResponseEntity<Void> response = bookProductService.saveBookLike(headers, productId);
+        ResponseEntity<Void> response = bookProductService.saveBookLike(headers, productLikeRequestDto);
         return "index";
     }
 }

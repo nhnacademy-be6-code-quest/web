@@ -5,9 +5,13 @@
     <title>Title</title>
 </head>
 <body>
-    <div th:each="categoryName : ${categoryNamePage}">
-        <a th:href="'/categories/sub?categoryName=' + ${categoryName}" target="_self">
-            <span th:text="${categoryName}"></span>
+    <div th:if="${test}">
+
+    </div>
+    <div th:each="category : ${categoryNamePage}">
+        <a th:href="'/categories/sub?categoryName=' + ${category.categoryName()}" target="_self">
+            <span th:text="${category.categoryName()}"></span>
+            <span th:text="${category.productCategoryId()}"></span>
         </a>
     </div>
 </body>
