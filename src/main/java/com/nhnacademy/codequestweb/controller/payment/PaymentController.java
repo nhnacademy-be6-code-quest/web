@@ -1,5 +1,6 @@
 package com.nhnacademy.codequestweb.controller.payment;
 
+import com.nhnacademy.codequestweb.request.payment.PaymentRequestDto;
 import com.nhnacademy.codequestweb.response.payment.OrderPaymentResponseDto;
 import com.nhnacademy.codequestweb.response.payment.ProductOrderDetailResponseDto;
 import com.nhnacademy.codequestweb.service.payment.PaymentService;
@@ -11,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
@@ -20,8 +22,8 @@ public class PaymentController {
 
     private final PaymentService paymentService;
 
-    @GetMapping("/client/order/payment")
-    public String savePayment(/* TODO: 나중에 주석 풀기 @PathVariable long orderId,*/ Model model) {
+    @GetMapping("/client/order/{orderId}/payment")
+    public String savePayment(@PathVariable long orderId, Model model) {
 
         ProductOrderDetailResponseDto productOrderDetailResponseDto = ProductOrderDetailResponseDto.builder()
             .productId(1L)
@@ -73,15 +75,16 @@ public class PaymentController {
         String customerName = "김채호";
         model.addAttribute("customerName", customerName);
 
-        model.addAttribute("successUrl", "https://localhost:8080/client/order/payment/success");
+        model.addAttribute("successUrl", "https://localhost:8080/client/order/" + orderId + "/payment/success");
 
-        model.addAttribute("failUrl", "https://localhost:8080/client/order/payment/fail");
+        model.addAttribute("failUrl", "https://localhost:8080/client/order/" + orderId + "/payment/fail");
 
         return "/view/payment/tossPage";
     }
 
-    @GetMapping("/client/order/payment/success")
-    public String successPayment() {
+    @GetMapping("/client/order/{orderId}/payment/success")
+    public String successPayment(@PathVariable long orderId, PaymentRequestDto paymentRequestDto) {
+        paymentService.savePayment(orderId, paymentRequestDto);
         return "view/payment/success";
     }
 

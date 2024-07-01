@@ -1,18 +1,25 @@
 package com.nhnacademy.codequestweb.request.payment;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
+import org.json.JSONPropertyIgnore;
 
-@Data // Getter, Setter, equals & hashCode, toString, NoArgs, AllArgs ...
+@Builder
+@Getter
 public class PaymentRequestDto {
-    @NotNull
-    private Long orderId;                   // 주문 아이디
+
+//    @NotNull
+//    @JsonProperty("amount")
+//    long payAmount;
+    long amount;
+
+//    @NotNull
+//    @JsonProperty("orderId")
+//    String tossOrderId;
+    String orderId;
 
     @NotNull
-    private Long paymentMethodId;           // 결제 수단의 아이디
-
-    private Long couponId;                  // 이번 결제에서 사용할 쿠폰의 아이디
-
-    @NotNull
-    private Long payAmount;                 // 최종 결제한 금액
+    String paymentKey;
 }
