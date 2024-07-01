@@ -65,8 +65,8 @@ public class PaymentController {
         return "view/payment/failed";
     }
 
-    // 사용자에게 결제와 관련된 정보를 입력 받습니다.
-    @PostMapping("client/order/payment")
-    public void savePayment(/* TODO: 나중에 주석 풀기 @PathVariable long orderId */) {
-    }
+//    // 사용자에게 결제와 관련된 정보를 입력 받습니다.
+//    @PostMapping("client/order/payment")
+//    public void savePayment(/* TODO: 나중에 주석 풀기 @PathVariable long orderId */) {
+//    }
 }
