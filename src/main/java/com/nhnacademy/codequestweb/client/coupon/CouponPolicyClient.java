@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-@FeignClient(name = "couponPolicyClient", url="http://localhost:8006")
+@FeignClient(name = "couponPolicyClient", url="http://localhost:8001")
 //@FeignClient(name = "couponPolicyClient", url="http://10.220.222.13:8001")
 public interface CouponPolicyClient {
 

@@ -16,7 +16,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@FeignClient(name = "client", url = "http://10.220.222.13:8001")
+//@FeignClient(name = "client", url = "http://10.220.222.13:8001")
+@FeignClient(name = "client", url = "http://localhost:8001")
 public interface UserClient {
     @PostMapping("/api/client")
     ResponseEntity<ClientRegisterResponseDto> register(@Valid @RequestBody ClientRegisterRequestDto clientRegisterRequestDto);
