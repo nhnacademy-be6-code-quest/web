@@ -3,16 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        if (!window.opener) {
+            alert('잘못된 접근입니다.');
+            history.go(-1);
+        }
+
+        function openNewWindowWithParam() {
+            // 파라미터 값을 가져옵니다 (여기서는 input의 값을 사용합니다)
+            var inputValue = document.getElementById("inputValue").value;
+
+            if (inputValue.trim() === '') {
+                // 값이 비어있을 경우 메시지 표시
+                document.getElementById('errorMessage').innerText = '값을 입력하세요';
+                return;
+            }
+
+            // URL에 포함될 파라미터 문자열 생성
+            var url = "/categories/containing?categoryName=" + encodeURIComponent(inputValue);
+
+            window.location.href = url;
+        }
+
+        function sendMessageToParent(message) {
+            // `localStorage`에 값을 설정하여 부모 창에 전달
+            localStorage.setItem("sharedData", message);
+            window.close(); // 자식 창 닫기
+        }
+
+        /*]]>*/
+    </script>
 </head>
 <body>
-    <div th:if="${test}">
+<label for="inputValue">카테고리명 검색 :</label>
+<input type="text" id="inputValue" name="inputValue" required>
+<button onclick="openNewWindowWithParam()">검색</button>
 
+</form>
+    <div th:unless="${register}">
+        <div th:each="category : ${categoryNamePage}">
+            <a th:href="'/categories/sub?categoryName=' + ${category.getKey().categoryName()}" target="_self">
+                <span th:text="${category.getValue()}"></span>
+                <span th:text="${category.getKey().productCategoryId()}"></span>
+            </a>
+        </div>
     </div>
-    <div th:each="category : ${categoryNamePage}">
-        <a th:href="'/categories/sub?categoryName=' + ${category.categoryName()}" target="_self">
-            <span th:text="${category.categoryName()}"></span>
-            <span th:text="${category.productCategoryId()}"></span>
-        </a>
+    <div th:if="${register}">
+        <div th:each="category : ${categoryNamePage}">
+                <span th:text="${category.getValue()}"></span>
+            <button th:category="${category.getKey().categoryName()}" onclick="sendMessageToParent(this.getAttribute('category'))">등록</button>
+        </div>
     </div>
 </body>
 </html>

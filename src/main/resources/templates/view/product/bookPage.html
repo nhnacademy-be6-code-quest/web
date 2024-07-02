@@ -46,7 +46,10 @@
             <span th:text="'재고 :  ' + ${book.productInventory()}"></span>
             <span th:text="'정가 : ' + ${book.productPriceStandard()}" th:id="'priceStandard-' + ${book.bookId()}"></span>
             <span th:text="'판매가 : ' + ${book.productPriceSales()}" th:id="'priceSales-' + ${book.bookId()}"></span>
-            <span th:text="'할인율'" th:id="'discount-' + ${book.bookId()}"></span>
+            <span th:text="'할인율 : ' + ${book.productPriceStandard()}/ (100 * ${book.productPriceSales()})" ></span>
+            <span th:each="categoryName: ${book.categories()}">
+                <span th:text="${categoryName}"></span>
+            </span>
         </a>
     </div>
 </body>

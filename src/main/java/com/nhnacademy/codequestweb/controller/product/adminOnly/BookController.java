@@ -7,6 +7,8 @@ import com.nhnacademy.codequestweb.response.product.book.AladinBookResponseDto;
 import com.nhnacademy.codequestweb.response.product.common.ProductRegisterResponseDto;
 import com.nhnacademy.codequestweb.response.product.common.ProductUpdateResponseDto;
 import com.nhnacademy.codequestweb.service.product.BookProductService;
+import com.nhnacademy.codequestweb.utils.CookieUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -18,6 +20,7 @@ import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -39,6 +42,9 @@ public class BookController {
     private final BookProductService bookProductService;
 
     private final MessageSource messageSource;
+
+    private final String ACCESS = "access";
+    private final String REFRESH = "refresh";
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {
@@ -95,29 +101,26 @@ public class BookController {
 
 
     @PostMapping("/register")
-    public String saveBook(@ModelAttribute @Valid BookProductRegisterRequestDto dto, BindingResult bindingResult){
+    public String saveBook(@ModelAttribute @Valid BookProductRegisterRequestDto dto, HttpServletRequest req, Model model){
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(ACCESS, CookieUtils.getCookieValue(req, ACCESS));
+        headers.set(REFRESH, CookieUtils.getCookieValue(req, REFRESH));
         log.error("product name : {},", dto.productName());
         log.error("isbn 13: {}", dto.isbn13());
         log.error("isbn 10: {}", dto.isbn());
-        if (bindingResult.hasErrors()){
-            StringBuilder stringBuilder = new StringBuilder();
-            List<ObjectError> errors = bindingResult.getAllErrors();
-            for (ObjectError error : errors){
-                String errorCode = error.getCode();
-                log.error("errorCode : {}, locale : {}", errorCode, LocaleContextHolder.getLocale());
-                String errorMessage = messageSource.getMessage(Objects.requireNonNull(errorCode), null, error.getDefaultMessage(), LocaleContextHolder.getLocale());
-                stringBuilder.append(errorMessage);
-            }
-            throw new RuntimeException("errors : " + stringBuilder.toString());
-        }
-        ResponseEntity<ProductRegisterResponseDto> responseEntity = bookProductService.saveBook(dto);
+        log.error("categories: {}", dto.categories());
+        ResponseEntity<ProductRegisterResponseDto> responseEntity = bookProductService.saveBook(headers, dto);
         return "redirect:/";
     }
 
     @PostMapping("/update")
-    public String updateBook(@ModelAttribute @Valid BookProductUpdateRequestDto dto){
+    public String updateBook(HttpServletRequest req, @ModelAttribute @Valid BookProductUpdateRequestDto dto){
         log.info("update book called save book");
-        ResponseEntity<ProductUpdateResponseDto> responseEntity = bookProductService.updateBook(dto);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(ACCESS, CookieUtils.getCookieValue(req, ACCESS));
+        headers.set(REFRESH, CookieUtils.getCookieValue(req, REFRESH));
+        ResponseEntity<ProductUpdateResponseDto> responseEntity = bookProductService.updateBook(headers, dto);
         log.info("status code : {}",responseEntity.getStatusCode().value());
         return "redirect:/";
     }

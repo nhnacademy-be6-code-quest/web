@@ -19,10 +19,14 @@ import org.springframework.web.bind.annotation.RequestHeader;
 @FeignClient(name = "cart", url = "http://localhost:8001/api/product")
 public interface CartClient {
 
-    @GetMapping("/client/{clientId}/cart")
-    ResponseEntity<List<CartGetResponseDto>> getCartList(
-            @RequestHeader HttpHeaders headers,
-            @PathVariable Long clientId);
+    @GetMapping("/client/cart")
+    ResponseEntity<List<CartGetResponseDto>> getClientCartList(
+            @RequestHeader HttpHeaders headers);
+
+    @PostMapping("/guest/cart")
+    ResponseEntity<List<CartGetResponseDto>> getGuestCartList(
+            @RequestBody List<@Valid CartRequestDto> cartRequestDtoList
+    );
 
     @PostMapping("/client/cart/add")
     ResponseEntity<SaveCartResponseDto> saveCartItem(
@@ -34,14 +38,12 @@ public interface CartClient {
             @RequestHeader HttpHeaders headers,
             @RequestBody @Valid CartRequestDto cartRequestDto);
 
-    @DeleteMapping("/client/{clientId}/cart/items/{productId}")
+    @DeleteMapping("/client/cart/items/{productId}")
     ResponseEntity<Void> deleteCartItem(
             @RequestHeader HttpHeaders headers,
-            @PathVariable Long clientId,
             @PathVariable Long productId);
 
-    @DeleteMapping("/client/{clientId}/cart/all")
+    @DeleteMapping("/client/cart/all")
     ResponseEntity<Void> clearAllCart(
-            @RequestHeader HttpHeaders headers,
-            @PathVariable Long clientId);
+            @RequestHeader HttpHeaders headers);
 }

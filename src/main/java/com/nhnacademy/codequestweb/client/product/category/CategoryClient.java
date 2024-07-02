@@ -28,5 +28,4 @@ public interface CategoryClient {
 
     @GetMapping("/product/categories/sub")
     ResponseEntity<Page<CategoryGetResponseDto>> getSubCategories(@RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "desc", required = false) Boolean desc, @RequestParam(name = "sort", required = false) String sort, @RequestParam("categoryName") String categoryName);
-
 }

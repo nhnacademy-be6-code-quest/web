@@ -10,5 +10,12 @@
 <div th:text="${book.cover()}" />
 
     <div th:text="${book.productDescription()}"></div>
+    <form action="/cart/add" method="post">
+        <input type="hidden" name="productId" th:value="${book.productId()}">
+        갯수 <input type="number" name="quantity">
+        장바구니 담기     <input  type="submit" >
+    </form>
+    <form action="/product/books/"></form>
+
 </body>
 </html>

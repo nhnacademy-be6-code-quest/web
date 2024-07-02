@@ -26,7 +26,11 @@ public record CartGetResponseDto(
 
         @NotNull
         @Min(1)
-        Long productQuantity,
+        Long productQuantityOfCart,
+
+        @NotNull
+        @Min(0)
+        Long productInventory,
 
         @NotNull
         @NotBlank
