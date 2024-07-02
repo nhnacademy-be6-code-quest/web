@@ -1,19 +1,55 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="utf-8" />
-  <link rel="icon" href="https://static.toss.im/icons/png/4x/icon-toss-logo.png" />
-  <link rel="stylesheet" type="text/css" href="/css/payment/style.css" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>결제 성공 창</title>
-<!--  &lt;!&ndash; 결제위젯 SDK 추가 &ndash;&gt;-->
-<!--  <script src="https://js.tosspayments.com/v1/payment-widget"></script>-->
+  <title>결제 상태</title>
+  <meta charset="UTF-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .success, .failure {
+      background-color: #f1f1f1;
+      padding: 20px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+    }
+    .success p, .failure p {
+      margin: 10px 0;
+    }
+    .success span, .failure span {
+      font-weight: bold;
+    }
+  </style>
 </head>
-
 <body>
-<h1>결제 성공</h1>
-<script>
-</script>
+<th:block th:if="${#strings.equals(isSuccess, 'true')}">
+  <div class="success">
+    <h1>결제 성공</h1>
+<!--    <p>결과데이터: <span th:text="${responseStr}"></span></p>-->
+    <p>주문명: <span th:text="${orderName}"></span></p>
+    <p>결제 방식: <span th:text="${method}"></span></p>
+    <th:block th:switch="${method}">
+      <p th:case="'카드'">카드번호: <span th:text="${cardNumber}"></span></p>
+      <p th:case="'가상계좌'">계좌번호: <span th:text="${accountNumber}"></span></p>
+      <p th:case="'계좌이체'">은행: <span th:text="${bank}"></span></p>
+      <p th:case="'휴대폰'">고객 휴대폰: <span th:text="${customerMobilePhone}"></span></p>
+    </th:block>
+  </div>
+</th:block>
+<th:block th:if="${#strings.equals(isSuccess, 'false')}">
+  <div class="failure">
+    <h1>결제 실패</h1>
+    <p>에러 메시지: <span th:text="${message}"></span></p>
+    <p>에러 코드: <span th:text="${code}"></span></p>
+  </div>
+</th:block>
 </body>
 </html>
