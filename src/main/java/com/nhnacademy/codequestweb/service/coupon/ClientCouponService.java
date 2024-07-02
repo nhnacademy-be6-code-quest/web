@@ -33,7 +33,7 @@ public class ClientCouponService {
     }
 
     public Page<ClientCouponPaymentResponseDto> getClient(HttpHeaders httpHeaders, int page, int size){
-        return clientCouponClient.getCouponPaymentsClient(httpHeaders, page,size).getBody();
+        return clientCouponClient.getCouponPaymentsClient(httpHeaders, page, size).getBody();
 
     }
 

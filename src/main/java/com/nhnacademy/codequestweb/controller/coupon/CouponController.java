@@ -36,7 +36,7 @@ public class CouponController {
 
     @GetMapping("/processUserSelection")
     public String view(HttpServletRequest req,
-            Model model, @RequestParam(defaultValue = "10") int page, @RequestParam(defaultValue = "0") int size){
+            Model model, @RequestParam(defaultValue = "5") int page, @RequestParam(defaultValue = "0") int size){
 
 
 

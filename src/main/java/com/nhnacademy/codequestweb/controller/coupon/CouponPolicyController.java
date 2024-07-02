@@ -2,9 +2,7 @@ package com.nhnacademy.codequestweb.controller.coupon;
 
 import com.nhnacademy.codequestweb.domain.DiscountType;
 import com.nhnacademy.codequestweb.request.coupon.CouponPolicyRegisterRequestDto;
-import com.nhnacademy.codequestweb.request.product.PageRequestDto;
 import com.nhnacademy.codequestweb.response.coupon.CouponPolicyListResponseDto;
-import com.nhnacademy.codequestweb.response.coupon.CouponPolicyResponseDto;
 import com.nhnacademy.codequestweb.response.product.productCategory.CategoryGetResponseDto;
 import com.nhnacademy.codequestweb.service.coupon.ClientCouponService;
 import com.nhnacademy.codequestweb.service.coupon.CouponPolicyService;
@@ -15,18 +13,21 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
 @RequiredArgsConstructor
 @Controller
 public class CouponPolicyController {
-    private static final int DEFAULT_PAGE_SIZE = 5;
 
     private final CouponPolicyService couponPolicyService;
     private final ClientCouponService clientCouponService;
@@ -61,17 +62,17 @@ public class CouponPolicyController {
     }
 
     @GetMapping("/api/coupon/policy")
-    public String viewPolicy(Model model, Pageable pageable){
-        Pageable pageRequest = PageRequest.of(pageable.getPageNumber(), DEFAULT_PAGE_SIZE);
-        Page<CouponPolicyListResponseDto> coupPolicies = couponPolicyService.getAllCouponPolicies(pageRequest);
+    public String viewPolicy(Model model, @PageableDefault(size = 6) Pageable pageable){
+        Page<CouponPolicyListResponseDto> couponPolicies = couponPolicyService.getAllCouponPolicies(pageable);
 
-        model.addAttribute("couponPolicies",coupPolicies);
+        model.addAttribute("couponPolicies",couponPolicies);
         return "/view/coupon/admin_policy_list";
     }
     @GetMapping("/api/coupon/policy/register")
     public String viewRegisterPolicy(Model model){
         List<DiscountType> discountTypes = List.of(DiscountType.AMOUNTDISCOUNT,DiscountType.PERCENTAGEDISCOUNT);
         model.addAttribute("discountTypes",discountTypes);
+
         return "/view/coupon/admin_policy_register";
     }
     @PostMapping("/api/coupon/policy/register")

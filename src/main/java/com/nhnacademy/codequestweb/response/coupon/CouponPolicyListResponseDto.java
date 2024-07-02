@@ -1,14 +1,20 @@
 package com.nhnacademy.codequestweb.response.coupon;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.nhnacademy.codequestweb.domain.DiscountType;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
+//@JsonIgnoreProperties(ignoreUnknown = true)
+
+@Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
 public class CouponPolicyListResponseDto {
 
     private long couponPolicyId;
@@ -17,4 +23,21 @@ public class CouponPolicyListResponseDto {
     private long discountValue;
     private long minPurchaseAmount;
     private long maxDiscountAmount;
+
+    @JsonCreator
+    public CouponPolicyListResponseDto(
+            @JsonProperty("couponPolicyId") Long couponPolicyId,
+            @JsonProperty("couponPolicyDescription") String couponPolicyDescription,
+            @JsonProperty("discountType") DiscountType discountType,
+            @JsonProperty("discountValue") int discountValue,
+            @JsonProperty("minPurchaseAmount") int minPurchaseAmount,
+            @JsonProperty("maxDiscountAmount") int maxDiscountAmount) {
+        this.couponPolicyId = couponPolicyId;
+        this.couponPolicyDescription = couponPolicyDescription;
+        this.discountType = discountType;
+        this.discountValue = discountValue;
+        this.minPurchaseAmount = minPurchaseAmount;
+        this.maxDiscountAmount = maxDiscountAmount;
+    }
 }
+

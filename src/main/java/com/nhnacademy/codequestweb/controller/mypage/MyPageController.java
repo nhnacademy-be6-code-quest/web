@@ -246,36 +246,41 @@ public class MyPageController {
 
 
     @GetMapping("/mypage/coupons")
-    public String getCoupon(HttpServletRequest req, Model model, Pageable pageable) {
-//        if (CookieUtils.getCookieValue(req, "refresh") == null) {
-//            return "redirect:/auth";
-//        }
+    public String getCoupon(HttpServletRequest req, Pageable pageable) {
+        if (CookieUtils.getCookieValue(req, "refresh") == null) {
+            return "redirect:/auth";
+        }
 
-//
+
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
         headers.set("refresh", CookieUtils.getCookieValue(req, "refresh"));
         req.setAttribute("view", "mypage");
-        req.setAttribute("mypage", "coupon");
+        req.setAttribute("mypage", "coupons");
 
-        Pageable pageRequest = PageRequest.of(pageable.getPageNumber(), DEFAULT_PAGE_SIZE, Sort.by(
-                Sort.Direction.DESC, "registerDate"));
+//        Pageable pageRequest = PageRequest.of(pageable.getPageNumber(), DEFAULT_PAGE_SIZE, Sort.by(
+//                Sort.Direction.DESC, "registerDate"));
 
         List<CouponResponseDto> couponList = couponService.findClientCoupon(headers);
         //TODO pageable 고려
-        model.addAttribute("coupons", couponList);
+//        model.addAttribute("coupons", couponList);
+        req.setAttribute("coupons", couponList);
         return "index";
     }
+    @GetMapping("/my/coupons")
+    public String gtcoupon(HttpServletRequest req, Model model) {
+        if (CookieUtils.getCookieValue(req, "refresh") == null) {
+            return "redirect:/auth";
+        }
 
-    @GetMapping("/api/client/coupon")
-    public String viewCoupon(Model model,HttpServletRequest req){
+
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
         headers.set("refresh", CookieUtils.getCookieValue(req, "refresh"));
         List<CouponResponseDto> couponList = couponService.findClientCoupon(headers);
-        model.addAttribute("couponList",couponList);
-        return "/view/coupon/client_coupon_view";
+        model.addAttribute("coupons", couponList);
+        return "/view/mypage/coupons";
+
+
     }
-
-
 }

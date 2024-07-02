@@ -4,7 +4,102 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coupon Policies</title>
-    <link rel="stylesheet" th:href="@{/css/coupon/admin_policy_list.css}">
+<!--    <link rel="stylesheet" th:href="@{/css/coupon/admin_policy_list.css}">-->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            height: 2500px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            height: 2000px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+        }
+        .card h2 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .card p {
+            margin-bottom: 8px;
+        }
+        .card .discount {
+            color: #666;
+        }
+        .card .products {
+            color: #888;
+        }
+        .card .btn {
+            background-color: #007bff;
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 4px;
+            text-decoration: none;
+            display: inline-block;
+            transition: background-color 0.3s ease;
+            margin-top: auto;
+        }
+        .card .btn:hover {
+            background-color: #0056b3;
+        }
+        .pagination {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            width: 100%; /* Ensure pagination spans full width */
+        }
+        .pagination a {
+            text-decoration: none;
+            color: #007bff;
+            padding: 8px 12px;
+            border: 1px solid #007bff;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+            margin: 0 5px;
+        }
+        .pagination a:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+        .pagination .active {
+            background-color: #007bff;
+            color: #fff;
+        }
+        .create-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #007bff;
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+        .create-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
 <div class="container">
@@ -13,9 +108,10 @@
     <div class="grid">
         <div th:each="couponPolicy : ${couponPolicies}">
             <div class="card">
+            <p th:text="${couponPolicy.couponPolicyId}"></p>
                 <h2 class="text-lg font-bold" th:text="${couponPolicy.discountType}">Discount Type</h2>
-<!--                <p class="products" th:text="${couponPolicy.productId != null ? '도서 명 : ' + couponPolicy.productId : ''}"></p>-->
-<!--                <p class="category" th:text="${couponPolicy.productCategoryId != null ? '카테고리 : ' + couponPolicy.productCategoryId : ''}"></p>-->
+<!--                 <p class="products" th:text="${couponPolicy.productId != null ? '도서 명 : ' + couponPolicy.productId : ''}"></p>-->
+<!--                 <p class="category" th:text="${couponPolicy.productCategoryId != null ? '카테고리 : ' + couponPolicy.productCategoryId : ''}"></p>-->
                 <p th:text="${couponPolicy.couponPolicyDescription}">Coupon Policy Description</p>
                 <p class="discount" th:text="'할인금액: ' + ${couponPolicy.discountValue} + '원 할인최소금액: ' + ${couponPolicy.minPurchaseAmount} + ', 할인최대금액: ' + ${couponPolicy.maxDiscountAmount}"></p>
                 <div class="flex justify-end">
@@ -24,15 +120,19 @@
             </div>
         </div>
     </div>
-    <!-- Pagination controls -->
-    <div th:if="${couponPolicies.totalPages > 1}"class="pagination">
-        <a th:href="@{/admin/coupon/policy(page=${couponPolicies.number - 1})}" th:if="${couponPolicies.hasPrevious()}"  id="prevBtn">&laquo; Previous</a>
-        <a th:each="pageNum : ${#numbers.sequence(0, couponPolicies.totalPages - 1)}"
-           th:classappend="${pageNum == couponPolicies.number} ? 'active'"
-           th:href="@{/admin/coupon/policy(page=${pageNum})}" th:text="${pageNum + 1}">1</a>
-        <a th:href="@{/admin/coupon/policy(page=${couponPolicies.number + 1})}" th:if="${couponPolicies.hasNext()}" id="nextBtn">Next &raquo;</a>
+    <div>
+
     </div>
+    <div class="pagination">
+        <a th:href="@{/api/coupon/policies(page=${couponPolicies.number - 1}, size=${couponPolicies.size})}" th:if="${!couponPolicies.first}">&laquo; Previous</a>
+        <span th:each="i : ${#numbers.sequence(1, couponPolicies.totalPages)}">
+            <a th:href="@{/api/coupon/policies(page=${i - 1}, size=${couponPolicies.size})}" th:text="${i}" th:classappend="${couponPolicies.number + 1 == i} ? 'active'"></a>
+        </span>
+        <a th:href="@{/api/coupon/policies(page=${couponPolicies.number + 1}, size=${couponPolicies.size})}" th:if="${!couponPolicies.last}">Next &raquo;</a>
+    </div>
+
 </div>
+
 <script>
     function navigateToPolicyRegistration() {
         window.location.href = '/api/coupon/policy/register';

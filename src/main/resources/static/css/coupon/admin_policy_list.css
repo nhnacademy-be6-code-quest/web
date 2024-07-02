@@ -8,11 +8,14 @@ body {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
+    height: 3000px;
 }
 .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 20px;
+    /* Ensure grid expands to fit content */
+    width: 100%;
 }
 .card {
     background-color: #fff;
@@ -56,6 +59,10 @@ body {
     margin-top: 20px;
     display: flex;
     justify-content: center;
+    /* Ensure pagination is inside the container */
+    position: relative;
+    bottom: 0;
+    width: 100%;
 }
 .pagination a {
     text-decoration: none;
