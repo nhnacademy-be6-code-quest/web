@@ -3,6 +3,7 @@ package com.nhnacademy.codequestweb.controller.auth;
 import com.nhnacademy.codequestweb.request.auth.ClientLoginRequestDto;
 import com.nhnacademy.codequestweb.request.auth.ClientRegisterRequestDto;
 import com.nhnacademy.codequestweb.request.auth.OAuthRegisterRequestDto;
+import com.nhnacademy.codequestweb.request.client.ClientRecoveryRequestDto;
 import com.nhnacademy.codequestweb.response.auth.TokenResponseDto;
 import com.nhnacademy.codequestweb.service.auth.AuthService;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
@@ -35,13 +36,16 @@ public class AuthController {
         if (CookieUtils.getCookieValue(req, "refresh") == null) {
             req.setAttribute("view", "auth");
         }
+        if (req.getParameter("alterMessage") != null) {
+            req.setAttribute("alterMessage", req.getParameter("alterMessage"));
+        }
         return "index";
     }
 
     @PostMapping("/register")
     public String authPost(@Valid @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @ModelAttribute ClientRegisterRequestDto clientRegisterRequestDto, HttpServletRequest req) {
         authService.register(clientRegisterRequestDto);
-        return "redirect:/auth";
+        return "redirect:/auth" + "?alterMessage=" + "Success";
     }
 
     @PostMapping("/login")
@@ -90,6 +94,15 @@ public class AuthController {
         }
     }
 
+    @GetMapping("/payco/recovery")
+    public void paycoRecovery(HttpServletRequest req, HttpServletResponse res) {
+        try {
+            res.sendRedirect(authService.getPaycoRecoveryURL());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @GetMapping("/payco/login/callback")
     public String paycoLoginCallback(@RequestParam(required = false) String code,
                                      @RequestParam(required = false) String error,
@@ -100,8 +113,15 @@ public class AuthController {
 
         if (code != null) {
             log.info("Received Payco auth code: {}", code);
+            Cookie cookie;
             TokenResponseDto tokenInfo = authService.paycoLoginCallback(code).getBody();
-            Cookie cookie = new Cookie("access", tokenInfo.getAccess());
+            if (tokenInfo == null) {
+                req.setAttribute("alterMessage", "휴면/삭제된 계정 입니다.");
+                req.setAttribute("view", "auth");
+                return "index";
+            }
+
+            cookie = new Cookie("access", tokenInfo.getAccess());
             cookie.setHttpOnly(true);
             cookie.setSecure(true);
             cookie.setPath("/");
@@ -123,6 +143,24 @@ public class AuthController {
             log.warn("No code received from Payco");
         }
         return "redirect:/";
+    }
+
+    @GetMapping("/payco/recovery/callback")
+    public String paycoRecoveryCallback(@RequestParam(required = false) String code,
+                                     @RequestParam(required = false) String error,
+                                     HttpServletRequest req, HttpServletResponse res) {
+        if (error != null) {
+            log.error("Payco login error: {}", error);
+        }
+
+        if (code != null) {
+            log.info("Received Payco auth code: {}", code);
+            String email = authService.recover(code).getBody();
+            authService.recoverAccount(email);
+        } else {
+            log.warn("No code received from Payco");
+        }
+        return "redirect:/auth" + "?alterMessage=" + "Success";
     }
 
     @PostMapping("/oauth/register")

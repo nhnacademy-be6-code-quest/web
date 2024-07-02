@@ -10,11 +10,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class HomeController {
     @GetMapping("/")
-    public String index(Model model) {
-        if (model.containsAttribute("message")) {
-            String message = (String) model.getAttribute("message");
-            log.info(message);
-            model.addAttribute("message", message);
+    public String index(HttpServletRequest req) {
+        if (req.getParameter("alterMessage") != null) {
+            req.setAttribute("alterMessage", req.getParameter("alterMessage"));
         }
         return "index";
     }

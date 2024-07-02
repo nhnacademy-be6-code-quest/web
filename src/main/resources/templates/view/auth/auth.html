@@ -115,6 +115,15 @@
             display: flex;
             align-items: center;
         }
+
+        #additionalButton {
+            margin-top: 20px;
+            display: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #ff684b;
+            color: white;
+        }
     </style>
 </head>
 <section id="auth">
@@ -205,6 +214,7 @@
                 </div>
                 <div class="fpw-d-flex fpw-justify-content-end fpw-gap-2">
                     <button id="sendButton" type="submit" class="fpw-btn" onclick="showSpinner()">이메일 전송</button>
+                    <button id="additionalButton" type="button" class="fpw-btn" th:onclick="|location.href='@{/payco/recovery}'|">Payco 계정 복구</button>
                     <div id="spinner" class="spinner"></div>
                 </div>
             </form>
@@ -244,6 +254,12 @@
             document.getElementById('modalTitle').textContent = title;
             document.getElementById('modalForm').action = actionUrl;
             document.getElementById('fpwModal').style.display = 'block';
+
+            if (actionUrl === '/send-recovery-account') {
+                document.getElementById('additionalButton').style.display = 'block';
+            } else {
+                document.getElementById('additionalButton').style.display = 'none';
+            }
         }
 
         function hideModal() {
