@@ -1,5 +1,6 @@
 package com.nhnacademy.codequestweb.request.coupon;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.nhnacademy.codequestweb.domain.Status;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -13,6 +14,7 @@ public record CouponRequestDto(
         long couponPolicyId,
         @NotNull
         List<Long> clientId,
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
         LocalDateTime expirationDate,
         @NotNull
         Status status) {

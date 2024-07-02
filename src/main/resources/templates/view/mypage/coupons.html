@@ -9,6 +9,14 @@
         }
 
 
+        .pagination {
+            text-align: center; /* 페이지네이션을 가운데 정렬 */
+            margin-top: 20px; /* 페이지네이션 위쪽 여백 설정 */
+            display: flex;
+            justify-content: center;
+        }
+
+
 
         .card {
             background-color: #fff;
@@ -118,6 +126,19 @@
             </div>
         </div>
     </div>
+</div>
+
+<div class="pagination">
+    <!-- 이전 페이지 링크 -->
+    <a th:href="@{/mypage/coupons(page=${coupons.number - 1}, size=${coupons.size})}" th:if="${coupons.hasPrevious()}">&laquo; Previous</a>
+
+    <!-- 페이지 번호 링크 -->
+    <span th:each="i : ${#numbers.sequence(1, coupons.totalPages)}">
+        <a th:href="@{/mypage/coupons(page=${i - 1}, size=${coupons.size})}" th:text="${i}" th:classappend="${coupons.number + 1 == i} ? 'active'"></a>
+    </span>
+
+    <!-- 다음 페이지 링크 -->
+    <a th:href="@{/mypage/coupons(page=${coupons.number + 1}, size=${coupons.size})}" th:if="${coupons.hasNext()}">Next &raquo;</a>
 </div>
 
 

@@ -29,7 +29,7 @@
             const selectedUsersList = document.getElementById('selectedUsersList');
             const clientList = [];
 
-
+            selectedUsersList.innerHTML = '';
             selectedUsers.forEach(function(user) {
                 const listItem = document.createElement('div');
                 listItem.textContent = `ID: ${user.clientId}, Name: ${user.clientName}, Email: ${user.clientEmail}`;

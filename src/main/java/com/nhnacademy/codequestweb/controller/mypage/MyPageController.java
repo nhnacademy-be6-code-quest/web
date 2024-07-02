@@ -246,7 +246,7 @@ public class MyPageController {
 
 
     @GetMapping("/mypage/coupons")
-    public String getCoupon(HttpServletRequest req, Pageable pageable) {
+    public String getCoupon(HttpServletRequest req, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size) {
         if (CookieUtils.getCookieValue(req, "refresh") == null) {
             return "redirect:/auth";
         }
@@ -261,26 +261,11 @@ public class MyPageController {
 //        Pageable pageRequest = PageRequest.of(pageable.getPageNumber(), DEFAULT_PAGE_SIZE, Sort.by(
 //                Sort.Direction.DESC, "registerDate"));
 
-        List<CouponResponseDto> couponList = couponService.findClientCoupon(headers);
+        Page<CouponResponseDto> couponList = couponService.findClientCoupon(headers, page, size).getBody();
         //TODO pageable 고려
 //        model.addAttribute("coupons", couponList);
         req.setAttribute("coupons", couponList);
         return "index";
     }
-    @GetMapping("/my/coupons")
-    public String gtcoupon(HttpServletRequest req, Model model) {
-        if (CookieUtils.getCookieValue(req, "refresh") == null) {
-            return "redirect:/auth";
-        }
 
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("access", CookieUtils.getCookieValue(req, "access"));
-        headers.set("refresh", CookieUtils.getCookieValue(req, "refresh"));
-        List<CouponResponseDto> couponList = couponService.findClientCoupon(headers);
-        model.addAttribute("coupons", couponList);
-        return "/view/mypage/coupons";
-
-
-    }
 }
