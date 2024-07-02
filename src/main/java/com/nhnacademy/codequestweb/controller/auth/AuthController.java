@@ -154,6 +154,13 @@ public class AuthController {
         return "index";
     }
 
+    @ExceptionHandler(FeignException.Gone.class)
+    public String loginError(FeignException.Gone e, HttpServletRequest req, HttpServletResponse res) {
+        req.setAttribute("login_message", "삭제/휴면된 계정입니다.");
+        req.setAttribute("view", "auth");
+        return "index";
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public String validationError(MethodArgumentNotValidException e, HttpServletRequest req) {
         ClientRegisterRequestDto requestDto = getRequestDto(req);

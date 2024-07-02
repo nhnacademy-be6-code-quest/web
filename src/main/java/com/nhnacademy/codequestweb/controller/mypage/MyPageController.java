@@ -63,6 +63,8 @@ public class MyPageController {
     public String mypageDelivery(HttpServletRequest req) {
         if (CookieUtils.getCookieValue(req, "refresh") == null) {
             return "redirect:/auth";
+        } else if (req.getParameter("alterMessage") != null) {
+            req.setAttribute("alterMessage", req.getParameter("alterMessage"));
         }
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
@@ -86,10 +88,13 @@ public class MyPageController {
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
         headers.set("refresh", CookieUtils.getCookieValue(req, "refresh"));
 
-        ResponseEntity<String> response = myPageService.registerAddress(headers,
-            clientRegisterAddressRequestDto);
-        log.info("/mypage/delivary post response: {}", response.getBody());
-
+        try {
+            ResponseEntity<String> response = myPageService.registerAddress(headers,
+                    clientRegisterAddressRequestDto);
+            log.info("/mypage/delivary post response: {}", response.getBody());
+        } catch (FeignException e) {
+            req.setAttribute("alterMessage", "배송지는 최대 10개 까지 등록 할 수 있습니다.");
+        }
         return "redirect:/mypage/delivary";
     }
 

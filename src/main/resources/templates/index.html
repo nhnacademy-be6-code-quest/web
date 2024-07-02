@@ -9,14 +9,48 @@
     <meta name="author" content="">
     <meta name="keywords" content="">
     <meta name="description" content="">
-    <title>Title</title>
+    <title>BookStore</title>
+    <style>
+        .alert {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 20px;
+            background-color: #f6EAC2;
+            color: black;
+            border-radius: 4px;
+            z-index: 1000;
+        }
+        .alert.show {
+            display: block;
+        }
+    </style>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        function showAlert(message) {
+            const alertBox = document.getElementById('alertMessage');
+            alertBox.textContent = message;
+            alertBox.classList.add('show');
+            setTimeout(() => {
+                alertBox.classList.remove('show');
+            }, 3000);
+        }
+
+        console.log(/*[[${alterMessage}]]*/)
+        const serverMessage = /*[[${alterMessage}]]*/ null;
+        if (serverMessage) {
+            showAlert(serverMessage);
+        }
+        /*]]>*/
+    </script>
 </head>
 <body>
+<div class="alert" id="alertMessage"></div>
 
 <div th:replace="~{layout/header.html :: headerFragment ('isLogin', 'message')}"></div>
-
-
-
 
 
 <div th:if="${view == null}">
@@ -41,9 +75,12 @@
     <section th:replace="~{view/product/tagRegisterForm.html :: tagRegisterFragment}"></section>
 </div>
 
-
+<div th:if="${view != null} and ${#strings.equals(view, 'change-password')}">
+    <section th:replace="~{view/auth/changePassword.html :: changePasswordFragment ('email', 'token')}"></section>
+</div>
 
 <div th:replace="~{layout/footer.html :: footerFragment}"></div>
+
 
 </body>
 </html>

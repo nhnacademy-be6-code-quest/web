@@ -1,6 +1,8 @@
 package com.nhnacademy.codequestweb.client.auth;
 
 import com.nhnacademy.codequestweb.request.auth.ClientRegisterRequestDto;
+import com.nhnacademy.codequestweb.request.client.ClientChangePasswordRequestDto;
+import com.nhnacademy.codequestweb.request.client.ClientRecoveryRequestDto;
 import com.nhnacademy.codequestweb.request.mypage.ClientRegisterAddressRequestDto;
 import com.nhnacademy.codequestweb.request.mypage.ClientRegisterPhoneNumberRequestDto;
 import com.nhnacademy.codequestweb.request.mypage.ClientUpdatePrivacyRequestDto;
@@ -51,4 +53,10 @@ public interface UserClient {
 
     @PutMapping("/api/client")
     ResponseEntity<String> updateClient(@RequestHeader HttpHeaders httpHeaders, @RequestBody ClientUpdatePrivacyRequestDto clientUpdatePrivacyRequestDto);
+
+    @PutMapping("/api/client/change-password")
+    ResponseEntity<String> changePasswordClient(@RequestBody ClientChangePasswordRequestDto clientChangePasswordRequestDto);
+
+    @PutMapping("/api/client/recovery-account")
+    ResponseEntity<String> recoveryClient(@RequestBody ClientRecoveryRequestDto clientRecoveryRequestDto);
 }
