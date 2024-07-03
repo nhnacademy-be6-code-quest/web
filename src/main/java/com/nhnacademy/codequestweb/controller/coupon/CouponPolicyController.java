@@ -3,11 +3,14 @@ package com.nhnacademy.codequestweb.controller.coupon;
 import com.nhnacademy.codequestweb.domain.DiscountType;
 import com.nhnacademy.codequestweb.request.coupon.CouponPolicyRegisterRequestDto;
 import com.nhnacademy.codequestweb.response.coupon.CouponPolicyListResponseDto;
+import com.nhnacademy.codequestweb.response.coupon.CouponResponseDto;
 import com.nhnacademy.codequestweb.response.product.productCategory.CategoryGetResponseDto;
 import com.nhnacademy.codequestweb.service.coupon.ClientCouponService;
 import com.nhnacademy.codequestweb.service.coupon.CouponPolicyService;
 import com.nhnacademy.codequestweb.service.product.CategoryService;
 import com.nhnacademy.codequestweb.test.ProductGetResponseDto;
+import com.nhnacademy.codequestweb.utils.CookieUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -61,13 +64,26 @@ public class CouponPolicyController {
         return "/view/coupon/testcategory";
     }
 
-    @GetMapping("/api/coupon/policy")
-    public String viewPolicy(Model model, @PageableDefault(size = 6) Pageable pageable){
-        Page<CouponPolicyListResponseDto> couponPolicies = couponPolicyService.getAllCouponPolicies(pageable);
 
-        model.addAttribute("couponPolicies",couponPolicies);
-        return "/view/coupon/admin_policy_list";
+
+
+    @GetMapping("/admin/coupon/policy")
+    public String viewPolicy(HttpServletRequest req, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "6") int size){
+        if (CookieUtils.getCookieValue(req, "refresh") == null) {
+            return "redirect:/auth";
+        }
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("access", CookieUtils.getCookieValue(req, "access"));
+        headers.set("refresh", CookieUtils.getCookieValue(req, "refresh"));
+        Page<CouponPolicyListResponseDto> couponPolicies = couponPolicyService.getAllCouponPolicies(page, size);
+        req.setAttribute("view", "adminPage");
+        req.setAttribute("adminPage", "couponPolicy");
+
+        req.setAttribute("couponPolicies",couponPolicies);
+        return "index";
     }
+
+
     @GetMapping("/api/coupon/policy/register")
     public String viewRegisterPolicy(Model model){
         List<DiscountType> discountTypes = List.of(DiscountType.AMOUNTDISCOUNT,DiscountType.PERCENTAGEDISCOUNT);
@@ -75,11 +91,11 @@ public class CouponPolicyController {
 
         return "/view/coupon/admin_policy_register";
     }
+
     @PostMapping("/api/coupon/policy/register")
     public String registerPolicy(@Valid @ModelAttribute CouponPolicyRegisterRequestDto couponPolicyRegisterRequestDto){
         couponPolicyService.savePolicy(couponPolicyRegisterRequestDto);
-        //return "redirect:/api/coupon/policy";
-        return "redirect:/api/coupon/policy";
+        return "redirect:/admin/coupon/policy";
     }
 
 }

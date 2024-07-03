@@ -119,21 +119,7 @@ public String getView() {
 
     }
 
-    private List<CategoryGetResponseDto> getCategoryPathList1(ResponseEntity<Page<CategoryGetResponseDto>> response) {
-        List<CategoryGetResponseDto> categoryPathList = new ArrayList<>();
-        if (response.getBody() != null) {
-            List<CategoryGetResponseDto> categoryList = response.getBody().getContent();
-            for (CategoryGetResponseDto category : categoryList) {
-                CategoryGetResponseDto categoryPath = new CategoryGetResponseDto(
-                        category.productCategoryId(),
-                        getAllCategoryPathName(category),
-                        category.parentProductCategory()
-                );
-                categoryPathList.add(categoryPath);
-            }
-        }
-        return categoryPathList;
-    }
+
 
 
     private String getAllCategoryPathName1(CategoryGetResponseDto category) {
@@ -152,19 +138,6 @@ public String getView() {
         return stringBuilder.toString();
     }
 
-    @GetMapping("/categories/sub")
-    public String getCategorySubPage(@RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "desc", required = false) Boolean desc, @RequestParam(name = "sort", required = false) String sort, @RequestParam("categoryName") String categoryName, Model model) {
-        ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getSubCategories(page, desc, sort, categoryName);
-        List<CategoryGetResponseDto> categories = getCategoryPathList1(response);
-        log.error("{}",response);
-        log.error("{}",categories);
-
-        //List<String> categoryNamePage = getCategoryPathNameList(response);
-        model.addAttribute("categoryDetails", categories);
-        //model.addAttribute("categorys",categoryNamePage);
-       // return "/view/product/categoryPage";
-        return "/test/second_popup";
-    }
 
     @GetMapping("/categories/search")
     public String test() {

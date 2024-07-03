@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import java.util.List;
 
 @FeignClient(name="couponTypeClient", url = "http://localhost:8001")
-//@FeignClient(name="couponTypeClient", url = "http://10.220.222.13:8001")
 public interface CouponTypeClient {
 
     @GetMapping("/api/coupon/type")

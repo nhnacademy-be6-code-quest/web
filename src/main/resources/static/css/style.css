@@ -103,6 +103,7 @@ CSS STRUCTURE:
   }
 }
 
+
 /* Theme Colors */
 :root {
   --accent-color: #DEAD6F;
@@ -294,6 +295,7 @@ a {
   top: 0;
   left: 0;
   z-index: 111;
+
   background: #fff;
 }
 

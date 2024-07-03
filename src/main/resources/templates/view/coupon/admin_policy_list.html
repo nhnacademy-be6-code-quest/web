@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="couponPolicyFragment('couponPolicy')">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,22 +7,22 @@
 <!--    <link rel="stylesheet" th:href="@{/css/coupon/admin_policy_list.css}">-->
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
+
             margin: 0;
             padding: 0;
-            height: 2500px;
+
         }
         .container {
-            max-width: 1200px;
+            /*max-width: 1200px;*/
             margin: 0 auto;
             padding: 20px;
-            height: 2000px;
+            position: relative;
         }
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px;
+            margin-top: 50px;
         }
         .card {
             background-color: #fff;
@@ -43,12 +43,7 @@
         .card p {
             margin-bottom: 8px;
         }
-        .card .discount {
-            color: #666;
-        }
-        .card .products {
-            color: #888;
-        }
+
         .card .btn {
             background-color: #007bff;
             color: #fff;

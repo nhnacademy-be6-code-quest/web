@@ -7,10 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 @FeignClient(name = "couponClient", url = "http://localhost:8001")
-//@FeignClient(name = "couponClient", url = "http://10.220.222.13:8001")
 public interface CouponClient {
 
     @GetMapping("/api/coupon")

@@ -13,7 +13,14 @@
 </head>
 <body>
 
-<div th:replace="~{layout/header.html :: headerFragment ('isLogin', 'message')}"></div>
+
+    <div th:if="${view!='adminPage'}">
+        <div th:replace="~{layout/header.html :: headerFragment ('isLogin', 'message')}"></div>
+    </div>
+    <div th:if="${view != null} and ${#strings.equals(view, 'adminPage')}">
+        <div th:replace="~{layout/adminHeader.html :: headerFragment ('isLogin', 'message')}"></div>
+    </div>
+
 
 
 
@@ -28,8 +35,11 @@
 <div th:if="${view != null} and ${#strings.equals(view, 'oauth')}">
     <section th:replace="~{view/auth/OAuth.html :: oauthFragment}"></section>
 </div>
+<div th:if="${view != null} and ${#strings.equals(view, 'adminPage')}">
+    <div th:replace="~{view/adminPage/adminPage :: adminPageFragment ('couponPolicy')}"></div>
+</div>
 <div th:if="${view != null} and ${#strings.equals(view, 'mypage')}">
-    <div th:replace="~{view/mypage/mypage :: mypageFragment ('mypage', 'profile', 'delivaryaddress','clientPhoneNumber','coupons')}"></div>
+    <div th:replace="~{view/mypage/mypage :: mypageFragment ('adminPage', 'profile', 'delivaryaddress','clientPhoneNumber','coupons')}"></div>
 </div>
 <div th:if="${view != null} and ${#strings.equals(view, 'bookProductRegisterForm')}">
     <section th:replace="~{view/product/bookProductRegisterForm.html :: bookProductRegisterFragment}"></section>

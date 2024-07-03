@@ -250,20 +250,13 @@ public class MyPageController {
         if (CookieUtils.getCookieValue(req, "refresh") == null) {
             return "redirect:/auth";
         }
-
-
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
         headers.set("refresh", CookieUtils.getCookieValue(req, "refresh"));
         req.setAttribute("view", "mypage");
         req.setAttribute("mypage", "coupons");
 
-//        Pageable pageRequest = PageRequest.of(pageable.getPageNumber(), DEFAULT_PAGE_SIZE, Sort.by(
-//                Sort.Direction.DESC, "registerDate"));
-
         Page<CouponResponseDto> couponList = couponService.findClientCoupon(headers, page, size).getBody();
-        //TODO pageable 고려
-//        model.addAttribute("coupons", couponList);
         req.setAttribute("coupons", couponList);
         return "index";
     }

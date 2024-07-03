@@ -16,10 +16,10 @@ public class CouponPolicyService {
 
     private final CouponPolicyClient couponPolicyClient;
 
-    public Page<CouponPolicyListResponseDto> getAllCouponPolicies(Pageable pageable) {
+    public Page<CouponPolicyListResponseDto> getAllCouponPolicies(int page, int size) {
 
 
-       return couponPolicyClient.getAllCouponPolices(pageable).getBody();
+       return couponPolicyClient.getAllCouponPolices(page, size).getBody();
     }
 
     public ResponseEntity<CouponPolicyRegisterRequestDto> savePolicy(CouponPolicyRegisterRequestDto couponPolicyRegisterRequestDto){
