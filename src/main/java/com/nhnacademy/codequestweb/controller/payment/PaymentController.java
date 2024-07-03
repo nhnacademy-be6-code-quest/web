@@ -1,25 +1,17 @@
 package com.nhnacademy.codequestweb.controller.payment;
 
+import com.nhnacademy.codequestweb.client.payment.TossPaymentsClient;
 import com.nhnacademy.codequestweb.request.payment.PaymentOrderRequestDto;
-import com.nhnacademy.codequestweb.request.payment.PaymentOrderValidationRequestDto;
-import com.nhnacademy.codequestweb.response.payment.PaymentResponseDto;
 import com.nhnacademy.codequestweb.response.payment.ProductOrderDetailResponseDto;
+import com.nhnacademy.codequestweb.response.payment.TossPaymentsResponseDto;
 import com.nhnacademy.codequestweb.service.order.OrderService;
 import com.nhnacademy.codequestweb.service.payment.PaymentService;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,6 +27,7 @@ public class PaymentController {
     private final PaymentService paymentService;
     private final OrderService orderService;
     private final String secretKey;
+    private final TossPaymentsClient tossPaymentsClient;
 
     @GetMapping("/client/order/{orderId}/payment")
     public String savePayment(@PathVariable long orderId, Model model) {
@@ -42,22 +35,22 @@ public class PaymentController {
         ProductOrderDetailResponseDto productOrderDetailResponseDto = ProductOrderDetailResponseDto.builder()
             .productId(1L)
             .quantity(3L)
-            .pricePerProduct(10000L)
-            .productName("10000 원 짜리 테스트 상품")
+            .pricePerProduct(100000L)
+            .productName("100000 원 짜리 테스트 상품")
             .build();
 
         ProductOrderDetailResponseDto productOrderDetailResponseDto2 = ProductOrderDetailResponseDto.builder()
             .productId(2L)
             .quantity(2L)
-            .pricePerProduct(20000L)
-            .productName("20000 원 짜리 테스트 상품")
+            .pricePerProduct(200000L)
+            .productName("200000 원 짜리 테스트 상품")
             .build();
 
         ProductOrderDetailResponseDto productOrderDetailResponseDto3 = ProductOrderDetailResponseDto.builder()
             .productId(3L)
             .quantity(1L)
-            .pricePerProduct(30000L)
-            .productName("30000 원 짜리 테스트 상품")
+            .pricePerProduct(300000L)
+            .productName("300000 원 짜리 테스트 상품")
             .build();
 
         List<ProductOrderDetailResponseDto> productOrderDetailResponseDtoList = new ArrayList<>();
@@ -65,25 +58,19 @@ public class PaymentController {
         productOrderDetailResponseDtoList.add(productOrderDetailResponseDto2);
         productOrderDetailResponseDtoList.add(productOrderDetailResponseDto3);
 
-//        OrderPaymentResponseDto orderPaymentResponseDto = paymentService.findOrderPaymentResponseDtoByOrderId(orderId);
+        // TODO 1. 주문에서 이것만 잘 받으면 됨.
+//        PaymentOrderRequestDto paymentOrderRequestDto = paymentService.findPaymentOrderRequestDtoByOrderId(orderId);
         PaymentOrderRequestDto paymentOrderRequestDto = PaymentOrderRequestDto.builder()
-            .orderTotalAmount(100000L)
+            .orderTotalAmount(1000000L)
             .discountAmountByCoupon(20000L)
             .discountAmountByPoint(20000L)
-            .tossOrderId(/* TODO: 수정 필요. UUID.randomUUID().toString()*/ "04b4e96f-1a48-40fb-8ce6-16e10ab54c80")
+            .tossOrderId(UUID.randomUUID().toString())
             .productOrderDetailResponseDtoList(productOrderDetailResponseDtoList)
             .build();
 
-        model.addAttribute("payAmount", paymentOrderRequestDto.getOrderTotalAmount()
-            - paymentOrderRequestDto.getDiscountAmountByCoupon()
-            - paymentOrderRequestDto.getDiscountAmountByCoupon());
+        // TODO 2. 주문에서 받은 값을 토대로 내 View 에 잘 표현하기. (View 에서는 결제 창을 보여 줌.)
 
-        model.addAttribute("tossOrderId", paymentOrderRequestDto.getTossOrderId());
-
-        model.addAttribute("orderName",
-            paymentOrderRequestDto.getProductOrderDetailResponseDtoList().getFirst()
-                .getProductName() + " 외 " + (
-                paymentOrderRequestDto.getProductOrderDetailResponseDtoList().size() - 1) + "건");
+        model.addAttribute("paymentOrderRequestDto", paymentOrderRequestDto);
 
 //        String customerName = paymentService.getCustomerNameByOrderId(orderId);
         String customerName = "김채호";
@@ -95,6 +82,7 @@ public class PaymentController {
         model.addAttribute("failUrl",
             "https://localhost:8080/client/order/" + orderId + "/payment/fail");
 
+        // TODO 3. html 페이지로 이동하여 토스 결제 창을 불러 옴.
         return "/view/payment/tossPage";
     }
 
@@ -106,132 +94,43 @@ public class PaymentController {
         @RequestParam(value = "amount") long amount, // 토스가 말하는 결제 금액
         @RequestParam(value = "paymentKey") String paymentKey) throws Exception {
 
-//        주문 정보 검증
-//        PaymentOrderPriceDto paymentOrderPriceDto = orderService.findPaymentOrderPriceDtoByOrderId(
-//            orderId);
-
+        /*
+        TODO 지우면 안 됨!!! 테스트 간결하게 하기 위해 잠시 주석 처리 함.
+//        PaymentOrderValidationRequestDto paymentOrderValidationRequestDto = orderService.findPaymentOrderValidationDtoByOrderId(orderId);
         PaymentOrderValidationRequestDto paymentOrderValidationRequestDto = PaymentOrderValidationRequestDto.builder()
             .orderTotalAmount(100000L)
             .discountAmountByCoupon(20000L)
             .discountAmountByPoint(20000L)
-            .tossOrderId("04b4e96f-1a48-40fb-8ce6-16e10ab54c80")
+            .tossOrderId("287af443-771e-4b04-9428-8031d72cff25") // 서버에 저장하고 있어야 하는 값
             .build();
 
-        // TODO 1. OrderService 에서 넘겨 받은 총 결제 금액과, 토스의 amount 가 일치하는지 확인.
-        if (paymentOrderValidationRequestDto == null
-            || (paymentOrderValidationRequestDto.getOrderTotalAmount()
-            - paymentOrderValidationRequestDto.getDiscountAmountByPoint()
-            - paymentOrderValidationRequestDto.getDiscountAmountByCoupon()) != amount
-
-            // TODO 2. OrderService 에서 넘긴 (토스)orderId 와 Query Parameter 의 orderId 가 일치하는지 확인
-            || (!paymentOrderValidationRequestDto.getTossOrderId().equals("04b4e96f-1a48-40fb-8ce6-16e10ab54c80"))) {
-
+//        TODO 4. 사용자에게 결제 수단을 잘 받아 왔다면, tossOrderId, amount 가 조작되지는 않았는지 확인함.
+        if (!paymentService.isValidTossPayment(paymentOrderValidationRequestDto, tossOrderId,
+            amount)) {
             // 주문 정보가 일치하지 않으면 에러 처리
             model.addAttribute("isSuccess", false);
             model.addAttribute("code", "INVALID_ORDER");
             model.addAttribute("message", "주문 정보가 일치하지 않습니다.");
             return "view/payment/failed";
         }
+        TODO 지우면 안 됨!!! 테스트 간결하게 하기 위해 잠시 주석 처리 함.
+         */
 
-        // TODO 2. 토스 페이먼트에 실제로 결제를 요청함.
-        // 시크릿 키 설정 (주의: 실제 환경에서는 안전하게 관리해야 함)
-        // 시크릿 키를 Base64로 인코딩하여 Authorization 헤더 생성
-        Base64.Encoder encoder = Base64.getEncoder();
-        byte[] encodedBytes = encoder.encode(secretKey.getBytes("UTF-8"));
-        String authorizations = "Basic " + new String(encodedBytes, 0, encodedBytes.length);
+//         TODO 5. 토스 페이먼트에게 결제를 승인 받음. // @NotNull 애너테이션이 있어서 -> Validation 가능
+        JSONObject jsonObject = paymentService.approvePayment(tossOrderId,
+            amount, paymentKey);
 
-        // 토스페이먼츠 결제 승인 API 엔드포인트 URL 생성
-        URL url = new URL("https://api.tosspayments.com/v1/payments/" + paymentKey);
-
-        // HTTP 연결 설정
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestProperty("Authorization", authorizations);
-        connection.setRequestProperty("Content-Type", "application/json");
-        connection.setRequestMethod("POST");
-        connection.setDoOutput(true);
-
-        // 요청 본문 데이터 생성
-        JSONObject obj = new JSONObject();
-        obj.put("orderId", tossOrderId);
-        obj.put("amount", amount);
-
-        // 요청 전송
-        OutputStream outputStream = connection.getOutputStream();
-        outputStream.write(obj.toString().getBytes("UTF-8"));
-
-        // 응답 코드 확인 및 성공 여부 판단
-        int code = connection.getResponseCode();
-        boolean isSuccess = code == 200 ? true : false;
-        model.addAttribute("isSuccess", isSuccess);
-
-        // 응답 데이터 읽기
-        InputStream responseStream =
-            isSuccess ? connection.getInputStream() : connection.getErrorStream();
-        Reader reader = new InputStreamReader(responseStream, StandardCharsets.UTF_8);
-        JSONParser parser = new JSONParser();
-        JSONObject jsonObject = (JSONObject) parser.parse(reader);
-        responseStream.close();
-        reader.close();
-
-        if (isSuccess) {
-            Object amountObj = jsonObject.get("totalAmount");
-            String responseOrderId = (String) jsonObject.get("orderId");
-            long responseAmount = ((Number) amountObj).longValue();
-        }
-
-        // 응답 데이터를 모델에 추가 및 콘솔 출력
-        model.addAttribute("responseStr", jsonObject.toJSONString());
-        System.out.println(jsonObject.toJSONString());
-
-        String methodName = (String) jsonObject.get("method");
-
-        // 결제 방식과 주문명을 모델에 추가
-        model.addAttribute("method", (String) jsonObject.get("method"));
-        model.addAttribute("orderName", (String) jsonObject.get("orderName"));
-
-
-        // 결제 방식에 따른 추가 정보 처리
-        if (((String) jsonObject.get("method")) != null) {
-            switch ((String) jsonObject.get("method")) {
-                case "카드":
-                    model.addAttribute("cardNumber",
-                        (String) ((JSONObject) jsonObject.get("card")).get("number"));
-                    break;
-                case "가상계좌":
-                    model.addAttribute("accountNumber",
-                        (String) ((JSONObject) jsonObject.get("virtualAccount")).get(
-                            "accountNumber"));
-                    break;
-                case "계좌이체":
-                    model.addAttribute("bank",
-                        (String) ((JSONObject) jsonObject.get("transfer")).get("bank"));
-                    break;
-                case "휴대폰":
-                    model.addAttribute("customerMobilePhone",
-                        (String) ((JSONObject) jsonObject.get("mobilePhone")).get(
-                            "customerMobilePhone"));
-                    break;
-            }
-        } else {
-            // 결제 방식이 없는 경우 (에러 상황) 에러 정보를 모델에 추가
-            model.addAttribute("code", (String) jsonObject.get("code"));
-            model.addAttribute("message", (String) jsonObject.get("message"));
-        }
-
-        PaymentResponseDto paymentResponseDto = PaymentResponseDto.builder()
-            .orderId(orderId)
-            .payAmount(amount)
-            .paymentMethodName(methodName)
-            .tossPaymentKey(paymentKey)
-            .build();
-
+        TossPaymentsResponseDto tossPaymentsResponseDto = paymentService.parseJSONObject(jsonObject);
         // 결제 성공 페이지로 이동
-        paymentService.savePayment(orderId, paymentResponseDto);
+        paymentService.savePayment(orderId, tossPaymentsResponseDto);
+        model.addAttribute("tossPaymentsResponseDto", tossPaymentsResponseDto);
+        model.addAttribute("jsonObject", jsonObject);
         return "view/payment/success";
     }
 
-    @GetMapping("/client/order/payment/fail")
+    @GetMapping("/client/order/{orderId}/payment/fail")
     public String paymentResult(
+        @PathVariable long orderId,
         Model model,
         @RequestParam(value = "message") String message,
         @RequestParam(value = "code") Integer code) {
@@ -243,6 +142,5 @@ public class PaymentController {
     // 사용자에게 결제와 관련된 정보를 입력 받습니다.
     @PostMapping("client/order/payment")
     public void savePayment(/* TODO: 나중에 주석 풀기 @PathVariable long orderId */) {
-
     }
 }
