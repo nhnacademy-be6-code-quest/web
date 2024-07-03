@@ -53,17 +53,9 @@ public class CategoryController {
             HttpServletRequest req
             ) {
         log.warn("category Name : {}, parent Category : {}", categoryName, parentCategoryName);
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("access", CookieUtils.getCookieValue(req,"access"));
-        headers.set("refresh", CookieUtils.getCookieValue(req, "refresh"));
 
         CategoryRegisterRequestDto dto = new CategoryRegisterRequestDto(categoryName, parentCategoryName);
-//        if (parentCategoryName.isBlank()){
-//            dto = new CategoryRegisterRequestDto(categoryName, null);
-//        }else{
-//            dto = new CategoryRegisterRequestDto(categoryName, parentCategoryName);
-//        }
-        ResponseEntity<CategoryRegisterResponseDto> response = categoryService.saveCategory(headers, dto);
+        ResponseEntity<CategoryRegisterResponseDto> response = categoryService.saveCategory(CookieUtils.setHeader(req), dto);
         log.info("status code : {} body : {}",response.getStatusCode().value(), response.getBody());
         redirectAttributes.addFlashAttribute("message", "category saved successfully");
         return "redirect:/";
@@ -100,24 +92,17 @@ public class CategoryController {
     }
 
     private List<CategoryGetResponseDto> getCategoryPathNameList(ResponseEntity<Page<CategoryGetResponseDto>> response) {
-//        List<String> categoryNamePage = new ArrayList<>();
         if (response.getBody() != null) {
             return response.getBody().getContent();
-//            for (CategoryGetResponseDto category : categoryList) {
-//                log.error("category id : {}",category.productCategoryId());
-//                categoryNamePage.add(getAllCategoryPathName(category));
-//            }
         }else{
             return new ArrayList<>();
         }
-//        return categoryNamePage;
     }
 
 
     @GetMapping("/categories/containing")
     public String getCategoryContainingPage(@RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "desc", required = false) Boolean desc, @RequestParam(name = "sort", required = false) String sort, @RequestParam("categoryName") String categoryName, Model model) {
         ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getNameContainingCategories(page, desc, sort, categoryName);
-//        List<String> categoryNamePage = getCategoryPathNameList(response);
         List<CategoryGetResponseDto> categoryNamePage = getCategoryPathNameList(response);
         Map<CategoryGetResponseDto, String> categoryNameMap = new LinkedHashMap<>();
 
@@ -127,7 +112,6 @@ public class CategoryController {
 
         model.addAttribute("register", false);
         model.addAttribute("categoryNamePage", categoryNameMap);
-//        model.addAttribute("view", "categories");
         return "/view/product/categoryPage";
     }
 

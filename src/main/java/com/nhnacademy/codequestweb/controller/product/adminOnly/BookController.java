@@ -43,8 +43,6 @@ public class BookController {
 
     private final MessageSource messageSource;
 
-    private final String ACCESS = "access";
-    private final String REFRESH = "refresh";
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {
@@ -102,25 +100,14 @@ public class BookController {
 
     @PostMapping("/register")
     public String saveBook(@ModelAttribute @Valid BookProductRegisterRequestDto dto, HttpServletRequest req, Model model){
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set(ACCESS, CookieUtils.getCookieValue(req, ACCESS));
-        headers.set(REFRESH, CookieUtils.getCookieValue(req, REFRESH));
-        log.error("product name : {},", dto.productName());
-        log.error("isbn 13: {}", dto.isbn13());
-        log.error("isbn 10: {}", dto.isbn());
-        log.error("categories: {}", dto.categories());
-        ResponseEntity<ProductRegisterResponseDto> responseEntity = bookProductService.saveBook(headers, dto);
+        ResponseEntity<ProductRegisterResponseDto> responseEntity = bookProductService.saveBook(CookieUtils.setHeader(req), dto);
         return "redirect:/";
     }
 
     @PostMapping("/update")
     public String updateBook(HttpServletRequest req, @ModelAttribute @Valid BookProductUpdateRequestDto dto){
         log.info("update book called save book");
-        HttpHeaders headers = new HttpHeaders();
-        headers.set(ACCESS, CookieUtils.getCookieValue(req, ACCESS));
-        headers.set(REFRESH, CookieUtils.getCookieValue(req, REFRESH));
-        ResponseEntity<ProductUpdateResponseDto> responseEntity = bookProductService.updateBook(headers, dto);
+        ResponseEntity<ProductUpdateResponseDto> responseEntity = bookProductService.updateBook(CookieUtils.setHeader(req), dto);
         log.info("status code : {}",responseEntity.getStatusCode().value());
         return "redirect:/";
     }

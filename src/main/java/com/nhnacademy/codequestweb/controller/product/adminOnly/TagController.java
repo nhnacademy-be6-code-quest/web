@@ -4,6 +4,8 @@ import com.nhnacademy.codequestweb.request.product.tag.TagRegisterRequestDto;
 import com.nhnacademy.codequestweb.response.product.tag.TagGetResponseDto;
 import com.nhnacademy.codequestweb.response.product.tag.TagRegisterResponseDto;
 import com.nhnacademy.codequestweb.service.product.TagService;
+import com.nhnacademy.codequestweb.utils.CookieUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -28,8 +30,8 @@ public class TagController {
     }
 
     @PostMapping("/admin/tags/register")
-    public String saveTag(@ModelAttribute TagRegisterRequestDto dto) {
-        ResponseEntity<TagRegisterResponseDto> response = tagService.saveTag(dto);
+    public String saveTag(HttpServletRequest req, @ModelAttribute TagRegisterRequestDto dto) {
+        ResponseEntity<TagRegisterResponseDto> response = tagService.saveTag(CookieUtils.setHeader(req), dto);
         log.warn(response.toString());
         return "redirect:/";
     }

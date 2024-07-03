@@ -4,6 +4,7 @@ import com.nhnacademy.codequestweb.request.product.PageRequestDto;
 import com.nhnacademy.codequestweb.request.product.productCategory.CategoryRegisterRequestDto;
 import com.nhnacademy.codequestweb.response.product.productCategory.CategoryGetResponseDto;
 import com.nhnacademy.codequestweb.response.product.productCategory.CategoryRegisterResponseDto;
+import jakarta.validation.Valid;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface CategoryClient {
 
     @PostMapping("/product/admin/category/register")
-    ResponseEntity<CategoryRegisterResponseDto> saveCategory(@RequestHeader HttpHeaders headers, @RequestBody CategoryRegisterRequestDto categoryRegisterRequestDto);
+    ResponseEntity<CategoryRegisterResponseDto> saveCategory(@RequestHeader HttpHeaders headers, @Valid @RequestBody CategoryRegisterRequestDto categoryRegisterRequestDto);
 
     @GetMapping("/product/categories/all")
     ResponseEntity<Page<CategoryGetResponseDto>> getAllCategories(@RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "desc", required = false) Boolean desc, @RequestParam(name = "sort", required = false) String sort);
