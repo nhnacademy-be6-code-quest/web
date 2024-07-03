@@ -14,10 +14,8 @@ import lombok.Getter;
 @Getter
 public class PaymentResponseDto {
 
-    @NotNull
     long orderId;
 
-    @NotNull
     long payAmount;
 
     @NotNull

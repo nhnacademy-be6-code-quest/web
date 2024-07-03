@@ -16,11 +16,8 @@ import lombok.Getter;
 @Getter
 public class PaymentOrderRequestDto {
     // payAmount 를 계산하기 위해 필요한 값들
-    @NotNull
     long orderTotalAmount;          // 주문 총 금액
-    @NotNull
     long discountAmountByCoupon;    // 쿠폰으로 할인 받은 값
-    @NotNull
     long discountAmountByPoint;     // 포인트로 할인 받은 값
 
     // toss 에 제공해야 하는 orderId 를 제공하기 위해 필요한 값
