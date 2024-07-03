@@ -45,7 +45,6 @@
         <div th:each="category : ${categoryNamePage}">
             <a th:href="'/categories/sub?categoryName=' + ${category.getKey().categoryName()}" target="_self">
                 <span th:text="${category.getValue()}"></span>
-                <span th:text="${category.getKey().productCategoryId()}"></span>
             </a>
         </div>
     </div>

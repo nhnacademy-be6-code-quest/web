@@ -15,6 +15,10 @@ import org.springframework.stereotype.Service;
 public class CartService {
     private final CartClient cartClient;
 
+    public ResponseEntity<List<CartRequestDto>> restoreClientCartList(HttpHeaders headers){
+        return cartClient.restoreClientCartList(headers);
+    }
+
     public ResponseEntity<List<CartGetResponseDto>> getClientCartList(HttpHeaders headers) {
         return cartClient.getClientCartList(headers);
     }
@@ -23,7 +27,28 @@ public class CartService {
         return cartClient.getGuestCartList(cartRequestDtoList);
     }
 
-    public ResponseEntity<SaveCartResponseDto> addCartItem(HttpHeaders headers, CartRequestDto requestDto) {
-        return cartClient.saveCartItem(headers, requestDto);
+    public ResponseEntity<SaveCartResponseDto> addClientCartItem(HttpHeaders headers, CartRequestDto requestDto) {
+        return cartClient.addClientCartItem(headers, requestDto);
     }
+
+    public ResponseEntity<SaveCartResponseDto> addGuestCartItem(CartRequestDto requestDto) {
+        return cartClient.addGuestCartItem(requestDto);
+    }
+
+    public ResponseEntity<SaveCartResponseDto> updateClientCartItem(HttpHeaders headers, CartRequestDto cartRequestDto){
+        return cartClient.updateClientCartItem(headers, cartRequestDto);
+    };
+
+    public ResponseEntity<SaveCartResponseDto> updateGuestCartItem(CartRequestDto cartRequestDto){
+        return cartClient.updateGuestCartItem(cartRequestDto);
+    };
+
+    public ResponseEntity<Void> deleteClientCartItem(HttpHeaders headers, Long productId){
+        return cartClient.deleteClientCartItem(headers, productId);
+    };
+
+    public ResponseEntity<Void> clearClientAllCart(HttpHeaders headers){
+        return cartClient.clearClientAllCart(headers);
+    };
+
 }

@@ -3,6 +3,8 @@ package com.nhnacademy.codequestweb.response.product.common;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import java.util.Map;
 import lombok.Builder;
 import org.hibernate.validator.constraints.Length;
 
@@ -34,6 +36,14 @@ public record CartGetResponseDto(
 
         @NotNull
         @NotBlank
-        String productThumbnailImage
+        String productThumbnailImage,
+
+        @NotNull(message = "{must.have.category}")
+        @Size(min = 1, message = "{must.have.category}")
+        @Size(max =10, message = "{too.much.category}")
+        Map<Long, String> categoryMapOfIdAndName,
+
+        Map<Long, String> tagMapOfIdAndName
+
 ) {
 }

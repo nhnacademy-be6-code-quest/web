@@ -19,6 +19,10 @@ import org.springframework.web.bind.annotation.RequestHeader;
 @FeignClient(name = "cart", url = "http://localhost:8001/api/product")
 public interface CartClient {
 
+    @GetMapping("/client/cart/restore")
+    ResponseEntity<List<CartRequestDto>> restoreClientCartList(
+            @RequestHeader HttpHeaders headers);
+
     @GetMapping("/client/cart")
     ResponseEntity<List<CartGetResponseDto>> getClientCartList(
             @RequestHeader HttpHeaders headers);
@@ -29,21 +33,30 @@ public interface CartClient {
     );
 
     @PostMapping("/client/cart/add")
-    ResponseEntity<SaveCartResponseDto> saveCartItem(
+    ResponseEntity<SaveCartResponseDto> addClientCartItem(
             @RequestHeader HttpHeaders headers,
             @RequestBody @Valid CartRequestDto cartRequestDto);
 
+    @PostMapping("/guest/cart/add")
+    ResponseEntity<SaveCartResponseDto> addGuestCartItem(
+            @RequestBody @Valid CartRequestDto cartRequestDto);
+
+
     @PutMapping("/client/cart/update")
-    ResponseEntity<SaveCartResponseDto> updateCartItem(
+    ResponseEntity<SaveCartResponseDto> updateClientCartItem(
             @RequestHeader HttpHeaders headers,
+            @RequestBody @Valid CartRequestDto cartRequestDto);
+
+    @PutMapping("/guest/cart/update")
+    ResponseEntity<SaveCartResponseDto> updateGuestCartItem(
             @RequestBody @Valid CartRequestDto cartRequestDto);
 
     @DeleteMapping("/client/cart/items/{productId}")
-    ResponseEntity<Void> deleteCartItem(
+    ResponseEntity<Void> deleteClientCartItem(
             @RequestHeader HttpHeaders headers,
             @PathVariable Long productId);
 
     @DeleteMapping("/client/cart/all")
-    ResponseEntity<Void> clearAllCart(
+    ResponseEntity<Void> clearClientAllCart(
             @RequestHeader HttpHeaders headers);
 }

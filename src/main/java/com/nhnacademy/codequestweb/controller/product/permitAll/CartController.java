@@ -1,29 +1,29 @@
 package com.nhnacademy.codequestweb.controller.product.permitAll;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhnacademy.codequestweb.request.product.cart.CartRequestDto;
 import com.nhnacademy.codequestweb.response.product.common.CartGetResponseDto;
 import com.nhnacademy.codequestweb.response.product.common.SaveCartResponseDto;
 import com.nhnacademy.codequestweb.service.product.CartService;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
-import com.nhnacademy.codequestweb.utils.SecretKeyUtils;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+
 
 @Slf4j
 @Controller
@@ -31,77 +31,38 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class CartController {
     private final CartService cartService;
 
-    private final String ACCESS = "access";
-    private final String REFRESH = "refresh";
+    private final ObjectMapper objectMapper;
 
-    private boolean isGuest(HttpServletRequest req) {
-        String accessToken = CookieUtils.getCookieValue(req, ACCESS);
-        String refreshToken = CookieUtils.getCookieValue(req, REFRESH);
-        return accessToken == null && refreshToken == null;
-    }
+    private final List<CartRequestDto> emptyList = new ArrayList<>();
 
     @GetMapping("/cart/all")
     public String cartAll(HttpServletRequest req, Model model) throws Exception {
-        if (isGuest(req)) {
-            ObjectMapper objectMapper = new ObjectMapper();
-            String encryptedCart = CookieUtils.getCookieValue(req, "cart");
+        List<CartRequestDto> cartListOfCookie = (List<CartRequestDto>) model.getAttribute("cart");
 
-            if (encryptedCart == null) {
+        if (CookieUtils.isGuest(req)) {
+            if (cartListOfCookie == null || cartListOfCookie.isEmpty()) {
                 model.addAttribute("empty", true);
-            } else{
-                String cartJson = SecretKeyUtils.decrypt(encryptedCart, SecretKeyUtils.getSecretKey());
-                List<CartRequestDto> cartListOfCookie = objectMapper.readValue(cartJson, new TypeReference<List<CartRequestDto>>() {});
-//                Map<Long, Long> cartListOfCookie = objectMapper.readValue(cartJson, new TypeReference<Map<Long, Long>>(){}>());
-
-                if (cartListOfCookie == null || cartListOfCookie.isEmpty()) {
-                    model.addAttribute("empty", true);
-                }else{
-                    ResponseEntity<List<CartGetResponseDto>> responseEntity = cartService.getGuestCartList(cartListOfCookie);
-                    if (responseEntity.getStatusCode().is2xxSuccessful()) {
-                        List<CartGetResponseDto> cartList = responseEntity.getBody();
-
-                        if (cartList == null || cartList.isEmpty()) {
-                            model.addAttribute("empty", true);
-                        }else {
-                            for (CartGetResponseDto cartGetResponseDto : cartList) {
-                                log.info(cartGetResponseDto.toString());
-                            }
-                            model.addAttribute("cartList", cartList);
-                        }
-                        return "index";
+                return "/view/product/cart";
+            }else{
+                ResponseEntity<List<CartGetResponseDto>> responseEntity = cartService.getGuestCartList(cartListOfCookie);
+                if (responseEntity.getStatusCode().is2xxSuccessful()) {
+                    List<CartGetResponseDto> cartList = responseEntity.getBody();
+                    for (CartGetResponseDto cartGetResponseDto : cartList) {
+                        log.error("map : {}",cartGetResponseDto.categoryMapOfIdAndName());
                     }
-                    return "error";
+                    model.addAttribute("cartList", cartList);
+                    return "/view/product/cart";
+                }else{
+                    return "redirect:/";
                 }
             }
-
-//            if (encryptedCart != null) {
-//                String cartJson = SecretKeyUtils.decrypt(encryptedCart, SecretKeyUtils.getSecretKey());
-//                List<CartRequestDto> cartListOfCookie = objectMapper.readValue(cartJson, new TypeReference<List<CartRequestDto>>() {});
-//
-//                if (cartListOfCookie != null && !cartListOfCookie.isEmpty()) {
-//                    ResponseEntity<List<CartGetResponseDto>> responseEntity = cartService.getGuestCartList(cartListOfCookie);
-//
-//                    if (responseEntity.getStatusCode().is2xxSuccessful()) {
-//                        List<CartGetResponseDto> cartList = responseEntity.getBody();
-//
-//                        if (cartList == null || cartList.isEmpty()) {
-//                            model.addAttribute("empty", true);
-//                        }else {
-//                            model.addAttribute("cartList", cartList);
-//                        }
-//                    }
-//                }
-//                //코드 꼬라지봐 이게 실환가
-//            }else {
-//                model.addAttribute("empty", true);
-//            }
         }
+        // 아마도 CartControllerAdvice 의 로직이 잘 동작한다면 (쿠키에 담긴 회원 장바구니를 변조/삭제했을 시 데이터베이스 조회해서 자동 복구하고 쿠키에 새로 담음)
+        // 로직을 둘로 구분 (isGuest 인지 아닌지 경우로) 할 필요 없이 그냥 동일하게 위 로직 써도 될 것 같은데 어떻게 생각하시나요?
+        // 가독성 부분에선 그렇게 하는게 나을 것 같고, 혹시 모르니 안정성 관점에선 로직을 둘로 나눠야 할 것도 같고..
 
         else{
-            HttpHeaders headers = new HttpHeaders();
-            headers.set(ACCESS, CookieUtils.getCookieValue(req, ACCESS));
-            headers.set(REFRESH, CookieUtils.getCookieValue(req, REFRESH));
-            ResponseEntity<List<CartGetResponseDto>> responseEntity = cartService.getClientCartList(headers);
+            ResponseEntity<List<CartGetResponseDto>> responseEntity = cartService.getClientCartList(CookieUtils.setHeader(req));
             if (responseEntity.getStatusCode().is2xxSuccessful()) {
                 List<CartGetResponseDto> cartList = responseEntity.getBody();
                 if (cartList == null || cartList.isEmpty()) {
@@ -109,72 +70,157 @@ public class CartController {
                 }else {
                     model.addAttribute("cartList", cartList);
                 }
+                return "/view/product/cart";
             }else {
                 return "redirect:/";
             }
         }
-        return "index";
     }
 
-
+    @Transactional
     @PostMapping("/cart/add")
     public String addCart(HttpServletRequest req, HttpServletResponse resp, @ModelAttribute @Valid CartRequestDto cartRequestDto, Model model) throws Exception {
-        log.info("Add cart request: {}", cartRequestDto);
-        if (isGuest(req)) {
-            log.info("Add cart guest");
-            ObjectMapper objectMapper = new ObjectMapper();
-            String encryptedCart = CookieUtils.getCookieValue(req, "cart");
-            List<CartRequestDto> cartListOfCookie;
-            if (encryptedCart == null) {
-                cartListOfCookie = new ArrayList<>();
-                cartListOfCookie.add(cartRequestDto);
-                String cartJson = objectMapper.writeValueAsString(cartListOfCookie);
-                String encryptedCartJson = SecretKeyUtils.encrypt(cartJson, SecretKeyUtils.getSecretKey());
-                CookieUtils.setCookieValue(resp,"cart", encryptedCartJson);
-            } else {
-                CookieUtils.deleteCookieValue(resp, "cart");
+        log.info("call add cart");
 
+        List<CartRequestDto> cartListOfCookie = emptyList;
 
-                String cartJson = SecretKeyUtils.decrypt(encryptedCart, SecretKeyUtils.getSecretKey());
-                cartListOfCookie = objectMapper.readValue(cartJson, new TypeReference<List<CartRequestDto>>() {});
-                //재고보다 많으면 빠꾸시켜야되는데..
-                //이거 프론트에서 막으려면 막을 순.. 있긴 한데 데이터 정합성이 맞을지 모르겠네.. 디비 접속하는게 더 정확할 거 같긴 한데.
+        try {
+            cartListOfCookie = (List<CartRequestDto>) model.getAttribute("cart");
+        }catch (ClassCastException | NullPointerException ignore){
+        }
 
-                boolean isExist = false;
-                for (CartRequestDto cartItem : cartListOfCookie) {
-                    if (cartItem.productId().equals(cartRequestDto.productId())) {
-                        CartRequestDto updatedCartRequestDto = CartRequestDto.builder()
-                                .productId(cartItem.productId())
-                                .quantity(cartItem.quantity() + cartRequestDto.quantity())
-                                .build();
-                        cartListOfCookie.remove(cartItem);
-                        cartListOfCookie.add(updatedCartRequestDto);
-                        isExist = true;
-                    }
-                }
-                if (!isExist) {
-                    cartListOfCookie.add(cartRequestDto);
-                }
+        ResponseEntity<SaveCartResponseDto> response;
+        Long quantity = 0L;
+        CartRequestDto cartDto = cartRequestDto;
+        List<CartRequestDto> cartRequestDtoToDelete = new ArrayList<>();
 
-                log.info("cartListOfCookie: {}", cartListOfCookie);
-                String updatedCartJson = objectMapper.writeValueAsString(cartListOfCookie);
-                String encryptedUpdatedCartJson = SecretKeyUtils.encrypt(updatedCartJson, SecretKeyUtils.getSecretKey());
-                CookieUtils.setCookieValue(resp,"cart", encryptedUpdatedCartJson);
-            }
-        }else {
-            log.info("Add cart client");
-            HttpHeaders headers = new HttpHeaders();
-            headers.set(ACCESS, CookieUtils.getCookieValue(req, ACCESS));
-            headers.set(REFRESH, CookieUtils.getCookieValue(req, REFRESH));
-            ResponseEntity<SaveCartResponseDto> response = cartService.addCartItem(headers, cartRequestDto);
-            if (response.getStatusCode().is2xxSuccessful()) {
-                SaveCartResponseDto saveCartResponseDto = response.getBody();
-
+        for (CartRequestDto cartItem : cartListOfCookie) {
+            if (cartItem.productId().equals(cartRequestDto.productId())) {
+                cartDto = CartRequestDto.builder()
+                        .productId(cartItem.productId())
+                        .quantity(cartItem.quantity() + cartRequestDto.quantity())
+                        .build();
+                cartRequestDtoToDelete.add(cartItem);
             }
         }
-        return "index";
 
+        cartListOfCookie.removeAll(cartRequestDtoToDelete);
+
+        if (CookieUtils.isGuest(req)) {
+            response = cartService.addGuestCartItem(cartDto);
+        } else{
+            response = cartService.addClientCartItem(CookieUtils.setHeader(req), cartDto);
+        }
+        if (response.getStatusCode().is2xxSuccessful()) {
+            quantity = response.getBody().savedCartQuantity();
+
+            // 장바구니에 담으려 한 수량이 상품 재고보다 많은 경우.
+            if (!cartDto.quantity().equals(quantity)){
+                model.addAttribute("warn", true);
+            }
+        }
+        cartListOfCookie.add(CartRequestDto.builder()
+                        .productId(cartDto.productId())
+                        .quantity(quantity).build());
+        log.info("cartListOfCookie: {}", cartListOfCookie);
+
+
+        CookieUtils.deleteCookieValue(resp, "cart");
+        CookieUtils.setCartCookieValue(cartListOfCookie, objectMapper, resp);
+        return "redirect:/";
+    }
+
+    @PutMapping("/cart/update")
+    public String updateCart(HttpServletRequest req, HttpServletResponse resp, @ModelAttribute @Valid CartRequestDto cartRequestDto, Model model) throws Exception {
+        List<CartRequestDto> cartListOfCookie = emptyList;
+
+        try {
+            cartListOfCookie = (List<CartRequestDto>) model.getAttribute("cart");
+        }catch (ClassCastException | NullPointerException ignore){
+        }
+
+        ResponseEntity<SaveCartResponseDto> response;
+        Long quantity = 0L;
+        List<CartRequestDto> cartRequestDtoToDelete = new ArrayList<>();
+
+        for (CartRequestDto cartItem : cartListOfCookie) {
+            if (cartItem.productId().equals(cartRequestDto.productId())) {
+                cartRequestDtoToDelete.add(cartItem);
+            }
+        }
+
+        cartListOfCookie.removeAll(cartRequestDtoToDelete);
+
+        if (CookieUtils.isGuest(req)) {
+            response = cartService.updateGuestCartItem(cartRequestDto);
+        }else {
+            response = cartService.updateClientCartItem(CookieUtils.setHeader(req), cartRequestDto);
+        }
+
+        if (response.getStatusCode().is2xxSuccessful()) {
+            quantity = response.getBody().savedCartQuantity();
+
+            // 장바구니에 담으려 한 수량이 상품 재고보다 많은 경우.
+            if (!cartRequestDto.quantity().equals(quantity)){
+                model.addAttribute("warn", true);
+            }
+        }
+        cartListOfCookie.add(CartRequestDto.builder()
+                .productId(cartRequestDto.productId())
+                .quantity(quantity).build());
+
+        log.info("cartListOfCookie: {}", cartListOfCookie);
+
+
+        CookieUtils.deleteCookieValue(resp, "cart");
+        CookieUtils.setCartCookieValue(cartListOfCookie, objectMapper, resp);
+        return "redirect:/cart/all";
+    }
+
+    @DeleteMapping("/cart/{productId}")
+    public String deleteCart(HttpServletRequest req, HttpServletResponse resp,  Model model, @PathVariable("productId") Long productId) throws Exception {
+        log.info("call delete one item");
+        List<CartRequestDto> cartListOfCookie = emptyList;
+
+        try {
+            cartListOfCookie = (List<CartRequestDto>) model.getAttribute("cart");
+        }catch (ClassCastException | NullPointerException ignore){
+        }
+
+        List<CartRequestDto> cartRequestDtoToDelete = new ArrayList<>();
+        for (CartRequestDto cartItem : cartListOfCookie) {
+            if (cartItem.productId().equals(productId)) {
+                cartRequestDtoToDelete.add(cartItem);
+            }
+        }
+
+        if (CookieUtils.isGuest(req)) {
+            cartListOfCookie.removeAll(cartRequestDtoToDelete);
+        }else{
+            ResponseEntity<Void> response = cartService.deleteClientCartItem(CookieUtils.setHeader(req), productId);
+            if (response.getStatusCode().is2xxSuccessful()) {
+                cartListOfCookie.removeAll(cartRequestDtoToDelete);
+            }
+        }
+
+        CookieUtils.deleteCookieValue(resp, "cart");
+        CookieUtils.setCartCookieValue(cartListOfCookie, objectMapper, resp);
+        return "redirect:/cart/all";
     }
 
 
+    @DeleteMapping("/cart/clear")
+    public String clearCart(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+        log.info("call clear cart");
+
+        if (CookieUtils.isGuest(req)) {
+            CookieUtils.deleteCookieValue(resp, "cart");
+        }else {
+            ResponseEntity<Void> clearClientCart = cartService.clearClientAllCart(CookieUtils.setHeader(req));
+            if (clearClientCart.getStatusCode().is2xxSuccessful()) {
+                CookieUtils.deleteCookieValue(resp, "cart");
+            }
+        }
+        return "redirect:/cart/all";
+    }
 }
