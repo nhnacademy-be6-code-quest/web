@@ -58,6 +58,7 @@ public class CouponController {
         model.addAttribute("status",statuses);
         model.addAttribute("couponPolicyId",couponPolicyId);
         return "/view/coupon/admin_coupon_register";
+        //TODO 주소바꾸기
     }
 
     @PostMapping("/api/coupon/register/{couponPolicyId}")
