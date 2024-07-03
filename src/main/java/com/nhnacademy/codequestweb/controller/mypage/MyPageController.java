@@ -24,6 +24,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -144,11 +145,11 @@ public class MyPageController {
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
         headers.set("refresh", CookieUtils.getCookieValue(req, "refresh"));
         headers.set("password", pw);
-
-        ResponseEntity<String> response = myPageService.deleteClient(headers);
-        log.info("/mypage/withdrawal post response: {}", response.getBody());
-
-        return ResponseEntity.ok("Successfully deleted delivery address");
+        try {
+            return myPageService.deleteClient(headers);
+        } catch (FeignException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
     }
 
     @GetMapping("/mypage/phone")
