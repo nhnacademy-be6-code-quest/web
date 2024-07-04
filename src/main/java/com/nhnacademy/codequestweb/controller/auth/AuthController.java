@@ -3,7 +3,6 @@ package com.nhnacademy.codequestweb.controller.auth;
 import com.nhnacademy.codequestweb.request.auth.ClientLoginRequestDto;
 import com.nhnacademy.codequestweb.request.auth.ClientRegisterRequestDto;
 import com.nhnacademy.codequestweb.request.auth.OAuthRegisterRequestDto;
-import com.nhnacademy.codequestweb.request.client.ClientRecoveryRequestDto;
 import com.nhnacademy.codequestweb.response.auth.TokenResponseDto;
 import com.nhnacademy.codequestweb.service.auth.AuthService;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
@@ -33,7 +32,7 @@ public class AuthController {
 
     @GetMapping("/auth")
     public String auth(HttpServletRequest req) {
-        if (CookieUtils.getCookieValue(req, "refresh") == null) {
+        if (CookieUtils.getCookieValue(req, "access") == null) {
             req.setAttribute("view", "auth");
         }
         if (req.getParameter("alterMessage") != null) {
@@ -56,7 +55,7 @@ public class AuthController {
             cookie.setHttpOnly(true);
             cookie.setSecure(true);
             cookie.setPath("/");
-            cookie.setMaxAge(60 * 60 * 2);
+            cookie.setMaxAge(60 * 60 * 24 * 14);
             res.addCookie(cookie);
 
             cookie = new Cookie("refresh", response.getRefresh());
@@ -72,6 +71,7 @@ public class AuthController {
     @GetMapping("/logout")
     public String logout(HttpServletRequest req, HttpServletResponse res) {
         HttpHeaders headers = new HttpHeaders();
+        headers.set("access", CookieUtils.getCookieValue(req, "access"));
         headers.set("refresh", CookieUtils.getCookieValue(req, "refresh"));
         authService.logout(headers);
         Cookie access = new Cookie("access", null);
@@ -121,19 +121,19 @@ public class AuthController {
                 return "index";
             }
 
-            cookie = new Cookie("access", tokenInfo.getAccess());
+            cookie = new Cookie("refresh", tokenInfo.getAccess());
             cookie.setHttpOnly(true);
             cookie.setSecure(true);
             cookie.setPath("/");
-            cookie.setMaxAge(60 * 60 * 2);
+            cookie.setMaxAge(60 * 60 * 24 * 14);
             res.addCookie(cookie);
 
-            if (tokenInfo.getRefresh() == null) {
+            if (tokenInfo.getAccess() == null) {
                 req.setAttribute("view", "oauth");
                 return "index";
             }
 
-            cookie = new Cookie("refresh", tokenInfo.getRefresh());
+            cookie = new Cookie("access", tokenInfo.getRefresh());
             cookie.setHttpOnly(true);
             cookie.setSecure(true);
             cookie.setPath("/");
@@ -172,7 +172,7 @@ public class AuthController {
             cookie.setHttpOnly(true);
             cookie.setSecure(true);
             cookie.setPath("/");
-            cookie.setMaxAge(60 * 60 * 2);
+            cookie.setMaxAge(60 * 60 * 24 * 14);
             res.addCookie(cookie);
 
             cookie = new Cookie("refresh", response.getRefresh());
