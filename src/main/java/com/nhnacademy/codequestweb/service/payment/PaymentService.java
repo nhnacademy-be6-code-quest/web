@@ -1,25 +1,41 @@
 package com.nhnacademy.codequestweb.service.payment;
 
+import com.nhnacademy.codequestweb.client.payment.NhnKeyManagerClient;
 import com.nhnacademy.codequestweb.client.payment.PaymentClient;
 import com.nhnacademy.codequestweb.client.payment.TossPaymentsClient;
 import com.nhnacademy.codequestweb.request.payment.PaymentOrderValidationRequestDto;
 import com.nhnacademy.codequestweb.request.payment.TossPaymentsRequestDto;
 import com.nhnacademy.codequestweb.response.payment.TossPaymentsResponseDto;
+import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.Base64;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class PaymentService {
-
+    @Autowired
     private final PaymentClient paymentClient;
+    @Autowired
     private final TossPaymentsClient tossPaymentsClient;
+    @Autowired
+    private final NhnKeyManagerClient nhnKeyManagerClient;
     private final String secretKey;
+
+    public PaymentService(PaymentClient paymentClient, TossPaymentsClient tossPaymentsClient, NhnKeyManagerClient nhnKeyManagerClient) {
+        this.paymentClient = paymentClient;
+        this.tossPaymentsClient = tossPaymentsClient;
+        this.nhnKeyManagerClient = nhnKeyManagerClient;
+        JSONObject jsonObject = nhnKeyManagerClient.getTossSecretKey();
+        Map<String, Object> responseMap = (Map<String, Object>) jsonObject;
+        Map<String, Object> bodyMap = (Map<String, Object>) responseMap.get("body");
+        this.secretKey = (String) bodyMap.get("secret");
+    }
 
 
     public void savePayment(long orderId, TossPaymentsResponseDto tossPaymentsResponseDto) {
