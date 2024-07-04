@@ -1,6 +1,5 @@
 package com.nhnacademy.codequestweb.controller.mypage;
 
-import com.nhnacademy.codequestweb.request.auth.ClientRegisterRequestDto;
 import com.nhnacademy.codequestweb.request.mypage.ClientRegisterAddressRequestDto;
 import com.nhnacademy.codequestweb.request.mypage.ClientRegisterPhoneNumberRequestDto;
 import com.nhnacademy.codequestweb.request.mypage.ClientUpdatePrivacyRequestDto;
@@ -51,7 +50,6 @@ public class MyPageController {
     public String mypageMain(HttpServletRequest req, HttpServletResponse res) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
-        headers.set("refresh", CookieUtils.getCookieValue(req, "refresh"));
 
         ResponseEntity<ClientPrivacyResponseDto> response = myPageService.getPrivacy(headers);
 
@@ -65,7 +63,7 @@ public class MyPageController {
 
     @GetMapping("/mypage/delivary")
     public String mypageDelivery(HttpServletRequest req) {
-        if (CookieUtils.getCookieValue(req, "refresh") == null) {
+        if (CookieUtils.getCookieValue(req, "access") == null) {
             return "redirect:/auth";
         } else if (req.getParameter("alterMessage") != null) {
             String decoding;
@@ -78,7 +76,6 @@ public class MyPageController {
         }
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
-        headers.set("refresh", CookieUtils.getCookieValue(req, "refresh"));
 
         ResponseEntity<List<ClientDeliveryAddressResponseDto>> response = myPageService.getDeliveryAddresses(headers);
         log.info("response: {}", response.getBody());
@@ -95,7 +92,6 @@ public class MyPageController {
         HttpServletRequest req) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
-        headers.set("refresh", CookieUtils.getCookieValue(req, "refresh"));
 
         try {
             ResponseEntity<String> response = myPageService.registerAddress(headers,
@@ -119,7 +115,6 @@ public class MyPageController {
         HttpServletRequest req) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
-        headers.set("refresh", CookieUtils.getCookieValue(req, "refresh"));
 
         ResponseEntity<String> response = myPageService.deleteDeliveryAddress(headers,
             deliveryAddressId);
@@ -130,7 +125,7 @@ public class MyPageController {
 
     @GetMapping("/mypage/withdrawal")
     public String withdrawal(HttpServletRequest req) {
-        if (CookieUtils.getCookieValue(req, "refresh") == null) {
+        if (CookieUtils.getCookieValue(req, "access") == null) {
             return "redirect:/auth";
         }
         req.setAttribute("view", "mypage");
@@ -143,7 +138,6 @@ public class MyPageController {
         HttpServletRequest req) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
-        headers.set("refresh", CookieUtils.getCookieValue(req, "refresh"));
         headers.set("password", pw);
         try {
             return myPageService.deleteClient(headers);
@@ -154,14 +148,13 @@ public class MyPageController {
 
     @GetMapping("/mypage/phone")
     public String phone(HttpServletRequest req) {
-        if (CookieUtils.getCookieValue(req, "refresh") == null) {
+        if (CookieUtils.getCookieValue(req, "access") == null) {
             return "redirect:/auth";
         } else if (req.getParameter("alterMessage") != null) {
             req.setAttribute("alterMessage", req.getParameter("alterMessage"));
         }
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
-        headers.set("refresh", CookieUtils.getCookieValue(req, "refresh"));
 
         ResponseEntity<List<ClientPhoneNumberResponseDto>> response = myPageService.getPhoneNumbers(headers);
         log.info("response: {}", response.getBody());
@@ -174,12 +167,11 @@ public class MyPageController {
 
     @PostMapping("/mypage/phone")
     public String addPhone(HttpServletRequest req, @Valid @ModelAttribute ClientRegisterPhoneNumberRequestDto clientRegisterPhoneNumberRequestDto) {
-        if (CookieUtils.getCookieValue(req, "refresh") == null) {
+        if (CookieUtils.getCookieValue(req, "access") == null) {
             return "redirect:/auth";
         }
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
-        headers.set("refresh", CookieUtils.getCookieValue(req, "refresh"));
 
         ResponseEntity<String> response = myPageService.registerPhoneNumbers(headers, clientRegisterPhoneNumberRequestDto);
         log.info("response: {}", response.getBody());
@@ -190,7 +182,6 @@ public class MyPageController {
     public ResponseEntity<String> deletePhone(@PathVariable Long phoneId, HttpServletRequest req) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
-        headers.set("refresh", CookieUtils.getCookieValue(req, "refresh"));
 
         ResponseEntity<String> response = myPageService.deletePhoneNumber(headers, phoneId);
         log.info("/mypage/phone post response: {}", response.getBody());
@@ -201,7 +192,6 @@ public class MyPageController {
     public String updateProfile(@ModelAttribute ClientUpdatePrivacyRequestDto clientUpdatePrivacyRequestDto, HttpServletRequest req) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
-        headers.set("refresh", CookieUtils.getCookieValue(req, "refresh"));
 
         ResponseEntity<String> response = myPageService.updateClient(headers, clientUpdatePrivacyRequestDto);
         log.info("response: {}", response.getBody());
@@ -227,13 +217,12 @@ public class MyPageController {
 
     @GetMapping("/mypage/reviews/no-photo")
     public String getNoPhotoReviews(HttpServletRequest req, Model model, Pageable pageable) {
-        if (CookieUtils.getCookieValue(req, "refresh") == null) {
+        if (CookieUtils.getCookieValue(req, "access") == null) {
             return "redirect:/auth";
         }
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
-        headers.set("refresh", CookieUtils.getCookieValue(req, "refresh"));
 
         req.setAttribute("view", "mypage");
         req.setAttribute("mypage", "noPhotoReviews");
@@ -253,13 +242,12 @@ public class MyPageController {
 
     @GetMapping("/mypage/reviews/photo")
     public String getPhotoReviews(HttpServletRequest req, Model model, Pageable pageable) {
-        if (CookieUtils.getCookieValue(req, "refresh") == null) {
+        if (CookieUtils.getCookieValue(req, "access") == null) {
             return "redirect:/auth";
         }
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
-        headers.set("refresh", CookieUtils.getCookieValue(req, "refresh"));
 
         req.setAttribute("view", "mypage");
         req.setAttribute("mypage", "photoReviews");

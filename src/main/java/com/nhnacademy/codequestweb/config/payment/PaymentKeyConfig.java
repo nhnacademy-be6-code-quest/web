@@ -11,10 +11,11 @@ import org.springframework.context.annotation.Configuration;
 public class PaymentKeyConfig {
     @Bean
     public String secretKey() throws IOException {
-        File file = new File("src/main/resources/key/paymentKey.txt");
-        BufferedReader br = new BufferedReader(new FileReader(file));
-        String str = br.readLine();
-        System.out.println(str);
-        return str;
+//        File file = new File("src/main/resources/key/paymentKey.txt");
+//        BufferedReader br = new BufferedReader(new FileReader(file));
+//        String str = br.readLine();
+//        System.out.println(str);
+//        return str;
+        return "";
     }
 }
