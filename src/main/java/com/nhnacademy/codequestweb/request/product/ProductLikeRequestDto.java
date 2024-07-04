@@ -1,4 +1,4 @@
-package com.nhnacademy.codequestweb.controller.product.authenticatedOnly;
+package com.nhnacademy.codequestweb.request.product;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -10,4 +10,3 @@ public record ProductLikeRequestDto (
         @NotNull @Min(1) Long productId
 ){
 }
-

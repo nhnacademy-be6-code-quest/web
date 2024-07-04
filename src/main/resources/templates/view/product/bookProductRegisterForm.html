@@ -129,13 +129,120 @@
                 document.getElementById('discount').value = 0;
             }
         }
+
+        function openCategorySearch(){
+            var url = "/categories/all";
+
+            var newWindowWidth = 600;  // 새 창의 너비
+            var newWindowHeight = 750; // 새 창의 높이
+
+            var availWidth = screen.availWidth;
+            var availHeight = screen.availHeight;
+            var left = Math.max(0, (availWidth - newWindowWidth) / 2);
+            var top = Math.max(0, (availHeight - newWindowHeight) / 2);
+            // 새 창 열기
+            var newWindow = window.open(url, "_blank", "width=" + newWindowWidth + ",height=" + newWindowHeight + ",top=" + top + ",left=" + left);
+
+            newWindow.focus();
+        }
+
+        window.addEventListener("storage", function(event) {
+            if (event.key === "sharedData") {
+
+
+                var result2Element = document.getElementById("result2");
+
+                document.getElementById("result").innerText = document.getElementById("result").innerText == "" ? event.newValue : document.getElementById("result").innerText + "," + event.newValue;
+
+                result2Element.value = result2Element.value === "" ? event.newValue : result2Element.value + "," + event.newValue;
+
+                // 필요 시 `localStorage` 값 제거
+                localStorage.removeItem("sharedData");
+
+                createRemoveButton(event.newValue);
+            }
+
+            function createRemoveButton(category) {
+                var button = document.createElement("button");
+                button.textContent = "삭제: " + category;
+                button.onclick = function() {
+                    removeCategory(category);
+                    this.remove(); // 삭제 버튼 자신도 함께 삭제
+                };
+
+                document.getElementById("removeButtons").appendChild(button);
+            }
+
+            // 카테고리 삭제 함수
+            function removeCategory(category) {
+                var categories = document.getElementById("result2").value.split(',');
+                var index = categories.indexOf(category);
+
+                if (index !== -1) {
+                    categories.splice(index, 1); // 해당 카테고리 삭제
+                    document.getElementById("result2").value = categories.join(',');
+                    document.getElementById("result").innerText = categories.join(','); // 화면에도 반영
+                }
+            }
+        });
+
+        // / 선택된 카테고리를 담을 배열
+        // var selectedCategories = [];
+        //
+        // // `localStorage`에서 값이 변경될 때 호출되는 이벤트 리스너
+        // window.addEventListener("storage", function(event) {
+        //     if (event.key === "sharedData") {
+        //         var newValue = event.newValue;
+        //
+        //         // 선택된 카테고리 배열에 추가
+        //         selectedCategories.push(newValue);
+        //
+        //         // 리스트 업데이트
+        //         updateCategoryList();
+        //     }
+        // });
+        //
+        // // 카테고리 리스트 업데이트 함수
+        // function updateCategoryList() {
+        //     var listElement = document.getElementById("categoryList");
+        //     listElement.innerHTML = ""; // 리스트 초기화
+        //
+        //     // 선택된 카테고리들을 순회하면서 리스트에 추가
+        //     selectedCategories.forEach(function(category) {
+        //         var listItem = document.createElement("li");
+        //
+        //         // 카테고리 텍스트 표시
+        //         listItem.textContent = category;
+        //
+        //         // 삭제 버튼 생성
+        //         var deleteButton = document.createElement("button");
+        //         deleteButton.textContent = "삭제";
+        //         deleteButton.onclick = function() {
+        //             removeCategory(category);
+        //         };
+        //         listItem.appendChild(deleteButton);
+        //
+        //         // 리스트에 항목 추가
+        //         listElement.appendChild(listItem);
+        //     });
+        // }
+        //
+        // // 카테고리 삭제 함수
+        // function removeCategory(category) {
+        //     var index = selectedCategories.indexOf(category);
+        //     if (index !== -1) {
+        //         selectedCategories.splice(index, 1); // 배열에서 해당 카테고리 삭제
+        //         updateCategoryList(); // 리스트 업데이트
+        //     }
+        // }
+
         /*]]>*/
     </script>
 </head>
 <body>
-<label for="inputValue">Input Value:</label>
+<label for="inputValue">제목 :</label>
 <input type="text" id="inputValue" name="inputValue" required>
-<button onclick="openNewWindowWithParam()">Open New Window</button>
+<button onclick="openNewWindowWithParam()">검색</button>
 <div id="errorMessage" style="color: red;"></div>
 
 <form action="/admin/products/book/register" id="bookProductRegister" method="post" onsubmit="formValidation(event)">
@@ -173,9 +280,14 @@
             <span th:text="${category.categoryName()}"></span>
         </label>
     </div>
+    <button type="button" onclick="openCategorySearch()">카테고리 검색</button>
 
+    <p id="result"></p>
+    <div id="removeButtons"></div>
+    <input type="hidden" id="result2" name="categories">
     <button type="submit">등록</button>
 
 </form>
+
 </body>
 </html>

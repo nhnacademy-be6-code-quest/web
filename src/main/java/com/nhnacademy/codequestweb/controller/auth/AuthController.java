@@ -65,6 +65,8 @@ public class AuthController {
             cookie.setPath("/");
             cookie.setMaxAge(60 * 60 * 24 * 14);
             res.addCookie(cookie);
+
+            CookieUtils.deleteCookieValue(res, "cart");
         }
         return "redirect:/";
     }
