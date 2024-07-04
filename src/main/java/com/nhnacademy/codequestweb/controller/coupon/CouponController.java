@@ -41,8 +41,7 @@ public class CouponController {
 
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set("access", CookieUtils.getCookieValue(req, "access"));
-        headers.set("refresh", CookieUtils.getCookieValue(req, "refresh"));
+
         Page<ClientCouponPaymentResponseDto> coupons = clientCouponService.getClient(headers, size, page);
         model.addAttribute("couponPayments",coupons);
         return "/view/coupon/coupon_client";

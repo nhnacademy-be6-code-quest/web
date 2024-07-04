@@ -30,8 +30,12 @@
     </style>
 </head>
 <body>
-
-<div th:replace="~{layout/header.html :: headerFragment ('isLogin', 'message')}"></div>
+<div th:if="${view!='adminPage'}">
+    <div th:replace="~{layout/header.html :: headerFragment ('isLogin', 'message')}"></div>
+</div>
+<div th:if="${view != null} and ${#strings.equals(view, 'adminPage')}">
+    <div th:replace="~{layout/adminHeader.html :: headerFragment ('isLogin', 'message')}"></div>
+</div>
 
 
 <div th:if="${view == null}">

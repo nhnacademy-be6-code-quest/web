@@ -70,7 +70,7 @@ public class CouponPolicyController {
         }
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
-        headers.set("refresh", CookieUtils.getCookieValue(req, "refresh"));
+
         Page<CouponPolicyListResponseDto> couponPolicies = couponPolicyService.getAllCouponPolicies(page, size);
         req.setAttribute("view", "adminPage");
         req.setAttribute("adminPage", "couponPolicy");
