@@ -123,7 +123,7 @@ public class AuthController {
                 return "index";
             }
 
-            cookie = new Cookie("refresh", tokenInfo.getAccess());
+            cookie = new Cookie("refresh", tokenInfo.getRefresh());
             cookie.setHttpOnly(true);
             cookie.setSecure(true);
             cookie.setPath("/");
@@ -135,7 +135,7 @@ public class AuthController {
                 return "index";
             }
 
-            cookie = new Cookie("access", tokenInfo.getRefresh());
+            cookie = new Cookie("access", tokenInfo.getAccess());
             cookie.setHttpOnly(true);
             cookie.setSecure(true);
             cookie.setPath("/");
@@ -167,7 +167,7 @@ public class AuthController {
 
     @PostMapping("/oauth/register")
     public String oauthRegister(@ModelAttribute OAuthRegisterRequestDto oAuthRegisterRequestDto, HttpServletRequest req, HttpServletResponse res) {
-        oAuthRegisterRequestDto.setAccess(CookieUtils.getCookieValue(req, "access"));
+        oAuthRegisterRequestDto.setAccess(CookieUtils.getCookieValue(req, "refresh"));
         TokenResponseDto response = authService.oAuthRegister(oAuthRegisterRequestDto).getBody();
         if (response != null) {
             Cookie cookie = new Cookie("access", response.getAccess());

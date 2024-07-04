@@ -39,10 +39,6 @@ public class AuthService {
         return authClient.logout(headers);
     }
 
-    public ResponseEntity<TokenResponseDto> reissue(String refreshToken) {
-        return authClient.reissue(refreshToken);
-    }
-
     public String getPaycoLoginURL() {
         return "https://id.payco.com/oauth2.0/authorize" +
                 "?client_id=" + clientId +

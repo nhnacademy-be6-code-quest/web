@@ -7,6 +7,7 @@ import feign.FeignException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -27,7 +28,10 @@ public class TokenReissueInterceptor implements HandlerInterceptor {
         if (ex instanceof FeignException && ((FeignException) ex).status() == 303 && CookieUtils.getCookieValue(request, "refresh") != null) {
 
             try {
-                ResponseEntity<TokenResponseDto> reissueResponse = authClient.reissue(CookieUtils.getCookieValue(request, "refresh"));
+                HttpHeaders headers = new HttpHeaders();
+                headers.set("access", CookieUtils.getCookieValue(request, "access"));
+                headers.set("refresh", CookieUtils.getCookieValue(request, "refresh"));
+                ResponseEntity<TokenResponseDto> reissueResponse = authClient.reissue(headers);
                 if (reissueResponse.getStatusCode().is2xxSuccessful() && reissueResponse.getBody() != null) {
                     Cookie accessCookie = new Cookie("access", reissueResponse.getBody().getAccess());
                     accessCookie.setHttpOnly(true);
