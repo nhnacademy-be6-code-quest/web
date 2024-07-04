@@ -46,6 +46,9 @@
 <div th:if="${view != null} and ${#strings.equals(view, 'mypage')}">
     <div th:replace="~{view/mypage/mypage :: mypageFragment ('mypage', 'profile', 'delivaryaddress','clientPhoneNumber')}"></div>
 </div>
+<div th:if="${view != null} and ${#strings.equals(view, 'adminPage')}">
+    <div th:replace="~{view/adminPage/adminPage :: adminPageFragment ('couponPolicy')}"></div>
+</div>
 <div th:if="${view != null} and ${#strings.equals(view, 'bookProductRegisterForm')}">
     <section th:replace="~{view/product/bookProductRegisterForm.html :: bookProductRegisterFragment}"></section>
 </div>

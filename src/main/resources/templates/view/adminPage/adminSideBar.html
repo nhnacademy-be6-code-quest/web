@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="sidebarFragment ()">
+<nav class="adminPage-sidebar">
+    <div class="accordion" id="accordionExample">
+        <div class="accordion-item">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingOne">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo" data-bs-parent="#accordionExample">
+                        회원 정보 관리
+                    </button>
+                </h2>
+                <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <nav class="nav flex-column">
+                            <a class="nav-link" href="#">회원 정보 수정</a>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            <h2 class="accordion-header" id="headingTwo">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne" data-bs-parent="#accordionExample">
+                    도서
+                </button>
+            </h2>
+            <div id="collapseTwo" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                <div class="accordion-body">
+                    <nav class="nav flex-column">
+                        <a class="nav-link" href="#">카테고리 추가</a>
+                        <a class="nav-link" href="#">카테고리 수정</a>
+                        <a class="nav-link" href="#">태그 추가</a>
+                        <a class="nav-link" href="#">태그 수정</a>
+                        <!-- 마이리뷰/좋아요 관리 추가 -->
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseReviews" aria-expanded="false" aria-controls="collapseReviews">
+                            상품
+                        </button>
+                        <div id="collapseReviews" class="accordion-collapse show" aria-labelledby="headingReviews" data-bs-parent="#collapseOne">
+                            <nav class="nav flex-column ms-3">
+                                <a class="nav-link" href="#">상품 추가</a>
+                                <a class="nav-link" href="#">상품 수정</a>
+
+                            </nav>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingThree">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo" data-bs-parent="#accordionExample">
+                    주문
+                </button>
+            </h2>
+            <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+                <div class="accordion-body">
+                    <nav class="nav flex-column">
+                        <a class="nav-link" href="#">배송정책 수정</a>
+                        <a class="nav-link" href="#">회원 주문내역 조회</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingFour">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree" data-bs-parent="#accordionExample">
+                    쿠폰
+                </button>
+            </h2>
+            <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+                <div class="accordion-body">
+                    <nav class="nav flex-column">
+                        <a class="nav-link" href="#">쿠폰 정책</a>
+                        <a class="nav-link" href="#">쿠폰 지급</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingFive">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree" data-bs-parent="#accordionExample">
+                    포인트
+                </button>
+            </h2>
+            <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+                <div class="accordion-body">
+                    <nav class="nav flex-column">
+                        <a class="nav-link" href="#">포인트 정책</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingSix">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree" data-bs-parent="#accordionExample">
+                    리뷰
+                </button>
+            </h2>
+            <div id="collapseSix" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+                <div class="accordion-body">
+                    <nav class="nav flex-column">
+                        <a class="nav-link" href="/mypage/coupons">쿠폰</a>
+                        <a class="nav-link" href="#">포인트</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingSeven">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour" data-bs-parent="#accordionExample">
+                    고객센터
+                </button>
+            </h2>
+            <div id="collapseSeven" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#accordionExample">
+                <div class="accordion-body">
+                    <nav class="nav flex-column">
+                        <a class="nav-link" href="#">자주 묻는 질문 FAQ</a>
+                        <a class="nav-link" href="#">1:1 고객상담</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+</html>
