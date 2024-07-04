@@ -1,6 +1,5 @@
 package com.nhnacademy.codequestweb.service.payment;
 
-import com.nhnacademy.codequestweb.client.payment.NhnKeyManagerClient;
 import com.nhnacademy.codequestweb.client.payment.PaymentClient;
 import com.nhnacademy.codequestweb.client.payment.TossPaymentsClient;
 import com.nhnacademy.codequestweb.request.payment.PaymentOrderValidationRequestDto;
@@ -8,33 +7,29 @@ import com.nhnacademy.codequestweb.request.payment.TossPaymentsRequestDto;
 import com.nhnacademy.codequestweb.response.payment.TossPaymentsResponseDto;
 import jakarta.annotation.PostConstruct;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class PaymentService {
-    @Autowired
+
     private final PaymentClient paymentClient;
-    @Autowired
     private final TossPaymentsClient tossPaymentsClient;
-    @Autowired
-    private final NhnKeyManagerClient nhnKeyManagerClient;
     private final String secretKey;
 
-    public PaymentService(PaymentClient paymentClient, TossPaymentsClient tossPaymentsClient, NhnKeyManagerClient nhnKeyManagerClient) {
-        this.paymentClient = paymentClient;
-        this.tossPaymentsClient = tossPaymentsClient;
-        this.nhnKeyManagerClient = nhnKeyManagerClient;
-        JSONObject jsonObject = nhnKeyManagerClient.getTossSecretKey();
-        Map<String, Object> responseMap = (Map<String, Object>) jsonObject;
-        Map<String, Object> bodyMap = (Map<String, Object>) responseMap.get("body");
-        this.secretKey = (String) bodyMap.get("secret");
+    @PostConstruct
+    public void init() {
+        if (secretKey.isEmpty()){
+            log.error("secretKey is empty");
+        }
     }
 
 
@@ -59,7 +54,7 @@ public class PaymentService {
         // 시크릿 키 설정 (주의: 실제 환경에서는 안전하게 관리해야 함)
         // 시크릿 키를 Base64로 인코딩하여 Authorization 헤더 생성
         Base64.Encoder encoder = Base64.getEncoder();
-        byte[] encodedBytes = encoder.encode(secretKey.getBytes("UTF-8"));
+        byte[] encodedBytes = encoder.encode(secretKey.getBytes(StandardCharsets.UTF_8));
         String authorizations = "Basic " + new String(encodedBytes, 0, encodedBytes.length);
 
         TossPaymentsRequestDto tossPaymentsRequestDto = TossPaymentsRequestDto.builder()
@@ -74,9 +69,7 @@ public class PaymentService {
             tossPaymentsRequestDto, authorizations, contentType);
 
         JSONParser parser = new JSONParser();
-        JSONObject jsonObject = (JSONObject) parser.parse(str);
-
-        return jsonObject;
+        return (JSONObject) parser.parse(str);
     }
 
     public TossPaymentsResponseDto parseJSONObject(JSONObject jsonObject) {
