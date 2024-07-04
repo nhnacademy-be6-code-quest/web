@@ -1,10 +1,9 @@
 package com.nhnacademy.codequestweb.config.payment;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import com.nhnacademy.codequestweb.client.payment.NhnKeyManagerClient;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.json.simple.JSONObject;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -19,12 +18,13 @@ import org.springframework.context.annotation.Configuration;
 @RequiredArgsConstructor
 public class PaymentKeyConfig {
 
+    private final NhnKeyManagerClient nhnKeyManagerClient;
+
     @Bean
-    public String secretKey() throws IOException {
-        File file = new File("src/main/resources/key/paymentKey.txt");
-        BufferedReader br = new BufferedReader(new FileReader(file));
-        String str = br.readLine();
-        System.out.println(str);
-        return str;
+    public String secretKey() {
+        JSONObject jsonObject = nhnKeyManagerClient.getTossSecretKey();
+        Map<String, Object> responseMap = (Map<String, Object>) jsonObject;
+        Map<String, Object> bodyMap = (Map<String, Object>) responseMap.get("body");
+        return (String) bodyMap.get("secret");
     }
 }
