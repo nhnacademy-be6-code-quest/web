@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form action="/cart/clear" method="post">
+    <input type="hidden" name="_method" value="DELETE"/>
+    <button type="submit"> 초기화</button>
+</form>
+<div th:each="cart: ${cartList}">
+    <img th:src="${cart.productThumbnailImage()}" alt="">
+    <div th:text="'상품명' + ${cart.productName()}"></div>
+    <div th:text="'수량' + ${cart.productQuantityOfCart()}"></div>
+    <form action="/cart/update" method="post">
+        <input type="hidden" name="_method" value="PUT"/>
+        <input type="hidden" name="productId" th:value="${cart.productId()}">
+        <label >수정</label><input type="number" name="quantity" th:value="${cart.productQuantityOfCart()}" min="1" th:max="${cart.productInventory()}"/>
+        <button type="submit"> 수정</button>
+    </form>
+    <div th:each="categoryName : ${cart.categoryMapOfIdAndName().values()}">
+        <span th:text="${categoryName}"></span>
+    </div>
+    <form th:action="'/cart/' + ${cart.productId()}" method="post">
+        <input type="hidden" name="_method" value="DELETE"/>
+        <button type="submit"> 삭제</button>
+    </form>
+</div>
+</body>
+</html>

@@ -5,6 +5,7 @@ import com.nhnacademy.codequestweb.request.coupon.CouponRequestDto;
 import com.nhnacademy.codequestweb.response.coupon.CouponResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -20,14 +21,13 @@ public class CouponService {
     @Autowired
     private CouponClient couponClient;
 
-    private static final String ID_HEADER = "X-User-Id";
+
 
     public ResponseEntity<CouponRequestDto> saveCoupon(CouponRequestDto couponRequestDto, long couponPolicyId){
-        log.error("{}",couponRequestDto);
 
         return couponClient.saveCoupon(couponPolicyId, couponRequestDto);
     }
-    public List<CouponResponseDto> findClientCoupon(HttpHeaders headers){
-        return couponClient.viewCoupons(Long.valueOf(headers.getFirst(ID_HEADER)));
+    public ResponseEntity<Page<CouponResponseDto>> findClientCoupon(HttpHeaders headers, int page, int size){
+        return couponClient.viewCoupons(headers, page, size);
     }
 }

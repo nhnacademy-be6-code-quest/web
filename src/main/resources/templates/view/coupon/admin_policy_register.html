@@ -1,10 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coupon Policy Registration</title>
     <link rel="stylesheet" th:href="@{/css/coupon/admin_policy_register.css}">
+    <style>
+        .hidden {
+            display: none;
+        }
+    </style>
 </head>
 <body>
 <div class="container mx-auto px-4 py-8">
@@ -15,11 +20,9 @@
             <label class="block text-gray-700 font-bold mb-2" for="bookType">
                 Book Type
             </label>
-            <select
-                    class="input"
-                    id="bookType"
-                    onchange="toggleInput(this.value)"
-            >
+            <input type="hidden" id="selectedId" name="id">
+            <input type="hidden" id="selectedName" name="name">
+            <select class="input" id="bookType" onchange="toggleInput(this.value)" name="bookType">
                 <option value="">Select Book Type</option>
                 <option value="none">선택안함</option>
                 <option value="book">도서명</option>
@@ -30,129 +33,82 @@
             <label class="block text-gray-700 font-bold mb-2" for="bookName">
                 Book Name
             </label>
-            <select
-                    class="input"
-                    id="bookName"
-            >
-                <option value="">선택안함</option>
-                <option value="book1">Book 1</option>
-                <option value="book2">Book 2</option>
-                <option value="book3">Book 3</option>
-            </select>
+
+                <button id="bookName" type="button" onclick="openBookSelectWindow()">상품 선택</button>
+            <div>
+                <h3>선택된 상품:</h3>
+                <p id="selectedBookInfo">선택된 상품: <span id="selectedBookName"></span></p>
+            </div>
+
         </div>
+
         <div id="categoryInput" class="mb-4 hidden">
             <label class="block text-gray-700 font-bold mb-2" for="bookCategory">
                 Book Category
             </label>
-            <select
-                    class="input"
-                    id="bookCategory"
-            >
-                <option value="">선택안함</option>
-                <option value="category1">Category 1</option>
-                <option value="category2">Category 2</option>
-                <option value="category3">Category 3</option>
-            </select>
+            <button id="bookCategory" type="button" onclick="openCategorySelectWindow()">카테고리 선택</button>
+            <p id="selectedCategoryInfo">선택된 카테고리: <span id="selectedCategoryName"></span></p>
+
         </div>
+
         <div class="mb-4">
             <label class="block text-gray-700 font-bold mb-2" for="PolicyDescription">
-                쿠폰 정책 설명</label>
-            <textarea
-                    class="input"
-                    id="PolicyDescription"
-                    name="PolicyDescription"
-                    rows="3"
-                    placeholder="쿠폰 정책 설명을 입력하세요."
-            ></textarea>
+                쿠폰 정책 설명
+            </label>
+            <textarea class="input" id="couponPolicyDescription" name="PolicyDescription" rows="3" placeholder="쿠폰 정책 설명을 입력하세요."></textarea>
         </div>
+
         <div class="mb-4">
             <label class="block text-gray-700 font-bold mb-2" for="discountType">
                 Discount Type
             </label>
-            <select
-                    class="input"
-                    id="discountType"
-                    name="discountType"
-            >
+            <select class="input" id="discountType" name="discountType">
                 <option value="">할인 유형 선택</option>
-                <option th:each="discountType : ${discountTypes}" th:text="${discountType}"></option>
+                <option th:each="discountType : ${discountTypes}" th:value="${discountType}" th:text="${discountType}"></option>
             </select>
             <div class="error-class" th:errors="*{discountTypes}"></div>
         </div>
+
         <div class="mb-4">
-            <label class="block text-gray-700 font-bold mb-2">
-                할인 금액
-            </label>
+            <label class="block text-gray-700 font-bold mb-2">할인 금액</label>
             <div class="flex items-center">
-                <input
-                        class="mr-2"
-                        type="radio"
-                        id="discountAmountType1"
-                        name="discountAmountType"
-                        value="amount"
-                        onchange="toggleDiscountInput(this.value)"
-                />
+                <input class="mr-2" type="radio" id="discountAmountType1" name="discountAmountType" value="amount" onchange="toggleDiscountInput(this.value)" />
                 <label class="mr-4" for="discountAmountType1">할인금액</label>
-                <input
-                        class="mr-2"
-                        type="radio"
-                        id="discountAmountType2"
-                        name="discountAmountType"
-                        value="percentage"
-                        onchange="toggleDiscountInput(this.value)"
-                />
+                <input class="mr-2" type="radio" id="discountAmountType2" name="discountAmountType" value="percentage" onchange="toggleDiscountInput(this.value)" />
                 <label for="discountAmountType2">할인율</label>
             </div>
-            <input
-                    class="input"
-                    id="discountInput"
-                    name="discountValue"
-                    type="number"
-                    placeholder=""
-                    style="display: none;"
-            />
+            <input class="input" id="discountInput" name="discountValue" type="number" placeholder="" style="display: none;" />
         </div>
+
         <div class="mb-4">
-            <label class="block text-gray-700 font-bold mb-2" for="minPurchaseAmount">
-                최소 할인금액</label>
-            <input
-                    class="input"
-                    id="minPurchaseAmount"
-                    name="minPurchaseAmount"
-                    type="number"
-                    placeholder="최소 할인금액을 입력해주세요."
-            />
+            <label class="block text-gray-700 font-bold mb-2" for="minPurchaseAmount">최소 할인금액</label>
+            <input class="input" id="minPurchaseAmount" name="minPurchaseAmount" type="number" placeholder="최소 할인금액을 입력해주세요." />
         </div>
+
         <div class="mb-4">
-            <label class="block text-gray-700 font-bold mb-2" for="maxDiscountAmount">
-                최대 할인금액
-            </label>
-            <input
-                    class="input"
-                    id="maxDiscountAmount"
-                    name="maxDiscountAmount"
-                    type="number"
-                    placeholder="최대 할인금액을 입력해주세요."
-            />
+            <label class="block text-gray-700 font-bold mb-2" for="maxDiscountAmount">최대 할인금액</label>
+            <input class="input" id="maxDiscountAmount" name="maxDiscountAmount" type="number" placeholder="최대 할인금액을 입력해주세요." />
         </div>
+
         <div class="flex items-center justify-between">
-            <button
-                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                    type="submit"
-            >
-                저장
-            </button>
-            <button
-                    class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                    type="button"
-            >
-                취소
-            </button>
+            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">저장</button>
+            <button class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">취소</button>
         </div>
     </form>
 </div>
 
 <script>
+
+    function openBookSelectWindow() {
+        window.open('/coupon/books', 'selectBookWindow', 'width=600,height=400');
+    }
+
+    function openCategorySelectWindow() {
+        firstPopup = window.open('/categories/all', 'selectCategoryWindow', 'width=600,height=400');
+    }
+
+
+
     function toggleInput(value) {
         const bookNameInput = document.getElementById('bookNameInput');
         const categoryInput = document.getElementById('categoryInput');
@@ -185,6 +141,29 @@
             discountInput.setAttribute('max', '100'); // Set max attribute for percentage
         }
     }
+    let firstPopup;
+    let secondPopup;
+    function receiveCategory(categoryId, categoryName) {
+        document.getElementById("selectedId").value = categoryId;
+        document.getElementById("selectedCategoryName").textContent = categoryName;
+        document.getElementById('selectedCategoryInfo').style.display = 'block';
+        document.getElementById("selectedName").value = "카테고리";
+        if (firstPopup) firstPopup.close();
+        if (secondPopup) secondPopup.close();
+    }
+
+    window.addEventListener('message', function(event) {
+        if (event.origin === window.location.origin) {
+            const selectedBook = event.data.selectedBook;
+
+            if (selectedBook) {
+                document.getElementById('selectedId').value = selectedBook.productId;
+                document.getElementById('selectedBookName').textContent = selectedBook.productName;
+                document.getElementById('selectedBookInfo').style.display = 'block';
+                document.getElementById("selectedName").value = "상품";
+            }
+        }
+    });
 </script>
 
 </body>

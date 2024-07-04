@@ -5,45 +5,85 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coupons</title>
-    <link rel="stylesheet" href="/static/css/coupon/client_coupon_view.css">
+    <style>
+        .review-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .review-content {
+            flex: 1;
+            padding-right: 20px;
+        }
+
+        .photo-container {
+            position: relative;
+            width: 150px;
+            height: 150px;
+        }
+
+        .photo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .photo-count {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 2px 5px;
+            border-radius: 5px;
+        }
+
+        .modal-content img {
+            width: 100%;
+        }
+
+        .stars {
+            color: gold;
+        }
+
+        .expanded-review {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .edit-button {
+            position: absolute;
+            right: 15px;
+            bottom: 15px;
+        }
+    </style>
 </head>
 
 <body>
-<div class="w-full max-w-4xl mx-auto py-8 px-4 md:px-6">
-    <div class="flex items-center justify-between mb-6">
-        <div class="grid gap-1">
-            <h1 class="text-3xl font-bold text-gray-900">My Coupons</h1>
-        </div>
-        <p class="text-sm text-gray-600">10 Available</p>
-    </div>
+
     <div th:each="coupon : ${couponList}">
-        <div class="bg-white shadow-md rounded-lg overflow-hidden">
-            <div class="px-6 py-4">
-                <div class="flex items-center justify-between">
-                    <div class="text-lg font-medium text-gray-800" th:text="${coupon.couponType.couponKind}"></div>
-                    <div
-                            class="px-3 py-1 rounded-full text-sm font-bold"
-                            th:classappend="${coupon.status == 'Available'} ? 'bg-green-500 text-white' : 'bg-red-500 text-white'"
-                            th:text="${coupon.status}"></div>
-                </div>
-                <div class="grid grid-cols-2 gap-4 mt-4">
-                    <div>
-                        <div class="text-sm text-gray-600">Discount</div>
-                        <div th:text="${coupon.couponPolicy.getDiscountValue}"></div>
-                    </div>
-                    <div>
-                        <div class="text-sm text-gray-600">Policy</div>
-                        <div th:text="${coupon.couponPolicy.getCouponPolicyDescription}"></div>
-                    </div>
-                    <div>
-                        <div class="text-sm text-gray-600">Expires</div>
-                        <div th:text="${coupon.expirationDate}"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <p th:text="${coupon.status}"></p>
+        <p th:text="${coupon.couponType.couponKind}"></p>
+        <p th:text="${coupon.couponPolicy.couponPolicyDescription}"></p>
+        <p th:text="${coupon.couponPolicy.discountType}"></p>
+        <p th:text="${coupon.couponPolicy.maxDiscountAmount}"></p>
+        <p th:text="${coupon.couponPolicy.minPurchaseAmount}"></p>
+        <p th:text="${coupon.couponPolicy.discountValue}"></p>
+        <p th:text="${coupon.usedDate}"></p>
+        <p th:text="${coupon.expirationDate}"></p>
+        <p th:text="${coupon}"></p><!--발급일 어디감!-->
+
+
     </div>
-</div>
+
+
 </body>
 
 </html>

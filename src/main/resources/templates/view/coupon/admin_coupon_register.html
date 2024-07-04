@@ -14,32 +14,40 @@
         // 새 창에서 메시지 받기
         window.addEventListener('message', function(event) {
             if (event.origin !== window.location.origin) {
+                console.error('Invalid origin:', event.origin);
+
                 return;
             }
 
             // 전송된 데이터 받아오기
-            var data = event.data;
-            var selectedUsers = data.selectedUsers; // 선택된 사용자 배열
-            var clientIds = data.clientIds;         // 클라이언트 ID 배열
+            const selectedUsers = event.data.selectedUsers; // 선택된 사용자 배열
+
+            console.log("123",selectedUsers);
 
             // 선택된 사용자 정보를 출력합니다
-            var selectedUsersList = document.getElementById('selectedUsersList');
-            selectedUsersList.innerHTML = ''; // 기존 목록 초기화
+            const selectedClientIds = document.getElementById('selectedClientIds');
+            const selectedUsersList = document.getElementById('selectedUsersList');
+            const clientList = [];
 
-            var selectedClientIds = []; // 클라이언트 ID 배열 초기화
-
+            selectedUsersList.innerHTML = '';
             selectedUsers.forEach(function(user) {
-                var listItem = document.createElement('div');
+                const listItem = document.createElement('div');
                 listItem.textContent = `ID: ${user.clientId}, Name: ${user.clientName}, Email: ${user.clientEmail}`;
                 selectedUsersList.appendChild(listItem);
 
                 // 클라이언트 ID를 배열에 추가
-                selectedClientIds.push(user.clientId);
-            });
+                clientList.push(user.clientId);
+                // todo
+                // input 태그 를 만들어서 user.clientId를 넣어야함
+                // 여러개다 보니까 html id를 사용 못함
+                // ul li  로 만들어줘
 
+            });
+            console.log(clientList);
+            selectedClientIds.value = (clientList.join(', '));
             // 선택된 클라이언트 ID들을 hidden input에 설정하여 서버로 전송
-            var clientIdInput = document.getElementById('clientIdInput');
-            clientIdInput.value = selectedClientIds.join(','); // 배열을 문자열로 변환하여 설정
+            // const clientIdInput = document.getElementById('clientIdInput');
+            // clientIdInput.value = selectedClientIds.join(','); // 배열을 문자열로 변환하여 설정
         });
     </script>
 </head>
@@ -53,11 +61,12 @@
         <div class="card-content">
             <div class="grid">
                 <label class="label" for="couponTypeId">쿠폰 타입</label>
-                <select id="couponTypeId" name="couponTypeId">
+                <select id="couponTypeId" name="couponTypeId" >\
                     <option value="">쿠폰 타입 선택</option>
                     <option th:each="couponType : ${couponTypes}" th:value="${couponType.couponTypeId}"
                             th:text="${couponType.couponKind}"></option>
                 </select>
+
 
             </div>
 
@@ -65,15 +74,15 @@
 
             <div>
                 <h3>선택된 사용자:</h3>
-                <p>사용자 이름: <span id="selectedUsersList"></span></p>
+                <p>사용자 이름: <span id="'selectedUsersList'"></span></p>
             </div>
 
             <!-- 숨겨진 필드로 선택된 사용자의 ID와 이름을 전달 -->
-            <input type="hidden" id="clientIdInput" name="clientId" value=clientIds>
+            <input type="text" id="selectedClientIds" name="clientId">
 
             <div class="grid">
                 <label class="label" for="expiration-date">만료일</label>
-                <input type="datetime-local" id="expiration-date" name="expirationDate" class="select">
+                <input type="date" id="expiration-date" name="expirationDate" class="select">
             </div>
             <div class="grid">
                 <label class="label" for="status">상태</label>

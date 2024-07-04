@@ -45,13 +45,13 @@
     </style>
     <script th:inline="javascript">
         /*<![CDATA[*/
-        if (!window.opener || window.opener.location.href !== 'http://localhost:8080/admin/products/book/register') {
+        if (!window.opener) {
             alert('잘못된 접근입니다.');
-            if(!window.opener){
+            // if(!window.opener){
                 history.go(-1);
-            }else{
-                window.close(); // 자식 창 닫기 예시
-            }
+            // }else{
+            //     window.close(); // 자식 창 닫기 예시
+            // }
         }
 
         function sendSelectedBookTitle(title, Author, publisher, cover, pubDate, isbn, isbn13, priceStandard) {
