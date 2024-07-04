@@ -13,13 +13,8 @@ import lombok.Getter;
 @Builder
 @Getter
 public class PaymentOrderValidationRequestDto { // 결제에서 -> 주문으로 : 금액과 관련된 것들을 요청하는 Dto
-    @NotNull
     long orderTotalAmount;
-
-    @NotNull
     long discountAmountByPoint;
-
-    @NotNull
     long discountAmountByCoupon;
 
     @NotNull

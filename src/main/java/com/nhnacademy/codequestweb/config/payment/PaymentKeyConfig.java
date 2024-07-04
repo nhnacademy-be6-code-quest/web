@@ -1,21 +1,37 @@
 package com.nhnacademy.codequestweb.config.payment;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import com.nhnacademy.codequestweb.client.payment.NhnKeyManagerClient;
+import jakarta.validation.constraints.Null;
+import java.util.Map;
+import java.util.Objects;
+import lombok.RequiredArgsConstructor;
+import org.json.simple.JSONObject;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * - KeyManager 로 관리 중입니다.
+ * - IP가 NHN Cloud 에 없으면 secretKey 에 접근할 수 없습니다.
+ *
+ * @author 김채호
+ * @version 1.0
+ */
 @Configuration
+@RequiredArgsConstructor
 public class PaymentKeyConfig {
+
+    private final NhnKeyManagerClient nhnKeyManagerClient;
+
     @Bean
-    public String secretKey() throws IOException {
-//        File file = new File("src/main/resources/key/paymentKey.txt");
-//        BufferedReader br = new BufferedReader(new FileReader(file));
-//        String str = br.readLine();
-//        System.out.println(str);
-//        return str;
-        return "";
+    public String secretKey() { // 테스트 환경에서 돌아가지 않게...
+        try{
+            JSONObject jsonObject = nhnKeyManagerClient.getTossSecretKey();
+            Map<String, Object> responseMap = (Map<String, Object>) jsonObject;
+            Map<String, Object> bodyMap = (Map<String, Object>) responseMap.get("body");
+            String secretKey = (String) bodyMap.get("secret");
+            return secretKey;
+        } catch (NullPointerException e){
+            return "";
+        }
     }
 }
