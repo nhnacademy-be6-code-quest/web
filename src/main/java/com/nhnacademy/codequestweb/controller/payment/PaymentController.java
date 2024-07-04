@@ -1,10 +1,8 @@
 package com.nhnacademy.codequestweb.controller.payment;
 
-import com.nhnacademy.codequestweb.client.payment.TossPaymentsClient;
 import com.nhnacademy.codequestweb.request.payment.PaymentOrderRequestDto;
 import com.nhnacademy.codequestweb.response.payment.ProductOrderDetailResponseDto;
 import com.nhnacademy.codequestweb.response.payment.TossPaymentsResponseDto;
-import com.nhnacademy.codequestweb.service.order.OrderService;
 import com.nhnacademy.codequestweb.service.payment.PaymentService;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,9 +23,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class PaymentController {
 
     private final PaymentService paymentService;
-    private final OrderService orderService;
-    private final String secretKey;
-    private final TossPaymentsClient tossPaymentsClient;
 
     @GetMapping("/client/order/{orderId}/payment")
     public String savePayment(@PathVariable long orderId, Model model) {
@@ -120,7 +115,8 @@ public class PaymentController {
         JSONObject jsonObject = paymentService.approvePayment(tossOrderId,
             amount, paymentKey);
 
-        TossPaymentsResponseDto tossPaymentsResponseDto = paymentService.parseJSONObject(jsonObject);
+        TossPaymentsResponseDto tossPaymentsResponseDto = paymentService.parseJSONObject(
+            jsonObject);
         // 결제 성공 페이지로 이동
         paymentService.savePayment(orderId, tossPaymentsResponseDto);
         model.addAttribute("tossPaymentsResponseDto", tossPaymentsResponseDto);

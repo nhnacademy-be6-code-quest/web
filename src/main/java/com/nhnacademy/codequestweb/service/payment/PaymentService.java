@@ -71,14 +71,22 @@ public class PaymentService {
             .paymentKey(jsonObject.get("paymentKey").toString())
             .build();
 
-        if (tossPaymentsResponseDto.getMethod().equals("카드") || tossPaymentsResponseDto.getMethod().equals("CARD")) {
-            tossPaymentsResponseDto.setCardNumber((String) ((JSONObject) jsonObject.get("card")).get("number"));
-        } else if (tossPaymentsResponseDto.getMethod().equals("가상계좌") || tossPaymentsResponseDto.getMethod().equals("VIRTUAL_ACCOUNT")) {
-            tossPaymentsResponseDto.setAccountNumber((String) ((JSONObject) jsonObject.get("virtualAccount")).get("accountNumber"));
-        } else if (tossPaymentsResponseDto.getMethod().equals("계좌이체") || tossPaymentsResponseDto.getMethod().equals("TRANSFER")) {
-            tossPaymentsResponseDto.setBank((String) ((JSONObject) jsonObject.get("transfer")).get("bank"));
-        } else if (tossPaymentsResponseDto.getMethod().equals("휴대폰") || tossPaymentsResponseDto.getMethod().equals("MOBILE_PHONE")) {
-            tossPaymentsResponseDto.setCustomerMobilePhone((String) ((JSONObject) jsonObject.get("mobilePhone")).get("customerMobilePhone"));
+        if (tossPaymentsResponseDto.getMethod().equals("카드") || tossPaymentsResponseDto.getMethod()
+            .equals("CARD")) {
+            tossPaymentsResponseDto.setCardNumber(
+                (String) ((JSONObject) jsonObject.get("card")).get("number"));
+        } else if (tossPaymentsResponseDto.getMethod().equals("가상계좌")
+            || tossPaymentsResponseDto.getMethod().equals("VIRTUAL_ACCOUNT")) {
+            tossPaymentsResponseDto.setAccountNumber(
+                (String) ((JSONObject) jsonObject.get("virtualAccount")).get("accountNumber"));
+        } else if (tossPaymentsResponseDto.getMethod().equals("계좌이체")
+            || tossPaymentsResponseDto.getMethod().equals("TRANSFER")) {
+            tossPaymentsResponseDto.setBank(
+                (String) ((JSONObject) jsonObject.get("transfer")).get("bank"));
+        } else if (tossPaymentsResponseDto.getMethod().equals("휴대폰")
+            || tossPaymentsResponseDto.getMethod().equals("MOBILE_PHONE")) {
+            tossPaymentsResponseDto.setCustomerMobilePhone(
+                (String) ((JSONObject) jsonObject.get("mobilePhone")).get("customerMobilePhone"));
         }
         return tossPaymentsResponseDto;
     }
