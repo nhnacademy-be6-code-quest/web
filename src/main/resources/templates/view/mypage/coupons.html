@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="couponsFragment('coupons')">
+<head>
+    <meta charset="UTF-8">
+    <title>coupons</title>
+    <style>
+        .section-title {
+            margin-top: 20px;
+        }
+
+
+        .pagination {
+            text-align: center; /* 페이지네이션을 가운데 정렬 */
+            margin-top: 20px; /* 페이지네이션 위쪽 여백 설정 */
+            display: flex;
+            justify-content: center;
+        }
+
+
+
+        .card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .discount {
+            float:right;
+        }
+        /*.card-header {*/
+        /*    padding: 16px;*/
+        /*    border-top-left-radius: 8px;*/
+        /*    border-top-right-radius: 8px;*/
+        /*    background-color: #f0f1f3;*/
+        /*    display: flex;*/
+        /*    justify-content: space-between;*/
+        /*    align-items: center;*/
+        /*}*/
+
+
+
+        .status-available {
+            background-color: #7fe495;
+            color: #065f46;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .status-used {
+            background-color: #ffe7a3;
+            color: #c27803;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .status-expired {
+            background-color: #fca5a5;
+            color: #b91c1c;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .card-content {
+            padding: 16px;
+        }
+
+        .coupon-type {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .description {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 10px;
+        }
+
+        /*.details {*/
+        /*    display: flex;*/
+        /*    justify-content: space-between;*/
+        /*    align-items: center;*/
+        /*    margin-top: 10px;*/
+        /*}*/
+
+        .validity {
+            font-size: 12px;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2 class="section-title">My Coupons</h2>
+    <!-- Thymeleaf 반복문으로 쿠폰들을 동적으로 생성 -->
+    <div th:each="coupon : ${coupons}">
+        <div class="card">
+            <div class="card-header">
+                <!-- 쿠폰 상태에 따라 동적으로 클래스 설정 -->
+                <span th:text="${'AVAILABLE' == coupon.status ? '사용 가능' : ('USED' == coupon.status ? '사용 완료' : '사용 불가')}"
+                      th:class="${'AVAILABLE' == coupon.status ? 'status-available'
+                    : ('USED' == coupon.status ? 'status-used' : 'status-expired')}"
+                      class="status"></span>
+                <span class="discount">할인 타입: <span th:text="${'AMOUNTDISCOUNT' == coupon.couponPolicy.discountType ? '금액 할인' : '비율 할인'}"></span></span>
+            </div>
+            <div class="card-content">
+                <p class="description">쿠폰 설명: <span th:text="${coupon.couponPolicy.couponPolicyDescription}"></span></p>
+                <div class="details">
+                    <div>
+                        <p>최대 할인 금액: <span th:text="${coupon.couponPolicy.maxDiscountAmount}"></span></p>
+                        <p>최소 할인 금액: <span th:text="${coupon.couponPolicy.minPurchaseAmount}"></span></p>
+                    </div>
+                    <div>
+                        <p>만료일: <span th:text="${coupon.expirationDate}"></span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="pagination">
+    <!-- 이전 페이지 링크 -->
+    <a th:href="@{/mypage/coupons(page=${coupons.number - 1}, size=${coupons.size})}" th:if="${coupons.hasPrevious()}">&laquo; Previous</a>
+
+    <!-- 페이지 번호 링크 -->
+    <span th:each="i : ${#numbers.sequence(1, coupons.totalPages)}">
+        <a th:href="@{/mypage/coupons(page=${i - 1}, size=${coupons.size})}" th:text="${i}" th:classappend="${coupons.number + 1 == i} ? 'active'"></a>
+    </span>
+
+    <!-- 다음 페이지 링크 -->
+    <a th:href="@{/mypage/coupons(page=${coupons.number + 1}, size=${coupons.size})}" th:if="${coupons.hasNext()}">Next &raquo;</a>
+</div>
+
+
+
+</body>
+</html>
+
