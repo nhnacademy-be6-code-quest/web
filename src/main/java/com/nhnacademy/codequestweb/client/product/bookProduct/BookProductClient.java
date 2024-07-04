@@ -41,10 +41,13 @@ public interface BookProductClient {
                 @RequestBody BookProductUpdateRequestDto bookProductUpdateRequestDto);
 
         @GetMapping("/api/product/book/{bookId}")
-        ResponseEntity<BookProductGetResponseDto> getSingleBookInfo(@PathVariable("bookId") long bookId);
+        ResponseEntity<BookProductGetResponseDto> getSingleBookInfo(
+                @RequestHeader HttpHeaders headers,
+                @PathVariable("bookId") long bookId);
 
         @GetMapping("/api/product/books")
         ResponseEntity<Page<BookProductGetResponseDto>> getAllBookPage(
+                @RequestHeader HttpHeaders headers,
                 @RequestParam(value = "page", required = false) Integer page,
                 @RequestParam(name = "size", required = false) Integer size,
                 @RequestParam(name = "sort", required = false)String sort,
@@ -53,6 +56,7 @@ public interface BookProductClient {
 
         @GetMapping("/api/product/books/tagFilter")
         ResponseEntity<Page<BookProductGetResponseDto>> getBookPageFilterByTag(
+                @RequestHeader HttpHeaders headers,
                 @RequestParam(value = "page", required = false) Integer page,
                 @RequestParam(name = "size", required = false) Integer size,
                 @RequestParam(name = "sort", required = false)String sort,
@@ -63,6 +67,7 @@ public interface BookProductClient {
 
         @GetMapping("/api/product/books/categoryFilter")
         ResponseEntity<Page<BookProductGetResponseDto>> getBookPageFilterByCategory(
+                @RequestHeader HttpHeaders headers,
                 @RequestParam(value = "page", required = false) Integer page,
                 @RequestParam(name = "size", required = false) Integer size,
                 @RequestParam(name = "sort", required = false)String sort,
@@ -70,6 +75,7 @@ public interface BookProductClient {
                 @RequestParam("category") String categoryName);
 
         @PostMapping("/api/product/client/like")
-        ResponseEntity<Void> saveBookProductLike(@RequestHeader HttpHeaders headers,
-                                                 @RequestBody @Valid ProductLikeRequestDto productLikeRequestDto);
+        ResponseEntity<Void> saveBookProductLike(
+                @RequestHeader HttpHeaders headers,
+                @RequestBody @Valid ProductLikeRequestDto productLikeRequestDto);
 }

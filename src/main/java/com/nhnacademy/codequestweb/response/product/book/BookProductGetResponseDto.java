@@ -35,6 +35,8 @@ public record BookProductGetResponseDto (
         @Size(max =10, message = "{too.much.category}")
         Map<Long, String> categoryMapOfIdAndName,
 
-        Map<Long, String> tagMapOfIdAndName
+        Map<Long, String> tagMapOfIdAndName,
+
+        boolean hasLike
 ){
 }

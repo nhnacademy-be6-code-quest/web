@@ -47,9 +47,6 @@ public class CartController {
                 ResponseEntity<List<CartGetResponseDto>> responseEntity = cartService.getGuestCartList(cartListOfCookie);
                 if (responseEntity.getStatusCode().is2xxSuccessful()) {
                     List<CartGetResponseDto> cartList = responseEntity.getBody();
-                    for (CartGetResponseDto cartGetResponseDto : cartList) {
-                        log.error("map : {}",cartGetResponseDto.categoryMapOfIdAndName());
-                    }
                     model.addAttribute("cartList", cartList);
                     return "/view/product/cart";
                 }else{

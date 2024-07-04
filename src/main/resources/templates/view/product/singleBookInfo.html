@@ -8,7 +8,16 @@
     <img th:src="${book.cover()}" alt="">
 
 <div th:text="${book.cover()}" />
-
+    <div th:if="${book.hasLike()}">
+        좋아요 눌려있음!
+    </div>
+    <div th:unless="${book.hasLike()}">
+        좋아요 눌려있지 않음!
+    </div>
+    <form action="/product/client/like" method="post">
+        <input type="hidden" name="productId" th:value="${book.productId()}">
+        <button type="submit">좋아요</button>
+    </form>
     <div th:text="${book.productDescription()}"></div>
     <form action="/cart/add" method="post">
         <input type="hidden" name="productId" th:value="${book.productId()}">
