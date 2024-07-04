@@ -20,4 +20,6 @@ public interface AuthClient {
     ResponseEntity<TokenResponseDto> paycoLoginCallback(@RequestParam("code") String code);
     @PostMapping("/api/oauth")
     ResponseEntity<TokenResponseDto> oAuthRegister(@RequestBody OAuthRegisterRequestDto oAuthRegisterRequestDto);
+    @GetMapping("/api/payco/recovery/callback")
+    ResponseEntity<String> paycoRecoveryCallback(@RequestParam("code") String code);
 }

@@ -5,6 +5,7 @@ import com.nhnacademy.codequestweb.client.auth.UserClient;
 import com.nhnacademy.codequestweb.request.auth.ClientLoginRequestDto;
 import com.nhnacademy.codequestweb.request.auth.ClientRegisterRequestDto;
 import com.nhnacademy.codequestweb.request.auth.OAuthRegisterRequestDto;
+import com.nhnacademy.codequestweb.request.client.ClientRecoveryRequestDto;
 import com.nhnacademy.codequestweb.response.auth.ClientRegisterResponseDto;
 import com.nhnacademy.codequestweb.response.auth.TokenResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,8 @@ public class AuthService {
     private String clientId;
     @Value("${payco.redirect.uri}")
     private String redirectUri;
+    @Value("${payco.recover.redirect.uri}")
+    private String recoverRedirectUri;
 
     private final UserClient userClient;
     private final AuthClient authClient;
@@ -49,11 +52,28 @@ public class AuthService {
                 "&userLocale=ko_KR";
     }
 
+    public String getPaycoRecoveryURL() {
+        return "https://id.payco.com/oauth2.0/authorize" +
+                "?client_id=" + clientId +
+                "&redirect_uri=" + recoverRedirectUri +
+                "&response_type=code" +
+                "&serviceProviderCode=FRIENDS" +
+                "&userLocale=ko_KR";
+    }
+
     public ResponseEntity<TokenResponseDto> paycoLoginCallback(String code) {
         return authClient.paycoLoginCallback(code);
     }
 
     public ResponseEntity<TokenResponseDto> oAuthRegister(OAuthRegisterRequestDto oAuthRegisterRequestDto) {
         return authClient.oAuthRegister(oAuthRegisterRequestDto);
+    }
+
+    public ResponseEntity<String> recover(String code) {
+        return authClient.paycoRecoveryCallback(code);
+    }
+
+    public String recoverAccount(String email) {
+        return userClient.recoveryOauthClient(email).getBody();
     }
 }

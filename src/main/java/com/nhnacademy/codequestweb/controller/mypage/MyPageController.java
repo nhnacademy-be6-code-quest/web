@@ -1,8 +1,6 @@
 package com.nhnacademy.codequestweb.controller.mypage;
 
-import static org.springframework.beans.support.PagedListHolder.DEFAULT_PAGE_SIZE;
-
-import com.nhnacademy.codequestweb.client.auth.UserClient;
+import com.nhnacademy.codequestweb.request.auth.ClientRegisterRequestDto;
 import com.nhnacademy.codequestweb.request.mypage.ClientRegisterAddressRequestDto;
 import com.nhnacademy.codequestweb.request.mypage.ClientRegisterPhoneNumberRequestDto;
 import com.nhnacademy.codequestweb.request.mypage.ClientUpdatePrivacyRequestDto;
@@ -18,6 +16,7 @@ import com.nhnacademy.codequestweb.utils.CookieUtils;
 import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -25,12 +24,17 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.RequestEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Slf4j
@@ -63,13 +67,20 @@ public class MyPageController {
     public String mypageDelivery(HttpServletRequest req) {
         if (CookieUtils.getCookieValue(req, "refresh") == null) {
             return "redirect:/auth";
+        } else if (req.getParameter("alterMessage") != null) {
+            String decoding;
+            try{
+                decoding = URLDecoder.decode(req.getParameter("alterMessage"), StandardCharsets.UTF_8.toString());
+            } catch (UnsupportedEncodingException e) {
+                decoding = null;
+            }
+            req.setAttribute("alterMessage", decoding);
         }
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
         headers.set("refresh", CookieUtils.getCookieValue(req, "refresh"));
 
-        ResponseEntity<List<ClientDeliveryAddressResponseDto>> response = myPageService.getDeliveryAddresses(
-            headers);
+        ResponseEntity<List<ClientDeliveryAddressResponseDto>> response = myPageService.getDeliveryAddresses(headers);
         log.info("response: {}", response.getBody());
 
         req.setAttribute("view", "mypage");
@@ -86,10 +97,20 @@ public class MyPageController {
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
         headers.set("refresh", CookieUtils.getCookieValue(req, "refresh"));
 
-        ResponseEntity<String> response = myPageService.registerAddress(headers,
-            clientRegisterAddressRequestDto);
-        log.info("/mypage/delivary post response: {}", response.getBody());
-
+        try {
+            ResponseEntity<String> response = myPageService.registerAddress(headers,
+                    clientRegisterAddressRequestDto);
+            log.info("/mypage/delivary post response: {}", response.getBody());
+        } catch (FeignException e) {
+            String message = "배송지는 최대 10개 까지 등록 할 수 있습니다.";
+            String encodedMessage;
+            try {
+                encodedMessage = URLEncoder.encode(message, StandardCharsets.UTF_8.toString());
+            } catch (UnsupportedEncodingException e1) {
+                encodedMessage = message;
+            }
+            return "redirect:/mypage/delivary?alterMessage=" + encodedMessage;
+        }
         return "redirect:/mypage/delivary";
     }
 
@@ -124,17 +145,19 @@ public class MyPageController {
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
         headers.set("refresh", CookieUtils.getCookieValue(req, "refresh"));
         headers.set("password", pw);
-
-        ResponseEntity<String> response = myPageService.deleteClient(headers);
-        log.info("/mypage/withdrawal post response: {}", response.getBody());
-
-        return ResponseEntity.ok("Successfully deleted delivery address");
+        try {
+            return myPageService.deleteClient(headers);
+        } catch (FeignException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
     }
 
     @GetMapping("/mypage/phone")
     public String phone(HttpServletRequest req) {
         if (CookieUtils.getCookieValue(req, "refresh") == null) {
             return "redirect:/auth";
+        } else if (req.getParameter("alterMessage") != null) {
+            req.setAttribute("alterMessage", req.getParameter("alterMessage"));
         }
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
@@ -150,7 +173,7 @@ public class MyPageController {
     }
 
     @PostMapping("/mypage/phone")
-    public String addPhone(HttpServletRequest req, @ModelAttribute ClientRegisterPhoneNumberRequestDto clientRegisterPhoneNumberRequestDto) {
+    public String addPhone(HttpServletRequest req, @Valid @ModelAttribute ClientRegisterPhoneNumberRequestDto clientRegisterPhoneNumberRequestDto) {
         if (CookieUtils.getCookieValue(req, "refresh") == null) {
             return "redirect:/auth";
         }
@@ -188,6 +211,18 @@ public class MyPageController {
     @ExceptionHandler(FeignException.NotFound.class)
     public String notFound(HttpServletRequest req, Exception e) {
         return "redirect:/auth";
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public String validationError(MethodArgumentNotValidException e, HttpServletRequest req) {
+        String encodedMessage;
+        try {
+            encodedMessage = URLEncoder.encode(e.getBindingResult().getAllErrors().get(0).getDefaultMessage(), StandardCharsets.UTF_8.toString());
+        } catch (UnsupportedEncodingException e1) {
+            encodedMessage = e.getBindingResult().getAllErrors().get(0).getDefaultMessage();
+        }
+        String referer = req.getHeader("Referer").split("\\?alterMessage")[0];
+        return "redirect:" + (referer != null ? referer : "/") + "?alterMessage=" + encodedMessage;
     }
 
     @GetMapping("/mypage/reviews/no-photo")
