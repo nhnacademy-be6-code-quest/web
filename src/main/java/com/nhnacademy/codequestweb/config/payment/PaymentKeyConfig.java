@@ -25,6 +25,6 @@ public class PaymentKeyConfig {
         JSONObject jsonObject = nhnKeyManagerClient.getTossSecretKey();
         Map<String, Object> responseMap = (Map<String, Object>) jsonObject;
         Map<String, Object> bodyMap = (Map<String, Object>) responseMap.get("body");
-        return (String) bodyMap.get("secret") ;
+        return (String) bodyMap.get("secret");
     }
 }
