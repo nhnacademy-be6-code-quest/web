@@ -13,5 +13,8 @@
         <div th:replace="~{view/coupon/admin_policy_list :: couponPolicyFragment ('couponPolicy')}"></div>
     </div>
 
+    <div class="adminPage-wrapper" th:if="${adminPage != null} and ${#strings.equals(adminPage, 'bookProductRegisterForm')}">
+        <section th:replace="~{view/product/bookProductRegisterForm.html :: bookProductRegisterFragment}"></section>
+    </div>
 </div>
 </html>

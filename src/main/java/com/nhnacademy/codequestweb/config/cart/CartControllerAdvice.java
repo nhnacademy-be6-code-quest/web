@@ -43,7 +43,6 @@ public class CartControllerAdvice {
             try {
                 String cartJson = SecretKeyUtils.decrypt(encryptedCart, SecretKeyUtils.getSecretKey());
                 List<CartRequestDto> cartListOfCookie = objectMapper.readValue(cartJson, new TypeReference<List<CartRequestDto>>() {});
-                log.warn("{}", cartListOfCookie);
                 model.addAttribute("cart", cartListOfCookie);
             } catch (IllegalArgumentException | IllegalBlockSizeException | BadPaddingException e) {
                 log.warn("cookie has been corrupted");
@@ -58,7 +57,7 @@ public class CartControllerAdvice {
                 log.error("error while decrypting cart", e);
             }
         } else {
-            log.info("cookie has been deleted");
+            log.warn("cookie has been deleted");
             try {
                 if (!CookieUtils.isGuest(req)){
                     restoreClientCartList(req, resp, model);

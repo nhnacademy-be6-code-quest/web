@@ -42,16 +42,16 @@ public class CartController {
         if (CookieUtils.isGuest(req)) {
             if (cartListOfCookie == null || cartListOfCookie.isEmpty()) {
                 model.addAttribute("empty", true);
-                return "/view/product/cart";
+                model.addAttribute("view", "cart");
+                return "index";
             }else{
                 ResponseEntity<List<CartGetResponseDto>> responseEntity = cartService.getGuestCartList(cartListOfCookie);
                 if (responseEntity.getStatusCode().is2xxSuccessful()) {
                     List<CartGetResponseDto> cartList = responseEntity.getBody();
-                    for (CartGetResponseDto cartGetResponseDto : cartList) {
-                        log.error("map : {}",cartGetResponseDto.categoryMapOfIdAndName());
-                    }
                     model.addAttribute("cartList", cartList);
-                    return "/view/product/cart";
+                    model.addAttribute("view", "cart");
+
+                    return "index";
                 }else{
                     return "redirect:/";
                 }
@@ -70,7 +70,8 @@ public class CartController {
                 }else {
                     model.addAttribute("cartList", cartList);
                 }
-                return "/view/product/cart";
+                model.addAttribute("view", "cart");
+                return "index";
             }else {
                 return "redirect:/";
             }
@@ -127,7 +128,9 @@ public class CartController {
 
         CookieUtils.deleteCookieValue(resp, "cart");
         CookieUtils.setCartCookieValue(cartListOfCookie, objectMapper, resp);
-        return "redirect:/";
+
+
+        return "redirect:/cart/all";
     }
 
     @PutMapping("/cart/update")

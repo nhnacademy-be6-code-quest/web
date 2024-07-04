@@ -1,8 +1,50 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="cartFragment ()">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <style>
+        .book-button {
+            display: flex;
+            align-items: center;
+            border: 5px solid bisque;
+            background: none;
+            padding: 10px;
+            cursor: pointer;
+            width: 45%;
+            margin: 20px;
+        }
+
+        .book-info {
+            display: flex;
+            flex-direction: column;
+            margin-left: 30px;
+            text-align: left;
+        }
+
+        .book-info span {
+            margin-bottom: 5px;
+        }
+
+        .book-container {
+            width: 90%;
+            height: 300px;
+            display: flex; /* Flexbox를 사용하여 요소들을 배치합니다 */
+            align-items: center; /* 요소들을 수직 가운데 정렬합니다 */
+            padding: 50px; /* 각 요소 주위에 여백을 줍니다 */
+            border: 3px solid bisque; /* 네모 테두리를 추가합니다 */
+            background-color: bisque;
+            border-radius: 5px; /* 모서리를 둥글게 만듭니다 */
+        }
+
+        .pagination-container {
+            text-align: center; /* 컨테이너를 가운데 정렬 */
+        }
+        .pagination-form {
+            display: inline-block; /* 폼을 인라인 블록으로 배치 */
+            margin: 5px; /* 각 폼 간의 간격 */
+        }
+    </style>
 </head>
 <body>
 <form action="/cart/clear" method="post">
@@ -10,22 +52,31 @@
     <button type="submit"> 초기화</button>
 </form>
 <div th:each="cart: ${cartList}">
-    <img th:src="${cart.productThumbnailImage()}" alt="">
-    <div th:text="'상품명' + ${cart.productName()}"></div>
-    <div th:text="'수량' + ${cart.productQuantityOfCart()}"></div>
-    <form action="/cart/update" method="post">
-        <input type="hidden" name="_method" value="PUT"/>
-        <input type="hidden" name="productId" th:value="${cart.productId()}">
-        <label >수정</label><input type="number" name="quantity" th:value="${cart.productQuantityOfCart()}" min="1" th:max="${cart.productInventory()}"/>
-        <button type="submit"> 수정</button>
-    </form>
-    <div th:each="categoryName : ${cart.categoryMapOfIdAndName().values()}">
-        <span th:text="${categoryName}"></span>
+    <div class="book-button">
+        <div class="book-container">
+            <img th:src="${cart.productThumbnailImage()}" alt="">
+            <div class="book-info">
+                <span th:text="'상품명' + ${cart.productName()}"></span>
+                <span th:text="'가격' + ${cart.productPriceStandard()}"></span>
+                <span th:text="' -> ' + ${cart.productPriceSales()}"></span>
+
+                <form action="/cart/update" method="post">
+                    <input type="hidden" name="_method" value="PUT"/>
+                    <input type="hidden" name="productId" th:value="${cart.productId()}">
+                    <label >수정</label><input type="number" name="quantity" th:value="${cart.productQuantityOfCart()}" min="1" th:max="${cart.productInventory()}"/>
+                    <button type="submit"> 수정</button>
+                </form>
+                <div th:each="categoryName : ${cart.categoryMapOfIdAndName().values()}">
+                    <span th:text="${categoryName}"></span>
+                </div>
+                <form th:action="'/cart/' + ${cart.productId()}" method="post">
+                    <input type="hidden" name="_method" value="DELETE"/>
+                    <button type="submit"> 삭제</button>
+                </form>
+            </div>
+        </div>
     </div>
-    <form th:action="'/cart/' + ${cart.productId()}" method="post">
-        <input type="hidden" name="_method" value="DELETE"/>
-        <button type="submit"> 삭제</button>
-    </form>
+
 </div>
 </body>
 </html>

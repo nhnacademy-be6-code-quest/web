@@ -38,24 +38,49 @@ public class BookProductService {
         return bookProductClient.updateBook(headers, bookProductUpdateRequestDto);
     }
 
-    public ResponseEntity<BookProductGetResponseDto> getSingleBookInfo(long id) {
-        return bookProductClient.getSingleBookInfo(id);
+    public ResponseEntity<BookProductGetResponseDto> getSingleBookInfo(
+            HttpHeaders headers,
+            long bookId) {
+        return bookProductClient.getSingleBookInfo(headers, bookId);
     }
 
 
-    public ResponseEntity<Page<BookProductGetResponseDto>> getAllBookPage(Integer page, Integer size, String sort, Boolean desc) {
-        return bookProductClient.getAllBookPage(page, size, sort, desc);
+    public ResponseEntity<Page<BookProductGetResponseDto>> getAllBookPage(
+            HttpHeaders headers,
+            Integer page, Integer size, String sort, Boolean desc) {
+        return bookProductClient.getAllBookPage(headers, page, size, sort, desc);
     }
 
-    public ResponseEntity<Page<BookProductGetResponseDto>> getBookPageFilterByTag(Integer page, Integer size, String sort, Boolean desc, Set<String> tagNameSet, Boolean conditionIsAnd) {
-        return bookProductClient.getBookPageFilterByTag(page, size, sort, desc, tagNameSet, conditionIsAnd);
+    public ResponseEntity<Page<BookProductGetResponseDto>> getNameContainingBookPage(
+            HttpHeaders headers,
+            Integer page, Integer size, String sort, Boolean desc,
+            String title) {
+        return bookProductClient.getNameContainingBookPage(headers, page, size, sort, desc, title);
     }
 
-    public ResponseEntity<Page<BookProductGetResponseDto>> getBookPageFilterByCategory(Integer page, Integer size, String sort, Boolean desc, String categoryName) {
-        return bookProductClient.getBookPageFilterByCategory(page, size, sort, desc, categoryName);
+    public ResponseEntity<Page<BookProductGetResponseDto>> getBookPageFilterByTag(
+            HttpHeaders headers,
+            Integer page, Integer size, String sort, Boolean desc, Set<String> tagNameSet, Boolean conditionIsAnd) {
+        return bookProductClient.getBookPageFilterByTag(headers, page, size, sort, desc, tagNameSet, conditionIsAnd);
+    }
+
+    public ResponseEntity<Page<BookProductGetResponseDto>> getBookPageFilterByCategory(
+            HttpHeaders headers,
+            Integer page, Integer size, String sort, Boolean desc, String categoryName) {
+        return bookProductClient.getBookPageFilterByCategory(headers, page, size, sort, desc, categoryName);
+    }
+
+    public ResponseEntity<Page<BookProductGetResponseDto>> getLikeBookPage(
+            HttpHeaders headers,
+            Integer page, Integer size, String sort, Boolean desc) {
+        return bookProductClient.getLikeBookPage(headers, page, size, sort, desc);
     }
 
     public ResponseEntity<Void> saveBookLike(HttpHeaders headers, ProductLikeRequestDto productLikeRequestDto) {
         return bookProductClient.saveBookProductLike(headers, productLikeRequestDto);
+    }
+
+    public ResponseEntity<Void> deleteBookLike(HttpHeaders headers, Long productId) {
+        return bookProductClient.deleteBookProductLike(headers, productId);
     }
 }

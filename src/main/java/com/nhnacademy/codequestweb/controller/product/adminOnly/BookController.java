@@ -50,10 +50,9 @@ public class BookController {
     }
 
     @GetMapping("/register")
-    public String registerForm(Model model){
-
-        model.addAttribute("view", "bookProductRegisterForm");
-
+    public String registerForm(HttpServletRequest req){
+        req.setAttribute("view", "adminPage");
+        req.setAttribute("adminPage", "bookProductRegisterForm");
         return "index";
     }
 

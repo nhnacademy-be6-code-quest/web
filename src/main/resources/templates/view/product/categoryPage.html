@@ -28,7 +28,7 @@
 
         function sendMessageToParent(message) {
             // `localStorage`에 값을 설정하여 부모 창에 전달
-            localStorage.setItem("sharedData", message);
+            localStorage.setItem("category", message);
             window.close(); // 자식 창 닫기
         }
 
