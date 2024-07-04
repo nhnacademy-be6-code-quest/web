@@ -10,14 +10,19 @@
 <div th:text="${book.cover()}" />
     <div th:if="${book.hasLike()}">
         좋아요 눌려있음!
+        <form action="/product/client/unlike"  method="post">
+            <input type="hidden" name="_method" value="DELETE"/>
+            <input type="hidden" name="productId" th:value="${book.productId()}">
+            <button type="submit">좋아요 취소하기</button>
+        </form>
     </div>
     <div th:unless="${book.hasLike()}">
         좋아요 눌려있지 않음!
+        <form action="/product/client/like" method="post">
+            <input type="hidden" name="productId" th:value="${book.productId()}">
+            <button type="submit">좋아요</button>
+        </form>
     </div>
-    <form action="/product/client/like" method="post">
-        <input type="hidden" name="productId" th:value="${book.productId()}">
-        <button type="submit">좋아요</button>
-    </form>
     <div th:text="${book.productDescription()}"></div>
     <form action="/cart/add" method="post">
         <input type="hidden" name="productId" th:value="${book.productId()}">

@@ -16,6 +16,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -54,6 +55,16 @@ public interface BookProductClient {
                 @RequestParam(name = "desc", required = false)Boolean desc
                 );
 
+        @GetMapping("/api/product/books/containing")
+        ResponseEntity<Page<BookProductGetResponseDto>> getNameContainingBookPage(
+                @RequestHeader HttpHeaders headers,
+                @RequestParam(value = "page", required = false) Integer page,
+                @RequestParam(name = "size", required = false) Integer size,
+                @RequestParam(name = "sort", required = false)String sort,
+                @RequestParam(name = "desc", required = false)Boolean desc,
+                @RequestParam(name = "title")String title
+        );
+
         @GetMapping("/api/product/books/tagFilter")
         ResponseEntity<Page<BookProductGetResponseDto>> getBookPageFilterByTag(
                 @RequestHeader HttpHeaders headers,
@@ -74,8 +85,21 @@ public interface BookProductClient {
                 @RequestParam(name = "desc", required = false)Boolean desc,
                 @RequestParam("category") String categoryName);
 
+        @GetMapping("/api/product/client/books/like")
+        ResponseEntity<Page<BookProductGetResponseDto>> getLikeBookPage(
+                @RequestHeader HttpHeaders headers,
+                @RequestParam(value = "page", required = false) Integer page,
+                @RequestParam(name = "size", required = false) Integer size,
+                @RequestParam(name = "sort", required = false)String sort,
+                @RequestParam(name = "desc", required = false)Boolean desc);
+
         @PostMapping("/api/product/client/like")
         ResponseEntity<Void> saveBookProductLike(
                 @RequestHeader HttpHeaders headers,
                 @RequestBody @Valid ProductLikeRequestDto productLikeRequestDto);
+
+        @DeleteMapping("/api/product/client/unlike")
+        ResponseEntity<Void> deleteBookProductLike(
+                @RequestHeader HttpHeaders httpHeaders,
+                @RequestParam("productId") Long productId);
 }
