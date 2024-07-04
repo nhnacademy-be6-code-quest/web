@@ -15,7 +15,7 @@ public interface AuthClient {
     @PostMapping("/api/logout")
     ResponseEntity<String> logout(@RequestHeader HttpHeaders headers);
     @PostMapping("/api/reissue")
-    ResponseEntity<TokenResponseDto> reissue(@RequestHeader(name = "refresh") String refresh);
+    ResponseEntity<TokenResponseDto> reissue(@RequestHeader HttpHeaders headers);
     @GetMapping("/api/payco/login/callback")
     ResponseEntity<TokenResponseDto> paycoLoginCallback(@RequestParam("code") String code);
     @PostMapping("/api/oauth")
