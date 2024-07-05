@@ -1,5 +1,6 @@
 package com.nhnacademy.codequestweb.controller.product.adminOnly;
 
+import com.nhnacademy.codequestweb.config.CategoryConfig;
 import com.nhnacademy.codequestweb.request.product.productCategory.CategoryRegisterRequestDto;
 import com.nhnacademy.codequestweb.response.product.productCategory.CategoryGetResponseDto;
 import com.nhnacademy.codequestweb.response.product.productCategory.CategoryRegisterResponseDto;
@@ -32,11 +33,18 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 @RequiredArgsConstructor
 public class CategoryController {
+    private final CategoryConfig categoryConfig;
     private final CategoryService categoryService;
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
+    }
+
+    @GetMapping("/category/update")
+    public ResponseEntity<String> updateCategory() {
+        categoryConfig.update();
+        return ResponseEntity.ok("Category updated");
     }
 
     @GetMapping("/admin/categories/registerForm")
