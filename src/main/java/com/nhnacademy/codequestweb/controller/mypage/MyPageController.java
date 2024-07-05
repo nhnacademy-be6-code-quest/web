@@ -265,9 +265,4 @@ public class MyPageController {
         return "index";
     }
 
-    @ExceptionHandler(FeignException.Unauthorized.class)
-    public String unauthorized(HttpServletRequest req, Exception e) {
-        return "redirect:/auth";
-    }
-
 }
