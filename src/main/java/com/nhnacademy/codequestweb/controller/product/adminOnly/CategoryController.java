@@ -24,10 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Slf4j
@@ -42,9 +39,10 @@ public class CategoryController {
         binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
     }
 
-    @GetMapping("/category/update")
-    public ResponseEntity<String> updateCategory(CategoryNodeResponseDto categoryNodeResponseDto) {
+    @PostMapping("/category/update")
+    public ResponseEntity<String> updateCategory(@RequestBody CategoryNodeResponseDto categoryNodeResponseDto) {
         categoryConfig.update(categoryNodeResponseDto);
+        log.info("Category updated");
         return ResponseEntity.ok("Category updated");
     }
 
