@@ -25,9 +25,8 @@
     // orderId: `[[${tossOrderId}]]`,
     orderId: `[[${paymentOrderRequestDto.getTossOrderId()}]]`, // 주문번호(주문번호는 상점에서 직접 만들어주세요.)
 
-    orderName: `[[${paymentOrderRequestDto.getProductOrderDetailResponseDtoList().getFirst()
-        .getProductName()}]]` + ` 외 `
-        + `[[${paymentOrderRequestDto.getProductOrderDetailResponseDtoList().size() - 1}]]` + `건`, // 구매상품
+    orderName: `[[${paymentOrderRequestDto.getProductNameList().getFirst()}]]` + ` 외 `
+        + `[[${paymentOrderRequestDto.getProductNameList().size() - 1}]]` + `건`, // 구매상품
 
     customerName: `[[${customerName}]]`, // 구매자 이름
 
