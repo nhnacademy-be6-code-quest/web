@@ -3,7 +3,6 @@ package com.nhnacademy.codequestweb.controller.payment;
 import com.nhnacademy.codequestweb.request.payment.PaymentOrderRequestDto;
 import com.nhnacademy.codequestweb.response.payment.TossPaymentsResponseDto;
 import com.nhnacademy.codequestweb.service.payment.PaymentService;
-import com.nhnacademy.codequestweb.utils.CookieUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,7 +26,6 @@ public class PaymentController {
     // PaymentController 의 Service 는 PaymentService 만 있어야 함. 단일 책임의 원칙...
     // 하나의 컨트롤러가 여러 개의 서비스를 호출하면 1) 테스트 어렵고 2) 확장성도 떨어짐
     private final PaymentService paymentService;
-    static final String ID_HEADER = "X-User-Id";
 
     @GetMapping("/client/order/{orderId}/payment")
     public String savePayment(@PathVariable long orderId, Model model, HttpServletRequest httpServletRequest) {
@@ -37,8 +34,7 @@ public class PaymentController {
         productNameList.add("10만 원짜리 테스트 상품");
         productNameList.add("20만 원짜리 테스트 상품");
         productNameList.add("30만 원짜리 테스트 상품");
-
-        // TODO 1. 주문에서 이것만 잘 받으면 됨.
+        // TODO : 주문에서 이것만 잘 받으면 됨.
 //        PaymentOrderRequestDto paymentOrderRequestDto = paymentService.findPaymentOrderRequestDtoByOrderId(orderId);
         PaymentOrderRequestDto paymentOrderRequestDto = PaymentOrderRequestDto.builder()
             .orderTotalAmount(1000000L)
@@ -46,36 +42,12 @@ public class PaymentController {
             .discountAmountByPoint(20000L)
             .tossOrderId(UUID.randomUUID().toString())
             .productNameList(productNameList)
-            .nonClientOrdererName("비회원({주문창에서입력한비회원이름})")
             .build();
-
-        // TODO 2. 주문에서 받은 값을 토대로 내 View 에 잘 표현하기. (View 에서는 결제 창을 보여 줌.)
-
         model.addAttribute("paymentOrderRequestDto", paymentOrderRequestDto);
-
-        // TODO 2-1) 결제자의 이름 받아 와서 토스 결제 창에 띄워 주기
-        //  if(회원이라면) {회원 아이디로 회원 이름 달라고 하기}
-        //  if(비회원이라면) { 주문 테이블에 있는 '비회원 주문자 이름' 컬럼을 받아 오기}
-
-        // 회원이면 -> 회원의 이름이 들어 오고, 그렇지 않으면 주문에서 받아 온 비회원의 이름을 사용함.
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.set("access", CookieUtils.getCookieValue(httpServletRequest, "access"));
-
-        String customerName = paymentService.findClientNameByHttpHeaders(httpHeaders);
-        if (customerName == null) { // 회원이 아니라면
-            customerName = paymentOrderRequestDto.getNonClientOrdererName();
-        }
-        model.addAttribute("customerName", customerName);
-
-        // TODO 2-2) successUrl, failUrl 설정
-
         model.addAttribute("successUrl",
             "https://localhost:8080/client/order/" + orderId + "/payment/success");
-
         model.addAttribute("failUrl",
             "https://localhost:8080/client/order/" + orderId + "/payment/fail");
-
-        // TODO 3. html 페이지로 이동하여 토스 결제 창을 불러 옴.
         return "/view/payment/tossPage";
     }
 
@@ -112,7 +84,6 @@ public class PaymentController {
 //         TODO 5. 토스 페이먼트에게 결제를 승인 받음. // @NotNull 애너테이션이 있어서 -> Validation 가능
         JSONObject jsonObject = paymentService.approvePayment(tossOrderId,
             amount, paymentKey);
-
         TossPaymentsResponseDto tossPaymentsResponseDto = paymentService.parseJSONObject(
             jsonObject);
         // 결제 성공 페이지로 이동
