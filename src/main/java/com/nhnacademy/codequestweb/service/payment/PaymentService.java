@@ -1,98 +1,61 @@
 package com.nhnacademy.codequestweb.service.payment;
 
-import com.nhnacademy.codequestweb.client.payment.PaymentClient;
-import com.nhnacademy.codequestweb.client.payment.TossPaymentsClient;
 import com.nhnacademy.codequestweb.request.payment.PaymentOrderValidationRequestDto;
-import com.nhnacademy.codequestweb.request.payment.TossPaymentsRequestDto;
 import com.nhnacademy.codequestweb.response.payment.TossPaymentsResponseDto;
 import jakarta.annotation.PostConstruct;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Service;
 
-@Slf4j
+/**
+ *
+ */
 @Service
-@RequiredArgsConstructor
-public class PaymentService {
+public interface PaymentService {
 
-    private final PaymentClient paymentClient;
-    private final TossPaymentsClient tossPaymentsClient;
-    private final String secretKey;
-
+    /**
+     * @PostConstruct : 의존성 주입 완료 후 실행해야 하는 메서드에 적용하는 애너테이션입니다. 이 메서드는 IP가 NHN KeyManager 에 등록되어 있지
+     * 않는 등의 사유로 토스 시크릿 키가 없다면 시크릿 키가 없다는 에러 로그를 띄웁니다.
+     */
     @PostConstruct
-    public void init() {
-        if (secretKey.isEmpty()){
-            log.error("secretKey is empty");
-        }
-    }
+    void init();
 
+    /**
+     * 결제 관련 정보를 DB에 저장하기 위한 메서드입니다.
+     *
+     * @param orderId                 주문 아이디
+     * @param tossPaymentsResponseDto 토스 페이먼츠에서 넘어 오는 값들을 파싱한 Dto
+     */
+    void savePayment(long orderId, TossPaymentsResponseDto tossPaymentsResponseDto);
 
-    public void savePayment(long orderId, TossPaymentsResponseDto tossPaymentsResponseDto) {
-        paymentClient.savePayment(orderId, tossPaymentsResponseDto);
-    }
+    /**
+     * 사용자가 결제 관련 로직을 수행한 이후, 토스 페이먼츠에 승인을 보내기 전, 사용자가 금액 등을 조작하지는 않았는지 검증하는 메서드입니다.
+     *
+     * @param paymentOrderValidationRequestDto 조작 여부를 확인하기 위해, 주문에서 금액, 토스 주문 아이디 등을 받아 옵니다.
+     * @param tossOrderId                      토스에서 제공하는 오더 아이디입니다. 주문에서 받아온 값과 비교하는 데에 사용됩니다.
+     * @param amount                           토스에서 제공하는 결제 금액입니다. 주문에서 받아온 값과 비교하는 데에 사용됩니다.
+     * @return
+     */
+    boolean isValidTossPayment(PaymentOrderValidationRequestDto paymentOrderValidationRequestDto,
+        String tossOrderId, long amount);
 
-    public boolean isValidTossPayment(
-        PaymentOrderValidationRequestDto paymentOrderValidationRequestDto,
-        String tossOrderId, long amount) {
-        return paymentOrderValidationRequestDto != null
-            && (paymentOrderValidationRequestDto.getOrderTotalAmount()
-            - paymentOrderValidationRequestDto.getDiscountAmountByPoint()
-            - paymentOrderValidationRequestDto.getDiscountAmountByCoupon()) == amount
-            && (paymentOrderValidationRequestDto.getTossOrderId()
-            .equals(tossOrderId));
-    }
+    /**
+     * 토스 페이먼츠에 결제 승인을 요청하는 메서드입니다.
+     *
+     * @param tossOrderId 토스 주문 아이디입니다. 토스 페이먼츠에 결제 승인을 요청하기 위해 보내야 하는 값입니다.
+     * @param amount      결제 총 금액입니다. 토스 페이먼츠에 결제 승인을 요청하기 위해 보내야 하는 값입니다.
+     * @param paymentKey  결제 키 입니다. 토스 페이먼츠에 결제 승인을 요청하기 위해 보내야 하는 값입니다.
+     * @return 토스 페이먼츠에서 준 JSON 값을 받아 옵니다.
+     * @throws ParseException 토스 페이먼츠에서 준 값을 JSON 을 String 으로 받은 후, 다시 JSON 으로 바꾸기 때문에 필요합니다. (Dto
+     *                        생성 및 에러 피하기 위해 )
+     */
+    JSONObject approvePayment(String tossOrderId, long amount, String paymentKey)
+        throws ParseException;
 
-    public JSONObject approvePayment(String tossOrderId, long amount,
-        String paymentKey)
-        throws IOException, ParseException {
-        // 시크릿 키 설정 (주의: 실제 환경에서는 안전하게 관리해야 함)
-        // 시크릿 키를 Base64로 인코딩하여 Authorization 헤더 생성
-        Base64.Encoder encoder = Base64.getEncoder();
-        byte[] encodedBytes = encoder.encode(secretKey.getBytes(StandardCharsets.UTF_8));
-        String authorizations = "Basic " + new String(encodedBytes, 0, encodedBytes.length);
-
-        TossPaymentsRequestDto tossPaymentsRequestDto = TossPaymentsRequestDto.builder()
-            .paymentKey(paymentKey)
-            .orderId(tossOrderId)
-            .amount(amount)
-            .build();
-
-        String contentType = "application/json";
-
-        String str = tossPaymentsClient.approvePayment(
-            tossPaymentsRequestDto, authorizations, contentType);
-
-        JSONParser parser = new JSONParser();
-        return (JSONObject) parser.parse(str);
-    }
-
-    public TossPaymentsResponseDto parseJSONObject(JSONObject jsonObject) {
-        TossPaymentsResponseDto tossPaymentsResponseDto = TossPaymentsResponseDto.builder()
-            .orderName(jsonObject.get("orderName").toString())
-            .totalAmount(Long.parseLong(jsonObject.get("totalAmount").toString()))
-            .method(jsonObject.get("method").toString())
-            .paymentKey(jsonObject.get("paymentKey").toString())
-            .build();
-
-        if (tossPaymentsResponseDto.getMethod().equals("카드")) {
-            tossPaymentsResponseDto.setCardNumber(
-                (String) ((JSONObject) jsonObject.get("card")).get("number"));
-        } else if (tossPaymentsResponseDto.getMethod().equals("가상계좌")) {
-            tossPaymentsResponseDto.setAccountNumber(
-                (String) ((JSONObject) jsonObject.get("virtualAccount")).get("accountNumber"));
-        } else if (tossPaymentsResponseDto.getMethod().equals("계좌이체")) {
-            tossPaymentsResponseDto.setBank(
-                (String) ((JSONObject) jsonObject.get("transfer")).get("bank"));
-        } else if (tossPaymentsResponseDto.getMethod().equals("휴대폰")) {
-            tossPaymentsResponseDto.setCustomerMobilePhone(
-                (String) ((JSONObject) jsonObject.get("mobilePhone")).get("customerMobilePhone"));
-        }
-        return tossPaymentsResponseDto;
-    }
+    /**
+     * @param jsonObject 토스 페이먼츠에서 응답으로 제공되는 값입니다. 매우 다양한 값이 들어 있습니다.
+     *                   [링크](https://docs.tosspayments.com/reference#payment-%EA%B0%9D%EC%B2%B4)
+     * @return Dto 에 토스 페이먼츠에서 응답으로 제공하는 값을 추가하여 반환합니다.
+     */
+    TossPaymentsResponseDto parseJSONObject(JSONObject jsonObject);
 }
