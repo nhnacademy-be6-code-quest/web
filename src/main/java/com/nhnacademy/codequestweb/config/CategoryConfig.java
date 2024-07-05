@@ -18,15 +18,19 @@ public class CategoryConfig {
 
     public CategoryConfig(@Lazy CategoryClient categoryClient) {
         this.categoryClient = categoryClient;
-        update();
+        init();
     }
 
-    public void update() {
+    public void init() {
         try {
             this.root = categoryClient.getCategoriesTree().getBody();
             log.info("root: {}", this.root);
         } catch (Exception e) {
             log.error("Error while getting category tree", e);
         }
+    }
+
+    public void update(CategoryNodeResponseDto root) {
+        this.root = root;
     }
 }

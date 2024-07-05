@@ -3,6 +3,7 @@ package com.nhnacademy.codequestweb.controller.product.adminOnly;
 import com.nhnacademy.codequestweb.config.CategoryConfig;
 import com.nhnacademy.codequestweb.request.product.productCategory.CategoryRegisterRequestDto;
 import com.nhnacademy.codequestweb.response.product.productCategory.CategoryGetResponseDto;
+import com.nhnacademy.codequestweb.response.product.productCategory.CategoryNodeResponseDto;
 import com.nhnacademy.codequestweb.response.product.productCategory.CategoryRegisterResponseDto;
 import com.nhnacademy.codequestweb.response.product.productCategory.ProductCategory;
 import com.nhnacademy.codequestweb.service.product.CategoryService;
@@ -42,8 +43,8 @@ public class CategoryController {
     }
 
     @GetMapping("/category/update")
-    public ResponseEntity<String> updateCategory() {
-        categoryConfig.update();
+    public ResponseEntity<String> updateCategory(CategoryNodeResponseDto categoryNodeResponseDto) {
+        categoryConfig.update(categoryNodeResponseDto);
         return ResponseEntity.ok("Category updated");
     }
 
