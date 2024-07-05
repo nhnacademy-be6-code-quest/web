@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="singleBookFragment ()">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
@@ -13,7 +13,7 @@
         <form action="/product/client/unlike"  method="post">
             <input type="hidden" name="_method" value="DELETE"/>
             <input type="hidden" name="productId" th:value="${book.productId()}">
-            <button type="submit">좋아요 취소하기</button>
+            <button type="submit">좋아요 취소</button>
         </form>
     </div>
     <div th:unless="${book.hasLike()}">
@@ -23,10 +23,15 @@
             <button type="submit">좋아요</button>
         </form>
     </div>
+    <div th:each="category : ${book.categoryMapOfIdAndName()}">
+        <a th:href="'/product/books/category/' + ${category.getKey()}"><span th:text="'값 ' + ${category.getValue()}"></span></a>
+        <div th:text="'키 ' + ${category.getKey()}"></div>
+        <div th:text="'값 ' + ${category.getValue()}"></div>
+    </div>
     <div th:text="${book.productDescription()}"></div>
     <form action="/cart/add" method="post">
         <input type="hidden" name="productId" th:value="${book.productId()}">
-        갯수 <input type="number" name="quantity">
+        갯수 <input type="number" name="quantity" required min="1">
         장바구니 담기     <input  type="submit" >
     </form>
     <form action="/product/books/"></form>

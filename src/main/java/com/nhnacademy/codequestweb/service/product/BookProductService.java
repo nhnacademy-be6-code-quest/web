@@ -40,8 +40,8 @@ public class BookProductService {
 
     public ResponseEntity<BookProductGetResponseDto> getSingleBookInfo(
             HttpHeaders headers,
-            long bookId) {
-        return bookProductClient.getSingleBookInfo(headers, bookId);
+            long productId) {
+        return bookProductClient.getSingleBookInfo(headers, productId);
     }
 
 
@@ -66,8 +66,8 @@ public class BookProductService {
 
     public ResponseEntity<Page<BookProductGetResponseDto>> getBookPageFilterByCategory(
             HttpHeaders headers,
-            Integer page, Integer size, String sort, Boolean desc, String categoryName) {
-        return bookProductClient.getBookPageFilterByCategory(headers, page, size, sort, desc, categoryName);
+            Integer page, Integer size, String sort, Boolean desc, Long categoryId) {
+        return bookProductClient.getBookPageFilterByCategory(headers, page, size, sort, desc, categoryId);
     }
 
     public ResponseEntity<Page<BookProductGetResponseDto>> getLikeBookPage(

@@ -32,7 +32,7 @@ public record BookProductGetResponseDto (
 
         @NotNull(message = "{must.have.category}")
         @Size(min = 1, message = "{must.have.category}")
-        @Size(max =10, message = "{too.much.category}")
+        @Size(max = 10, message = "{too.much.category}")
         Map<Long, String> categoryMapOfIdAndName,
 
         Map<Long, String> tagMapOfIdAndName,

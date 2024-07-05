@@ -4,14 +4,51 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <style>
+        .cart-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .cart-items {
+            width: 70%; /* 책 목록의 너비 */
+        }
+
+        .cart-summary {
+            width: 28%; /* 요약 섹션의 너비 */
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .cart-summary > div {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cart-summary > div > div {
+            display: flex;
+            justify-content: space-between;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .book-body {
+            display: flex;
+            justify-content: center;
+            /*align-items: center;*/
+            height: 100%;
+        }
+
         .book-button {
             display: flex;
             align-items: center;
-            border: 5px solid bisque;
-            background: none;
-            padding: 10px;
-            cursor: pointer;
-            width: 45%;
+            border: 1px solid burlywood;
+            background: papayawhip;
+            padding: 15px;
+            cursor: default;
+            width: 1000px;
             margin: 20px;
         }
 
@@ -27,7 +64,7 @@
         }
 
         .book-container {
-            width: 90%;
+            width: 100%;
             height: 300px;
             display: flex; /* Flexbox를 사용하여 요소들을 배치합니다 */
             align-items: center; /* 요소들을 수직 가운데 정렬합니다 */
@@ -45,38 +82,171 @@
             margin: 5px; /* 각 폼 간의 간격 */
         }
     </style>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+
+
+        function formValidation(event) {
+            event.preventDefault();
+
+            var checkBoxes = document.getElementById("checkBox");
+
+            if (!checkBoxes) {
+                document.getElementById('errorMessage').innerText = '최소 하나 이상의 상품을 선택해주세요';
+
+                // alert('최소 하나의 상품을 선택해주세요');
+                return;
+            }
+            event.target.submit(); // 폼 제출
+
+        }
+
+        function check(box){
+            if(box.checked == true){
+                alert('체크되었습니다');
+            }else{
+                alert('체크해제되었습니다');
+            }
+        }
+        /*]]>*/
+
+    </script>
 </head>
 <body>
-<form action="/cart/clear" method="post">
-    <input type="hidden" name="_method" value="DELETE"/>
-    <button type="submit"> 초기화</button>
-</form>
-<div th:each="cart: ${cartList}">
-    <div class="book-button">
-        <div class="book-container">
-            <img th:src="${cart.productThumbnailImage()}" alt="">
-            <div class="book-info">
-                <span th:text="'상품명' + ${cart.productName()}"></span>
-                <span th:text="'가격' + ${cart.productPriceStandard()}"></span>
-                <span th:text="' -> ' + ${cart.productPriceSales()}"></span>
+<!--<div class="book-body">-->
+<!--    <div th:each="cart: ${cartList}">-->
+<!--        <div class="book-button">-->
+<!--            <div class="book-container">-->
+<!--                <a th:href="'/product/books/' + ${cart.productId}"><img th:src="${cart.productThumbnailImage()}" alt=""></a>-->
+<!--                <div class="book-info">-->
+<!--                    <a th:href="'/product/books/' + ${cart.productId}">-->
+<!--                        <span th:text="${cart.productName()}"></span>-->
+<!--                    </a>-->
+<!--                    <span th:text="'가격' + ${cart.productPriceStandard()}"></span>-->
+<!--                    <span th:text="' -> ' + ${cart.productPriceSales()} +'(할인율 : ' + (100 *(1 - ${cart.productPriceSales()} / ${cart.productPriceStandard()})) + '%)'"></span>-->
 
-                <form action="/cart/update" method="post">
-                    <input type="hidden" name="_method" value="PUT"/>
-                    <input type="hidden" name="productId" th:value="${cart.productId()}">
-                    <label >수정</label><input type="number" name="quantity" th:value="${cart.productQuantityOfCart()}" min="1" th:max="${cart.productInventory()}"/>
-                    <button type="submit"> 수정</button>
-                </form>
-                <div th:each="categoryName : ${cart.categoryMapOfIdAndName().values()}">
-                    <span th:text="${categoryName}"></span>
+<!--                    <form action="/cart/update" method="post">-->
+<!--                        <input type="hidden" name="_method" value="PUT"/>-->
+<!--                        <input type="hidden" name="productId" th:value="${cart.productId()}">-->
+<!--                        <label >수량</label><input type="number" name="quantity" th:value="${cart.productQuantityOfCart()}" min="1" th:max="${cart.productInventory()}"/>-->
+<!--                        <button type="submit"> 수정</button>-->
+<!--                    </form>-->
+<!--                    <span th:each="categoryName : ${cart.categoryMapOfIdAndName().values()}">-->
+<!--                        <span th:text="${categoryName}"></span>-->
+<!--                    </span>-->
+<!--                    <form th:action="'/cart/' + ${cart.productId()}" method="post">-->
+<!--                        <input type="hidden" name="_method" value="DELETE"/>-->
+<!--                        <button type="submit"> 삭제</button>-->
+<!--                    </form>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+<!--<div class="total">-->
+<!--    <div th:if="${jsonCartList != null and !#lists.isEmpty(jsonCartList)}">-->
+<!--        <form action="/cart/clear" method="post">-->
+<!--            <input type="hidden" name="_method" value="DELETE"/>-->
+<!--            <button type="submit"> 장바구니 모두 비우기</button>-->
+<!--        </form>-->
+
+<!--        <form id="cartForm" action="/test" method="get" onsubmit="formValidation(event)">-->
+
+<!--        <div th:each="jsonCart : ${jsonCartList}">-->
+<!--            <input type="checkbox" id="checkBox" class="box" name="test" th:value="${jsonCart}" onclick="check(this)">-->
+<!--        </div>-->
+<!--        <div>-->
+<!--            <div> 주문 예상 금액</div>-->
+<!--            <div>-->
+<!--                <div>총 상품 가격</div>-->
+<!--                <div id="totalPrice" th:text="'원'"></div>-->
+<!--            </div>-->
+<!--            <div>-->
+<!--                <div>총 할인</div>-->
+<!--                <div id="sale" th:text="'원'"></div>-->
+<!--            </div>-->
+<!--            <div>-->
+<!--                <div>총 배송비</div>-->
+<!--                <div id="totalShippingFee" th:text="'원'"></div>-->
+<!--            </div>-->
+<!--            <div>-->
+<!--                <div id="realPrice" th:text="'원'"></div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <button type="submit" form="cartForm">구매하기</button>-->
+<!--        </form>-->
+<!--    </div>-->
+<!--</div>-->
+<div class="cart-container">
+    <div class="cart-items">
+        <div class="book-body">
+            <div th:each="cart: ${cartList}">
+                <div class="book-button">
+                    <div class="book-container">
+                        <input type="checkbox" class="cart-checkbox" name="selectedCartItems" th:value="${cart.productId}">
+                        <a th:href="'/product/books/' + ${cart.productId}"><img th:src="${cart.productThumbnailImage()}" alt=""></a>
+                        <div class="book-info">
+                            <a th:href="'/product/books/' + ${cart.productId}">
+                                <span th:text="${cart.productName()}"></span>
+                            </a>
+                            <span th:text="'가격' + ${cart.productPriceStandard()}"></span>
+                            <span th:text="' -> ' + ${cart.productPriceSales()} +'(할인율 : ' + (100 *(1 - ${cart.productPriceSales()} / ${cart.productPriceStandard()})) + '%)'"></span>
+
+                            <form action="/cart/update" method="post">
+                                <input type="hidden" name="_method" value="PUT"/>
+                                <input type="hidden" name="productId" th:value="${cart.productId()}">
+                                <label>수량</label><input type="number" name="quantity" th:value="${cart.productQuantityOfCart()}" min="1" th:max="${cart.productInventory()}"/>
+                                <button type="submit">수정</button>
+                            </form>
+                            <span th:each="categoryName : ${cart.categoryMapOfIdAndName().values()}">
+                                <span th:text="${categoryName}"></span>
+                            </span>
+                            <form th:action="'/cart/' + ${cart.productId()}" method="post">
+                                <input type="hidden" name="_method" value="DELETE"/>
+                                <button type="submit">삭제</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
-                <form th:action="'/cart/' + ${cart.productId()}" method="post">
-                    <input type="hidden" name="_method" value="DELETE"/>
-                    <button type="submit"> 삭제</button>
-                </form>
             </div>
+            <form id="cartForm" action="/test" method="get" onsubmit="formValidation(event)">
+
+            <div th:each="jsonCart : ${jsonCartList}">
+                <input type="checkbox" id="checkBox" class="box" name="test" th:value="${jsonCart}" onclick="check(this)">
+            </div>
+            </form>
         </div>
     </div>
-
+    <form action="/cart/clear" method="post">
+        <input type="hidden" name="_method" value="DELETE"/>
+        <button type="submit">장바구니 모두 비우기</button>
+    </form>
+    <div th:if="${jsonCartList != null and !#lists.isEmpty(jsonCartList)}">
+        <div class="cart-summary">
+                <div>
+                    <div>주문 예상 금액</div>
+                    <div>
+                        <div>총 상품 가격</div>
+                        <div id="totalPrice" th:text="'원'"></div>
+                    </div>
+                    <div>
+                        <div>총 할인</div>
+                        <div id="sale" th:text="'원'"></div>
+                    </div>
+                    <div>
+                        <div>총 배송비</div>
+                        <div id="totalShippingFee" th:text="'원'"></div>
+                    </div>
+                    <div>
+                        <div id="realPrice" th:text="'원'"></div>
+                    </div>
+                </div>
+                <button type="submit" form="cartForm">구매하기</button>
+        </div>
+    </div>
 </div>
+
+<div id="errorMessage" style="color: red;"></div>
+
 </body>
 </html>

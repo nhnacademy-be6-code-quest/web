@@ -27,49 +27,33 @@ public class BookProductGetController {
 
     private final BookProductService bookProductService;
 
-    @GetMapping("/product/books/{bookId}")
+    @GetMapping("/product/books/{productId}")
     public String book(
             HttpServletRequest req,
-            @PathVariable long bookId,
+            @PathVariable long productId,
             Model model) {
-//        ResponseEntity<BookProductGetResponseDto> response;
+        ResponseEntity<BookProductGetResponseDto> response;
 //        if (!CookieUtils.isGuest(req)){
-//            response = bookProductService.getSingleBookInfo(CookieUtils.setHeader(req), bookId);
+            response = bookProductService.getSingleBookInfo(CookieUtils.setHeader(req), productId);
 //        }else {
-//            response = null;
 //        }
-        ResponseEntity<BookProductGetResponseDto> response = bookProductService.getSingleBookInfo(null, bookId);
-        model.addAttribute("view", "productBookDetail");
+//        ResponseEntity<BookProductGetResponseDto> response = bookProductService.getSingleBookInfo(CookieUtils.setHeader(req), bookId);
         model.addAttribute("book", response.getBody());
-        log.info("header of get : {}", CookieUtils.setHeader(req));
-        log.info(response.getBody().toString());
-        log.info("has like? {}", response.getBody().hasLike());
+        req.setAttribute("view", "singleBook");
         return "index";
     }
 
-    @GetMapping("/product/books")
+    @GetMapping("/product/books/all")
     public String getAllBookPage(
             HttpServletRequest req,
             @RequestParam(name = "page", required = false)Integer page,
+            @RequestParam(name= "size", required = false)Integer size,
             @RequestParam(name = "sort", required = false)String sort,
             @RequestParam(name = "desc", required = false)Boolean desc,
             Model model) {
-        ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getAllBookPage(null, page, 10, sort, desc);
-
-        switch (sort) {
-            case "product.productViewCount": model.addAttribute("mainText", "조회순 검색");
-            break;
-            case "pubDate": model.addAttribute("mainText", "출시순 검색");
-            break;
-            default: model.addAttribute("mainText", "전체 검색");
-        }
-
-        model.addAttribute("sort", sort);
-        model.addAttribute("desc", desc);
-        model.addAttribute("view", "productList");
-        model.addAttribute("productList", response.getBody().getContent());
-        model.addAttribute("page", page);
-        model.addAttribute("totalPage", response.getBody().getTotalPages());
+        ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getAllBookPage(CookieUtils.setHeader(req), page, size, sort, desc);
+        model.addAttribute("books", response.getBody().getContent());
+        req.setAttribute("view", "bookPage");
         return "index";
     }
 
@@ -84,7 +68,8 @@ public class BookProductGetController {
             Model model) {
         ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getNameContainingBookPage(CookieUtils.setHeader(req), page, size, sort, desc, title);
         model.addAttribute("books", response.getBody().getContent());
-        return "/view/product/bookPage";
+        req.setAttribute("view", "bookPage");
+        return "index";
     }
 
     @GetMapping("/product/books/tagFilter")
@@ -103,25 +88,28 @@ public class BookProductGetController {
             log.info("cover : {}",book.cover());
         }
         log.warn("response: {}", response.getBody().getContent());
-        return "/view/product/bookPage";
+        req.setAttribute("view", "bookPage");
+        return "index";
     }
 
-    @GetMapping("/product/books/categoryFilter")
+    @GetMapping("/product/books/category/{categoryId}")
     public String getBookPageFilterByCategory(
             HttpServletRequest req,
             @RequestParam(name = "page", required = false)Integer page,
             @RequestParam(name= "size", required = false)Integer size,
             @RequestParam(name = "sort", required = false)String sort,
             @RequestParam(name = "desc", required = false)Boolean desc,
-            @RequestParam(name = "category") String categoryName,
-            Model model) {
-        ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getBookPageFilterByCategory(CookieUtils.setHeader(req), page, size, sort, desc, categoryName);
-        model.addAttribute("books", response.getBody().getContent());
-        for(BookProductGetResponseDto book : response.getBody()) {
-            log.info("cover : {}",book.cover());
-        }
+            @PathVariable("categoryId") Long categoryId) {
+        ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getBookPageFilterByCategory(CookieUtils.setHeader(req), page, size, sort, desc, categoryId);
+//        req.setAttribute("cateogry", );
+        req.setAttribute("books", response.getBody().getContent());
+//        model.addAttribute("books", response.getBody().getContent());
+//        for(BookProductGetResponseDto book : response.getBody()) {
+//            log.info("cover : {}",book.cover());
+//        }
         log.warn("response: {}", response.getBody().getContent());
-        return "/view/product/bookPage";
+        req.setAttribute("view", "bookPage");
+        return "index";
     }
 
     @GetMapping("/product/books/like")
@@ -136,7 +124,8 @@ public class BookProductGetController {
         model.addAttribute("books", response.getBody().getContent());
 
         log.warn("response: {}", response.getBody().getContent());
-        return "/view/product/bookPage";
+        req.setAttribute("view", "bookPage");
+        return "index";
     }
 
 
@@ -146,12 +135,13 @@ public class BookProductGetController {
 
         log.info("like: {}", productLikeRequestDto);
         ResponseEntity<Void> response = bookProductService.saveBookLike(CookieUtils.setHeader(req), productLikeRequestDto);
-        return "index";
+        return "/view/product/refresh";
     }
 
     @DeleteMapping("/product/client/unlike")
     public String unlike(HttpServletRequest req, Model model, @RequestParam("productId") long productId) {
         ResponseEntity<Void> response = bookProductService.deleteBookLike(CookieUtils.setHeader(req), productId);
-        return "index";
+        return "/view/product/refresh";
     }
+
 }

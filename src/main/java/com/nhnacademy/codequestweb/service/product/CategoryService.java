@@ -1,18 +1,15 @@
 package com.nhnacademy.codequestweb.service.product;
 
 import com.nhnacademy.codequestweb.client.product.category.CategoryClient;
-import com.nhnacademy.codequestweb.request.product.PageRequestDto;
 import com.nhnacademy.codequestweb.request.product.productCategory.CategoryRegisterRequestDto;
 import com.nhnacademy.codequestweb.response.product.productCategory.CategoryGetResponseDto;
 import com.nhnacademy.codequestweb.response.product.productCategory.CategoryRegisterResponseDto;
-import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Service
 @RequiredArgsConstructor
@@ -31,8 +28,11 @@ public class CategoryService {
         return categoryClient.getNameContainingCategories(page, desc, sort, categoryName);
     }
 
-    public ResponseEntity<Page<CategoryGetResponseDto>> getSubCategories(Integer page, Boolean desc, String sort, String categoryName){
-        return categoryClient.getSubCategories(page, desc, sort, categoryName);
+    public ResponseEntity<Page<CategoryGetResponseDto>> getSubCategories(Integer page, Boolean desc, String sort, Long categoryId){
+        return categoryClient.getSubCategories(page, desc, sort, categoryId);
     }
 
+    public ResponseEntity<List<CategoryGetResponseDto>> getAllSubCategories(Long categoryId){
+        return categoryClient.getAllSubCategories(categoryId);
+    }
 }

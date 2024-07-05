@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="bookPageFragment ()">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
@@ -38,7 +38,7 @@
 </head>
 <body>
     <div th:each="book: ${books}">
-        <a th:href="'/product/books/' + ${book.bookId()}">
+        <a th:href="'/product/books/' + ${book.productId()}">
             <img th:src="${book.cover()}" alt="">
             <span th:text="'도서명 : ' + ${book.title()}"></span>
             <span th:text="'상품명 : ' + ${book.productName()}"></span>

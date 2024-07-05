@@ -41,10 +41,10 @@ public interface BookProductClient {
                 @RequestHeader HttpHeaders headers,
                 @RequestBody BookProductUpdateRequestDto bookProductUpdateRequestDto);
 
-        @GetMapping("/api/product/book/{bookId}")
+        @GetMapping("/api/product/book/{productId}")
         ResponseEntity<BookProductGetResponseDto> getSingleBookInfo(
                 @RequestHeader HttpHeaders headers,
-                @PathVariable("bookId") long bookId);
+                @PathVariable("productId") long productId);
 
         @GetMapping("/api/product/books")
         ResponseEntity<Page<BookProductGetResponseDto>> getAllBookPage(
@@ -76,14 +76,14 @@ public interface BookProductClient {
                 @RequestParam(value = "isAnd", required = false)Boolean conditionIsAnd);
 
 
-        @GetMapping("/api/product/books/categoryFilter")
+        @GetMapping("/api/product/books/category/{categoryId}")
         ResponseEntity<Page<BookProductGetResponseDto>> getBookPageFilterByCategory(
                 @RequestHeader HttpHeaders headers,
                 @RequestParam(value = "page", required = false) Integer page,
                 @RequestParam(name = "size", required = false) Integer size,
                 @RequestParam(name = "sort", required = false)String sort,
                 @RequestParam(name = "desc", required = false)Boolean desc,
-                @RequestParam("category") String categoryName);
+                @PathVariable("categoryId") Long categoryId);
 
         @GetMapping("/api/product/client/books/like")
         ResponseEntity<Page<BookProductGetResponseDto>> getLikeBookPage(
