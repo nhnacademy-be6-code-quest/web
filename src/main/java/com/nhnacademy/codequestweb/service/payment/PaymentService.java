@@ -1,13 +1,11 @@
 package com.nhnacademy.codequestweb.service.payment;
 
-import com.nhnacademy.codequestweb.client.payment.PaymentUserClient;
 import com.nhnacademy.codequestweb.client.payment.PaymentClient;
 import com.nhnacademy.codequestweb.client.payment.PaymentOrderClient;
 import com.nhnacademy.codequestweb.client.payment.TossPaymentsClient;
 import com.nhnacademy.codequestweb.request.payment.PaymentOrderRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentOrderValidationRequestDto;
 import com.nhnacademy.codequestweb.request.payment.TossPaymentsRequestDto;
-import com.nhnacademy.codequestweb.response.mypage.ClientPrivacyResponseDto;
 import com.nhnacademy.codequestweb.response.payment.TossPaymentsResponseDto;
 import jakarta.annotation.PostConstruct;
 import java.nio.charset.StandardCharsets;
@@ -17,8 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -29,7 +25,6 @@ public class PaymentService /*implements PaymentService*/ {
     private final PaymentClient paymentClient;
     private final PaymentOrderClient paymentOrderClient;
     private final TossPaymentsClient tossPaymentsClient;
-    private final PaymentUserClient paymentUserClient;
     private final String secretKey;
 
     @PostConstruct
@@ -56,11 +51,11 @@ public class PaymentService /*implements PaymentService*/ {
 
     public JSONObject approvePayment(String tossOrderId, long amount,
         String paymentKey) throws ParseException {
-        // 시크릿 키 설정 (주의: 실제 환경에서는 안전하게 관리해야 함)
         // 시크릿 키를 Base64로 인코딩하여 Authorization 헤더 생성
         Base64.Encoder encoder = Base64.getEncoder();
         byte[] encodedBytes = encoder.encode(secretKey.getBytes(StandardCharsets.UTF_8));
         String authorizations = "Basic " + new String(encodedBytes, 0, encodedBytes.length);
+        String contentType = "application/json";
 
         TossPaymentsRequestDto tossPaymentsRequestDto = TossPaymentsRequestDto.builder()
             .paymentKey(paymentKey)
@@ -68,9 +63,7 @@ public class PaymentService /*implements PaymentService*/ {
             .amount(amount)
             .build();
 
-        String contentType = "application/json";
-
-        // 일단 String 으로 받아 온 뒤에
+        // 승인 요청을 보내면서 + 응답을 받아 옴.
         String tossPaymentsApproveResponseString = tossPaymentsClient.approvePayment(
             tossPaymentsRequestDto, authorizations, contentType);
 
@@ -105,11 +98,5 @@ public class PaymentService /*implements PaymentService*/ {
 
     public PaymentOrderRequestDto findPaymentOrderRequestDtoByOrderId(long orderId) {
         return paymentOrderClient.findPaymentOrderRequestDtoByOrderId(orderId);
-    }
-
-    public String findClientNameByHttpHeaders(HttpHeaders httpHeaders) {
-        ResponseEntity<ClientPrivacyResponseDto> privacyResponseDtoResponseEntity = paymentUserClient.getPrivacy(
-            httpHeaders);
-        return privacyResponseDtoResponseEntity.getBody().getClientName();
     }
 }

@@ -5,8 +5,8 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 
 /**
- * Order API 로 주문 관련 Request 를 보내는 FeignClient 파일입니다. 결제와 같은 서비스이기는 하나, 가독성 및 API 요청 분리를 위해 분리했습니다.
- * Payment 에서 Order API 에 요청을 보내기 때문에 PaymentOrderClient 라는 네이밍을 사용하게 되었습니다.
+ * Order API 로 주문 관련 Request 를 보내는 FeignClient 파일입니다. 결제와 같은 서비스이기는 하나, 가독성 및 충돌 우려를 위해 분리했습니다.
+ * Payment -> Order API 에 요청을 보내기 때문에 PaymentOrderClient 라는 네이밍을 사용하게 되었습니다.
  *
  * @author 김채호
  * @version 0.0

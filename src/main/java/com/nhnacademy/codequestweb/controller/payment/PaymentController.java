@@ -3,7 +3,6 @@ package com.nhnacademy.codequestweb.controller.payment;
 import com.nhnacademy.codequestweb.request.payment.PaymentOrderRequestDto;
 import com.nhnacademy.codequestweb.response.payment.TossPaymentsResponseDto;
 import com.nhnacademy.codequestweb.service.payment.PaymentService;
-import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
-
 @Controller
 @RequiredArgsConstructor
 @Slf4j
@@ -28,7 +26,7 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     @GetMapping("/client/order/{orderId}/payment")
-    public String savePayment(@PathVariable long orderId, Model model, HttpServletRequest httpServletRequest) {
+    public String savePayment(@PathVariable long orderId, Model model) {
 
         List<String> productNameList = new ArrayList<>();
         productNameList.add("10만 원짜리 테스트 상품");
@@ -53,15 +51,13 @@ public class PaymentController {
 
     @GetMapping("/client/order/{orderId}/payment/success")
     public String paymentResult(
-        @PathVariable long orderId,
-        Model model,
-        @RequestParam(value = "orderId") String tossOrderId, // 토스를 위해 넣어 준 orderId
-        @RequestParam(value = "amount") long amount, // 토스가 말하는 결제 금액
-        @RequestParam(value = "paymentKey") String paymentKey) throws ParseException {
+        @PathVariable long orderId, Model model,
+        @RequestParam(value = "orderId") String tossOrderId,
+        @RequestParam long amount, @RequestParam String paymentKey) throws ParseException {
 
         /*
         TODO 지우면 안 됨!!! 테스트 간결하게 하기 위해 잠시 주석 처리 함.
-//        PaymentOrderValidationRequestDto paymentOrderValidationRequestDto = orderService.findPaymentOrderValidationDtoByOrderId(orderId);
+        PaymentOrderValidationRequestDto paymentOrderValidationRequestDto = paymentService.findPaymentOrderValidationDtoByOrderId(orderId);
         PaymentOrderValidationRequestDto paymentOrderValidationRequestDto = PaymentOrderValidationRequestDto.builder()
             .orderTotalAmount(100000L)
             .discountAmountByCoupon(20000L)
@@ -89,7 +85,7 @@ public class PaymentController {
         // 결제 성공 페이지로 이동
         paymentService.savePayment(orderId, tossPaymentsResponseDto);
         model.addAttribute("tossPaymentsResponseDto", tossPaymentsResponseDto);
-        model.addAttribute("jsonObject", jsonObject);
+        model.addAttribute("jsonObject", jsonObject); // 딱히 필요 없을 듯?
         return "view/payment/success";
     }
 
