@@ -42,7 +42,7 @@
     <div th:replace="~{view/home/home.html :: homeFragment('popularBooks', 'newBooks')}"></div>
 </div>
 <div th:if="${view != null} and ${#strings.equals(view, 'auth')}">
-    <section th:replace="~{view/auth/auth.html :: authFragment ('login_message', 'register_message', 'form', 'prev_data')}"></section>
+    <section th:replace="~{view/auth/auth.html :: authFragment ('login_message', 'register_message', 'form', 'prev_data', 'isDeleted')}"></section>
 </div>
 <div th:if="${view != null} and ${#strings.equals(view, 'oauth')}">
     <section th:replace="~{view/auth/OAuth.html :: oauthFragment}"></section>
