@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="authFragment ('login_message', 'register_message', 'form', 'prev_data')">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="authFragment ('login_message', 'register_message', 'form', 'prev_data', 'isDeleted')">
 <head>
     <meta charset="UTF-8">
     <title></title>
@@ -144,8 +144,8 @@
             </label>
             <div class="forgot-pass">
                 <a onclick="showModal('비밀번호 찾기', '/send-reset-password-email')" >비밀번호 찾기</a>
-                <span>/</span>
-                <a onclick="showModal('계정 복구', '/send-recovery-account')" >계정 복구</a>
+                <span th:if="${isDeleted != null}">/</span>
+                <a th:if="${isDeleted != null}" onclick="showModal('계정 복구', '/send-recovery-account')" >계정 복구</a>
             </div>
             <button type="submit" class="submit">Sign In</button>
             <button type="button" class="submit payco-login" th:onclick="|location.href='@{/payco/login}'|">Payco</button>

@@ -199,6 +199,7 @@ public class AuthController {
     public String loginError(FeignException.Gone e, HttpServletRequest req, HttpServletResponse res) {
         req.setAttribute("login_message", "삭제/휴면된 계정입니다.");
         req.setAttribute("view", "auth");
+        req.setAttribute("isDeleted", true);
         return "index";
     }
 
