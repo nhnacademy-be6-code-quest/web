@@ -32,12 +32,13 @@ public class AuthController {
 
     @GetMapping("/auth")
     public String auth(HttpServletRequest req) {
-        if (CookieUtils.getCookieValue(req, "access") == null) {
-            req.setAttribute("view", "auth");
+        if (CookieUtils.getCookieValue(req, "access") != null) {
+            return "redirect:/";
         }
         if (req.getParameter("alterMessage") != null) {
             req.setAttribute("alterMessage", req.getParameter("alterMessage"));
         }
+        req.setAttribute("view", "auth");
         return "index";
     }
 

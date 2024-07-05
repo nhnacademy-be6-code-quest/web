@@ -1,6 +1,8 @@
 package com.nhnacademy.codequestweb.config;
 
 import com.nhnacademy.codequestweb.client.auth.AuthClient;
+import com.nhnacademy.codequestweb.client.product.category.CategoryClient;
+import com.nhnacademy.codequestweb.interceptor.CategoryInterceptor;
 import com.nhnacademy.codequestweb.interceptor.LoginInfoInterceptor;
 import com.nhnacademy.codequestweb.interceptor.TokenReissueInterceptor;
 
@@ -15,9 +17,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
     private final AuthClient authClient;
+    private final CategoryConfig categoryConfig;
 
-    public WebConfig(@Lazy AuthClient authClient) {
+    public WebConfig(@Lazy AuthClient authClient, @Lazy CategoryConfig categoryConfig) {
         this.authClient = authClient;
+        this.categoryConfig = categoryConfig;
     }
 
     @Override
@@ -25,6 +29,8 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(new LoginInfoInterceptor())
                 .addPathPatterns("/**");
         registry.addInterceptor(new TokenReissueInterceptor(authClient))
+                .addPathPatterns("/**");
+        registry.addInterceptor(new CategoryInterceptor(categoryConfig))
                 .addPathPatterns("/**");
     }
 

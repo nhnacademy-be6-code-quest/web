@@ -196,7 +196,7 @@ body {
 
 .btn-outline-dark {
   transition: all 0.3s ease-in;
-  padding: 1.2rem 3rem;
+  padding: 1rem 2rem;
   letter-spacing: 0.02375rem;
   text-transform: uppercase;
   --bs-btn-color: #41403E;
@@ -422,6 +422,11 @@ a.btn-wishlist {
 
   border-radius: 0.25rem;
   border: 1px solid rgba(65, 64, 62, 0.20);
+}
+
+.small-img {
+  width: 100px;  /* 너비를 100px로 설정 */
+  height: auto;  /* 높이를 자동으로 설정하여 비율을 유지 */
 }
 
 
@@ -673,4 +678,104 @@ Single Product section style start
 .nav-pills .show>.nav-link {
   color: var(--light-color);
   background-color: var(--accent-color);
+}
+
+/*--------------------------------------------------------------
+tree menu start
+--------------------------------------------------------------*/
+
+ .coupang-category-menu {
+   position: relative;
+   display: inline-block;
+ }
+.category-menu-button {
+  padding: 10px 15px;
+  background-color: #fff;
+  color: black;
+  font-weight: 900;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+}
+.category-menu-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 200px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1000;
+}
+.coupang-category-menu:hover .category-menu-content {
+  display: block;
+}
+.category-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+.category-item {
+  position: relative;
+}
+.category-link, .sub-category-link, .sub-sub-category-link {
+  display: block;
+  padding: 10px 15px;
+  color: #333;
+  text-decoration: none;
+}
+.category-item:hover > .category-link {
+  background-color: #4285f4;
+  color: #fff;
+}
+.sub-category-wrapper {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 100%;
+  min-width: 200px;
+  background-color: #f9f9f9;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+}
+.category-item:hover > .sub-category-wrapper {
+  display: block;
+}
+.sub-category-list, .sub-sub-category-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+.sub-category-item:hover > .sub-category-link,
+.sub-sub-category-item:hover > .sub-sub-category-link {
+  background-color: #f0f0f0;
+}
+.sub-sub-category-list {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 100%;
+  min-width: 200px;
+  background-color: #f9f9f9;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+}
+.sub-category-item:hover > .sub-sub-category-list {
+  display: block;
+}
+
+/*--------------------------------------------------------------
+best-seller
+--------------------------------------------------------------*/
+.best-seller {
+  background-color: #ffffff;
+}
+
+/*--------------------------------------------------------------
+best-seller
+--------------------------------------------------------------*/
+.new-book {
+  background-color: #fafafa;
+}
+
+/*edit by chae*/
+.custom {
+  height: 80px !important;
+  overflow: hidden;
 }

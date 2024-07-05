@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="homeFragment ()">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="homeFragment ('popularBooks', 'newBooks')">
 <head>
     <meta charset="UTF-8">
     <title>Home</title>
@@ -27,8 +27,8 @@
 </head>
 
 <div th:replace="~{view/home/banner :: bannerFragment}"></div>
-<div th:replace="~{view/home/categories :: categoriesFragment}"></div>
-<div th:replace="~{view/home/bestseller :: bestsellerFragment}"></div>
-<div th:replace="~{view/home/newbooks :: newbooksFragment}"></div>
+<!--<div th:replace="~{view/home/categories :: categoriesFragment}"></div>-->
+<div th:replace="~{view/home/bestseller :: bestsellerFragment('popularBooks')}"></div>
+<div th:replace="~{view/home/newbooks :: newbooksFragment('newBooks')}"></div>
 
 </html>
