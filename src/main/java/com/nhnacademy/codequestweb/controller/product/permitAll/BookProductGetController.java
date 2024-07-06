@@ -46,17 +46,30 @@ public class BookProductGetController {
         return "/view/product/singleBookInfo";
     }
 
-    @GetMapping("/product/books/all")
+    @GetMapping("/product/books")
     public String getAllBookPage(
             HttpServletRequest req,
             @RequestParam(name = "page", required = false)Integer page,
-            @RequestParam(name= "size", required = false)Integer size,
             @RequestParam(name = "sort", required = false)String sort,
             @RequestParam(name = "desc", required = false)Boolean desc,
             Model model) {
-        ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getAllBookPage(CookieUtils.setHeader(req), page, size, sort, desc);
-        model.addAttribute("books", response.getBody().getContent());
-        return "/view/product/bookPage";
+        ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getAllBookPage(null, page, 10, sort, desc);
+
+        switch (sort) {
+            case "product.productViewCount": model.addAttribute("mainText", "조회순 검색");
+            break;
+            case "productRegisterDate": model.addAttribute("mainText", "출시순 검색");
+            break;
+            default: model.addAttribute("mainText", "전체 검색");
+        }
+
+        model.addAttribute("sort", sort);
+        model.addAttribute("desc", desc);
+        model.addAttribute("view", "productList");
+        model.addAttribute("productList", response.getBody().getContent());
+        model.addAttribute("page", page);
+        model.addAttribute("totalPage", response.getBody().getTotalPages());
+        return "index";
     }
 
     @GetMapping("/product/books/containing")
@@ -140,5 +153,4 @@ public class BookProductGetController {
         ResponseEntity<Void> response = bookProductService.deleteBookLike(CookieUtils.setHeader(req), productId);
         return "index";
     }
-
 }

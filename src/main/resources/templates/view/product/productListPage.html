@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="productListFragment ('productList', 'mainText', 'page', 'totalPage', 'sort', 'desc')">
+<head>
+    <meta charset="UTF-8">
+    <title>Product Search</title>
+    <style>
+        .book-listing {
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .book-listing:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        .book-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #5a5a5a;
+            margin-bottom: 10px;
+        }
+        .book-price {
+            color: #f8c471;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .pagination a {
+            color: #f8c471;
+            padding: 8px 16px;
+            text-decoration: none;
+            transition: background-color .3s;
+        }
+
+        .pagination a.active {
+            background-color: #f8c471;
+            color: white;
+            border-radius: 5px;
+        }
+
+        .pagination a:hover {
+            background-color: #ddd;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<section style="background-color: #fafafa;">
+    <div class="pt-5 pb-5">
+
+        <div th:if="${productList != null and not #lists.isEmpty(productList)}" class="container my-5">
+            <h2 class="mb-5" th:text="${mainText}"></h2>
+
+            <div class="book-listing" th:each="product : ${productList}">
+                <div class="row align-items-center">
+                    <div class="col-md-2">
+                        <img th:src="${product.cover}" class="img-fluid rounded-4" alt="Book Image" style="height: 12vh;">
+                    </div>
+                    <div class="col-md-8">
+                        <p class="book-title" th:text="${product.title}"></p>
+                        <p class="book-price"><span th:text="${product.productPriceSales}"></span>원</p>
+                    </div>
+                    <div class="col-md-2 text-end">
+                        <a href="#" class="btn btn-warning">장바구니 추가</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pagination" th:attr="data-total-pages=${totalPage},data-current-page=${page}">
+                <span th:if="${page > 1}">
+                    <a th:href="@{|/product/books?page=${page - 1}&sort=${sort}&desc=${desc}|}">Previous</a>
+                    <a>Previous</a>
+                </span>
+                <span th:each="pageNum : ${#numbers.sequence(1, totalPage)}">
+                    <a th:if="${pageNum == page}" th:text="${pageNum}" th:class="'active'"></a>
+                    <a th:if="${pageNum != page}" th:href="@{|/product/books?page=${pageNum}&sort=${sort}&desc=${desc}|}" th:text="${pageNum}"></a>
+                </span>
+                <span th:if="${page < totalPage - 1}">
+                    <a th:href="@{|/product/books?page=${page + 1}&sort=${sort}&desc=${desc}|}">Next</a>
+                </span>
+            </div>
+        </div>
+
+        <div th:if="${productList == null or #lists.isEmpty(productList)}">
+            <h2 class="mb-4" th:text="${mainText}"></h2>
+            <div class="mb-4 text-center border" >
+                <h3>검색 결과 없음</h3>
+            </div>
+        </div>
+    </div>
+</section>
+</html>

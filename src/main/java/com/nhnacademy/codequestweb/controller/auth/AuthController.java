@@ -121,6 +121,7 @@ public class AuthController {
             if (tokenInfo == null) {
                 req.setAttribute("alterMessage", "휴면/삭제된 계정 입니다.");
                 req.setAttribute("view", "auth");
+                req.setAttribute("isDeleted", true);
                 return "index";
             }
 

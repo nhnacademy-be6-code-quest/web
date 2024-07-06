@@ -14,7 +14,9 @@ public class CategoryInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-
+        if (categoryConfig.getRoot() == null) {
+            categoryConfig.init();
+        }
         request.setAttribute("categories", categoryConfig.getRoot());
         return true;
     }

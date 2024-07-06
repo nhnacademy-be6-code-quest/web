@@ -764,18 +764,26 @@ tree menu start
 best-seller
 --------------------------------------------------------------*/
 .best-seller {
+  display: flex;
   background-color: #ffffff;
+  justify-content: center;
+  align-items: center;
 }
 
 /*--------------------------------------------------------------
 best-seller
 --------------------------------------------------------------*/
 .new-book {
+  display: flex;
   background-color: #fafafa;
+  justify-content: center;
+  align-items: center;
 }
 
 /*edit by chae*/
-.custom {
+.home-product-title {
   height: 80px !important;
   overflow: hidden;
+  text-overflow: ellipsis;
+  white-space:nowrap;
 }
