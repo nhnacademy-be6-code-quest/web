@@ -32,18 +32,19 @@ public class BookProductGetController {
             HttpServletRequest req,
             @PathVariable long bookId,
             Model model) {
-        ResponseEntity<BookProductGetResponseDto> response;
-        if (!CookieUtils.isGuest(req)){
-            response = bookProductService.getSingleBookInfo(CookieUtils.setHeader(req), bookId);
-        }else {
-            response = null;
-        }
-//        ResponseEntity<BookProductGetResponseDto> response = bookProductService.getSingleBookInfo(CookieUtils.setHeader(req), bookId);
+//        ResponseEntity<BookProductGetResponseDto> response;
+//        if (!CookieUtils.isGuest(req)){
+//            response = bookProductService.getSingleBookInfo(CookieUtils.setHeader(req), bookId);
+//        }else {
+//            response = null;
+//        }
+        ResponseEntity<BookProductGetResponseDto> response = bookProductService.getSingleBookInfo(null, bookId);
+        model.addAttribute("view", "productBookDetail");
         model.addAttribute("book", response.getBody());
         log.info("header of get : {}", CookieUtils.setHeader(req));
         log.info(response.getBody().toString());
         log.info("has like? {}", response.getBody().hasLike());
-        return "/view/product/singleBookInfo";
+        return "index";
     }
 
     @GetMapping("/product/books")
@@ -58,7 +59,7 @@ public class BookProductGetController {
         switch (sort) {
             case "product.productViewCount": model.addAttribute("mainText", "조회순 검색");
             break;
-            case "productRegisterDate": model.addAttribute("mainText", "출시순 검색");
+            case "pubDate": model.addAttribute("mainText", "출시순 검색");
             break;
             default: model.addAttribute("mainText", "전체 검색");
         }

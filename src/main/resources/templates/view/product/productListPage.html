@@ -22,6 +22,9 @@
             font-weight: bold;
             color: #5a5a5a;
             margin-bottom: 10px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space:nowrap;
         }
         .book-price {
             color: #f8c471;
@@ -70,7 +73,12 @@
                         <p class="book-price"><span th:text="${product.productPriceSales}"></span>원</p>
                     </div>
                     <div class="col-md-2 text-end">
-                        <a href="#" class="btn btn-warning">장바구니 추가</a>
+                        <div>
+                            <a href="#" class="btn my-2" style="background-color: #3b82f6; color: #FFFFFF;">구매하기</a>
+                        </div>
+                        <div>
+                            <a href="#" class="btn btn-warning my-2" style="background-color: #f8c471;">장바구니</a>
+                        </div>
                     </div>
                 </div>
             </div>

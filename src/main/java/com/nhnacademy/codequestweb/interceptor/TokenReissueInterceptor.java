@@ -7,6 +7,7 @@ import feign.FeignException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -15,6 +16,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+@Slf4j
 @Component
 public class TokenReissueInterceptor implements HandlerInterceptor {
     private final AuthClient authClient;
@@ -24,7 +26,7 @@ public class TokenReissueInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws IOException {
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
         if (ex instanceof FeignException && ((FeignException) ex).status() == 303 && CookieUtils.getCookieValue(request, "refresh") != null) {
 
             try {
@@ -47,20 +49,44 @@ public class TokenReissueInterceptor implements HandlerInterceptor {
                     refreshCookie.setMaxAge(60 * 60 * 24 * 14);
                     response.addCookie(refreshCookie);
 
-                    response.setContentType("text/html");
-                    PrintWriter out = response.getWriter();
-                    out.println("<html><body>");
-                    out.println("<script type=\"text/javascript\">");
-                    out.println("window.location.reload(true);");
-                    out.println("</script>");
-                    out.println("</body></html>");
-                    out.close();
+                    log.info("Token reissued success");
+                    refreshPage(response);
                 } else {
-                    response.sendRedirect("/auth");
+                    log.info("refresh token expired");
+                    removeCookie(response);
+                    refreshPage(response);
                 }
             } catch (Exception e) {
-                response.sendRedirect("/auth");
+                log.info("Token reissued failed");
+                removeCookie(response);
+                refreshPage(response);
             }
+        }
+    }
+
+    private void removeCookie(HttpServletResponse response) {
+        Cookie access = new Cookie("access", null);
+        Cookie refresh = new Cookie("refresh", null);
+        access.setMaxAge(0);
+        refresh.setMaxAge(0);
+        access.setPath("/");
+        refresh.setPath("/");
+        response.addCookie(access);
+        response.addCookie(refresh);
+    }
+
+    private void refreshPage(HttpServletResponse response) {
+        try {
+            response.setContentType("text/html");
+            PrintWriter out = response.getWriter();
+            out.println("<html><body>");
+            out.println("<script type=\"text/javascript\">");
+            out.println("window.location.reload(true);");
+            out.println("</script>");
+            out.println("</body></html>");
+            out.close();
+        } catch (IOException e) {
+            log.error(e.getMessage());
         }
     }
 }
