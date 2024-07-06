@@ -64,7 +64,7 @@
             <h2 class="mb-5" th:text="${mainText}"></h2>
 
             <div class="book-listing" th:each="product : ${productList}">
-                <div class="row align-items-center">
+                <div th:onclick="|location.href='@{/product/books/{id}(id = ${product.bookId})}'|" class="row align-items-center">
                     <div class="col-md-2">
                         <img th:src="${product.cover}" class="img-fluid rounded-4" alt="Book Image" style="height: 12vh;">
                     </div>
