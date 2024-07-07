@@ -3,9 +3,13 @@ package com.nhnacademy.codequestweb.controller.product.permitAll;
 
 import com.nhnacademy.codequestweb.request.product.ProductLikeRequestDto;
 import com.nhnacademy.codequestweb.response.product.book.BookProductGetResponseDto;
+import com.nhnacademy.codequestweb.response.product.productCategory.ProductCategory;
 import com.nhnacademy.codequestweb.service.product.BookProductService;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,13 +36,23 @@ public class BookProductGetController {
             HttpServletRequest req,
             @PathVariable long productId,
             Model model) {
-        ResponseEntity<BookProductGetResponseDto> response;
-//        if (!CookieUtils.isGuest(req)){
-            response = bookProductService.getSingleBookInfo(CookieUtils.setHeader(req), productId);
-//        }else {
-//        }
-//        ResponseEntity<BookProductGetResponseDto> response = bookProductService.getSingleBookInfo(CookieUtils.setHeader(req), bookId);
-        model.addAttribute("book", response.getBody());
+        ResponseEntity<BookProductGetResponseDto> response = bookProductService.getSingleBookInfo(CookieUtils.setHeader(req), productId);
+        BookProductGetResponseDto bookProductGetResponseDto = response.getBody();
+        Set<ProductCategory> categorySet = bookProductGetResponseDto.categorySet();
+        List<List<ProductCategory>> allCategoryList = new ArrayList<>();
+        for (ProductCategory category : categorySet) {
+            List<ProductCategory> parentCategoryList = new ArrayList<>();
+            parentCategoryList.add(category);
+            ProductCategory parent = category.parentProductCategory();
+            while(parent != null) {
+                parentCategoryList.add(parent);
+                parent = parent.parentProductCategory();
+            }
+            parentCategoryList.sort(Comparator.comparing(ProductCategory::productCategoryId));
+            allCategoryList.add(parentCategoryList);
+        }
+        model.addAttribute("listOfCategoryList", allCategoryList);
+        model.addAttribute("book", bookProductGetResponseDto);
         req.setAttribute("view", "singleBook");
         return "index";
     }
@@ -51,7 +65,7 @@ public class BookProductGetController {
             @RequestParam(name = "sort", required = false)String sort,
             @RequestParam(name = "desc", required = false)Boolean desc,
             Model model) {
-        ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getAllBookPage(CookieUtils.setHeader(req), page, size, sort, desc);
+        ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getAllBookPage(CookieUtils.setHeader(req), page, size, sort, desc, 0);
         model.addAttribute("books", response.getBody().getContent());
         req.setAttribute("view", "bookPage");
         return "index";
@@ -66,7 +80,7 @@ public class BookProductGetController {
             @RequestParam(name = "desc", required = false)Boolean desc,
             @RequestParam("title")String title,
             Model model) {
-        ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getNameContainingBookPage(CookieUtils.setHeader(req), page, size, sort, desc, title);
+        ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getNameContainingBookPage(CookieUtils.setHeader(req), page, size, sort, desc, title, 0);
         model.addAttribute("books", response.getBody().getContent());
         req.setAttribute("view", "bookPage");
         return "index";
@@ -82,7 +96,7 @@ public class BookProductGetController {
             @RequestParam(name = "tagName") Set<String> tagNameSet,
             @RequestParam(name = "isAnd", required = false)Boolean isAnd,
             Model model) {
-        ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getBookPageFilterByTag(CookieUtils.setHeader(req), page, size, sort, desc, tagNameSet, isAnd);
+        ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getBookPageFilterByTag(CookieUtils.setHeader(req), page, size, sort, desc, tagNameSet, isAnd, 0);
         model.addAttribute("books", response.getBody().getContent());
         for(BookProductGetResponseDto book : response.getBody()) {
             log.info("cover : {}",book.cover());
@@ -100,13 +114,8 @@ public class BookProductGetController {
             @RequestParam(name = "sort", required = false)String sort,
             @RequestParam(name = "desc", required = false)Boolean desc,
             @PathVariable("categoryId") Long categoryId) {
-        ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getBookPageFilterByCategory(CookieUtils.setHeader(req), page, size, sort, desc, categoryId);
-//        req.setAttribute("cateogry", );
+        ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getBookPageFilterByCategory(CookieUtils.setHeader(req), page, size, sort, desc, categoryId, 0);
         req.setAttribute("books", response.getBody().getContent());
-//        model.addAttribute("books", response.getBody().getContent());
-//        for(BookProductGetResponseDto book : response.getBody()) {
-//            log.info("cover : {}",book.cover());
-//        }
         log.warn("response: {}", response.getBody().getContent());
         req.setAttribute("view", "bookPage");
         return "index";

@@ -35,7 +35,7 @@ public class CookieUtils {
     public static HttpHeaders setHeader(HttpServletRequest req){
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
-        headers.set("refresh", CookieUtils.getCookieValue(req, "refresh"));
+//        headers.set("refresh", CookieUtils.getCookieValue(req, "refresh"));
         return headers;
     }
 

@@ -2,6 +2,7 @@ package com.nhnacademy.codequestweb.service.product;
 
 import com.nhnacademy.codequestweb.client.product.bookProduct.BookProductClient;
 import com.nhnacademy.codequestweb.request.product.ProductLikeRequestDto;
+import com.nhnacademy.codequestweb.request.product.ProductStateUpdateRequestDto;
 import com.nhnacademy.codequestweb.request.product.bookProduct.BookProductRegisterRequestDto;
 import com.nhnacademy.codequestweb.request.product.bookProduct.BookProductUpdateRequestDto;
 import com.nhnacademy.codequestweb.response.product.book.AladinBookResponseDto;
@@ -38,36 +39,44 @@ public class BookProductService {
         return bookProductClient.updateBook(headers, bookProductUpdateRequestDto);
     }
 
+    public ResponseEntity<ProductUpdateResponseDto> updateBookState(
+            HttpHeaders headers,
+            ProductStateUpdateRequestDto productStateUpdateRequestDto){
+        return bookProductClient.updateBookState(headers, productStateUpdateRequestDto);
+    }
+
     public ResponseEntity<BookProductGetResponseDto> getSingleBookInfo(
             HttpHeaders headers,
             long productId) {
         return bookProductClient.getSingleBookInfo(headers, productId);
     }
 
-
     public ResponseEntity<Page<BookProductGetResponseDto>> getAllBookPage(
             HttpHeaders headers,
-            Integer page, Integer size, String sort, Boolean desc) {
-        return bookProductClient.getAllBookPage(headers, page, size, sort, desc);
+            Integer page, Integer size, String sort, Boolean desc,
+            Integer productState) {
+        return bookProductClient.getAllBookPageByProductState(headers, page, size, sort, desc, productState);
     }
 
     public ResponseEntity<Page<BookProductGetResponseDto>> getNameContainingBookPage(
             HttpHeaders headers,
             Integer page, Integer size, String sort, Boolean desc,
-            String title) {
-        return bookProductClient.getNameContainingBookPage(headers, page, size, sort, desc, title);
+            String title, Integer productState) {
+        return bookProductClient.getNameContainingBookPageByProductState(headers, page, size, sort, desc, title, productState);
     }
 
     public ResponseEntity<Page<BookProductGetResponseDto>> getBookPageFilterByTag(
             HttpHeaders headers,
-            Integer page, Integer size, String sort, Boolean desc, Set<String> tagNameSet, Boolean conditionIsAnd) {
-        return bookProductClient.getBookPageFilterByTag(headers, page, size, sort, desc, tagNameSet, conditionIsAnd);
+            Integer page, Integer size, String sort, Boolean desc,
+            Set<String> tagNameSet, Boolean conditionIsAnd, Integer productState) {
+        return bookProductClient.getBookPageFilterByTagAndProductState(headers, page, size, sort, desc, tagNameSet, conditionIsAnd, productState);
     }
 
     public ResponseEntity<Page<BookProductGetResponseDto>> getBookPageFilterByCategory(
             HttpHeaders headers,
-            Integer page, Integer size, String sort, Boolean desc, Long categoryId) {
-        return bookProductClient.getBookPageFilterByCategory(headers, page, size, sort, desc, categoryId);
+            Integer page, Integer size, String sort, Boolean desc,
+            Long categoryId, Integer productState) {
+        return bookProductClient.getBookPageFilterByCategory(headers, page, size, sort, desc, categoryId, productState);
     }
 
     public ResponseEntity<Page<BookProductGetResponseDto>> getLikeBookPage(

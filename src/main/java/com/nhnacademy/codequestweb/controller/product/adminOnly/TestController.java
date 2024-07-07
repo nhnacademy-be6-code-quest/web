@@ -6,10 +6,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhnacademy.codequestweb.request.order.field.OrderItemDto;
 import com.nhnacademy.codequestweb.request.product.cart.CartRequestDto;
 import com.nhnacademy.codequestweb.response.product.common.CartGetResponseDto;
+import com.nhnacademy.codequestweb.response.product.productCategory.ProductCategory;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -39,7 +43,8 @@ public class TestController {
                         .map(cartGetResponseDto -> OrderItemDto.builder()
                                 .productId(cartGetResponseDto.productId())
                                 .quantity(cartGetResponseDto.productQuantityOfCart())
-                                .categoryId(cartGetResponseDto.categoryMapOfIdAndName().keySet().stream().toList())
+                                .categoryId(cartGetResponseDto.categorySet().stream().map(ProductCategory::productCategoryId
+                                ).toList())
                                 .build())
                                 .toList();
         log.info("dto is : {}", json2);
@@ -47,5 +52,27 @@ public class TestController {
         log.info("order dto list : {}", orderItemDtoList);
 
         return "redirect:/";
+    }
+
+    @GetMapping("/2")
+    public String test2(){
+        return "/view/product/toast";
+    }
+
+    @PostMapping("/test")
+    public String test22(@RequestParam("productDescription") String description, Model model){
+        log.info("description is : {}", description);
+        model.addAttribute("test", description);
+        return "/view/product/toast2";
+    }
+
+    @GetMapping("/3")
+    public String test3(){
+        return "/view/product/test33";
+    }
+
+    @GetMapping("/4")
+    public String test4(){
+        return "/view/product/test4";
     }
 }

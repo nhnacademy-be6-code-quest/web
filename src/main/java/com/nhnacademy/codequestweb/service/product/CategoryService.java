@@ -2,8 +2,10 @@ package com.nhnacademy.codequestweb.service.product;
 
 import com.nhnacademy.codequestweb.client.product.category.CategoryClient;
 import com.nhnacademy.codequestweb.request.product.productCategory.CategoryRegisterRequestDto;
+import com.nhnacademy.codequestweb.request.product.productCategory.CategoryUpdateRequestDto;
 import com.nhnacademy.codequestweb.response.product.productCategory.CategoryGetResponseDto;
 import com.nhnacademy.codequestweb.response.product.productCategory.CategoryRegisterResponseDto;
+import com.nhnacademy.codequestweb.response.product.productCategory.CategoryUpdateResponseDto;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,6 +20,10 @@ public class CategoryService {
 
     public ResponseEntity<CategoryRegisterResponseDto> saveCategory(HttpHeaders headers, CategoryRegisterRequestDto categoryRegisterRequestDto) {
         return categoryClient.saveCategory(headers, categoryRegisterRequestDto);
+    }
+
+    public ResponseEntity<CategoryUpdateResponseDto> updateCategory(HttpHeaders headers, CategoryUpdateRequestDto categoryUpdateRequestDto) {
+        return categoryClient.updateCategory(headers, categoryUpdateRequestDto);
     }
 
     public ResponseEntity<Page<CategoryGetResponseDto>> getCategories(Integer page, Boolean desc, String sort) {

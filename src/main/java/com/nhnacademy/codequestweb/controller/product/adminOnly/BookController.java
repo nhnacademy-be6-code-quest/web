@@ -1,9 +1,11 @@
 package com.nhnacademy.codequestweb.controller.product.adminOnly;
 
 
+import com.nhnacademy.codequestweb.request.product.ProductStateUpdateRequestDto;
 import com.nhnacademy.codequestweb.request.product.bookProduct.BookProductRegisterRequestDto;
 import com.nhnacademy.codequestweb.request.product.bookProduct.BookProductUpdateRequestDto;
 import com.nhnacademy.codequestweb.response.product.book.AladinBookResponseDto;
+import com.nhnacademy.codequestweb.response.product.book.BookProductGetResponseDto;
 import com.nhnacademy.codequestweb.response.product.common.ProductRegisterResponseDto;
 import com.nhnacademy.codequestweb.response.product.common.ProductUpdateResponseDto;
 import com.nhnacademy.codequestweb.service.product.BookProductService;
@@ -12,25 +14,22 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -99,15 +98,109 @@ public class BookController {
 
     @PostMapping("/register")
     public String saveBook(@ModelAttribute @Valid BookProductRegisterRequestDto dto, HttpServletRequest req, Model model){
+        log.info("dto : {}", dto);
         ResponseEntity<ProductRegisterResponseDto> responseEntity = bookProductService.saveBook(CookieUtils.setHeader(req), dto);
         return "redirect:/";
     }
 
-    @PostMapping("/update")
+    @PutMapping("/update")
     public String updateBook(HttpServletRequest req, @ModelAttribute @Valid BookProductUpdateRequestDto dto){
         log.info("update book called save book");
         ResponseEntity<ProductUpdateResponseDto> responseEntity = bookProductService.updateBook(CookieUtils.setHeader(req), dto);
         log.info("status code : {}",responseEntity.getStatusCode().value());
         return "redirect:/";
     }
+
+    @PutMapping("/state")
+    public String updateBookState(HttpServletRequest req, @ModelAttribute @Valid ProductStateUpdateRequestDto dto){
+        ResponseEntity<ProductUpdateResponseDto> responseEntity = bookProductService.updateBookState(CookieUtils.setHeader(req), dto);
+        return "redirect:/";
+    }
+
+
+    @GetMapping("/all")
+    public String getAllBookPage(
+            HttpServletRequest req,
+            @RequestParam(name = "page", required = false)Integer page,
+            @RequestParam(name= "size", required = false)Integer size,
+            @RequestParam(name = "sort", required = false)String sort,
+            @RequestParam(name = "desc", required = false)Boolean desc,
+            @RequestParam(name = "productState", required = false) Integer productState,
+            Model model) {
+        ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getAllBookPage(CookieUtils.setHeader(req), page, size, sort, desc, productState);
+        model.addAttribute("books", response.getBody().getContent());
+        req.setAttribute("view", "bookPage");
+        return "index";
+    }
+
+    @GetMapping("/containing")
+    public String getNameContainingBookPage(
+            HttpServletRequest req,
+            @RequestParam(name = "page", required = false)Integer page,
+            @RequestParam(name= "size", required = false)Integer size,
+            @RequestParam(name = "sort", required = false)String sort,
+            @RequestParam(name = "desc", required = false)Boolean desc,
+            @RequestParam(name = "productState", required = false) Integer productState,
+            @RequestParam("title")String title,
+            Model model) {
+        ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getNameContainingBookPage(CookieUtils.setHeader(req), page, size, sort, desc, title, productState);
+        model.addAttribute("books", response.getBody().getContent());
+        req.setAttribute("view", "bookPage");
+        return "index";
+    }
+
+    @GetMapping("/tagFilter")
+    public String getBookPageFilterByTag(
+            HttpServletRequest req,
+            @RequestParam(name = "page", required = false)Integer page,
+            @RequestParam(name= "size", required = false)Integer size,
+            @RequestParam(name = "sort", required = false)String sort,
+            @RequestParam(name = "desc", required = false)Boolean desc,
+            @RequestParam(name = "tagName") Set<String> tagNameSet,
+            @RequestParam(name = "isAnd", required = false)Boolean isAnd,
+            @RequestParam(name = "productState", required = false) Integer productState,
+            Model model) {
+        ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getBookPageFilterByTag(CookieUtils.setHeader(req), page, size, sort, desc, tagNameSet, isAnd, productState);
+        model.addAttribute("books", response.getBody().getContent());
+        for(BookProductGetResponseDto book : response.getBody()) {
+            log.info("cover : {}",book.cover());
+        }
+        log.warn("response: {}", response.getBody().getContent());
+        req.setAttribute("view", "bookPage");
+        return "index";
+    }
+
+    @GetMapping("/category/{categoryId}")
+    public String getBookPageFilterByCategory(
+            HttpServletRequest req,
+            @RequestParam(name = "page", required = false)Integer page,
+            @RequestParam(name= "size", required = false)Integer size,
+            @RequestParam(name = "sort", required = false)String sort,
+            @RequestParam(name = "desc", required = false)Boolean desc,
+            @RequestParam(name = "productState", required = false) Integer productState,
+            @PathVariable("categoryId") Long categoryId) {
+        ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getBookPageFilterByCategory(CookieUtils.setHeader(req), page, size, sort, desc, categoryId, productState);
+        req.setAttribute("books", response.getBody().getContent());
+        log.warn("response: {}", response.getBody().getContent());
+        req.setAttribute("view", "bookPage");
+        return "index";
+    }
+
+    @GetMapping("/like")
+    public String getLikeBookPage(
+            HttpServletRequest req,
+            @RequestParam(name = "page", required = false)Integer page,
+            @RequestParam(name= "size", required = false)Integer size,
+            @RequestParam(name = "sort", required = false)String sort,
+            @RequestParam(name = "desc", required = false)Boolean desc,
+            Model model) {
+        ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getLikeBookPage(CookieUtils.setHeader(req), page, size, sort, desc);
+        model.addAttribute("books", response.getBody().getContent());
+
+        log.warn("response: {}", response.getBody().getContent());
+        req.setAttribute("view", "bookPage");
+        return "index";
+    }
+
+
 }

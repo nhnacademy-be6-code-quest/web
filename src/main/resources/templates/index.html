@@ -57,7 +57,7 @@
     <section th:replace="~{view/product/bookProductRegisterForm.html :: bookProductRegisterFragment}"></section>
 </div>
 <div th:if="${view != null} and ${#strings.equals(view, 'categoryRegisterForm')}">
-    <section th:replace="~{view/product/categoryRegisterForm.html :: categoryRegisterFragment}"></section>
+    <section th:replace="~{view/product/categoryForm.html :: categoryRegisterFragment}"></section>
 </div>
 <div th:if="${view != null} and ${#strings.equals(view, 'tagRegisterForm')}">
     <section th:replace="~{view/product/tagRegisterForm.html :: tagRegisterFragment}"></section>

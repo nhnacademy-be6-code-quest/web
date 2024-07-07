@@ -1,10 +1,13 @@
 package com.nhnacademy.codequestweb.response.product.book;
 
+import com.nhnacademy.codequestweb.response.product.productCategory.ProductCategory;
+import com.nhnacademy.codequestweb.response.product.tag.Tag;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Set;
 import lombok.Builder;
 import org.hibernate.validator.constraints.Length;
 
@@ -33,9 +36,9 @@ public record BookProductGetResponseDto (
         @NotNull(message = "{must.have.category}")
         @Size(min = 1, message = "{must.have.category}")
         @Size(max = 10, message = "{too.much.category}")
-        Map<Long, String> categoryMapOfIdAndName,
+        Set<ProductCategory> categorySet,
 
-        Map<Long, String> tagMapOfIdAndName,
+        Set<Tag> tagSet,
 
         boolean hasLike
 ){
