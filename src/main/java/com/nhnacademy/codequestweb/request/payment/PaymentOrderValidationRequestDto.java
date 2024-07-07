@@ -9,6 +9,7 @@ import lombok.Getter;
  * 금액. 2) 토스에 제공해야 하는 tossOrderId 등이 넘어 옵니다.
  * <p>
  * PaymentOrderRequestDto 와는 다른 페이지에서 불러 오는 값입니다. 같은 Dto 를 써도 되는지 고민해 보면 좋을 것 같습니다.
+ * -> PaymentOrderRequestDto2 와 통합될 것 같습니다. 자세한 내용은 추후 수정하겠습니다.
  *
  * @author 김채호
  * @version 1.0
