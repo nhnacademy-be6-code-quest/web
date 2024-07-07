@@ -73,27 +73,38 @@ public class PaymentService /*implements PaymentService*/ {
     }
 
     public TossPaymentsResponseDto parseJSONObject(JSONObject jsonObject) {
-        TossPaymentsResponseDto tossPaymentsResponseDto = TossPaymentsResponseDto.builder()
-            .orderName(jsonObject.get("orderName").toString())
-            .totalAmount(Long.parseLong(jsonObject.get("totalAmount").toString()))
-            .method(jsonObject.get("method").toString())
-            .paymentKey(jsonObject.get("paymentKey").toString())
-            .build();
 
-        if (tossPaymentsResponseDto.getMethod().equals("카드")) {
-            tossPaymentsResponseDto.setCardNumber(
-                (String) ((JSONObject) jsonObject.get("card")).get("number"));
-        } else if (tossPaymentsResponseDto.getMethod().equals("가상계좌")) {
-            tossPaymentsResponseDto.setAccountNumber(
-                (String) ((JSONObject) jsonObject.get("virtualAccount")).get("accountNumber"));
-        } else if (tossPaymentsResponseDto.getMethod().equals("계좌이체")) {
-            tossPaymentsResponseDto.setBank(
-                (String) ((JSONObject) jsonObject.get("transfer")).get("bank"));
-        } else if (tossPaymentsResponseDto.getMethod().equals("휴대폰")) {
-            tossPaymentsResponseDto.setCustomerMobilePhone(
-                (String) ((JSONObject) jsonObject.get("mobilePhone")).get("customerMobilePhone"));
+        String orderName = jsonObject.get("orderName").toString();
+        String totalAmount = jsonObject.get("totalAmount").toString();
+        String method = jsonObject.get("method").toString();
+        String paymentKey = jsonObject.get("paymentKey").toString();
+        String cardNumber = null;
+        String accountNumber = null;
+        String bank = null;
+        String customerMobilePhone = null;
+
+        if (method.equals("카드")) {
+            cardNumber = ((JSONObject) jsonObject.get("card")).get("number").toString();
+        } else if (method.equals("가상계좌")) {
+            accountNumber = ((JSONObject) jsonObject.get("virtualAccount")).get("accountNumber").toString();
+        } else if (method.equals("계좌이체")) {
+            bank = ((JSONObject) jsonObject.get("transfer")).get("bank").toString();
+        } else if (method.equals("휴대폰")) {
+            customerMobilePhone = ((JSONObject) jsonObject.get("mobilePhone")).get("customerMobilePhone").toString();
+        } else if (method.equals("간편결제")) {
+            method = method + "-" + ((JSONObject) jsonObject.get("easyPay")).get("provider").toString();
         }
-        return tossPaymentsResponseDto;
+
+        return TossPaymentsResponseDto.builder()
+            .orderName(orderName)
+            .totalAmount(Long.parseLong(totalAmount))
+            .method(method)
+            .paymentKey(paymentKey)
+            .cardNumber(cardNumber)
+            .accountNumber(accountNumber)
+            .bank(bank)
+            .customerMobilePhone(customerMobilePhone)
+            .build();
     }
 
     public PaymentOrderRequestDto findPaymentOrderRequestDtoByOrderId(long orderId) {
