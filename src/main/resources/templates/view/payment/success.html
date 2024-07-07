@@ -33,7 +33,6 @@
 <!--<th:block th:if="${#strings.equals(isSuccess, 'true')}">-->
   <div class="success">
     <h1>결제 성공</h1>
-    <p>결과데이터: <span th:text="${jsonObject}"></span></p>
     <p>주문명: <span th:text="${tossPaymentsResponseDto.getOrderName()}"></span></p>
     <p>총 결제금액: <span th:text="${tossPaymentsResponseDto.getTotalAmount()}"></span></p>
     <p>결제 방식: <span th:text="${tossPaymentsResponseDto.getMethod()}"></span></p>
