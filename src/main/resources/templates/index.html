@@ -65,9 +65,14 @@
 <div th:if="${view != null} and ${#strings.equals(view, 'cart')}">
     <section th:replace="~{view/product/cart :: cartFragment}"></section>
 </div>
-
 <div th:if="${view != null} and ${#strings.equals(view, 'change-password')}">
     <section th:replace="~{view/auth/changePassword.html :: changePasswordFragment ('email', 'token')}"></section>
+</div>
+<div th:if="${view != null} and ${#strings.equals(view, 'productList')}">
+    <section th:replace="~{view/product/productListPage.html :: productListFragment ('productList', 'mainText', 'page', 'totalPage', 'sort', 'desc')}"></section>
+</div>
+<div th:if="${view != null} and ${#strings.equals(view, 'productBookDetail')}">
+    <section th:replace="~{view/product/productBookDetail.html :: productBookDetailFragment ('book')}"></section>
 </div>
 
 <div th:replace="~{layout/footer.html :: footerFragment}"></div>

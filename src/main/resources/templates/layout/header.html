@@ -147,10 +147,10 @@
                             <a href="/" class="nav-link active">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a href="index.html" class="nav-link">인기 도서</a>
+                            <a th:href="@{/product/books?page=1&sort=product.productViewCount&desc=true}" class="nav-link">인기 도서</a>
                         </li>
                         <li class="nav-item">
-                            <a href="shop.html" class="nav-link">신간 도서</a>
+                            <a href="/product/books?page=1&sort=pubDate&desc=true" class="nav-link">신간 도서</a>
                         </li>
                         <li class="nav-item">
                             <a href="blog.html" class="nav-link">Event</a>

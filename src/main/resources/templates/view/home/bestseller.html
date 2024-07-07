@@ -7,16 +7,17 @@
 <div th:replace="~{icon/icon :: iconAsset}"></div>
 
 <section id="best-seller" class="best-seller my-4 overflow-hidden">
-    <div class="container pb-5">
+    <div class="container pt-5 pb-5">
 
-        <div class="section-header d-md-flex justify-content-between align-items-center mb-3">
-            <h2 class="display-8 fw-normal">인기 도서</h2>
-            <div>
-                <a href="#" class="btn btn-outline-dark btn-lg text-uppercase fs-6 rounded-1">
+        <div class="section-header d-md-flex justify-content-between align-items-center mb-3" style="background-color: #f2dfbb; padding: 20px; border-radius: 10px;">
+            <h2 class="display-8 fw-normal m-0 d-flex align-items-center" style="line-height: 1.5; padding-top: 15px; color: #795548">인기 도서</h2>
+            <div class="d-flex align-items-center">
+                <a th:href="@{/product/books?page=1&sort=product.productViewCount&desc=true}" class="btn btn-outline-dark btn-lg text-uppercase fs-6" style="background-color: #FFFFFF; border: none; color: #9e9e9e; border-radius: 15px;">
                     전체보기
-                    <svg width="20" height="20" viewBox="0 0 24 24" class="mb-1">
+                    <svg width="24" height="24" viewBox="0 0 24 24" class="mb-1">
                         <use xlink:href="#arrow-right"></use>
-                    </svg></a>
+                    </svg>
+                </a>
             </div>
         </div>
 
@@ -28,10 +29,10 @@
                         <a th:href="@{/product/books/{id}(id = ${book.bookId})}"><img th:src="${book.cover}" class="img-fluid rounded-4" alt="image" style="height: 360px"></a>
                         <div class="card-body p-0">
                             <a th:href="@{/product/books/{id}(id = ${book.bookId})}">
-                                <h5 class="custom card-title pt-4 m-0" th:text="${book.title}"></h5>
+                                <h5 class="home-product-title card-title pt-4 m-0" th:text="${book.title}"></h5>
                             </a>
-                            <h3 class="secondary-font text-primary"><span th:text="${book.productPriceSales}"></span>원</h3>
-                            <div class="d-flex flex-wrap mt-3">
+                            <h5 class="secondary-font text-primary"><span th:text="${book.productPriceSales}"></span>원</h5>
+                            <div class="d-flex flex-wrap mt-2">
                                 <a href="#" class="btn-cart me-3 px-3 pt-3 pb-3">
                                     <h6 class="text-uppercase m-0">장바구니 추가</h6>
                                 </a>
@@ -42,7 +43,8 @@
                         </div>
                     </div>
                 </div>
-
+            </div>
+        </div>
     </div>
 </section>
 </html>
