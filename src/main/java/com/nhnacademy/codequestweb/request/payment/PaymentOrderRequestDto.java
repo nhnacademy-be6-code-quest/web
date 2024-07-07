@@ -1,5 +1,6 @@
 package com.nhnacademy.codequestweb.request.payment;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import lombok.Builder;
@@ -28,5 +29,6 @@ public class PaymentOrderRequestDto {
     String tossOrderId;
 
     // orderName : ex) "초코파이 외 10건" 을 만들어 주기 위해 필요한 정보
+    @NotBlank
     List<String> productNameList;
 }
