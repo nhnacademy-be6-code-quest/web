@@ -18,6 +18,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Slf4j
@@ -86,9 +87,9 @@ public class ProductCategoryCouponController {
         return "/view/coupon/categoryAdd";
     }
 
-    @GetMapping("/admin/categories/sub")
-    public String getCategorySubPage(@RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "desc", required = false) Boolean desc, @RequestParam(name = "sort", required = false) String sort, @RequestParam("categoryName") String categoryName, Model model) {
-        ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getSubCategories(page, desc, sort, categoryName);
+    @GetMapping("/admin/categories/{categoryId}/sub")
+    public String getCategorySubPage(@RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "desc", required = false) Boolean desc, @RequestParam(name = "sort", required = false) String sort, @PathVariable("categoryId") Long categoryId, Model model) {
+        ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getSubCategories(page, desc, sort, categoryId);
         List<CategoryGetResponseDto> categoryNamePage = getCategoryPathNameList(response);
         Map<CategoryGetResponseDto, String> categoryNameMap = new LinkedHashMap<>();
 
