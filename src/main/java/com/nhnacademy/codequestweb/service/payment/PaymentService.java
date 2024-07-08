@@ -1,61 +1,152 @@
 package com.nhnacademy.codequestweb.service.payment;
 
+import com.nhnacademy.codequestweb.client.payment.PaymentClient;
+import com.nhnacademy.codequestweb.client.payment.PaymentCouponClient;
+import com.nhnacademy.codequestweb.client.payment.PaymentOrderClient;
+import com.nhnacademy.codequestweb.client.payment.PaymentPointClient;
+import com.nhnacademy.codequestweb.client.payment.PaymentProductClient;
+import com.nhnacademy.codequestweb.client.payment.TossPaymentsClient;
+import com.nhnacademy.codequestweb.request.payment.PaymentAccumulatePointRequestDto;
+import com.nhnacademy.codequestweb.request.payment.PaymentOrderRequestDto;
+import com.nhnacademy.codequestweb.request.payment.PaymentOrderRequestDto2;
 import com.nhnacademy.codequestweb.request.payment.PaymentOrderValidationRequestDto;
+import com.nhnacademy.codequestweb.request.payment.PaymentUsePointRequestDto;
+import com.nhnacademy.codequestweb.request.payment.TossPaymentsRequestDto;
 import com.nhnacademy.codequestweb.response.payment.TossPaymentsResponseDto;
 import jakarta.annotation.PostConstruct;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Service;
 
-/**
- *
- */
+@Slf4j
 @Service
-public interface PaymentService {
+@RequiredArgsConstructor
+public class PaymentService /*implements PaymentService*/ {
 
-    /**
-     * @PostConstruct : 의존성 주입 완료 후 실행해야 하는 메서드에 적용하는 애너테이션입니다. 이 메서드는 IP가 NHN KeyManager 에 등록되어 있지
-     * 않는 등의 사유로 토스 시크릿 키가 없다면 시크릿 키가 없다는 에러 로그를 띄웁니다.
-     */
+    private final PaymentClient paymentClient;
+    private final PaymentOrderClient paymentOrderClient;
+    private final TossPaymentsClient tossPaymentsClient;
+    private final PaymentCouponClient paymentCouponClient;
+    private final PaymentPointClient paymentPointClient;
+    private final PaymentProductClient paymentProductClient;
+    private final String secretKey;
+
     @PostConstruct
-    void init();
+    public void init() {
+        if (secretKey.isEmpty()) {
+            log.error("secretKey is empty");
+        }
+    }
 
-    /**
-     * 결제 관련 정보를 DB에 저장하기 위한 메서드입니다.
-     *
-     * @param orderId                 주문 아이디
-     * @param tossPaymentsResponseDto 토스 페이먼츠에서 넘어 오는 값들을 파싱한 Dto
-     */
-    void savePayment(long orderId, TossPaymentsResponseDto tossPaymentsResponseDto);
+    public void savePayment(long orderId, TossPaymentsResponseDto tossPaymentsResponseDto) {
+        paymentClient.savePayment(orderId, tossPaymentsResponseDto);
+    }
 
-    /**
-     * 사용자가 결제 관련 로직을 수행한 이후, 토스 페이먼츠에 승인을 보내기 전, 사용자가 금액 등을 조작하지는 않았는지 검증하는 메서드입니다.
-     *
-     * @param paymentOrderValidationRequestDto 조작 여부를 확인하기 위해, 주문에서 금액, 토스 주문 아이디 등을 받아 옵니다.
-     * @param tossOrderId                      토스에서 제공하는 오더 아이디입니다. 주문에서 받아온 값과 비교하는 데에 사용됩니다.
-     * @param amount                           토스에서 제공하는 결제 금액입니다. 주문에서 받아온 값과 비교하는 데에 사용됩니다.
-     * @return
-     */
-    boolean isValidTossPayment(PaymentOrderValidationRequestDto paymentOrderValidationRequestDto,
-        String tossOrderId, long amount);
+    public boolean isValidTossPayment(
+        PaymentOrderValidationRequestDto paymentOrderValidationRequestDto,
+        String tossOrderId, long amount) {
+        return paymentOrderValidationRequestDto != null
+            && (paymentOrderValidationRequestDto.getOrderTotalAmount()
+            - paymentOrderValidationRequestDto.getDiscountAmountByPoint()
+            - paymentOrderValidationRequestDto.getDiscountAmountByCoupon()) == amount
+            && (paymentOrderValidationRequestDto.getTossOrderId()
+            .equals(tossOrderId));
+    }
 
-    /**
-     * 토스 페이먼츠에 결제 승인을 요청하는 메서드입니다.
-     *
-     * @param tossOrderId 토스 주문 아이디입니다. 토스 페이먼츠에 결제 승인을 요청하기 위해 보내야 하는 값입니다.
-     * @param amount      결제 총 금액입니다. 토스 페이먼츠에 결제 승인을 요청하기 위해 보내야 하는 값입니다.
-     * @param paymentKey  결제 키 입니다. 토스 페이먼츠에 결제 승인을 요청하기 위해 보내야 하는 값입니다.
-     * @return 토스 페이먼츠에서 준 JSON 값을 받아 옵니다.
-     * @throws ParseException 토스 페이먼츠에서 준 값을 JSON 을 String 으로 받은 후, 다시 JSON 으로 바꾸기 때문에 필요합니다. (Dto
-     *                        생성 및 에러 피하기 위해 )
-     */
-    JSONObject approvePayment(String tossOrderId, long amount, String paymentKey)
-        throws ParseException;
+    public TossPaymentsResponseDto approvePayment(String tossOrderId, long amount,
+        String paymentKey) throws ParseException {
+        // 시크릿 키를 Base64로 인코딩하여 Authorization 헤더 생성
+        Base64.Encoder encoder = Base64.getEncoder();
+        byte[] encodedBytes = encoder.encode(secretKey.getBytes(StandardCharsets.UTF_8));
+        String authorizations = "Basic " + new String(encodedBytes);
+        String contentType = "application/json";
 
-    /**
-     * @param jsonObject 토스 페이먼츠에서 응답으로 제공되는 값입니다. 매우 다양한 값이 들어 있습니다.
-     *                   [링크](https://docs.tosspayments.com/reference#payment-%EA%B0%9D%EC%B2%B4)
-     * @return Dto 에 토스 페이먼츠에서 응답으로 제공하는 값을 추가하여 반환합니다.
-     */
-    TossPaymentsResponseDto parseJSONObject(JSONObject jsonObject);
+        TossPaymentsRequestDto tossPaymentsRequestDto = TossPaymentsRequestDto.builder()
+            .paymentKey(paymentKey)
+            .orderId(tossOrderId)
+            .amount(amount)
+            .build();
+
+        // 승인 요청을 보내면서 + 응답을 받아 옴.
+        String tossPaymentsApproveResponseString = tossPaymentsClient.approvePayment(
+            tossPaymentsRequestDto, authorizations, contentType);
+
+        // 다시 한 번 JSONObject 로 변환한다.
+        JSONObject jsonObject = (JSONObject) new JSONParser().parse(
+            tossPaymentsApproveResponseString);
+
+        String orderName = jsonObject.get("orderName").toString();
+        String totalAmount = jsonObject.get("totalAmount").toString();
+        String method = jsonObject.get("method").toString();
+        String cardNumber = null;
+        String accountNumber = null;
+        String bank = null;
+        String customerMobilePhone = null;
+
+        if (method.equals("카드")) {
+            cardNumber = ((JSONObject) jsonObject.get("card")).get("number").toString();
+        } else if (method.equals("가상계좌")) {
+            accountNumber = ((JSONObject) jsonObject.get("virtualAccount")).get("accountNumber")
+                .toString();
+        } else if (method.equals("계좌이체")) {
+            bank = ((JSONObject) jsonObject.get("transfer")).get("bank").toString();
+        } else if (method.equals("휴대폰")) {
+            customerMobilePhone = ((JSONObject) jsonObject.get("mobilePhone")).get(
+                "customerMobilePhone").toString();
+        } else if (method.equals("간편결제")) {
+            method =
+                method + "-" + ((JSONObject) jsonObject.get("easyPay")).get("provider").toString();
+        }
+
+        return TossPaymentsResponseDto.builder()
+            .orderName(orderName)
+            .totalAmount(Long.parseLong(totalAmount))
+            .method(method)
+            .paymentKey(paymentKey)
+            .cardNumber(cardNumber)
+            .accountNumber(accountNumber)
+            .bank(bank)
+            .customerMobilePhone(customerMobilePhone)
+            .build();
+    }
+
+    public PaymentOrderRequestDto findPaymentOrderRequestDtoByOrderId(long orderId) {
+        return paymentOrderClient.findPaymentOrderRequestDtoByOrderId(orderId);
+    }
+
+    public PaymentOrderValidationRequestDto findPaymentOrderValidationDtoByOrderId(long orderId) {
+        return paymentOrderClient.findPaymentOrderValidationDtoByOrderId(orderId);
+    }
+
+    public PaymentOrderRequestDto2 findPaymentOrderRequestDto2ByOrderId(long orderId) {
+        return paymentOrderClient.findPaymentOrderRequestDto2ByOrderId(orderId);
+    }
+
+    public void useCoupon(long couponId) {
+        paymentCouponClient.useCoupon(couponId);
+    }
+
+    public void usePoint(PaymentUsePointRequestDto paymentUsePointRequestDto) {
+        paymentPointClient.usePoint(paymentUsePointRequestDto);
+    }
+
+    public void accumulatePoint(PaymentAccumulatePointRequestDto paymentAccumulatePointRequestDto) {
+        paymentPointClient.accumulatePoint(paymentAccumulatePointRequestDto);
+    }
+
+    public Map<Long, Long> processReduceInventoryMap(
+        PaymentOrderRequestDto2 paymentOrderRequestDto2) {
+        return new HashMap<>();
+    }
+
+    public void reduceInventory(Map<Long, Long> reduceInventoryMap) {
+        paymentProductClient.reduceInventory(reduceInventoryMap);
+    }
 }
