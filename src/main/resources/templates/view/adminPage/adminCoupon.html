@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="adminPageCouponFragment ('adminCoupons')">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -96,6 +96,20 @@
     <div class="tab active" onclick="changeTab('ALL')">모든 쿠폰</div>
     <div class="tab" onclick="changeTab('USED')">사용 완료 쿠폰</div>
   </div>
+  <form id="filterForm">
+    <label>
+      <input type="radio" name="status" value="ALL" checked> 전체
+    </label>
+    <label>
+      <input type="radio" name="status" value="사용 가능"> 사용 가능
+    </label>
+    <label>
+      <input type="radio" name="status" value="사용완료"> 사용 완료
+    </label>
+    <label>
+      <input type="radio" name="status" value="사용 불가"> 사용 불가
+    </label>
+  </form>
   <table class="table">
     <thead class="table-header">
     <tr>
@@ -115,48 +129,44 @@
     </thead>
     <tbody class="table-body">
     <!-- Thymeleaf 반복문으로 쿠폰들을 동적으로 생성 -->
-    <tr th:each="coupon : ${coupons}">
-      <td th:text="${coupon.userId}">user123</td>
-      <td th:text="${coupon.userName}">John Doe</td>
-      <td th:text="${coupon.couponDescription}">10% off on all products</td>
-      <td th:text="${coupon.discountType}">Percentage</td>
-      <td th:text="${coupon.discountAmount}">10%</td>
-      <td th:text="${coupon.minDiscount}">$10</td>
-      <td th:text="${coupon.maxDiscount}">$50</td>
-      <td th:text="${coupon.issuedDate}">2023-05-01</td>
-      <td th:text="${coupon.expirationDate}">2023-06-30</td>
-      <td th:text="${coupon.usedDate}">2023-05-15</td>
-      <!-- 'ALL' 탭에서는 모든 쿠폰을, 'USED' 탭에서는 사용 완료 쿠폰만 표시 -->
-      <td th:classappend="{'badge-used': ${coupon.status == '사용완료'}}">
-        <span th:if="${tab == 'ALL'}">사용 완료</span>
-        <span th:if="${tab == 'USED' and coupon.status == '사용완료'}" class="badge badge-used">Used</span>
-      </td>
-      <td>
-        <button class="btn-delete" th:if="${tab == 'ALL' and coupon.status == '사용완료'}"
-                th:attr="onclick='handleDelete(' + ${coupon.id} + ')'" th:text="Delete"></button>
-        <button class="btn-delete" th:if="${tab == 'USED'}" onclick="handleDelete(${coupon.id})">Delete</button>
-      </td>
+    <tr th:each="coupon : ${adminCoupons}">
+      <td th:text="${coupon.userId}"></td>
+      <td th:text="${coupon.userName}"></td>
+      <td th:text="${coupon.couponDescription}"></td>
+      <td th:text="${coupon.discountType}"></td>
+      <td th:text="${coupon.discountAmount}"></td>
+      <td th:text="${coupon.minDiscount}"></td>
+      <td th:text="${coupon.maxDiscount}"></td>
+      <td th:text="${coupon.issuedDate}"></td>
+      <td th:text="${coupon.expirationDate}"></td>
+      <td th:text="${coupon.usedDate}"></td>
+      <td th:text="${coupon.status}"></td>
     </tr>
     </tbody>
   </table>
 </div>
-
 <script>
-  function changeTab(tab) {
-    var tabs = document.querySelectorAll('.tab');
-    tabs.forEach(function(item) {
-      item.classList.remove('active');
-    });
-    var activeTab = document.querySelector('.tab.' + tab.toLowerCase());
-    activeTab.classList.add('active');
-  }
+  document.addEventListener("DOMContentLoaded", function() {
+    const filterForm = document.getElementById("filterForm");
+    const cards = document.querySelectorAll('.card');
 
-  function handleDelete(id) {
-    console.log(`Deleting coupon with ID: ${id}`);
-    // 여기서 실제 삭제 로직을 구현할 수 있습니다.
-    // AJAX 요청이나 서버로의 데이터 전송 등의 처리가 이루어질 수 있습니다.
-  }
+    filterForm.addEventListener('change', function() {
+      const status = document.querySelector('input[name="status"]:checked').value;
+
+      cards.forEach(card => {
+        const cardStatus = card.getAttribute('data-status');
+
+        if (status === 'ALL' || cardStatus === status) {
+          card.classList.remove('hidden');
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+    });
+  });
 </script>
+
+
 
 </body>
 </html>
