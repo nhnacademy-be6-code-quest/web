@@ -63,8 +63,8 @@ public class CouponPolicyController {
 
     @GetMapping("/admin/coupon/policy/register")
     public String viewRegisterPolicy(Model model) {
-        List<String> discountTypes = List.of(DiscountType.AMOUNTDISCOUNT.getValue(),
-            DiscountType.PERCENTAGEDISCOUNT.getValue());
+        List<DiscountType> discountTypes = List.of(DiscountType.AMOUNTDISCOUNT,
+            DiscountType.PERCENTAGEDISCOUNT);
         model.addAttribute("discountTypes", discountTypes);
         return "/view/coupon/admin_policy_register";
     }

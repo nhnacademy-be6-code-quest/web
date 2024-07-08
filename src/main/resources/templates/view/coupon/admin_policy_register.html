@@ -14,7 +14,7 @@
 <body>
 <div class="container mx-auto px-4 py-8">
     <h1 class="text-2xl font-bold mb-6">Coupon Policy Registration</h1>
-    <form action="/api/coupon/policy/register" method="post" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+    <form action="/admin/coupon/policy/register" method="post" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
 
         <div class="mb-4">
             <label class="block text-gray-700 font-bold mb-2" for="bookType">
@@ -34,7 +34,7 @@
                 Book Name
             </label>
 
-                <button id="bookName" type="button" onclick="openBookSelectWindow()">상품 선택</button>
+            <button id="bookName" type="button" onclick="openBookSelectWindow()">상품 선택</button>
             <div>
                 <h3>선택된 상품:</h3>
                 <p id="selectedBookInfo">선택된 상품: <span id="selectedBookName"></span></p>
@@ -62,32 +62,30 @@
             <label class="block text-gray-700 font-bold mb-2" for="discountType">
                 Discount Type
             </label>
-            <select class="input" id="discountType" name="discountType">
+            <select class="input" id="discountType" name="discountType" onchange="toggleDiscountInput(this.value)">
                 <option value="">할인 유형 선택</option>
                 <option th:each="discountType : ${discountTypes}" th:value="${discountType}" th:text="${discountType}"></option>
             </select>
-            <div class="error-class" th:errors="*{discountTypes}"></div>
         </div>
 
-        <div class="mb-4">
-            <label class="block text-gray-700 font-bold mb-2">할인 금액</label>
-            <div class="flex items-center">
-                <input class="mr-2" type="radio" id="discountAmountType1" name="discountAmountType" value="amount" onchange="toggleDiscountInput(this.value)" />
-                <label class="mr-4" for="discountAmountType1">할인금액</label>
-                <input class="mr-2" type="radio" id="discountAmountType2" name="discountAmountType" value="percentage" onchange="toggleDiscountInput(this.value)" />
-                <label for="discountAmountType2">할인율</label>
-            </div>
-            <input class="input" id="discountInput" name="discountValue" type="number" placeholder="" style="display: none;" />
+        <div class="mb-4 hidden" id="amountDiscountInput">
+            <label class="block text-gray-700 font-bold mb-2" for="discountAmount">할인 금액</label>
+            <input class="input" id="discountAmount" name="discountValue" type="number" placeholder="할인 금액을 입력하세요." />
+        </div>
+
+        <div class="mb-4 hidden" id="percentageDiscountInput">
+            <label class="block text-gray-700 font-bold mb-2" for="discountPercentage">할인율</label>
+            <input class="input" id="discountPercentage" name="discountValue" type="number" min="0" max="100" placeholder="할인율을 입력하세요. 0~100 사이 값만 설정할 수 있습니다." />
         </div>
 
         <div class="mb-4">
             <label class="block text-gray-700 font-bold mb-2" for="minPurchaseAmount">최소 할인금액</label>
-            <input class="input" id="minPurchaseAmount" name="minPurchaseAmount" type="number" placeholder="최소 할인금액을 입력해주세요." />
+            <input class="input" id="minPurchaseAmount" name="minPurchaseAmount" type="number" placeholder="최소 할인금액을 입력하세요." />
         </div>
 
         <div class="mb-4">
             <label class="block text-gray-700 font-bold mb-2" for="maxDiscountAmount">최대 할인금액</label>
-            <input class="input" id="maxDiscountAmount" name="maxDiscountAmount" type="number" placeholder="최대 할인금액을 입력해주세요." />
+            <input class="input" id="maxDiscountAmount" name="maxDiscountAmount" type="number" placeholder="최대 할인금액을 입력하세요." />
         </div>
 
         <div class="flex items-center justify-between">
@@ -98,7 +96,6 @@
 </div>
 
 <script>
-
     function openBookSelectWindow() {
         window.open('/admin/coupon/books', 'selectBookWindow', 'width=1000,height=1500');
     }
@@ -106,10 +103,6 @@
     function openCategorySelectWindow() {
         firstPopup = window.open('/admin/categories/all', 'selectCategoryWindow', 'width=600,height=400');
     }
-
-
-
-
 
     function toggleInput(value) {
         const bookNameInput = document.getElementById('bookNameInput');
@@ -128,19 +121,18 @@
     }
 
     function toggleDiscountInput(value) {
-        const discountInput = document.getElementById('discountInput');
+        const amountDiscountInput = document.getElementById('amountDiscountInput');
+        const percentageDiscountInput = document.getElementById('percentageDiscountInput');
 
-        if (value === 'amount') {
-            discountInput.placeholder = '할인 금액을 입력하세요.';
-            discountInput.style.display = 'block';
-            discountInput.setAttribute('type', 'number');
-            discountInput.removeAttribute('max'); // Remove max attribute
-        } else if (value === 'percentage') {
-            discountInput.placeholder = '할인율을 설정해주세요. 0~100만 설정할수 있습니다.';
-            discountInput.style.display = 'block';
-            discountInput.setAttribute('type', 'number');
-            discountInput.setAttribute('min', '0');
-            discountInput.setAttribute('max', '100'); // Set max attribute for percentage
+        // Hide both inputs initially
+        amountDiscountInput.classList.add('hidden');
+        percentageDiscountInput.classList.add('hidden');
+
+        // Show corresponding input based on selected value
+        if (value === 'AMOUNTDISCOUNT') {
+            amountDiscountInput.classList.remove('hidden');
+        } else if (value === 'PERCENTAGEDISCOUNT') {
+            percentageDiscountInput.classList.remove('hidden');
         }
     }
 
@@ -153,11 +145,13 @@
             document.getElementById('selectedCategoryName').textContent = selectedCategoryName;
             document.getElementById('selectedCategoryInfo').style.display = 'block';
             document.getElementById('selectedName').value = "카테고리";
-            console.log(selectedCategoryName);
-            console.log(selectedCategoryId);
+        }else {
+            // If not categoryData event, set default values
+            document.getElementById('selectedId').value = -1; // Default id for no selection
+            document.getElementById('selectedCategoryName').textContent = ''; // Clear text content
+            document.getElementById('selectedCategoryInfo').style.display = 'none'; // Hide category info
+            document.getElementById('selectedName').value = ''; // Default name for no selection
         }
-
-
 
         if (event.origin === window.location.origin) {
             const selectedBook = event.data.selectedBook;
@@ -166,7 +160,13 @@
                 document.getElementById('selectedId').value = selectedBook.productId;
                 document.getElementById('selectedBookName').textContent = selectedBook.productName;
                 document.getElementById('selectedBookInfo').style.display = 'block';
-                document.getElementById("selectedName").value = "상품";
+                document.getElementById('selectedName').value = "상품";
+            }else {
+                // If not selectedBook event, set default values
+                document.getElementById('selectedId').value = -1; // Default id for no selection
+                document.getElementById('selectedBookName').textContent = ''; // Clear text content
+                document.getElementById('selectedBookInfo').style.display = 'none'; // Hide book info
+                document.getElementById('selectedName').value = ''; // Default name for no selection
             }
         }
     });
