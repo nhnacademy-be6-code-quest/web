@@ -8,23 +8,56 @@
     <link rel="stylesheet" href="/css/coupon/admin_coupon_register.css">
     <script>
         function openUserSelectWindow() {
-            window.open('/processUserSelection', 'selectUserWindow', 'width=600,height=400');
+            window.open('/admin/coupon/client', 'selectUserWindow', 'width=600,height=400');
         }
+
+        function validateCouponType() {
+            const name = document.getElementById('name').textContent.trim(); // name 값을 직접 가져옴
+            const couponTypeSelect = document.getElementById('couponTypeId');
+            const selectedOption = couponTypeSelect.options[couponTypeSelect.selectedIndex].textContent.trim(); // 선택된 옵션의 텍스트 내용 가져오기
+
+            console.log('Name:', name);
+            console.log('Selected Option:', selectedOption);
+
+            let errorMessage = '';
+
+            if (name === '상품' && selectedOption !== 'BOOK') {
+                errorMessage = '상품 쿠폰 타입에는 BOOK만 선택 가능합니다.';
+            } else if (name === '카테고리' && selectedOption !== 'CATEGORY') {
+                errorMessage = '카테고리 쿠폰 타입에는 CATEGORY만 선택 가능합니다.';
+            } else if (name === '전체' && (selectedOption === 'BOOK' || selectedOption === 'CATEGORY')) {
+                errorMessage = '전체 쿠폰 타입에는 BOOK 또는 CATEGORY를 선택할 수 없습니다.';
+            }
+
+            if (errorMessage) {
+                alert(errorMessage);
+                couponTypeSelect.selectedIndex = 0; // 선택된 옵션 초기화
+                return false;
+            }
+
+            return true;
+        }
+
+        // 사용자 리스트 선택 시 처리
+        document.addEventListener('DOMContentLoaded', function() {
+            const couponTypeSelect = document.getElementById('couponTypeId');
+
+            couponTypeSelect.addEventListener('change', function() {
+                validateCouponType();
+            });
+        });
 
         // 새 창에서 메시지 받기
         window.addEventListener('message', function(event) {
             if (event.origin !== window.location.origin) {
                 console.error('Invalid origin:', event.origin);
-
                 return;
             }
 
-            // 전송된 데이터 받아오기
             const selectedUsers = event.data.selectedUsers; // 선택된 사용자 배열
 
-            console.log("123",selectedUsers);
+            console.log("Selected Users:", selectedUsers);
 
-            // 선택된 사용자 정보를 출력합니다
             const selectedClientIds = document.getElementById('selectedClientIds');
             const selectedUsersList = document.getElementById('selectedUsersList');
             const clientList = [];
@@ -35,50 +68,41 @@
                 listItem.textContent = `ID: ${user.clientId}, Name: ${user.clientName}, Email: ${user.clientEmail}`;
                 selectedUsersList.appendChild(listItem);
 
-                // 클라이언트 ID를 배열에 추가
                 clientList.push(user.clientId);
-                // todo
-                // input 태그 를 만들어서 user.clientId를 넣어야함
-                // 여러개다 보니까 html id를 사용 못함
-                // ul li  로 만들어줘
-
             });
-            console.log(clientList);
-            selectedClientIds.value = (clientList.join(', '));
-            // 선택된 클라이언트 ID들을 hidden input에 설정하여 서버로 전송
-            // const clientIdInput = document.getElementById('clientIdInput');
-            // clientIdInput.value = selectedClientIds.join(','); // 배열을 문자열로 변환하여 설정
+
+            selectedClientIds.value = clientList.join(', ');
         });
     </script>
 </head>
+
 <body>
-<form th:action="@{'/api/coupon/register/' + ${couponPolicyId}}" method="post">
+<form th:action="@{'/api/coupon/register/' + ${couponPolicyId}}" method="post"
+      onsubmit="return validateCouponType()">
     <div class="card">
         <div class="card-header">
             <div class="card-title">쿠폰 지급</div>
             <div class="card-description">관리자가 쿠폰을 생성하고 사용자에게 지급할 수 있습니다.</div>
         </div>
+        <div id="name" style="display: none" th:text="${name.name}"></div> <!-- Thymeleaf으로 name 값을 설정 -->
         <div class="card-content">
             <div class="grid">
                 <label class="label" for="couponTypeId">쿠폰 타입</label>
-                <select id="couponTypeId" name="couponTypeId" >\
+                <select id="couponTypeId" name="couponTypeId">
                     <option value="">쿠폰 타입 선택</option>
                     <option th:each="couponType : ${couponTypes}" th:value="${couponType.couponTypeId}"
                             th:text="${couponType.couponKind}"></option>
                 </select>
-
-
             </div>
 
             <button type="button" onclick="openUserSelectWindow()">사용자 선택</button>
 
             <div>
                 <h3>선택된 사용자:</h3>
-                <p>사용자 이름: <span id="'selectedUsersList'"></span></p>
+                <div id="selectedUsersList"></div>
             </div>
 
-            <!-- 숨겨진 필드로 선택된 사용자의 ID와 이름을 전달 -->
-            <input type="text" id="selectedClientIds" name="clientId">
+            <input type="hidden" id="selectedClientIds" name="clientId">
 
             <div class="grid">
                 <label class="label" for="expiration-date">만료일</label>
@@ -88,7 +112,7 @@
                 <label class="label" for="status">상태</label>
                 <select id="status" name="status" class="select">
                     <option value="">상태 선택</option>
-                    <option th:each="statu : ${status}" th:text="${statu}"></option>
+                    <option th:each="statu : ${status}" th:text="${statu.name()}"></option>
                 </select>
             </div>
         </div>
@@ -97,4 +121,5 @@
     </div>
 </form>
 </body>
+
 </html>

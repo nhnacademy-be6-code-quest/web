@@ -3,7 +3,7 @@ package com.nhnacademy.codequestweb.response.coupon;
 import lombok.Builder;
 
 @Builder
-public record ProductGetResponseDto (
+public record ProductGetResponseDto(
         Long productId,
         String productName,
         int productState,
@@ -12,4 +12,3 @@ public record ProductGetResponseDto (
         String productThumbNailImage
 ){
 }
-

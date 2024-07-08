@@ -1,70 +1,99 @@
 package com.nhnacademy.codequestweb.controller.coupon;
 
 import com.nhnacademy.codequestweb.domain.Status;
-import com.nhnacademy.codequestweb.request.coupon.CouponRequestDto;
+import com.nhnacademy.codequestweb.request.coupon.CouponRegisterRequestDto;
 import com.nhnacademy.codequestweb.response.coupon.ClientCouponPaymentResponseDto;
+import com.nhnacademy.codequestweb.response.coupon.CouponAdminPageCouponResponseDto;
+import com.nhnacademy.codequestweb.response.coupon.CouponMyPageCouponResponseDto;
+import com.nhnacademy.codequestweb.response.coupon.CouponProvideTypeResponseDto;
 import com.nhnacademy.codequestweb.response.coupon.CouponTypeResponseDto;
-import com.nhnacademy.codequestweb.service.coupon.ClientCouponService;
 import com.nhnacademy.codequestweb.service.coupon.CouponService;
-import com.nhnacademy.codequestweb.service.coupon.CouponTypeService;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 
 
 @Controller
+@RequiredArgsConstructor
 public class CouponController {
-    @Autowired
-    private CouponService couponService;
 
-    @Autowired
-    private CouponTypeService couponTypeService;
+    private final CouponService couponService;
 
-    @Autowired
-    private ClientCouponService clientCouponService;
-
-
-    @GetMapping("/processUserSelection")
+    @GetMapping("/admin/coupon/client")
     public String view(HttpServletRequest req,
-            Model model, @RequestParam(defaultValue = "10") int page, @RequestParam(defaultValue = "0") int size){
-
-
-
+            Model model, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size){
 
         HttpHeaders headers = new HttpHeaders();
+        headers.set("access", CookieUtils.getCookieValue(req, "access"));
 
-        Page<ClientCouponPaymentResponseDto> coupons = clientCouponService.getClient(headers, size, page);
+        Page<ClientCouponPaymentResponseDto> coupons = couponService.getClient(headers, page, size);
         model.addAttribute("couponPayments",coupons);
         return "/view/coupon/coupon_client";
     }
 
-    @GetMapping("/api/coupon/register/{couponPolicyId}")
-    public String saveCouponView(Model model, @PathVariable long couponPolicyId){
-        List<CouponTypeResponseDto> couponTypes = couponTypeService.getAllCouponTypes();
+    @GetMapping("/admin/coupon/register/{couponPolicyId}")
+    public String saveCouponView(HttpServletRequest req, Model model, @PathVariable long couponPolicyId){
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("access", CookieUtils.getCookieValue(req, "access"));
 
-        List<Status> statuses = List.of(Status.AVAILABLE, Status.USED,Status.UNAVAILABLE);
+        List<CouponTypeResponseDto> couponTypes = couponService.getAllCouponTypes(headers);
+        CouponProvideTypeResponseDto name = couponService.findCouponType(headers, couponPolicyId);
+        List<Status> statuses = List.of(Status.AVAILABLE, Status.USED, Status.UNAVAILABLE);
         model.addAttribute("couponTypes",couponTypes);
         model.addAttribute("status",statuses);
         model.addAttribute("couponPolicyId",couponPolicyId);
+        model.addAttribute("name", name);
         return "/view/coupon/admin_coupon_register";
-        //TODO 주소바꾸기
     }
 
     @PostMapping("/api/coupon/register/{couponPolicyId}")
-    public String saveCoupon(@Valid @PathVariable long couponPolicyId, @ModelAttribute CouponRequestDto couponRequestDto){
+    public String saveCoupon(HttpServletRequest req, @Valid @PathVariable long couponPolicyId, @ModelAttribute CouponRegisterRequestDto couponRegisterRequestDto){
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("access", CookieUtils.getCookieValue(req, "access"));
+        couponService.saveCoupon(headers, couponRegisterRequestDto,couponPolicyId);
+        return "redirect:/admin/coupon/policy";
+    }
 
-        couponService.saveCoupon(couponRequestDto,couponPolicyId);
-        return "redirect:/api/coupon/policy";
+
+    @GetMapping("/mypage/coupons")
+    public String getCoupon( HttpServletRequest req,  @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "6") int size) {
+        if (CookieUtils.getCookieValue(req, "access") == null) {
+            return "redirect:/auth";
+        }
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("access", CookieUtils.getCookieValue(req, "access"));
+        req.setAttribute("view", "mypage");
+        req.setAttribute("mypage", "coupons");
+
+        Page<CouponMyPageCouponResponseDto> coupons = couponService.findMyPageCoupons(headers, page ,size);
+        req.setAttribute("coupons", coupons);
+        return "index";
 
     }
 
+    @GetMapping("/admin/user/coupons")
+    public String viewUserCoupon(HttpServletRequest req, @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "6") int size) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("access", CookieUtils.getCookieValue(req, "access"));
+
+        Page<CouponAdminPageCouponResponseDto> adminCoupons = couponService.findUsersCoupons(headers, page, size);
+        req.setAttribute("view", "adminPage");
+        req.setAttribute("adminPage", "adminCoupons");
+
+        req.setAttribute("adminCoupons", adminCoupons);
+        return "index";
+    }
 }
