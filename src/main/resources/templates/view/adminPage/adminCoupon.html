@@ -130,8 +130,8 @@
     <tbody class="table-body">
     <!-- Thymeleaf 반복문으로 쿠폰들을 동적으로 생성 -->
     <tr th:each="coupon : ${adminCoupons}">
-      <td th:text="${coupon.userId}"></td>
-      <td th:text="${coupon.userName}"></td>
+      <td th:text="${coupon.clientId}"></td>
+<!--      <td th:text="${coupon.userName}"></td>-->
       <td th:text="${coupon.couponDescription}"></td>
       <td th:text="${coupon.discountType}"></td>
       <td th:text="${coupon.discountAmount}"></td>

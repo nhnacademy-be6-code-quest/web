@@ -30,7 +30,7 @@ public interface CouponClient {
     ResponseEntity<CouponRegisterRequestDto> saveCoupon(@RequestHeader HttpHeaders headers, @PathVariable long couponPolicyId, @RequestBody CouponRegisterRequestDto couponRegisterRequestDto);
 
     @GetMapping("/api/coupon/adminPage")
-    ResponseEntity<Page<CouponAdminPageCouponResponseDto>> findUserCoupons(@RequestParam int page, @RequestParam int size);
+    ResponseEntity<Page<CouponAdminPageCouponResponseDto>> findUserCoupons(@RequestHeader HttpHeaders headers, @RequestParam int page, @RequestParam int size);
 
     @PutMapping("/api/coupon/refund")
     ResponseEntity<String> refundCoupon(@RequestBody RefundCouponResponseDto refundCouponResponseDto);

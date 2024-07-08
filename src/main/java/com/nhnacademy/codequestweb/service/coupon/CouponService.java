@@ -38,8 +38,8 @@ public class CouponService {
         return couponClient.findMyPageCoupons(headers, page, size).getBody();
     }
 
-    public Page<CouponAdminPageCouponResponseDto> findUsersCoupons(int page, int size) {
-        return couponClient.findUserCoupons(page, size).getBody();
+    public Page<CouponAdminPageCouponResponseDto> findUsersCoupons(HttpHeaders headers, int page, int size) {
+        return couponClient.findUserCoupons(headers, page, size).getBody();
     }
 
     public Page<ClientCouponPaymentResponseDto> getClient(HttpHeaders httpHeaders, int page,

@@ -86,13 +86,10 @@ public class CouponController {
     @GetMapping("/admin/user/coupons")
     public String viewUserCoupon(HttpServletRequest req, @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "6") int size) {
-        if (CookieUtils.getCookieValue(req, "refresh") == null) {
-            return "redirect:/auth";
-        }
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
 
-        Page<CouponAdminPageCouponResponseDto> adminCoupons = couponService.findUsersCoupons(page, size);
+        Page<CouponAdminPageCouponResponseDto> adminCoupons = couponService.findUsersCoupons(headers, page, size);
         req.setAttribute("view", "adminPage");
         req.setAttribute("adminPage", "adminCoupons");
 
