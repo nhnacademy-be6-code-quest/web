@@ -136,25 +136,27 @@ public class PaymentService /*implements PaymentService*/ {
         return paymentPointClient.usePoint(paymentUsePointRequestDto);
     }
 
-    public ResponseEntity<String> accumulatePoint(PaymentAccumulatePointRequestDto paymentAccumulatePointRequestDto) {
+    public ResponseEntity<String> accumulatePoint(
+        PaymentAccumulatePointRequestDto paymentAccumulatePointRequestDto) {
         return paymentPointClient.accumulatePoint(paymentAccumulatePointRequestDto);
     }
 
-    public ResponseEntity<String> reduceInventory(List<ProductOrderDetailRequestDto> productOrderDetailRequestDtoList) {
-        List<PaymentProductRequestDto> productOrderRequestDtoList = new ArrayList<>();
+    public ResponseEntity<String> reduceInventory(
+        List<ProductOrderDetailRequestDto> productOrderDetailRequestDtoList) {
+        List<PaymentProductRequestDto> paymentProductRequestDtoList = new ArrayList<>();
         for (ProductOrderDetailRequestDto productOrderDetailRequestDto : productOrderDetailRequestDtoList) {
-            productOrderRequestDtoList.add(PaymentProductRequestDto.builder()
-                    .productId(productOrderDetailRequestDto.getProductId())
-                    .quantity(productOrderDetailRequestDto.getQuantity())
+            paymentProductRequestDtoList.add(PaymentProductRequestDto.builder()
+                .productId(productOrderDetailRequestDto.getProductId())
+                .quantity(productOrderDetailRequestDto.getQuantity())
                 .build());
             for (ProductOrderDetailOptionRequestDto productOrderDetailOptionRequestDto : productOrderDetailRequestDto.getProductOrderDetailOptionRequestDtoList()) {
-                productOrderRequestDtoList.add(PaymentProductRequestDto.builder()
-                        .productId(productOrderDetailOptionRequestDto.getProductId())
-                        .quantity(productOrderDetailOptionRequestDto.getOptionProductQuantity())
+                paymentProductRequestDtoList.add(PaymentProductRequestDto.builder()
+                    .productId(productOrderDetailOptionRequestDto.getProductId())
+                    .quantity(productOrderDetailOptionRequestDto.getOptionProductQuantity())
                     .build());
             }
         }
-        return paymentProductClient.reduceInventory(productOrderDetailRequestDtoList);
+        return paymentProductClient.reduceInventory(paymentProductRequestDtoList);
     }
 
     public ResponseEntity<String> changeOrderStatusCompletePayment(Long orderId) {
