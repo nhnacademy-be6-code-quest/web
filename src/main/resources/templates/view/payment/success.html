@@ -32,6 +32,7 @@
 <body>
 <!--<th:block th:if="${#strings.equals(isSuccess, 'true')}">-->
   <div class="success">
+
     <h1>결제 성공</h1>
     <p>주문명: <span th:text="${tossPaymentsResponseDto.getOrderName()}"></span></p>
     <p>총 결제금액: <span th:text="${tossPaymentsResponseDto.getTotalAmount()}"></span></p>
@@ -51,5 +52,10 @@
 <!--    <p>에러 코드: <span th:text="${code}"></span></p>-->
 <!--  </div>-->
 <!--</th:block>-->
+<span th:text="${couponResponse == false ? '쿠폰이 정상적으로 소모되지 않았습니다. 이 메시지는 관리자에게 전송됩니다.' : ''}"></span>
+<span th:text="${pointUseResponse == false ? '포인트가 정상적으로 소모되지 않았습니다. 이 메시지는 관리자에게 전송됩니다.' : ''}"></span>
+<span th:text="${pointAccumulateResponse == false ? '포인트가 정상적으로 적립되지 않았습니다. 이 메시지는 관리자에게 전송됩니다.' : ''}"></span>
+<span th:text="${productReduceInventoryResponse == false ? '재고가 정상적으로 처리되지 않았습니다. 이 메시지는 관리자에게 전송됩니다.' : ''}"></span>
+<span th:text="${changeOrderStatusCompletePaymentResponse == false ? '결제 이후 주문이 결제 완료로 정상적으로 변경되지 않았습니다. 이 메시지는 관리자에게 전송됩니다.' : ''}"></span>
 </body>
 </html>
