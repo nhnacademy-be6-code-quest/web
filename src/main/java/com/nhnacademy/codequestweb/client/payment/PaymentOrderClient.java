@@ -3,6 +3,7 @@ package com.nhnacademy.codequestweb.client.payment;
 import com.nhnacademy.codequestweb.request.payment.PaymentOrderRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentOrderRequestDto2;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 
 /**
@@ -20,4 +21,7 @@ public interface PaymentOrderClient {
 
     @GetMapping("/api/client/views/order")
     PaymentOrderRequestDto2 findPaymentOrderRequestDto2ByOrderId(long orderId);
+
+    @GetMapping("/api/client/views/order")
+    ResponseEntity<String> changeOrderStatusCompletePayment(Long orderId);
 }

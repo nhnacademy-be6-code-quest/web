@@ -1,8 +1,10 @@
 package com.nhnacademy.codequestweb.controller.payment;
 
+import com.nhnacademy.codequestweb.request.payment.PaymentAccumulatePointRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentCompletedCouponRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentOrderRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentOrderRequestDto2;
+import com.nhnacademy.codequestweb.request.payment.PaymentUsePointRequestDto;
 import com.nhnacademy.codequestweb.response.payment.TossPaymentsResponseDto;
 import com.nhnacademy.codequestweb.service.payment.PaymentService;
 import lombok.RequiredArgsConstructor;
@@ -61,32 +63,49 @@ public class PaymentController {
             amount, paymentKey);
 
 //        응답의 형태에 따라 쿠폰, 포인트, 적립, 재고 등의 이벤트가 적절하게 발생했는지 판단하고, 사용자에게 보여줄 것은 보여주고, 시스템에 에러로 남길 것은 남겨 두기
-//        2) 쿠폰 사용 처리
-        boolean couponResponse = paymentService.useCoupon(
-            PaymentCompletedCouponRequestDto.builder()
-                .couponId(paymentOrderRequestDto2.getCouponId())
-                .build()
-        ).getStatusCode().is2xxSuccessful();
-        model.addAttribute("couponResponse", couponResponse);
 
-        if (!couponResponse) {
-            log.error("쿠폰 사용 처리에 실패했습니다.");
-            log.error("쿠폰 아이디: {}", paymentOrderRequestDto2.getCouponId());
-        }
-
+////        2) 쿠폰 사용 처리
+//        boolean couponResponse = paymentService.useCoupon(
+//            PaymentCompletedCouponRequestDto.builder()
+//                .couponId(paymentOrderRequestDto2.getCouponId())
+//                .build()
+//        ).getStatusCode().is2xxSuccessful();
+//        model.addAttribute("couponResponse", couponResponse);
+//
+//        if (!couponResponse) {
+//            log.error("쿠폰 사용 처리에 실패했습니다.");
+//            log.error("쿠폰 아이디: {}", paymentOrderRequestDto2.getCouponId());
+//        }
+//
 //        // 3) 포인트 사용 처리
-//        paymentService.usePoint(PaymentUsePointRequestDto.builder()
+//        boolean pointUseResponse = paymentService.usePoint(PaymentUsePointRequestDto.builder()
 //            .clientId(paymentOrderRequestDto2.getClientId())
 //            .discountAmountByPoint(paymentOrderRequestDto2.getDiscountAmountByPoint())
 //            .build()
-//        );
+//        ).getStatusCode().is2xxSuccessful();
+//        model.addAttribute("pointUseResponse", pointUseResponse);
+//
+//        if (!pointUseResponse) {
+//            log.error("포인트 사용 처리에 실패했습니다.");
+//            log.error("clientId: {}", paymentOrderRequestDto2.getClientId());
+//            log.error("discountAmountByPoint: {}",
+//                paymentOrderRequestDto2.getDiscountAmountByPoint());
+//        }
 //
 //        // 4) 포인트 적립 처리
-//        paymentService.accumulatePoint(PaymentAccumulatePointRequestDto.builder()
-//            .clientId(paymentOrderRequestDto2.getClientId())
-//            .accumulatedPoint(paymentOrderRequestDto2.getAccumulatedPoint())
-//            .build()
-//        );
+//        boolean pointAccumulateResponse = paymentService.accumulatePoint(
+//            PaymentAccumulatePointRequestDto.builder()
+//                .clientId(paymentOrderRequestDto2.getClientId())
+//                .accumulatedPoint(paymentOrderRequestDto2.getAccumulatedPoint())
+//                .build()
+//        ).getStatusCode().is2xxSuccessful();
+//        model.addAttribute("pointAccumulateResponse", pointAccumulateResponse);
+//
+//        if (!pointAccumulateResponse) {
+//            log.error("포인트 적립 처리에 실패했습니다.");
+//            log.error("clientId: {}", paymentOrderRequestDto2.getClientId());
+//            log.error("accumulatedPoint: {}", paymentOrderRequestDto2.getAccumulatedPoint());
+//        }
 //
 //        // 5) 재고 감소 처리
 //        boolean productResponse = paymentService.reduceInventory(
@@ -94,6 +113,16 @@ public class PaymentController {
 //
 //        if (!productResponse) {
 //            log.error("재고 감소 처리에 실패했습니다.");
+//            log.error("orderId: {}", orderId);
+//        }
+//
+//        // 6) 주문 상태를 결제 완료로 바꾸기
+//        boolean changeOrderStatusCompletePaymentResponse = paymentService.changeOrderStatusCompletePayment(
+//                orderId)
+//            .getStatusCode().is2xxSuccessful();
+//
+//        if (!changeOrderStatusCompletePaymentResponse) {
+//            log.error("주문 상태를 결제 완료로 바꾸는 데에 실패했습니다.");
 //            log.error("주문 아이디: {}", orderId);
 //        }
 

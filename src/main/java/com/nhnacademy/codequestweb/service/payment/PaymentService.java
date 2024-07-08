@@ -16,6 +16,7 @@ import com.nhnacademy.codequestweb.request.payment.ProductOrderDetailOptionReque
 import com.nhnacademy.codequestweb.request.payment.ProductOrderDetailRequestDto;
 import com.nhnacademy.codequestweb.request.payment.TossPaymentsRequestDto;
 import com.nhnacademy.codequestweb.response.payment.TossPaymentsResponseDto;
+import feign.Response;
 import jakarta.annotation.PostConstruct;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -132,12 +133,12 @@ public class PaymentService /*implements PaymentService*/ {
         return paymentCouponClient.paymentUsedCoupon(paymentCompletedCouponRequestDto);
     }
 
-    public void usePoint(PaymentUsePointRequestDto paymentUsePointRequestDto) {
-        paymentPointClient.usePoint(paymentUsePointRequestDto);
+    public ResponseEntity<String> usePoint(PaymentUsePointRequestDto paymentUsePointRequestDto) {
+        return paymentPointClient.usePoint(paymentUsePointRequestDto);
     }
 
-    public void accumulatePoint(PaymentAccumulatePointRequestDto paymentAccumulatePointRequestDto) {
-        paymentPointClient.accumulatePoint(paymentAccumulatePointRequestDto);
+    public ResponseEntity<String> accumulatePoint(PaymentAccumulatePointRequestDto paymentAccumulatePointRequestDto) {
+        return paymentPointClient.accumulatePoint(paymentAccumulatePointRequestDto);
     }
 
     public ResponseEntity<String> reduceInventory(List<ProductOrderDetailRequestDto> productOrderDetailRequestDtoList) {
@@ -155,5 +156,9 @@ public class PaymentService /*implements PaymentService*/ {
             }
         }
         return paymentProductClient.reduceInventory(productOrderDetailRequestDtoList);
+    }
+
+    public ResponseEntity<String> changeOrderStatusCompletePayment(Long orderId) {
+        return paymentOrderClient.changeOrderStatusCompletePayment(orderId);
     }
 }
