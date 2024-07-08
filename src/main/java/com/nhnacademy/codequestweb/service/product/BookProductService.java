@@ -96,6 +96,6 @@ public class BookProductService {
     }
 
     public ResponseEntity<Void> updateBookInventory(List<InventoryDecreaseRequestDto> requestDtoList) {
-
+        return  null;
     }
 }

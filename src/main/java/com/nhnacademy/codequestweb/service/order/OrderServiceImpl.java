@@ -67,7 +67,7 @@ public class OrderServiceImpl implements OrderService {
         // 바인딩 객체에 주문 상품 가격 정보 추가.
         orderItemDtoList.forEach((orderItemDto)->{
             // 책 상세 정보
-            BookProductGetResponseDto book = bookProductService.getSingleBookInfo(headers, orderItemDto.getBookId()).getBody();
+            BookProductGetResponseDto book = bookProductService.getSingleBookInfo(headers, orderItemDto.getProductId()).getBody();
             // 폼에 추가
             clientOrderForm.addOrderDetailDtoItem(
                     ClientOrderForm.OrderDetailDtoItem.builder()
@@ -75,7 +75,6 @@ public class OrderServiceImpl implements OrderService {
                             .productName(book.title())
                             .quantity(orderItemDto.getQuantity())
                             .categoryIdList(orderItemDto.getCategoryIdList())
-                            .bookId(orderItemDto.getBookId())
                             .productSinglePrice(book.productPriceSales())
                             .build()
             );
@@ -119,14 +118,13 @@ public class OrderServiceImpl implements OrderService {
         // 바인딩 객체에 주문 상품 가격 정보 추가.
         orderItemDtoList.forEach((orderItemDto)->{
             // 책 상세 정보
-            BookProductGetResponseDto book = bookProductService.getSingleBookInfo(headers, orderItemDto.getBookId()).getBody();
+            BookProductGetResponseDto book = bookProductService.getSingleBookInfo(headers, orderItemDto.getProductId()).getBody();
             // 폼에 추가
             nonClientOrderForm.addOrderDetailDtoItem(
                     NonClientOrderForm.OrderDetailDtoItem.builder()
                             .productId(orderItemDto.getProductId())
                             .productName(book.title())
                             .quantity(orderItemDto.getQuantity())
-                            .bookId(orderItemDto.getBookId())
                             .productSinglePrice(book.productPriceSales())
                             .build()
             );
@@ -168,8 +166,8 @@ public class OrderServiceImpl implements OrderService {
 
     private List<OrderItemDto> getOrderItemDtoList(){
         return new ArrayList<>(Arrays.asList(
-                new OrderItemDto(4L, 1L, new ArrayList<>(List.of(1L)), 2L),
-                new OrderItemDto(5L,3L, new ArrayList<>(List.of(4L)), 3L)
+                new OrderItemDto(4L, 1L, new ArrayList<>(List.of(1L)), false),
+                new OrderItemDto(5L,3L, new ArrayList<>(List.of(4L)), true)
         ));
     }
 

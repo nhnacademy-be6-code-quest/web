@@ -5,13 +5,16 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Builder
-public record OrderItemDto (
-        Long productId,
-        Long quantity,
-        List<Long> categoryId,
-        boolean packable
-){
-
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+public class OrderItemDto{
+    Long productId;
+    Long quantity;
+    List<Long> categoryIdList;
+    boolean packable;
 }

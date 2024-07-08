@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.nhnacademy.codequestweb.request.order.field.OrderItemDto;
-import com.nhnacademy.codequestweb.request.product.cart.CartRequestDto;
 import com.nhnacademy.codequestweb.response.product.common.CartGetResponseDto;
 import com.nhnacademy.codequestweb.response.product.productCategory.ProductCategory;
 import java.util.List;
@@ -12,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -42,7 +40,7 @@ public class TestController {
                         .map(cartGetResponseDto -> OrderItemDto.builder()
                                 .productId(cartGetResponseDto.productId())
                                 .quantity(cartGetResponseDto.productQuantityOfCart())
-                                .categoryId(cartGetResponseDto.categorySet().stream().map(ProductCategory::productCategoryId
+                                .categoryIdList(cartGetResponseDto.categorySet().stream().map(ProductCategory::productCategoryId
                                 ).toList())
                                 .build())
                                 .toList();
