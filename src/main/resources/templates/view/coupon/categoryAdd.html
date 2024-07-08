@@ -54,7 +54,7 @@ console.log(name);
 
 <div th:unless="${register}">
   <div th:each="category : ${categoryNamePage}">
-    <a th:href="'/admin/categories/sub?categoryName=' + ${category.getKey().categoryName()}" target="_self">
+      <a th:href="@{'/admin/categories/' + ${category.getKey().productCategoryId()} + '/sub'}" target="_self">
       <span th:text="${category.getValue()}"></span>
     </a>
   </div>
