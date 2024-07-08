@@ -20,14 +20,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/test")
 public class TestController {
 
-    @GetMapping
+    @PostMapping
     public String test(@RequestParam("test") List<String> tests) throws Exception {
         log.info("list is : {}", tests);
         String test1 = tests.toString();
 
         String test2 = tests.get(0);
-
-//        CartGetResponseDto json1 = (CartGetResponseDto) test1;
 
         log.info("test1 : {}", test1);
 
@@ -42,6 +40,7 @@ public class TestController {
                                 .quantity(cartGetResponseDto.productQuantityOfCart())
                                 .categoryIdList(cartGetResponseDto.categorySet().stream().map(ProductCategory::productCategoryId
                                 ).toList())
+                                .packable(cartGetResponseDto.packable())
                                 .build())
                                 .toList();
         log.info("dto is : {}", json2);

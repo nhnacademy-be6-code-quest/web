@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form action="/admin/products/book/state" method="post">
+    <input type="hidden" name="_method" value="PUT"/>
+    <input type="number" name="productId">
+    <input type="number" name="productState">
+    <button type="submit">상태 변경!</button>
+</form>
+<form action="/product/inventory/decrease" method="post">
+  <input type="hidden" name="_method" value="PUT"/>
+  <input type="number" name="productId">
+    <input type="number" name="quantityToDecrease">
+    <button type="submit">감소</button>
+</form>
+<form action="/admin/products/book/inventory/increase" method="post">
+    <input type="hidden" name="_method" value="PUT"/>
+    <input type="number" name="productId">
+    <input type="number" name="quantityToIncrease">
+    <button type="submit">증가!</button>
+</form>
+<form action="/admin/products/book/inventory/set" method="post">
+    <input type="hidden" name="_method" value="PUT"/>
+    <input type="number" name="productId">
+    <input type="number" name="quantityToSet">
+    <button type="submit">세팅!</button>
+</form>
+</body>
+</html>

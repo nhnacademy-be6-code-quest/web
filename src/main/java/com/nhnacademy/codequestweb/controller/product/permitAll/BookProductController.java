@@ -2,12 +2,14 @@ package com.nhnacademy.codequestweb.controller.product.permitAll;
 
 
 import com.nhnacademy.codequestweb.request.product.ProductLikeRequestDto;
+import com.nhnacademy.codequestweb.request.product.common.InventoryDecreaseRequestDto;
 import com.nhnacademy.codequestweb.response.product.book.BookProductGetResponseDto;
 import com.nhnacademy.codequestweb.response.product.productCategory.ProductCategory;
 import com.nhnacademy.codequestweb.service.product.BookProductService;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -23,40 +25,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Slf4j
 @Controller
 @RequiredArgsConstructor
-public class BookProductGetController {
+public class BookProductController {
 
     private final BookProductService bookProductService;
-
-//    @GetMapping("/product/books/{productId}")
-//    public String book(
-//            HttpServletRequest req,
-//            @PathVariable long productId,
-//            Model model) {
-//        ResponseEntity<BookProductGetResponseDto> response = bookProductService.getSingleBookInfo(CookieUtils.setHeader(req), productId);
-//        BookProductGetResponseDto bookProductGetResponseDto = response.getBody();
-//        Set<ProductCategory> categorySet = bookProductGetResponseDto.categorySet();
-//        List<List<ProductCategory>> allCategoryList = new ArrayList<>();
-//        for (ProductCategory category : categorySet) {
-//            List<ProductCategory> parentCategoryList = new ArrayList<>();
-//            parentCategoryList.add(category);
-//            ProductCategory parent = category.parentProductCategory();
-//            while(parent != null) {
-//                parentCategoryList.add(parent);
-//                parent = parent.parentProductCategory();
-//            }
-//            parentCategoryList.sort(Comparator.comparing(ProductCategory::productCategoryId));
-//            allCategoryList.add(parentCategoryList);
-//        }
-//        model.addAttribute("listOfCategoryList", allCategoryList);
-//        model.addAttribute("book", bookProductGetResponseDto);
-//        req.setAttribute("view", "singleBook");
-//        return "index";
-//    }
 
     @GetMapping("/product/books/{bookId}")
     public String book(
@@ -87,20 +64,6 @@ public class BookProductGetController {
         return "index";
     }
 
-
-    @GetMapping("/product/books/all")
-    public String getAllBookPage(
-            HttpServletRequest req,
-            @RequestParam(name = "page", required = false)Integer page,
-            @RequestParam(name= "size", required = false)Integer size,
-            @RequestParam(name = "sort", required = false)String sort,
-            @RequestParam(name = "desc", required = false)Boolean desc,
-            Model model) {
-        ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getAllBookPage(CookieUtils.setHeader(req), page, size, sort, desc, 0);
-        model.addAttribute("books", response.getBody().getContent());
-        req.setAttribute("view", "bookPage");
-        return "index";
-    }
 
     @GetMapping("/product/books")
     public String getAllBookPage(
@@ -139,7 +102,6 @@ public class BookProductGetController {
     public String getNameContainingBookPage(
             HttpServletRequest req,
             @RequestParam(name = "page", required = false)Integer page,
-//            @RequestParam(name= "size", required = false)Integer size,
             @RequestParam(name = "sort", required = false)String sort,
             @RequestParam(name = "desc", required = false)Boolean desc,
             @RequestParam("title")String title,
@@ -162,7 +124,6 @@ public class BookProductGetController {
     public String getBookPageFilterByTag(
             HttpServletRequest req,
             @RequestParam(name = "page", required = false)Integer page,
-//            @RequestParam(name= "size", required = false)Integer size,
             @RequestParam(name = "sort", required = false)String sort,
             @RequestParam(name = "desc", required = false)Boolean desc,
             @RequestParam(name = "tagName") Set<String> tagNameSet,
@@ -244,4 +205,15 @@ public class BookProductGetController {
         return "/view/product/refresh";
     }
 
+    @PutMapping("/product/inventory/decrease")
+    public String decreaseInventory(@ModelAttribute InventoryDecreaseRequestDto requestDtoList) {
+        log.info("request : {}",requestDtoList);
+        ResponseEntity<Void> response = bookProductService.decreaseBookInventory(Arrays.asList(requestDtoList));
+        return "/view/product/refresh";
+    }
+
+    @GetMapping("/test/decrease")
+    public String test(){
+        return "/view/product/testDecrease";
+    }
 }

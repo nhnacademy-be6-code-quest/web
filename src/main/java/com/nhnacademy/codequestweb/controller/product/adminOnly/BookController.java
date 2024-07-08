@@ -4,6 +4,8 @@ package com.nhnacademy.codequestweb.controller.product.adminOnly;
 import com.nhnacademy.codequestweb.request.product.ProductStateUpdateRequestDto;
 import com.nhnacademy.codequestweb.request.product.bookProduct.BookProductRegisterRequestDto;
 import com.nhnacademy.codequestweb.request.product.bookProduct.BookProductUpdateRequestDto;
+import com.nhnacademy.codequestweb.request.product.common.InventoryIncreaseRequestDto;
+import com.nhnacademy.codequestweb.request.product.common.InventorySetRequestDto;
 import com.nhnacademy.codequestweb.response.product.book.AladinBookResponseDto;
 import com.nhnacademy.codequestweb.response.product.book.BookProductGetResponseDto;
 import com.nhnacademy.codequestweb.response.product.common.ProductRegisterResponseDto;
@@ -41,7 +43,6 @@ public class BookController {
     private final BookProductService bookProductService;
 
     private final MessageSource messageSource;
-
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {
@@ -117,6 +118,17 @@ public class BookController {
         return "redirect:/";
     }
 
+    @PutMapping("/inventory/increase")
+    public String increaseBookInventory(HttpServletRequest req, @ModelAttribute @Valid InventoryIncreaseRequestDto dto){
+        ResponseEntity<Void> responseEntity = bookProductService.increaseBookInventory(CookieUtils.setHeader(req), dto);
+        return "redirect:/";
+    }
+
+    @PutMapping("/inventory/set")
+    public String setBookInventory(HttpServletRequest req, @ModelAttribute @Valid InventorySetRequestDto dto){
+        ResponseEntity<Void> responseEntity = bookProductService.setBookInventory(CookieUtils.setHeader(req), dto);
+        return "redirect:/";
+    }
 
     @GetMapping("/all")
     public String getAllBookPage(
