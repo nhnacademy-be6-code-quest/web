@@ -1,8 +1,0 @@
-payco:
-  client:
-    id: ""
-  redirect:
-    uri: ""
-  recover:
-    redirect:
-      uri: ""
