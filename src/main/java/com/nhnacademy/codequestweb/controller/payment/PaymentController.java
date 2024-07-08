@@ -111,7 +111,7 @@ public class PaymentController {
 //        }
 
         // 5) 재고 감소 처리
-        boolean productReduceInventoryResponse = paymentService.reduceInventory(
+        boolean productReduceInventoryResponse = paymentService.decreaseProductInventory(
                 paymentOrderApproveRequestDto.getProductOrderDetailList()).getStatusCode()
             .is2xxSuccessful();
 
@@ -135,6 +135,8 @@ public class PaymentController {
         model.addAttribute("pointUseResponse", false);
         model.addAttribute("pointAccumulateResponse", false);
         model.addAttribute("productReduceInventoryResponse", productReduceInventoryResponse);
+        model.addAttribute("changeOrderStatusCompletePaymentResponse",
+            changeOrderStatusCompletePaymentResponse);
         model.addAttribute("tossPaymentsResponseDto", tossPaymentsResponseDto);
         return "view/payment/success";
     }
