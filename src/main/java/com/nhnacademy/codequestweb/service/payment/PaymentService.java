@@ -8,15 +8,14 @@ import com.nhnacademy.codequestweb.client.payment.PaymentProductClient;
 import com.nhnacademy.codequestweb.client.payment.TossPaymentsClient;
 import com.nhnacademy.codequestweb.request.payment.PaymentAccumulatePointRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentCompletedCouponRequestDto;
-import com.nhnacademy.codequestweb.request.payment.PaymentOrderRequestDto;
-import com.nhnacademy.codequestweb.request.payment.PaymentOrderRequestDto2;
+import com.nhnacademy.codequestweb.request.payment.PaymentOrderShowRequestDto;
+import com.nhnacademy.codequestweb.request.payment.PaymentOrderApproveRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentProductRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentUsePointRequestDto;
 import com.nhnacademy.codequestweb.request.payment.ProductOrderDetailOptionRequestDto;
 import com.nhnacademy.codequestweb.request.payment.ProductOrderDetailRequestDto;
 import com.nhnacademy.codequestweb.request.payment.TossPaymentsRequestDto;
 import com.nhnacademy.codequestweb.response.payment.TossPaymentsResponseDto;
-import feign.Response;
 import jakarta.annotation.PostConstruct;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -54,13 +53,13 @@ public class PaymentService /*implements PaymentService*/ {
         paymentClient.savePayment(orderId, tossPaymentsResponseDto);
     }
 
-    public boolean isValidTossPayment(PaymentOrderRequestDto2 paymentOrderRequestDto2,
+    public boolean isValidTossPayment(PaymentOrderApproveRequestDto paymentOrderApproveRequestDto,
         String tossOrderId, long amount) {
-        return paymentOrderRequestDto2 != null
-            && paymentOrderRequestDto2.getTossOrderId().equals(tossOrderId)
-            && paymentOrderRequestDto2.getOrderTotalAmount()
-            - paymentOrderRequestDto2.getDiscountAmountByCoupon()
-            - paymentOrderRequestDto2.getDiscountAmountByPoint() == amount;
+        return paymentOrderApproveRequestDto != null
+            && paymentOrderApproveRequestDto.getTossOrderId().equals(tossOrderId)
+            && paymentOrderApproveRequestDto.getOrderTotalAmount()
+            - paymentOrderApproveRequestDto.getDiscountAmountByCoupon()
+            - paymentOrderApproveRequestDto.getDiscountAmountByPoint() == amount;
     }
 
     public TossPaymentsResponseDto approvePayment(String tossOrderId, long amount,
@@ -120,11 +119,11 @@ public class PaymentService /*implements PaymentService*/ {
             .build();
     }
 
-    public PaymentOrderRequestDto findPaymentOrderRequestDtoByOrderId(long orderId) {
+    public PaymentOrderShowRequestDto findPaymentOrderRequestDtoByOrderId(long orderId) {
         return paymentOrderClient.findPaymentOrderRequestDtoByOrderId(orderId);
     }
 
-    public PaymentOrderRequestDto2 findPaymentOrderRequestDto2ByOrderId(long orderId) {
+    public PaymentOrderApproveRequestDto findPaymentOrderRequestDto2ByOrderId(long orderId) {
         return paymentOrderClient.findPaymentOrderRequestDto2ByOrderId(orderId);
     }
 

@@ -2,7 +2,6 @@ package com.nhnacademy.codequestweb.request.payment;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -17,7 +16,7 @@ import lombok.Getter;
  */
 @Builder
 @Getter
-public class PaymentOrderRequestDto {
+public class PaymentOrderShowRequestDto {
 
     // payAmount 를 계산하기 위해 필요한 값들 : 결제 DB에 들어가야 하는 민감한 정보는 primitive type 으로 선언했습니다.
     long orderTotalAmount;          // 주문 총 금액
@@ -30,5 +29,5 @@ public class PaymentOrderRequestDto {
 
     // orderName : ex) "초코파이 외 10건" 을 만들어 주기 위해 필요한 정보
     @NotBlank
-    List<String> productNameList;
+    String orderHistoryTitle;
 }

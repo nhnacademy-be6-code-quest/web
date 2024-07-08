@@ -1,10 +1,7 @@
 package com.nhnacademy.codequestweb.controller.payment;
 
-import com.nhnacademy.codequestweb.request.payment.PaymentAccumulatePointRequestDto;
-import com.nhnacademy.codequestweb.request.payment.PaymentCompletedCouponRequestDto;
-import com.nhnacademy.codequestweb.request.payment.PaymentOrderRequestDto;
-import com.nhnacademy.codequestweb.request.payment.PaymentOrderRequestDto2;
-import com.nhnacademy.codequestweb.request.payment.PaymentUsePointRequestDto;
+import com.nhnacademy.codequestweb.request.payment.PaymentOrderShowRequestDto;
+import com.nhnacademy.codequestweb.request.payment.PaymentOrderApproveRequestDto;
 import com.nhnacademy.codequestweb.response.payment.TossPaymentsResponseDto;
 import com.nhnacademy.codequestweb.service.payment.PaymentService;
 import lombok.RequiredArgsConstructor;
@@ -28,9 +25,9 @@ public class PaymentController {
     @GetMapping("/client/order/{orderId}/payment")
     public String savePayment(@PathVariable long orderId, Model model) {
 //        1. 주문에서 받은 값을 토대로 사용자에게 보여 주기
-        PaymentOrderRequestDto paymentOrderRequestDto = paymentService.findPaymentOrderRequestDtoByOrderId(
+        PaymentOrderShowRequestDto paymentOrderShowRequestDto = paymentService.findPaymentOrderRequestDtoByOrderId(
             orderId);
-        model.addAttribute("paymentOrderRequestDto", paymentOrderRequestDto);
+        model.addAttribute("paymentOrderRequestDto", paymentOrderShowRequestDto);
         model.addAttribute("successUrl",
             "https://localhost:8080/client/order/" + orderId + "/payment/success");
         model.addAttribute("failUrl",
@@ -45,11 +42,11 @@ public class PaymentController {
         @RequestParam long amount, @RequestParam String paymentKey) throws ParseException {
 
 //         2. 결제 검증 및 승인 창에서 필요한 요소를 Order 에서 받아 오기
-        PaymentOrderRequestDto2 paymentOrderRequestDto2 = paymentService.findPaymentOrderRequestDto2ByOrderId(
+        PaymentOrderApproveRequestDto paymentOrderApproveRequestDto = paymentService.findPaymentOrderRequestDto2ByOrderId(
             orderId);
 
 //         3. 조작 확인하기 : 주문 정보가 일치하지 않으면 실패 페이지로 이동하기.
-        if (!paymentService.isValidTossPayment(paymentOrderRequestDto2, tossOrderId, amount)) {
+        if (!paymentService.isValidTossPayment(paymentOrderApproveRequestDto, tossOrderId, amount)) {
             model.addAttribute("isSuccess", false);
             model.addAttribute("code", "INVALID_ORDER");
             model.addAttribute("message", "주문 정보가 일치하지 않습니다.");
