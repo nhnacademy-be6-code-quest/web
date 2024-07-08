@@ -2,7 +2,6 @@ package com.nhnacademy.codequestweb.client.payment;
 
 import com.nhnacademy.codequestweb.request.payment.PaymentOrderRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentOrderRequestDto2;
-import com.nhnacademy.codequestweb.request.payment.PaymentOrderValidationRequestDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -18,9 +17,6 @@ public interface PaymentOrderClient {
 
     @GetMapping("/api/client/views/order")
     PaymentOrderRequestDto findPaymentOrderRequestDtoByOrderId(long orderId);
-
-    @GetMapping("/api/client/views/order")
-    PaymentOrderValidationRequestDto findPaymentOrderValidationDtoByOrderId(long orderId);
 
     @GetMapping("/api/client/views/order")
     PaymentOrderRequestDto2 findPaymentOrderRequestDto2ByOrderId(long orderId);

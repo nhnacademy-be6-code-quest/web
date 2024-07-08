@@ -7,22 +7,26 @@ import com.nhnacademy.codequestweb.client.payment.PaymentPointClient;
 import com.nhnacademy.codequestweb.client.payment.PaymentProductClient;
 import com.nhnacademy.codequestweb.client.payment.TossPaymentsClient;
 import com.nhnacademy.codequestweb.request.payment.PaymentAccumulatePointRequestDto;
+import com.nhnacademy.codequestweb.request.payment.PaymentCompletedCouponRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentOrderRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentOrderRequestDto2;
-import com.nhnacademy.codequestweb.request.payment.PaymentOrderValidationRequestDto;
+import com.nhnacademy.codequestweb.request.payment.PaymentProductRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentUsePointRequestDto;
+import com.nhnacademy.codequestweb.request.payment.ProductOrderDetailOptionRequestDto;
+import com.nhnacademy.codequestweb.request.payment.ProductOrderDetailRequestDto;
 import com.nhnacademy.codequestweb.request.payment.TossPaymentsRequestDto;
 import com.nhnacademy.codequestweb.response.payment.TossPaymentsResponseDto;
 import jakarta.annotation.PostConstruct;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -49,15 +53,13 @@ public class PaymentService /*implements PaymentService*/ {
         paymentClient.savePayment(orderId, tossPaymentsResponseDto);
     }
 
-    public boolean isValidTossPayment(
-        PaymentOrderValidationRequestDto paymentOrderValidationRequestDto,
+    public boolean isValidTossPayment(PaymentOrderRequestDto2 paymentOrderRequestDto2,
         String tossOrderId, long amount) {
-        return paymentOrderValidationRequestDto != null
-            && (paymentOrderValidationRequestDto.getOrderTotalAmount()
-            - paymentOrderValidationRequestDto.getDiscountAmountByPoint()
-            - paymentOrderValidationRequestDto.getDiscountAmountByCoupon()) == amount
-            && (paymentOrderValidationRequestDto.getTossOrderId()
-            .equals(tossOrderId));
+        return paymentOrderRequestDto2 != null
+            && paymentOrderRequestDto2.getTossOrderId().equals(tossOrderId)
+            && paymentOrderRequestDto2.getOrderTotalAmount()
+            - paymentOrderRequestDto2.getDiscountAmountByCoupon()
+            - paymentOrderRequestDto2.getDiscountAmountByPoint() == amount;
     }
 
     public TossPaymentsResponseDto approvePayment(String tossOrderId, long amount,
@@ -121,16 +123,13 @@ public class PaymentService /*implements PaymentService*/ {
         return paymentOrderClient.findPaymentOrderRequestDtoByOrderId(orderId);
     }
 
-    public PaymentOrderValidationRequestDto findPaymentOrderValidationDtoByOrderId(long orderId) {
-        return paymentOrderClient.findPaymentOrderValidationDtoByOrderId(orderId);
-    }
-
     public PaymentOrderRequestDto2 findPaymentOrderRequestDto2ByOrderId(long orderId) {
         return paymentOrderClient.findPaymentOrderRequestDto2ByOrderId(orderId);
     }
 
-    public void useCoupon(long couponId) {
-        paymentCouponClient.useCoupon(couponId);
+    public ResponseEntity<String> useCoupon(
+        PaymentCompletedCouponRequestDto paymentCompletedCouponRequestDto) {
+        return paymentCouponClient.paymentUsedCoupon(paymentCompletedCouponRequestDto);
     }
 
     public void usePoint(PaymentUsePointRequestDto paymentUsePointRequestDto) {
@@ -141,12 +140,20 @@ public class PaymentService /*implements PaymentService*/ {
         paymentPointClient.accumulatePoint(paymentAccumulatePointRequestDto);
     }
 
-    public Map<Long, Long> processReduceInventoryMap(
-        PaymentOrderRequestDto2 paymentOrderRequestDto2) {
-        return new HashMap<>();
-    }
-
-    public void reduceInventory(Map<Long, Long> reduceInventoryMap) {
-        paymentProductClient.reduceInventory(reduceInventoryMap);
+    public ResponseEntity<String> reduceInventory(List<ProductOrderDetailRequestDto> productOrderDetailRequestDtoList) {
+        List<PaymentProductRequestDto> productOrderRequestDtoList = new ArrayList<>();
+        for (ProductOrderDetailRequestDto productOrderDetailRequestDto : productOrderDetailRequestDtoList) {
+            productOrderRequestDtoList.add(PaymentProductRequestDto.builder()
+                    .productId(productOrderDetailRequestDto.getProductId())
+                    .quantity(productOrderDetailRequestDto.getQuantity())
+                .build());
+            for (ProductOrderDetailOptionRequestDto productOrderDetailOptionRequestDto : productOrderDetailRequestDto.getProductOrderDetailOptionRequestDtoList()) {
+                productOrderRequestDtoList.add(PaymentProductRequestDto.builder()
+                        .productId(productOrderDetailOptionRequestDto.getProductId())
+                        .quantity(productOrderDetailOptionRequestDto.getOptionProductQuantity())
+                    .build());
+            }
+        }
+        return paymentProductClient.reduceInventory(productOrderDetailRequestDtoList);
     }
 }
