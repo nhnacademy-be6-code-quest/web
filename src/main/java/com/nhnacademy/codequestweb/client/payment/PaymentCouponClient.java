@@ -1,11 +1,14 @@
 package com.nhnacademy.codequestweb.client.payment;
 
+import com.nhnacademy.codequestweb.request.payment.PaymentCompletedCouponRequestDto;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PutMapping;
 
 @FeignClient(name = "paymentCoupon", url = "http://localhost:8001")
 public interface PaymentCouponClient {
 
-    @GetMapping("/")
-    void useCoupon(long couponId);
+    @PutMapping("/api/coupon/payment")
+    ResponseEntity<String> paymentUsedCoupon(
+        PaymentCompletedCouponRequestDto paymentCompletedCouponRequestDto);
 }
