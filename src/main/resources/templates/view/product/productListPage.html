@@ -64,7 +64,7 @@
             <h2 class="mb-5" th:text="${mainText}"></h2>
 
             <div class="book-listing" th:each="product : ${productList}">
-                <div th:onclick="|location.href='@{/product/books/{id}(id = ${product.bookId})}'|" class="row align-items-center">
+                <div th:onclick="|location.href='@{/product/books/{id}(id = ${product.productId})}'|" class="row align-items-center">
                     <div class="col-md-2">
                         <img th:src="${product.cover}" class="img-fluid rounded-4" alt="Book Image" style="height: 12vh;">
                     </div>
@@ -85,15 +85,15 @@
 
             <div class="pagination" th:attr="data-total-pages=${totalPage},data-current-page=${page}">
                 <span th:if="${page > 1}">
-                    <a th:href="@{|/product/books?page=${page - 1}&sort=${sort}&desc=${desc}|}">Previous</a>
+                    <a th:href="${url} + '?page=' + ${page - 1} + ${sort == null ? '' : '&sort=' + sort} + ${desc == null ? '' : '&desc=' + desc}">Previous</a>
                     <a>Previous</a>
                 </span>
                 <span th:each="pageNum : ${#numbers.sequence(1, totalPage)}">
                     <a th:if="${pageNum == page}" th:text="${pageNum}" th:class="'active'"></a>
-                    <a th:if="${pageNum != page}" th:href="@{|/product/books?page=${pageNum}&sort=${sort}&desc=${desc}|}" th:text="${pageNum}"></a>
+                    <a th:if="${pageNum != page}" th:href="${url} + '?page=' + ${pageNum} + ${sort == null ? '' : '&sort=' + sort} + ${desc == null ? '' : '&desc=' + desc}" th:text="${pageNum}"></a>
                 </span>
-                <span th:if="${page < totalPage - 1}">
-                    <a th:href="@{|/product/books?page=${page + 1}&sort=${sort}&desc=${desc}|}">Next</a>
+                <span th:if="${page < totalPage}">
+                    <a th:href="${url} + '?page=' + ${page + 1}+ ${sort == null ? '' : '&sort=' + sort} + ${desc == null ? '' : '&desc=' + desc}">Next</a>
                 </span>
             </div>
         </div>

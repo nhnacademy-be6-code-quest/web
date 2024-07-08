@@ -1,19 +1,25 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="singleBookFragment ()">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <script>
+        function copyQuantity() {
+            // 갯수 입력 필드 값 가져오기
+            // 다른 폼의 갯수 입력 필드 값 설정하기
+            document.getElementById('purchaseQuantity').value = document.getElementById('sharedQuantity').value;
+        }
+    </script>
 </head>
 <body>
     <img th:src="${book.cover()}" alt="">
 
-<div th:text="${book.cover()}" />
     <div th:if="${book.hasLike()}">
         좋아요 눌려있음!
         <form action="/product/client/unlike"  method="post">
             <input type="hidden" name="_method" value="DELETE"/>
             <input type="hidden" name="productId" th:value="${book.productId()}">
-            <button type="submit">좋아요 취소하기</button>
+            <button type="submit">좋아요 취소</button>
         </form>
     </div>
     <div th:unless="${book.hasLike()}">
@@ -23,13 +29,28 @@
             <button type="submit">좋아요</button>
         </form>
     </div>
-    <div th:text="${book.productDescription()}"></div>
-    <form action="/cart/add" method="post">
-        <input type="hidden" name="productId" th:value="${book.productId()}">
-        갯수 <input type="number" name="quantity">
-        장바구니 담기     <input  type="submit" >
-    </form>
-    <form action="/product/books/"></form>
+    <ul>
 
+    <li th:each="categoryList : ${listOfCategoryList}">
+        <span th:each="category, categoryStat : ${categoryList}">
+            <a th:href="'/product/books/category/' + ${category.productCategoryId()}"><span th:text=" ${category.categoryName()}"></span></a>
+            <span th:unless="${categoryStat.last}"> > </span>
+        </span>
+    </li>
+    </ul>
+    <form id="saveCart" action="/cart/add" method="post">
+        <input type="hidden" name="productId" th:value="${book.productId()}">
+        갯수 <input type="number" id="sharedQuantity" name="quantity" required min="1" onchange="copyQuantity()">
+        <button type="submit" form="saveCart">장바구니 담기</button>
+    </form>
+    <form id="purchase" action="/test/2" method="get">
+        <input type="hidden" id="purchaseQuantity" min="1" name="quantity">
+        <input type="hidden" name="productId" th:value="${book.productId()}">
+        <span th:each="category : ${book.categorySet()}">
+            <input type="hidden" name="categoryId" th:value="${category.productCategoryId()}">
+        </span>
+        <button type="submit" form="purchase">바로 구매</button>
+    </form>
+    <div th:text="${book.productDescription()}"></div>
 </body>
 </html>

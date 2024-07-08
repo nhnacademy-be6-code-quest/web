@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${book.title}">책 제목</title>
+    <script>
+        function copyQuantity() {
+            // 갯수 입력 필드 값 가져오기
+            // 다른 폼의 갯수 입력 필드 값 설정하기
+            document.getElementById('purchaseQuantity').value = document.getElementById('sharedQuantity').value;
+        }
+    </script>
     <style>
         .product-book-detail-wrapper {
             display: flex;
@@ -14,7 +21,7 @@
             background-color: #f4f4f4;
         }
         .product-book-detail-container {
-            max-width: 1200px;
+            width: 1200px;
             overflow: hidden;
 
             display: flex;
@@ -22,6 +29,7 @@
             align-items: center;
         }
         .book-container {
+            min-width: 800px;
             display: flex;
             gap: 40px;
             padding: 40px;
@@ -32,15 +40,18 @@
             box-shadow: 0 0 20px rgba(0,0,0,0.1);
         }
         .book-image {
-            flex: 0 0 300px;
+            margin: 30px;
+            flex: 0 0 280px;
         }
         .book-image img {
+            border: 1px solid #000;
             max-width: 100%;
             height: auto;
             border-radius: 4px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
         .book-details {
+            width: 800px;
             flex: 1;
         }
         .book-title {
@@ -135,32 +146,60 @@
                           th:text="'(' + ${#numbers.formatDecimal(book.productPriceStandard, 0, 'COMMA', 0, 'POINT')} + '원)'"
                           style="text-decoration: line-through; color: #bdc3c7; font-size: 0.8em; margin-left: 10px;">정가</span>
                 </p>
+                <div th:if="${book.hasLike()}">
+                    좋아요 눌려있음!
+                    <form action="/product/client/unlike"  method="post">
+                        <input type="hidden" name="_method" value="DELETE"/>
+                        <input type="hidden" name="productId" th:value="${book.productId()}">
+                        <button type="submit">좋아요 취소</button>
+                    </form>
+                </div>
+                <div th:unless="${book.hasLike()}">
+                    좋아요 눌려있지 않음!
+                    <form action="/product/client/like" method="post">
+                        <input type="hidden" name="productId" th:value="${book.productId()}">
+                        <button type="submit">좋아요</button>
+                    </form>
+                </div>
                 <div class="book-actions">
-                    <button class="product-book-detail-btn product-book-detail-btn-buy" onclick="buyNow()">구매하기</button>
-                    <button class="product-book-detail-btn product-book-detail-btn-cart" onclick="addToCart()">장바구니 담기</button>
+                    <form id="saveCart" action="/cart/add" method="post">
+                        <input type="hidden" name="productId" th:value="${book.productId()}">
+                        <input type="number" id="sharedQuantity" name="quantity" required min="1" onchange="copyQuantity()">
+                    </form>
+                    <form id="purchase" action="/test" method="get">
+                        <input type="hidden" id="purchaseQuantity" min="1" name="quantity">
+                        <input type="hidden" name="productId" th:value="${book.productId()}">
+                        <span th:each="category : ${book.categorySet()}">
+                            <input type="hidden" name="categoryId" th:value="${category.productCategoryId()}">
+                        </span>
+                    </form>
+                    <button type="submit" form="saveCart" class="product-book-detail-btn product-book-detail-btn-cart">장바구니 담기</button>
+                    <button class="product-book-detail-btn product-book-detail-btn-buy" type="submit" form="purchase">바로 구매</button>
+
                 </div>
-                <div class="book-description" th:utext="${book.productDescription}">
-                    책 설명
-                </div>
+
                 <div class="book-meta">
                     <p th:text="'재고: ' + ${book.productInventory} + '권'">재고</p>
                     <p th:text="'조회수: ' + ${book.productViewCount}">조회수</p>
                 </div>
-                <div class="product-book-detail-categories">
-                    <h3>카테고리</h3>
-                    <span th:each="category : ${book.categoryMapOfIdAndName}"
-                          th:text="${category.value}"
-                          class="product-book-detail-category-tag">
-                        카테고리
+
+                <h3>카테고리</h3>
+                <ul class="product-book-detail-categories">
+                    <li th:each="categoryList : ${listOfCategoryList}">
+                        <span th:each="category, categoryStat : ${categoryList}">
+                            <a th:href="'/product/books/category/' + ${category.productCategoryId()}"><span  class="product-book-detail-category-tag" th:text=" ${category.categoryName()}"></span></a>
+                            <span th:unless="${categoryStat.last}"> > </span>
+                        </span>
+                    </li>
+                </ul>
+                <div class="product-book-detail-tags" th:if="${not #sets.isEmpty(book.tagSet)}">
+                    <h3>태그</h3>
+                    <span th:each="tag : ${book.tagSet}" class="product-book-detail-category-tag">
+                        <a th:href="'/product/books/tagFilter?tagName=' + ${tag.tagName}" th:text="'#' + ${tag.tagName}">태그</a>
                     </span>
                 </div>
-                <div class="product-book-detail-tags" th:if="${not #maps.isEmpty(book.tagMapOfIdAndName)}">
-                    <h3>태그</h3>
-                    <span th:each="tag : ${book.tagMapOfIdAndName}"
-                          th:text="${tag.value}"
-                          class="product-book-detail-category-tag">
-                        태그
-                    </span>
+                <div class="book-description" th:utext="${book.productDescription}">
+                    책 설명
                 </div>
             </div>
         </div>
@@ -176,13 +215,15 @@
         }
 
         function addToCart() {
+            const quantity = document.getElementById('sharedQuantity').value;
             fetch('/api/cart/add', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ productId: /*[[${book.productId}]]*/ '' })
+                body: JSON.stringify({ productId:/*[[${book.productId}]]*/ '', quantity:quantity })
             })
+
                 .then(response => response.json())
                 .then(data => {
                     alert('장바구니에 추가되었습니다.');

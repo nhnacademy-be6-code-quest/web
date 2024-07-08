@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="categoryRegisterFragment ()">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script th:src="@{/js/product/categorySearch.js}"></script>
+    <script th:src="@{/js/product/window.opener.Only.js}"></script>
+    <script>
+        window.addEventListener("storage", function(event) {
+            if (event.key === "category") {
+
+                document.getElementById("categoryResult").value = event.newValue;
+            }
+        })
+    </script>
+</head>
+<body>
+<button type="button" onclick="openCategorySearch()">카테고리 검색</button>
+<form th:action="'/admin/categories/' + ${action}" method="post">
+    <div th:unless="${action} == 'register'">
+        <input type="hidden" name="_method" value="PUT"/>
+    </div>
+    <input type="text" th:name="${action} == 'register'? 'parentCategoryName' : 'currentCategoryName'" id="categoryResult" readonly th:placeholder="${action} == 'register'? '상위 카테고리' : '기존 카테고리'"/>
+    <input type="text" name="categoryName" placeholder="카테고리명"/>
+    <button type="submit"><span th:text="등록"></span></button>
+</form>
+</body>
+</html>

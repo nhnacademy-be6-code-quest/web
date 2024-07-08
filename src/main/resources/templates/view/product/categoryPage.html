@@ -43,7 +43,7 @@
 </form>
     <div th:unless="${register}">
         <div th:each="category : ${categoryNamePage}">
-            <a th:href="'/categories/sub?categoryName=' + ${category.getKey().categoryName()}" target="_self">
+            <a th:href="'/categories/' + ${category.getKey().productCategoryId()} + '/sub'" target="_self">
                 <span th:text="${category.getValue()}"></span>
             </a>
         </div>
@@ -51,7 +51,10 @@
     <div th:if="${register}">
         <div th:each="category : ${categoryNamePage}">
                 <span th:text="${category.getValue()}"></span>
-            <button th:category="${category.getKey().categoryName()}" onclick="sendMessageToParent(this.getAttribute('category'))">등록</button>
+            <button th:category="${category.getKey().categoryName()}" onclick="sendMessageToParent(this.getAttribute('category'))">선택</button>
+        </div>
+        <div th:each="page : ${pageNumbers}">
+            <a th:href="${url} + ${page}"></a>
         </div>
     </div>
 </body>

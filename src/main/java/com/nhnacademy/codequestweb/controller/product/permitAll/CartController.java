@@ -1,5 +1,6 @@
 package com.nhnacademy.codequestweb.controller.product.permitAll;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhnacademy.codequestweb.request.product.cart.CartRequestDto;
 import com.nhnacademy.codequestweb.response.product.common.CartGetResponseDto;
@@ -11,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -51,6 +53,16 @@ public class CartController {
                     model.addAttribute("cartList", cartList);
                     model.addAttribute("view", "cart");
 
+                    List<String> jsonCartList = cartList.stream()
+                            .map(cart -> {
+                                try {
+                                    return objectMapper.writeValueAsString(cart);
+                                } catch (JsonProcessingException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            })
+                            .collect(Collectors.toList());
+                    model.addAttribute("jsonCartList", jsonCartList);
                     return "index";
                 }else{
                     return "redirect:/";
@@ -68,6 +80,16 @@ public class CartController {
                 if (cartList == null || cartList.isEmpty()) {
                     model.addAttribute("empty", true);
                 }else {
+                    List<String> jsonCartList = cartList.stream()
+                            .map(cart -> {
+                                try {
+                                    return objectMapper.writeValueAsString(cart);
+                                } catch (JsonProcessingException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            })
+                            .collect(Collectors.toList());
+                    model.addAttribute("jsonCartList", jsonCartList);
                     model.addAttribute("cartList", cartList);
                 }
                 model.addAttribute("view", "cart");

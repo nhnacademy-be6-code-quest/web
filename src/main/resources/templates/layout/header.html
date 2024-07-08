@@ -124,14 +124,14 @@
                             <ul class="category-list">
                                 <li th:each="category : ${categories.children}" class="category-item"
                                     th:attr="data-category-id=${category.productCategoryId}">
-                                    <a th:href="@{/product/books/categoryFilter(category=${category.categoryName})}" class="category-link" th:text="${category.categoryName}"></a>
+                                    <a th:href="@{'/product/books/category/' + ${category.productCategoryId}}" class="category-link" th:text="${category.categoryName}"></a>
                                     <div th:if="${not #lists.isEmpty(category.children)}" class="sub-category-wrapper">
                                         <ul class="sub-category-list">
                                             <li th:each="subCategory : ${category.children}" class="sub-category-item">
-                                                <a th:href="@{/product/books/categoryFilter(category=${subCategory.categoryName})}" class="sub-category-link" th:text="${subCategory.categoryName}"></a>
+                                                <a th:href="@{'/product/books/category/' +${subCategory.productCategoryId}}" class="sub-category-link" th:text="${subCategory.categoryName}"></a>
                                                 <ul th:if="${not #lists.isEmpty(subCategory.children)}" class="sub-sub-category-list">
                                                     <li th:each="subSubCategory : ${subCategory.children}" class="sub-sub-category-item">
-                                                        <a th:href="@{/product/books/categoryFilter(category=${subSubCategory.categoryName})}" class="sub-sub-category-link" th:text="${subSubCategory.categoryName}"></a>
+                                                        <a th:href="@{'/product/books/category/' + ${subSubCategory.productCategoryId}}" class="sub-sub-category-link" th:text="${subSubCategory.categoryName}"></a>
                                                     </li>
                                                 </ul>
                                             </li>

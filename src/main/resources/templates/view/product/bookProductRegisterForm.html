@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Title</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.48.4/codemirror.min.css"/>
+    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
     <style>
         .book-button {
             display: flex;
@@ -48,6 +50,7 @@
             margin-left:15%;
         }
     </style>
+    <script th:src="@{js/product/categorySearch.js}"></script>
     <script th:inline="javascript">
         /*<![CDATA[*/
 
@@ -61,6 +64,8 @@
             var productName = document.getElementById('productName').value;
             var priceSales = document.getElementById('priceSales').value;
             var inventory = document.getElementById('productInventory').value;
+            var description = document.getElementById('productDescriptionValue').value;
+
 
             if (!title) {
                 alert('도서를 선택하세요.');
@@ -76,6 +81,10 @@
             }
             if (!productName){
                 alert('상품명을 입력하세요.');
+                return; // 유효하지 않으면 제출하지 않음
+            }
+            if (!description){
+                alert('설명을 입력하세요.');
                 return; // 유효하지 않으면 제출하지 않음
             }
             event.target.submit(); // 폼 제출
@@ -218,10 +227,9 @@
         window.addEventListener("storage", function(event) {
             if (event.key === "category") {
 
-
                 var result2Element = document.getElementById("categories");
 
-                document.getElementById("result").innerText = document.getElementById("result").innerText == "" ? event.newValue : document.getElementById("result").innerText + ", " + event.newValue;
+                document.getElementById("categoryResult").innerText = document.getElementById("categoryResult").innerText == "" ? event.newValue : document.getElementById("result").innerText + ", " + event.newValue;
 
                 result2Element.value = result2Element.value === "" ? event.newValue : result2Element.value + "," + event.newValue;
 
@@ -319,14 +327,6 @@
             <span id="isbnText" th:text="'isbn10 : '"></span>
             <span id="isbn13Text" th:text="'isbn13 : '"></span>
             <span id="priceStandardText" th:text="'정가'"></span>
-
-            <!--            <span th:text="'출판일: ' + ${book.publisher}"></span>-->
-<!--            <span th:text="'작가: ' + ${book.author}"></span>-->
-<!--            <span th:text="'isbn10: ' + ${book.publisher}"></span>-->
-<!--            <span th:text="'isbn13: ' + ${book.publisher}"></span>-->
-<!--            -->
-<!--            <span th:text="'정가: ' + ${book.priceStandard}"></span>-->
-<!--            <span th:text="'알라딘 판매가(할인가): ' + ${book.priceSales}"></span>-->
         </div>
     </div>
 
@@ -350,23 +350,70 @@
         <input type="radio" name="packable" value="false" checked>
     </label><span th:text="불가능"></span>
     <input type="number" name="productInventory" id="productInventory" placeholder="재고" th:default="0">
-    <input type="text" name="productDescription" id="productDescription" placeholder="설명">
+    <input type="hidden" name="productDescription" id="productDescription" placeholder="설명">
+    <input type="hidden" name="productDescriptionValue" id="productDescriptionValue" placeholder="설명" required>
 
-<!--    <div th:each="tag : ${tagList}">-->
-<!--        <label>-->
-<!--            <input type="checkbox" name="tags" th:value="${tag.tagName}"/>-->
-<!--            <span th:text="${tag.tagName}"></span>-->
-<!--        </label>-->
-<!--    </div>-->
-<!--    <div th:each="category : ${categoryList}">-->
-<!--        <label>-->
-<!--            <input type="checkbox" name="categories" th:value="${category.categroyName()}"/>-->
-<!--            <span th:text="${category.categoryName()}"></span>-->
-<!--        </label>-->
-<!--    </div>-->
+    <div id="content">
+
+    </div>
+    <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+    <script>
+        const editor = new toastui.Editor({
+            el: document.querySelector('#content'), // 에디터를 적용할 요소 (컨테이너)
+            width: '700px',
+            height: 'auto',                        // 에디터 영역의 높이 값 (OOOpx || auto)
+            initialEditType: 'wysiwyg',            // 최초로 보여줄 에디터 타입 (markdown || wysiwyg)
+            initialValue: '내용을 입력해 주세요.',     // 내용의 초기 값으로, 반드시 마크다운 문자열 형태여야 함
+            previewStyle: 'tab',                // 마크다운 프리뷰 스타일 (tab || vertical)
+            hideModeSwitch: true,  // 모드 전환 버튼 숨기기
+            toolbarItems: [
+                ['heading', 'bold', 'italic', 'strike'],
+                ['hr', 'quote'],
+                ['ul', 'ol', 'task', 'indent', 'outdent'],
+                ['table', 'image', 'link'],
+                ['code', 'codeblock']
+            ],
+            hooks: {
+                async addImageBlobHook(blob, callback) {
+                    const formData = new FormData();
+                    formData.append('file', blob);
+
+                    try {
+                        const response = await fetch('/upload', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        if (response.ok) {
+                            const imageUrl = await response.text();
+
+                            const width = 300;
+                            callback(imageUrl, 'alt text', {
+                                width: width
+                            });  // 이미지 URL을 에디터에 삽입
+                        } else {
+                            console.error('Image upload failed:', response.statusText);
+                        }
+                    } catch (error) {
+                        console.error('Image upload failed:', error);
+                    }
+                }
+            }
+
+        });
+
+        editor.on('change', () => {
+            const inputValue = document.getElementById('productDescription');
+            inputValue.value = editor.getHTML();
+
+
+            const inputValue2 = document.getElementById('productDescriptionValue');
+            inputValue2.value = editor.getMarkdown();
+
+        });
+    </script>
     <button type="button" onclick="openCategorySearch()">카테고리 검색</button>
 
-    <p id="result"></p>
+    <p id="categoryResult"></p>
     <div id="removeCategoryButtons"></div>
     <input type="hidden" id="categories" name="categories">
 

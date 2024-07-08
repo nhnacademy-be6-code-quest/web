@@ -16,7 +16,7 @@ public class HomeService {
 
     public List<BookProductGetResponseDto> getPopularBooks() {
         try {
-            return bookProductService.getAllBookPage(null, 1, 20, "product.productViewCount", true)
+            return bookProductService.getAllBookPage(null, 1, 20, "product.productViewCount", true, 0)
                     .getBody().getContent();
         } catch (Exception e) {
             return null;
@@ -25,7 +25,7 @@ public class HomeService {
 
     public List<BookProductGetResponseDto> getNewBooks() {
         try {
-            return bookProductService.getAllBookPage(null, 1, 20, "pubDate", true)
+            return bookProductService.getAllBookPage(null, 1, 20, "pubDate", true, 0)
                     .getBody().getContent();
         } catch (Exception e) {
             return null;

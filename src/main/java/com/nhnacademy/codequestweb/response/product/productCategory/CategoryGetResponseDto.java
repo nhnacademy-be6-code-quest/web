@@ -1,8 +1,12 @@
 package com.nhnacademy.codequestweb.response.product.productCategory;
 
-public record CategoryGetResponseDto (
+import java.io.Serializable;
+import java.util.List;
+
+public record CategoryGetResponseDto  (
         Long productCategoryId,
         String categoryName,
-        ProductCategory parentProductCategory
-){
+        ProductCategory parentProductCategory,
+        List<ProductCategory> childrenProductCategory
+)implements Serializable{
 }
