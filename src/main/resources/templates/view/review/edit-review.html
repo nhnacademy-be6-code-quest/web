@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Review</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+
+    <!-- CSS for better visual appearance -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 10px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            color: #333;
+        }
+        .review-category, .review-details, .editor-container, .submit-section {
+            margin-bottom: 20px;
+        }
+        .review-category select, .search-bar input, .search-bar button {
+            padding: 10px;
+            margin-right: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .review-details img {
+            float: left;
+            margin-right: 20px;
+            border-radius: 10px;
+        }
+        .review-details h3 {
+            margin: 0;
+            font-size: 20px;
+            color: #333;
+        }
+        .review-details p {
+            margin: 5px 0;
+            color: #666;
+        }
+        .rating {
+            margin-top: 10px;
+        }
+        .rating span {
+            color: gold;
+            font-size: 18px;
+        }
+        .review-summary input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .editor-container {
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .submit-section {
+            text-align: center;
+        }
+        .submit-btn {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+
+    <!-- TOAST UI Editor CDN URL(CSS) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.48.4/codemirror.min.css"/>
+    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
+</head>
+
+<body>
+<div class="container">
+    <div class="header">
+        <h1>리뷰 작성</h1>
+    </div>
+
+    <div class="review-category">
+        <select>
+            <option value="category1">리뷰 카테고리</option>
+            <!-- Add other categories here -->
+        </select>
+        <input type="text" placeholder="리뷰 제목을 입력해주세요">
+    </div>
+
+    <div class="review-details">
+        <img th:src="@{/img/book/book1.jpg}" alt="book cover" width="100">
+        <h3 th:text="${book.title}">도서 제목</h3>
+        <p th:text="${book.author}">저자</p>
+
+        <div class="rating">
+            <span>평점: </span>
+            <span th:text="${book.rating}">★★★★★</span>
+        </div>
+    </div>
+
+    <div id="editor" class="editor-container"></div>
+
+    <div class="submit-section">
+        <button class="submit-btn" onclick="submitReview()">리뷰 제출</button>
+    </div>
+</div>
+
+<!-- TOAST UI Editor CDN URL(JS) -->
+<script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+
+<!-- JavaScript to initialize TOAST UI Editor and handle form submission -->
+<script>
+    let usedImagePaths = []; // 사용된 이미지 경로를 저장할 배열
+
+    const editor = new toastui.Editor({
+        el: document.querySelector('#editor'),
+        previewStyle: 'vertical',
+        height: '300px',
+        hooks: {
+            addImageBlobHook: (blob, callback) => {
+                uploadImage(blob)
+                    .then(path => {
+                        usedImagePaths.push(path); // 사용된 이미지 경로 저장
+                        callback(path, blob.name);
+                    })
+                    .catch(error => {
+                        console.error('Image upload failed:', error);
+                        callback('image_upload_error', 'Error');
+                    });
+                return false;
+            }
+        }
+    });
+
+    function uploadImage(blob) {
+        const formData = new FormData();
+        formData.append('image', blob);
+
+        return fetch('/save/img', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Image upload failed');
+                }
+                return response.json();
+            })
+            .then(data => {
+                return data.imagePath;
+            });
+    }
+
+    function submitReview() {
+        const reviewForm = document.getElementById('review-form');
+        const formData = new FormData(reviewForm);
+
+        // 리뷰 내용 추가
+        formData.append('content', editor.getMarkdown());
+
+        // 사용된 이미지 경로 리스트 추가
+        formData.append('usedImages', JSON.stringify(usedImagePaths));
+
+        fetch('/submit-review', {
+            method: 'POST',
+            body: formData,
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                // 성공 후 처리 (예: 페이지 리다이렉트 또는 알림 표시)
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                // 에러 처리
+            });
+    }
+</script>
+</body>
+</html>
