@@ -53,8 +53,8 @@ public class PaymentService /*implements PaymentService*/ {
         }
     }
 
-    public void savePayment(long orderId, TossPaymentsResponseDto tossPaymentsResponseDto) {
-        paymentClient.savePayment(orderId, tossPaymentsResponseDto);
+    public void savePayment(HttpHeaders headers, long orderId, TossPaymentsResponseDto tossPaymentsResponseDto) {
+        paymentClient.savePayment(headers, orderId, tossPaymentsResponseDto);
     }
 
     public boolean isValidTossPayment(PaymentOrderApproveRequestDto paymentOrderApproveRequestDto,
@@ -132,8 +132,8 @@ public class PaymentService /*implements PaymentService*/ {
     }
 
     public ResponseEntity<String> useCoupon(
-        PaymentCompletedCouponRequestDto paymentCompletedCouponRequestDto) {
-        return paymentCouponClient.paymentUsedCoupon(paymentCompletedCouponRequestDto);
+            HttpHeaders headers, PaymentCompletedCouponRequestDto paymentCompletedCouponRequestDto) {
+        return paymentCouponClient.paymentUsedCoupon(headers, paymentCompletedCouponRequestDto);
     }
 
     public ResponseEntity<String> usePoint(PaymentUsePointRequestDto paymentUsePointRequestDto) {
@@ -159,7 +159,7 @@ public class PaymentService /*implements PaymentService*/ {
         return paymentProductClient.decreaseProductInventory(inventoryDecreaseRequestDtoList);
     }
 
-    public ResponseEntity<String> changeOrderStatusCompletePayment(Long orderId) {
-        return paymentOrderClient.changeOrderStatusCompletePayment(orderId);
+    public ResponseEntity<String> changeOrderStatusCompletePayment(HttpHeaders headers, Long orderId) {
+        return paymentOrderClient.changeOrderStatusCompletePayment(headers, orderId);
     }
 }

@@ -6,5 +6,5 @@ import lombok.Getter;
 @Builder
 @Getter
 public class PaymentCompletedCouponRequestDto {
-    long couponId;
+    Long couponId;
 }

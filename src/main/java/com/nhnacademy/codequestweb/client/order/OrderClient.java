@@ -27,6 +27,7 @@ public interface OrderClient {
     @GetMapping("/api/order/{orderId}/payment-request")
     ResponseEntity<PaymentOrderShowRequestDto> getPaymentOrderShowRequestDto(@RequestHeader HttpHeaders headers, @PathVariable Long orderId);
 
-    @GetMapping("/{orderId}/approve-request")
+    @GetMapping("/api/order/{orderId}/approve-request")
     ResponseEntity<PaymentOrderApproveRequestDto> getPaymentOrderApproveRequestDto(@RequestHeader HttpHeaders headers, @PathVariable Long orderId);
+    
 }
