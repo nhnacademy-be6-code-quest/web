@@ -25,7 +25,7 @@ public class PaymentController {
     @GetMapping("/client/order/{orderId}/payment")
     public String savePayment(@PathVariable long orderId, Model model) {
 //        1. 주문에서 받은 값을 토대로 사용자에게 보여 주기
-        PaymentOrderShowRequestDto paymentOrderShowRequestDto = paymentService.findPaymentOrderRequestDtoByOrderId(
+        PaymentOrderShowRequestDto paymentOrderShowRequestDto = paymentService.findPaymentOrderShowRequestDtoByOrderId(
             orderId);
         model.addAttribute("paymentOrderRequestDto", paymentOrderShowRequestDto);
         model.addAttribute("successUrl",
@@ -42,7 +42,7 @@ public class PaymentController {
         @RequestParam long amount, @RequestParam String paymentKey) throws ParseException {
 
 //         2. 결제 검증 및 승인 창에서 필요한 요소를 Order 에서 받아 오기
-        PaymentOrderApproveRequestDto paymentOrderApproveRequestDto = paymentService.findPaymentOrderRequestDto2ByOrderId(
+        PaymentOrderApproveRequestDto paymentOrderApproveRequestDto = paymentService.findPaymentOrderApproveRequestDtoByOrderId(
             orderId);
 
 //         3. 조작 확인하기 : 주문 정보가 일치하지 않으면 실패 페이지로 이동하기.

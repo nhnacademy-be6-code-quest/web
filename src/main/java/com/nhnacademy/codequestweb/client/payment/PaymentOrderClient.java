@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 public interface PaymentOrderClient {
 
     @GetMapping("/api/client/views/order")
-    PaymentOrderShowRequestDto findPaymentOrderRequestDtoByOrderId(long orderId);
+    PaymentOrderShowRequestDto findPaymentOrderShowRequestDtoByOrderId(long orderId);
 
     @GetMapping("/api/client/views/order")
-    PaymentOrderApproveRequestDto findPaymentOrderRequestDto2ByOrderId(long orderId);
+    PaymentOrderApproveRequestDto findPaymentOrderApproveRequestDtoByOrderId(long orderId);
 
     @GetMapping("/api/client/views/order")
     ResponseEntity<String> changeOrderStatusCompletePayment(Long orderId);

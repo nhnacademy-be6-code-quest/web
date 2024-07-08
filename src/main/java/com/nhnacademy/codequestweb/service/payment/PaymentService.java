@@ -119,12 +119,12 @@ public class PaymentService /*implements PaymentService*/ {
             .build();
     }
 
-    public PaymentOrderShowRequestDto findPaymentOrderRequestDtoByOrderId(long orderId) {
-        return paymentOrderClient.findPaymentOrderRequestDtoByOrderId(orderId);
+    public PaymentOrderShowRequestDto findPaymentOrderShowRequestDtoByOrderId(long orderId) {
+        return paymentOrderClient.findPaymentOrderShowRequestDtoByOrderId(orderId);
     }
 
-    public PaymentOrderApproveRequestDto findPaymentOrderRequestDto2ByOrderId(long orderId) {
-        return paymentOrderClient.findPaymentOrderRequestDto2ByOrderId(orderId);
+    public PaymentOrderApproveRequestDto findPaymentOrderApproveRequestDtoByOrderId(long orderId) {
+        return paymentOrderClient.findPaymentOrderApproveRequestDtoByOrderId(orderId);
     }
 
     public ResponseEntity<String> useCoupon(
