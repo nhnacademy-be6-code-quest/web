@@ -6,6 +6,8 @@ import com.nhnacademy.codequestweb.request.product.ProductStateUpdateRequestDto;
 import com.nhnacademy.codequestweb.request.product.bookProduct.BookProductRegisterRequestDto;
 import com.nhnacademy.codequestweb.request.product.bookProduct.BookProductUpdateRequestDto;
 import com.nhnacademy.codequestweb.request.product.common.InventoryDecreaseRequestDto;
+import com.nhnacademy.codequestweb.request.product.common.InventoryIncreaseRequestDto;
+import com.nhnacademy.codequestweb.request.product.common.InventorySetRequestDto;
 import com.nhnacademy.codequestweb.response.product.book.AladinBookListResponseDto;
 import com.nhnacademy.codequestweb.response.product.book.AladinBookResponseDto;
 import com.nhnacademy.codequestweb.response.product.book.BookProductGetResponseDto;
@@ -121,4 +123,15 @@ public interface BookProductClient {
         @PutMapping("/api/product/inventory/decrease")
         ResponseEntity<Void> decreaseProductInventory(
                 @RequestBody @Valid List<InventoryDecreaseRequestDto> inventoryDecreaseRequestDtoList);
+
+
+        @PutMapping("/api/product/admin/inventory/increase")
+        ResponseEntity<Void> increaseProductInventory(
+                @RequestHeader HttpHeaders headers,
+                @RequestBody @Valid InventoryIncreaseRequestDto inventoryIncreaseRequestDto);
+
+        @PutMapping("/api/product/admin/inventory/set")
+        ResponseEntity<Void> setProductInventory(
+                @RequestHeader HttpHeaders headers,
+                @RequestBody @Valid InventorySetRequestDto inventorySetRequestDto);
 }

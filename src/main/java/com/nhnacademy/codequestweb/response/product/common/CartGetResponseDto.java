@@ -50,6 +50,8 @@ public record CartGetResponseDto(
         @Size(max =10, message = "{too.much.category}")
         Set<ProductCategory> categorySet,
 
-        Set<Tag> tagSet
+        Set<Tag> tagSet,
+
+        boolean packable
 ) {
 }
