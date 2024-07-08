@@ -1,8 +1,10 @@
 package com.nhnacademy.codequestweb.controller.product.adminOnly;
 
+import com.nhnacademy.codequestweb.config.CategoryConfig;
 import com.nhnacademy.codequestweb.request.product.productCategory.CategoryRegisterRequestDto;
 import com.nhnacademy.codequestweb.request.product.productCategory.CategoryUpdateRequestDto;
 import com.nhnacademy.codequestweb.response.product.productCategory.CategoryGetResponseDto;
+import com.nhnacademy.codequestweb.response.product.productCategory.CategoryNodeResponseDto;
 import com.nhnacademy.codequestweb.response.product.productCategory.CategoryRegisterResponseDto;
 import com.nhnacademy.codequestweb.response.product.productCategory.CategoryUpdateResponseDto;
 import com.nhnacademy.codequestweb.response.product.productCategory.ProductCategory;
@@ -31,6 +33,7 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -39,6 +42,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequiredArgsConstructor
 public class CategoryController {
     private final CategoryService categoryService;
+
+    private final CategoryConfig categoryConfig;
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {
@@ -81,6 +86,13 @@ public class CategoryController {
         CategoryUpdateRequestDto dto = new CategoryUpdateRequestDto(currentCategoryName, categoryName);
         ResponseEntity<CategoryUpdateResponseDto> response = categoryService.updateCategory(CookieUtils.setHeader(req), dto);
         return "/view/product/window.close";
+    }
+
+    @PostMapping("/category/update")
+    public ResponseEntity<String> updateCategory(@RequestBody CategoryNodeResponseDto categoryNodeResponseDto) {
+        categoryConfig.update(categoryNodeResponseDto);
+        log.info("Category updated");
+        return ResponseEntity.ok("Category updated");
     }
 
 

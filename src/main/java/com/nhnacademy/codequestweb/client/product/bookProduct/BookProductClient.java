@@ -5,6 +5,7 @@ import com.nhnacademy.codequestweb.request.product.ProductLikeRequestDto;
 import com.nhnacademy.codequestweb.request.product.ProductStateUpdateRequestDto;
 import com.nhnacademy.codequestweb.request.product.bookProduct.BookProductRegisterRequestDto;
 import com.nhnacademy.codequestweb.request.product.bookProduct.BookProductUpdateRequestDto;
+import com.nhnacademy.codequestweb.request.product.common.InventoryDecreaseRequestDto;
 import com.nhnacademy.codequestweb.response.product.book.AladinBookListResponseDto;
 import com.nhnacademy.codequestweb.response.product.book.AladinBookResponseDto;
 import com.nhnacademy.codequestweb.response.product.book.BookProductGetResponseDto;
@@ -12,6 +13,7 @@ import com.nhnacademy.codequestweb.response.product.common.ProductRegisterRespon
 import com.nhnacademy.codequestweb.response.product.common.ProductUpdateResponseDto;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+import java.util.List;
 import java.util.Set;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.domain.Page;
@@ -115,4 +117,8 @@ public interface BookProductClient {
         ResponseEntity<Void> deleteBookProductLike(
                 @RequestHeader HttpHeaders httpHeaders,
                 @RequestParam("productId") Long productId);
+
+        @PutMapping("/api/product/inventory/decrease")
+        ResponseEntity<Void> decreaseProductInventory(
+                @RequestBody @Valid List<InventoryDecreaseRequestDto> inventoryDecreaseRequestDtoList);
 }

@@ -8,11 +8,13 @@ import com.nhnacademy.codequestweb.response.product.productCategory.CategoryNode
 import com.nhnacademy.codequestweb.response.product.productCategory.CategoryRegisterResponseDto;
 import com.nhnacademy.codequestweb.response.product.productCategory.CategoryUpdateResponseDto;
 import jakarta.validation.Valid;
+import java.util.List;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,8 +38,15 @@ public interface CategoryClient {
     @GetMapping("/product/categories/containing")
     ResponseEntity<Page<CategoryGetResponseDto>> getNameContainingCategories(@RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "desc", required = false) Boolean desc, @RequestParam(name = "sort", required = false) String sort, @RequestParam("categoryName") String categoryName);
 
-    @GetMapping("/product/categories/sub")
-    ResponseEntity<Page<CategoryGetResponseDto>> getSubCategories(@RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "desc", required = false) Boolean desc, @RequestParam(name = "sort", required = false) String sort, @RequestParam("categoryName") String categoryName);
+//    @GetMapping("/product/categories/sub")
+//    ResponseEntity<Page<CategoryGetResponseDto>> getSubCategories(@RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "desc", required = false) Boolean desc, @RequestParam(name = "sort", required = false) String sort, @RequestParam("categoryName") String categoryName);
+
+    @GetMapping("/product/categories/{categoryId}/sub")
+    ResponseEntity<Page<CategoryGetResponseDto>> getSubCategories(@RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "desc", required = false) Boolean desc, @RequestParam(name = "sort", required = false) String sort,
+                                                                  @PathVariable("categoryId") Long categoryId);
+
+    @GetMapping("/product/categories/{categoryId}/sub/all")
+    ResponseEntity<List<CategoryGetResponseDto>> getAllSubCategories(@PathVariable("categoryId") Long categoryId);
 
     @GetMapping("/product/categories/tree")
     ResponseEntity<CategoryNodeResponseDto> getCategoriesTree();

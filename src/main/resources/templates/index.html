@@ -75,6 +75,14 @@
     <section th:replace="~{view/product/productBookDetail.html :: productBookDetailFragment ('book')}"></section>
 </div>
 
+<div th:if="${view != null} and ${#strings.equals(view, 'bookPage')}">
+    <section th:replace="~{view/product/bookPage :: bookPageFragment}"></section>
+</div>
+
+<div th:if="${view != null} and ${#strings.equals(view, 'singleBook')}">
+    <section th:replace="~{view/product/singleBookInfo :: singleBookFragment}"></section>
+</div>
+
 <div th:replace="~{layout/footer.html :: footerFragment}"></div>
 
 <div th:if="${alterMessage != null}" class="server-alert animate__animated animate__fadeInDown" th:text="${alterMessage}"></div>

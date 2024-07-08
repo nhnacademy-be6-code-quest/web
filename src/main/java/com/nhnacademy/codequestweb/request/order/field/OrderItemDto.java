@@ -7,17 +7,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Builder
-//@NoArgsConstructor
-//@AllArgsConstructor
-//public class OrderItemDto {
-//    private Long productId;
-//    private Long quantity;
-//    private List<Long> categoryId;
-//}
 public record OrderItemDto (
         Long productId,
         Long quantity,
-        List<Long> categoryId
+        List<Long> categoryId,
+        boolean packable
 ){
 
 }

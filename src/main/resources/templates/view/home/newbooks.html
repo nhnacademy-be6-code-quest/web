@@ -27,9 +27,9 @@
 
                 <div th:if="${newBooks != null}" th:each="book : ${newBooks}" class="swiper-slide" style="max-width: 230px;">
                     <div class="card position-relative">
-                        <a th:href="@{/product/books/{id}(id = ${book.bookId})}"><img th:src="${book.cover}" class="img-fluid rounded-4" alt="image" style="height: 360px"></a>
+                        <a th:href="@{/product/books/{id}(id = ${book.productId})}"><img th:src="${book.cover}" class="img-fluid rounded-4" alt="image" style="height: 360px"></a>
                         <div class="card-body p-0">
-                            <a th:href="@{/product/books/{id}(id = ${book.bookId})}">
+                            <a th:href="@{/product/books/{id}(id = ${book.productId})}">
                                 <h5 class="home-product-title card-title pt-4 m-0" th:text="${book.title}"></h5>
                             </a>
                             <h5 class="secondary-font text-primary"><span th:text="${book.productPriceSales}"></span>원</h5>

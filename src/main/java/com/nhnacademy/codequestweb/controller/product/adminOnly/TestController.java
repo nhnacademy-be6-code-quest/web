@@ -35,7 +35,6 @@ public class TestController {
 
         log.info("test2 : {}", test2);
 
-//        CartGetResponseDto json2 = (CartGetResponseDto) new ObjectMapper().readValue(test1, new TypeReference<>() {});
         ObjectMapper objectMapper = new ObjectMapper();
 
         List<CartGetResponseDto> json2 = objectMapper.readValue(test1, new TypeReference<List<CartGetResponseDto>>() {});
