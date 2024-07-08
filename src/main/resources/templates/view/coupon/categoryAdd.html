@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <script th:inline="javascript">
+
+    if (!window.opener) {
+      alert('잘못된 접근입니다.');
+      history.go(-1);
+    }
+
+    function openNewWindowWithParam() {
+      // 파라미터 값을 가져옵니다 (여기서는 input의 값을 사용합니다)
+      var inputValue = document.getElementById("inputValue").value;
+
+      if (inputValue.trim() === '') {
+        // 값이 비어있을 경우 메시지 표시
+        document.getElementById('errorMessage').innerText = '값을 입력하세요';
+        return;
+      }
+
+      // URL에 포함될 파라미터 문자열 생성
+      var url = "/admin/categories/containing?categoryName=" + encodeURIComponent(inputValue);
+
+      window.location.href = url;
+    }
+    function sendMessageToParent(category) {
+      // id와 name 추출
+
+      var id = category.substring(0, category.indexOf(" "));
+      var name = category.substring(category.indexOf(" ") + 1);
+console.log(id);
+console.log(name);
+      // 메시지 객체 생성
+      var message = {
+        type: 'categoryData',
+        id: id,
+        name: name
+      };
+
+      // 부모 창에 메시지 전송
+      window.opener.postMessage(message, '*');
+      window.close();
+    }
+
+
+  </script>
+</head>
+<body>
+<label for="inputValue">카테고리명 검색 :</label>
+<input type="text" id="inputValue" name="inputValue" required>
+<button onclick="openNewWindowWithParam()">검색</button>
+
+<div th:unless="${register}">
+  <div th:each="category : ${categoryNamePage}">
+    <a th:href="'/admin/categories/sub?categoryName=' + ${category.getKey().categoryName()}" target="_self">
+      <span th:text="${category.getValue()}"></span>
+    </a>
+  </div>
+</div>
+<div th:if="${register}">
+  <div th:each="category : ${categoryNamePage}">
+    <span th:text="${category.getValue()}"></span>
+    <button th:category="${category.getKey().productCategoryId()} + ' ' + ${category.getKey().categoryName()}" onclick="sendMessageToParent(this.getAttribute('category'))">등록</button>
+  </div>
+</div>
+</body>
+</html>

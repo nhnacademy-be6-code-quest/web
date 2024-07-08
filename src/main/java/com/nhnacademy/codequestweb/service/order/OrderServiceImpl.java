@@ -1,9 +1,11 @@
 package com.nhnacademy.codequestweb.service.order;
 
 
+import com.nhnacademy.codequestweb.client.coupon.CouponClient;
 import com.nhnacademy.codequestweb.client.order.OrderClient;
 import com.nhnacademy.codequestweb.client.order.OrderReviewClient;
 import com.nhnacademy.codequestweb.request.order.field.OrderItemDto;
+import com.nhnacademy.codequestweb.response.coupon.CouponOrderResponseDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientDeliveryAddressResponseDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientPhoneNumberResponseDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientPrivacyResponseDto;
@@ -37,7 +39,7 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderClient orderClient;
     private final OrderReviewClient orderReviewClient;
-    private final CouponService couponService;
+    private final CouponClient couponClient;
     private final MyPageService myPageService;
     private final BookProductService bookProductService;
     private final ShippingPolicyService shippingPolicyService;
@@ -85,7 +87,7 @@ public class OrderServiceImpl implements OrderService {
         List<PackageInfoResponseDto> packageList = getAllPackages();
 
         // 쿠폰 정보
-        //List<CouponOrderResponseDto> couponList = couponService.findClientCoupon(headers);
+        List<CouponOrderResponseDto> couponList = couponClient.findClientCoupon(headers);
 
         // 사용가능 포인트 정보
         long usablePoint = 10000l; // TODO 추후 포인트 서비스에서 가져오기
@@ -97,7 +99,7 @@ public class OrderServiceImpl implements OrderService {
         model.addAttribute("deliveryAddressList", deliveryAddressList);
         model.addAttribute("phoneNumberList", phoneNumberList);
         model.addAttribute("orderedPerson", orderedPerson);
-        //model.addAttribute("couponList", couponList);
+        model.addAttribute("couponList", couponList);
 
         return "view/order/clientOrder";
     }

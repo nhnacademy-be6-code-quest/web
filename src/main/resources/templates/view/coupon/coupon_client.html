@@ -110,20 +110,24 @@
     </table>
 </div>
 <div>
-        <span th:if="${couponPayments.hasPrevious()}">
-            <a th:href="@{/processUserSelection(size=${couponPayments.size}, page=${couponPayments.number - 1})}">Previous</a>
-        </span>
+    <!-- 이전 페이지 링크 -->
+    <span th:if="${couponPayments.hasPrevious()}">
+        <a th:href="@{/admin/coupon/client(size=${couponPayments.size}, page=${couponPayments.number - 1})}">Previous</a>
+    </span>
 
+    <!-- 페이지 번호 링크 -->
     <span th:each="i : ${#numbers.sequence(0, couponPayments.totalPages - 1)}">
-            <a th:href="@{/processUserSelection(size=${couponPayments.size}, page=${i})}"
-               th:text="${i + 1}"
-               th:class="${i == couponPayments.number ? 'active' : ''}">Page Number</a>
-        </span>
+        <a th:href="@{/admin/coupon/client(size=${couponPayments.size}, page=${i})}"
+           th:text="${i + 1}"
+           th:classappend="${i == couponPayments.number} ? ' active' : ''">Page Number</a>
+    </span>
 
+    <!-- 다음 페이지 링크 -->
     <span th:if="${couponPayments.hasNext()}">
-            <a th:href="@{/processUserSelection(size=${couponPayments.size}, page=${couponPayments.number + 1})}">Next</a>
-        </span>
+        <a th:href="@{/admin/coupon/client(size=${couponPayments.size}, page=${couponPayments.number + 1})}">Next</a>
+    </span>
 </div>
+
 <script>
     function selectUsers() {
         var selectedUsers = document.querySelectorAll('input[name="selectedUsers"]:checked');
@@ -157,7 +161,7 @@
             console.log(selectedUserDetails)
 
             // 새 창 닫기
-            //window.close();
+            window.close();
         } else {
             alert('선택된 사용자가 없습니다.');
         }

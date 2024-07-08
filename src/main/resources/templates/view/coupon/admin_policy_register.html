@@ -52,10 +52,10 @@
         </div>
 
         <div class="mb-4">
-            <label class="block text-gray-700 font-bold mb-2" for="PolicyDescription">
+            <label class="block text-gray-700 font-bold mb-2" for="couponPolicyDescription">
                 쿠폰 정책 설명
             </label>
-            <textarea class="input" id="couponPolicyDescription" name="PolicyDescription" rows="3" placeholder="쿠폰 정책 설명을 입력하세요."></textarea>
+            <textarea class="input" id="couponPolicyDescription" name="couponPolicyDescription" rows="3" placeholder="쿠폰 정책 설명을 입력하세요."></textarea>
         </div>
 
         <div class="mb-4">
@@ -100,12 +100,14 @@
 <script>
 
     function openBookSelectWindow() {
-        window.open('/coupon/books', 'selectBookWindow', 'width=600,height=400');
+        window.open('/admin/coupon/books', 'selectBookWindow', 'width=1000,height=1500');
     }
 
     function openCategorySelectWindow() {
-        firstPopup = window.open('/categories/all', 'selectCategoryWindow', 'width=600,height=400');
+        firstPopup = window.open('/admin/categories/all', 'selectCategoryWindow', 'width=600,height=400');
     }
+
+
 
 
 
@@ -141,18 +143,22 @@
             discountInput.setAttribute('max', '100'); // Set max attribute for percentage
         }
     }
-    let firstPopup;
-    let secondPopup;
-    function receiveCategory(categoryId, categoryName) {
-        document.getElementById("selectedId").value = categoryId;
-        document.getElementById("selectedCategoryName").textContent = categoryName;
-        document.getElementById('selectedCategoryInfo').style.display = 'block';
-        document.getElementById("selectedName").value = "카테고리";
-        if (firstPopup) firstPopup.close();
-        if (secondPopup) secondPopup.close();
-    }
 
     window.addEventListener('message', function(event) {
+        // 메시지가 'categoryData'인 경우 처리
+        if (event.data.type === 'categoryData') {
+            const selectedCategoryId = event.data.id;
+            const selectedCategoryName = event.data.name;
+            document.getElementById('selectedId').value = selectedCategoryId;
+            document.getElementById('selectedCategoryName').textContent = selectedCategoryName;
+            document.getElementById('selectedCategoryInfo').style.display = 'block';
+            document.getElementById('selectedName').value = "카테고리";
+            console.log(selectedCategoryName);
+            console.log(selectedCategoryId);
+        }
+
+
+
         if (event.origin === window.location.origin) {
             const selectedBook = event.data.selectedBook;
 
