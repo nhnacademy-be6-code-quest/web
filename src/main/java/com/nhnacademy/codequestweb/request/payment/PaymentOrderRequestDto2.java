@@ -8,6 +8,10 @@ import lombok.Getter;
 @Getter
 public class PaymentOrderRequestDto2 {
 
+    long orderTotalAmount;
+    long discountAmountByCoupon;
+    String tossOrderId;
+
     long clientId;
     long couponId;
     long discountAmountByPoint;

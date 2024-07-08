@@ -9,5 +9,5 @@ import lombok.Getter;
 public class ProductOrderDetailRequestDto {
     long productId;
     long quantity;
-    List<ProductOrderDetailOptionRequestDto> productOrderDetailOptionList;
+    List<ProductOrderDetailOptionRequestDto> productOrderDetailOptionRequestDtoList;
 }
