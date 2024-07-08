@@ -9,12 +9,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.parser.ParseException;
 import org.springframework.cloud.client.loadbalancer.Response;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
@@ -27,10 +29,10 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     @GetMapping("/client/order/{orderId}/payment")
-    public String savePayment(@PathVariable long orderId, Model model) {
+    public String savePayment(@RequestHeader HttpHeaders headers, @PathVariable long orderId, Model model) {
 //        1. 주문에서 받은 값을 토대로 사용자에게 보여 주기
         PaymentOrderShowRequestDto paymentOrderShowRequestDto = paymentService.findPaymentOrderShowRequestDtoByOrderId(
-            orderId);
+                headers, orderId);
         model.addAttribute("paymentOrderRequestDto", paymentOrderShowRequestDto);
         model.addAttribute("successUrl",
             "https://localhost:8080/client/order/" + orderId + "/payment/success");
@@ -41,13 +43,14 @@ public class PaymentController {
 
     @GetMapping("/client/order/{orderId}/payment/success")
     public String paymentResult(
+        @RequestHeader HttpHeaders headers,
         @PathVariable long orderId, Model model,
         @RequestParam(value = "orderId") String tossOrderId,
         @RequestParam long amount, @RequestParam String paymentKey) throws ParseException {
 
 //        2. 결제 검증 및 승인 창에서 필요한 요소를 Order 에서 받아 오기
         PaymentOrderApproveRequestDto paymentOrderApproveRequestDto = paymentService.findPaymentOrderApproveRequestDtoByOrderId(
-            orderId);
+                headers, orderId);
 
 //        3. 조작 확인하기 : 주문 정보가 일치하지 않으면 실패 페이지로 이동하기.
         if (!paymentService.isValidTossPayment(paymentOrderApproveRequestDto, tossOrderId,

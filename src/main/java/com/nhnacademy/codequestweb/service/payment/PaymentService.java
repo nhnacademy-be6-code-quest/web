@@ -1,5 +1,6 @@
 package com.nhnacademy.codequestweb.service.payment;
 
+import com.nhnacademy.codequestweb.client.order.OrderClient;
 import com.nhnacademy.codequestweb.client.payment.PaymentClient;
 import com.nhnacademy.codequestweb.client.payment.PaymentCouponClient;
 import com.nhnacademy.codequestweb.client.payment.PaymentOrderClient;
@@ -27,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -41,6 +43,7 @@ public class PaymentService /*implements PaymentService*/ {
     private final PaymentCouponClient paymentCouponClient;
     private final PaymentPointClient paymentPointClient;
     private final PaymentProductClient paymentProductClient;
+    private final OrderClient orderClient;
     private final String secretKey;
 
     @PostConstruct
@@ -120,12 +123,12 @@ public class PaymentService /*implements PaymentService*/ {
             .build();
     }
 
-    public PaymentOrderShowRequestDto findPaymentOrderShowRequestDtoByOrderId(long orderId) {
-        return paymentOrderClient.findPaymentOrderShowRequestDtoByOrderId(orderId);
+    public PaymentOrderShowRequestDto findPaymentOrderShowRequestDtoByOrderId(HttpHeaders headers, long orderId) {
+        return orderClient.getPaymentOrderShowRequestDto(headers, orderId).getBody();
     }
 
-    public PaymentOrderApproveRequestDto findPaymentOrderApproveRequestDtoByOrderId(long orderId) {
-        return paymentOrderClient.findPaymentOrderApproveRequestDtoByOrderId(orderId);
+    public PaymentOrderApproveRequestDto findPaymentOrderApproveRequestDtoByOrderId(HttpHeaders headers, long orderId) {
+        return orderClient.getPaymentOrderApproveRequestDto(headers, orderId).getBody();
     }
 
     public ResponseEntity<String> useCoupon(

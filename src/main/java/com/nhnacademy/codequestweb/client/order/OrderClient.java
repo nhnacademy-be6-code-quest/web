@@ -1,13 +1,14 @@
 package com.nhnacademy.codequestweb.client.order;
 
+import com.nhnacademy.codequestweb.request.payment.PaymentOrderApproveRequestDto;
+import com.nhnacademy.codequestweb.request.payment.PaymentOrderShowRequestDto;
 import com.nhnacademy.codequestweb.response.order.client.ClientOrderForm;
 import com.nhnacademy.codequestweb.response.order.nonclient.NonClientOrderForm;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 주문 클라이언트
@@ -23,11 +24,9 @@ public interface OrderClient {
     @PostMapping("/api/non-client/orders")
     ResponseEntity<Long> createNonClientOrder(@RequestHeader HttpHeaders headers, @RequestBody NonClientOrderForm nonClientOrderForm);
 
-//    // 회원 주문
-//    @PostMapping("/api/client/views/order")
-//    ResponseEntity<ClientViewOrderPostResponseDto> viewOrder(ClientViewOrderPostRequestDto orderRequestDto);
+    @GetMapping("/api/order/{orderId}/payment-request")
+    ResponseEntity<PaymentOrderShowRequestDto> getPaymentOrderShowRequestDto(@RequestHeader HttpHeaders headers, @PathVariable Long orderId);
 
-//    @PostMapping("/api/client/order")
-//    ResponseEntity<ClientOrderPostResponseDto> createOrder(ClientOrderPostRequestDto clientOrderPostRequestDto);
-
+    @GetMapping("/{orderId}/approve-request")
+    ResponseEntity<PaymentOrderApproveRequestDto> getPaymentOrderApproveRequestDto(@RequestHeader HttpHeaders headers, @PathVariable Long orderId);
 }
