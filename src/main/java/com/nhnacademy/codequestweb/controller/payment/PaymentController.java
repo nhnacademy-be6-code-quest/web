@@ -5,16 +5,21 @@ import com.nhnacademy.codequestweb.request.payment.PaymentOrderApproveRequestDto
 import com.nhnacademy.codequestweb.request.payment.PaymentOrderShowRequestDto;
 import com.nhnacademy.codequestweb.response.payment.TossPaymentsResponseDto;
 import com.nhnacademy.codequestweb.service.payment.PaymentService;
+import com.nhnacademy.codequestweb.utils.CookieUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.parser.ParseException;
 import org.springframework.cloud.client.loadbalancer.Response;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
@@ -27,11 +32,11 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     @GetMapping("/client/order/{orderId}/payment")
-    public String savePayment(@PathVariable long orderId, Model model) {
+    public String savePayment(@RequestHeader HttpHeaders headers, @PathVariable long orderId, Model model) {
 //        1. 주문에서 받은 값을 토대로 사용자에게 보여 주기
         PaymentOrderShowRequestDto paymentOrderShowRequestDto = paymentService.findPaymentOrderShowRequestDtoByOrderId(
-            orderId);
-        model.addAttribute("paymentOrderRequestDto", paymentOrderShowRequestDto);
+                headers, orderId);
+        model.addAttribute("paymentOrderShowRequestDto", paymentOrderShowRequestDto);
         model.addAttribute("successUrl",
             "https://localhost:8080/client/order/" + orderId + "/payment/success");
         model.addAttribute("failUrl",
@@ -41,13 +46,14 @@ public class PaymentController {
 
     @GetMapping("/client/order/{orderId}/payment/success")
     public String paymentResult(
+        @RequestHeader HttpHeaders headers, HttpServletRequest request,
         @PathVariable long orderId, Model model,
         @RequestParam(value = "orderId") String tossOrderId,
         @RequestParam long amount, @RequestParam String paymentKey) throws ParseException {
 
-//        2. 결제 검증 및 승인 창에서 필요한 요소를 Order 에서 받아 오기
+//        2. 결제 검증 및 승인 창에서 필요한 요소를 Order 에서 받아 오기 TODO : @RequestHeader 로 해결함.
         PaymentOrderApproveRequestDto paymentOrderApproveRequestDto = paymentService.findPaymentOrderApproveRequestDtoByOrderId(
-            orderId);
+                headers, orderId);
 
 //        3. 조작 확인하기 : 주문 정보가 일치하지 않으면 실패 페이지로 이동하기.
         if (!paymentService.isValidTossPayment(paymentOrderApproveRequestDto, tossOrderId,
@@ -67,17 +73,25 @@ public class PaymentController {
 //        응답의 형태에 따라 쿠폰, 포인트, 적립, 재고 등의 이벤트가 적절하게 발생했는지 판단하고,
 //        사용자에게 보여줄 것은 보여주고, 시스템에 에러로 남길 것은 남겨 두기
 
-//        2) 쿠폰 사용 처리
-        boolean couponResponse = paymentService.useCoupon(
+//        2) 쿠폰 사용 처리 TODO : @Httpheaders headers 사용해서 303 -> 401로 오류 변경 && CookieUtils 사용해서 401 -> 400
+        headers.set("access", CookieUtils.getCookieValue(request, "access"));
+        //boolean couponResponse =
+
+                ResponseEntity<String> couponRes = paymentService.useCoupon(headers,
             PaymentCompletedCouponRequestDto.builder()
                 .couponId(paymentOrderApproveRequestDto.getCouponId())
                 .build()
-        ).getStatusCode().is2xxSuccessful();
+        );
+                log.debug("couponRes: " + couponRes);
+        HttpStatusCode code = couponRes.getStatusCode();
+        log.debug("code: " + code);
+        boolean codeRes = code.is2xxSuccessful();
+        log.debug("codeRes: " + codeRes);
 
-        if (!couponResponse) {
-            log.error("쿠폰 사용 처리에 실패했습니다.");
-            log.error("쿠폰 아이디: {}", paymentOrderApproveRequestDto.getCouponId());
-        }
+//        if (!couponResponse) {
+//            log.error("쿠폰 사용 처리에 실패했습니다.");
+//            log.error("쿠폰 아이디: {}", paymentOrderApproveRequestDto.getCouponId());
+//        }
 
 //        // 3) 포인트 사용 처리
 //        boolean pointUseResponse = paymentService.usePoint(PaymentUsePointRequestDto.builder()
@@ -111,32 +125,32 @@ public class PaymentController {
 //        }
 
         // 5) 재고 감소 처리
-        boolean productReduceInventoryResponse = paymentService.decreaseProductInventory(
-                paymentOrderApproveRequestDto.getProductOrderDetailList()).getStatusCode()
-            .is2xxSuccessful();
-
-        if (!productReduceInventoryResponse) {
-            log.error("재고 감소 처리에 실패했습니다.");
-            log.error("orderId: {}", orderId);
-        }
+//        boolean productReduceInventoryResponse = paymentService.decreaseProductInventory(
+//                paymentOrderApproveRequestDto.getProductOrderDetailList()).getStatusCode()
+//            .is2xxSuccessful();
+//
+//        if (!productReduceInventoryResponse) {
+//            log.error("재고 감소 처리에 실패했습니다.");
+//            log.error("orderId: {}", orderId);
+//        }
 
         // 6) 주문 상태를 결제 완료로 바꾸기
-        boolean changeOrderStatusCompletePaymentResponse = paymentService.changeOrderStatusCompletePayment(
-            orderId).getStatusCode().is2xxSuccessful();
-
-        if (!changeOrderStatusCompletePaymentResponse) {
-            log.error("주문 상태를 결제 완료로 바꾸는 데에 실패했습니다.");
-            log.error("주문 아이디: {}", orderId);
-        }
+//        boolean changeOrderStatusCompletePaymentResponse = paymentService.changeOrderStatusCompletePayment(
+//            orderId).getStatusCode().is2xxSuccessful();
+//
+//        if (!changeOrderStatusCompletePaymentResponse) {
+//            log.error("주문 상태를 결제 완료로 바꾸는 데에 실패했습니다.");
+//            log.error("주문 아이디: {}", orderId);
+//        }
 
         // 결제 성공 페이지로 이동
-        paymentService.savePayment(orderId, tossPaymentsResponseDto);
-        model.addAttribute("couponResponse", couponResponse);
+        paymentService.savePayment(headers, orderId, tossPaymentsResponseDto);
+        //model.addAttribute("couponResponse", couponResponse);
         model.addAttribute("pointUseResponse", false);
         model.addAttribute("pointAccumulateResponse", false);
-        model.addAttribute("productReduceInventoryResponse", productReduceInventoryResponse);
-        model.addAttribute("changeOrderStatusCompletePaymentResponse",
-            changeOrderStatusCompletePaymentResponse);
+        //model.addAttribute("productReduceInventoryResponse", productReduceInventoryResponse);
+//        model.addAttribute("changeOrderStatusCompletePaymentResponse",
+//            changeOrderStatusCompletePaymentResponse);
         model.addAttribute("tossPaymentsResponseDto", tossPaymentsResponseDto);
         return "view/payment/success";
     }
