@@ -5,37 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Coupon Usage History</title>
   <style>
+    /* 전체 높이 설정 */
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* 가로 길이 설정 */
     .container {
-      max-width: 100%;
+      width: 100%; /* 컨테이너의 가로 길이를 100%로 설정 */
+      max-width: 2000px; /* 최대 가로 폭을 설정할 수도 있음 */
       margin: 20px auto;
       background-color: #fff;
       border-radius: 8px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       padding: 20px;
+      display: flex; /* Flexbox를 이용해 내용을 수직 가운데 정렬 */
+      flex-direction: column;
     }
 
     .section-title {
       font-size: 1.5rem;
-      font-weight: bold;
       margin-bottom: 10px;
-    }
-
-    .tabs {
-      margin-bottom: 20px;
-    }
-
-    .tab {
-      display: inline-block;
-      padding: 10px 20px;
-      margin-right: 10px;
-      cursor: pointer;
-      background-color: #f2f2f2;
-      border-radius: 4px 4px 0 0;
-    }
-
-    .tab.active {
-      background-color: #e0e0e0;
-      font-weight: bold;
     }
 
     .table {
@@ -44,31 +36,16 @@
       margin-top: 20px;
     }
 
+    .table-header th,
+    .table-body td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
     .table-header th {
       background-color: #f2f2f2;
       font-weight: bold;
-      text-align: left;
-      padding: 10px;
-      border-bottom: 1px solid #ddd;
-    }
-
-    .table-row td {
-      padding: 10px;
-      border-bottom: 1px solid #ddd;
-      vertical-align: top;
-    }
-
-    .badge {
-      display: inline-block;
-      padding: 6px 12px;
-      font-size: 0.875rem;
-      border-radius: 20px;
-      text-align: center;
-    }
-
-    .badge-used {
-      background-color: #f44336;
-      color: white;
     }
 
     .btn-delete {
@@ -87,15 +64,22 @@
     .btn-delete:hover {
       background-color: #d32f2f;
     }
+
+    .hidden {
+      display: none;
+    }
+    .pagination {
+      text-align: center; /* 페이지네이션을 가운데 정렬 */
+      margin-top: 20px; /* 페이지네이션 위쪽 여백 설정 */
+      display: flex;
+      justify-content: center;
+    }
   </style>
 </head>
 <body>
 <div class="container">
-  <h2 class="section-title">Coupon Usage History</h2>
-  <div class="tabs">
-    <div class="tab active" onclick="changeTab('ALL')">모든 쿠폰</div>
-    <div class="tab" onclick="changeTab('USED')">사용 완료 쿠폰</div>
-  </div>
+  <h2 class="section-title">쿠폰 사용 이력</h2>
+
   <form id="filterForm">
     <label>
       <input type="radio" name="status" value="ALL" checked> 전체
@@ -113,60 +97,88 @@
   <table class="table">
     <thead class="table-header">
     <tr>
-      <th>User ID</th>
-      <th>User Name</th>
-      <th>Coupon Description</th>
-      <th>Discount Type</th>
-      <th>Discount Amount</th>
-      <th>Min Discount</th>
-      <th>Max Discount</th>
-      <th>Issued Date</th>
-      <th>Expiration Date</th>
-      <th>Used Date</th>
-      <th>Status</th>
-      <th>Actions</th>
+      <th style="width: 7%;">사용자 ID</th>
+      <th style="width: 15%;">쿠폰 설명</th>
+      <th style="width: 10%;">할인 종류</th>
+      <th style="width: 8%;">할인 금액</th>
+      <th style="width: 8%;">최소 할인</th>
+      <th style="width: 8%;">최대 할인</th>
+      <th style="width: 8%;">발행 날짜</th>
+      <th style="width: 8%;">만료 날짜</th>
+      <th style="width: 8%;" id="usedDateHeader" class="hidden">사용 날짜</th>
+      <th style="width: 10%;">상태</th>
+      <th style="width: 10%;">작업</th>
     </tr>
     </thead>
-    <tbody class="table-body">
-    <!-- Thymeleaf 반복문으로 쿠폰들을 동적으로 생성 -->
-    <tr th:each="coupon : ${adminCoupons}">
+    <tbody>
+    <tr th:each="coupon : ${adminCoupons}" class="card1" th:attr="data-status=${coupon.status}">
       <td th:text="${coupon.clientId}"></td>
-<!--      <td th:text="${coupon.userName}"></td>-->
-      <td th:text="${coupon.couponDescription}"></td>
-      <td th:text="${coupon.discountType}"></td>
-      <td th:text="${coupon.discountAmount}"></td>
-      <td th:text="${coupon.minDiscount}"></td>
-      <td th:text="${coupon.maxDiscount}"></td>
+      <td th:text="${coupon.couponPolicy.couponPolicyDescription}"></td>
+      <td th:text="${coupon.couponPolicy.discountType}"></td>
+      <td th:text="${coupon.couponPolicy.discountValue}"></td>
+      <td th:text="${coupon.couponPolicy.minPurchaseAmount}"></td>
+      <td th:text="${coupon.couponPolicy.maxDiscountAmount}"></td>
       <td th:text="${coupon.issuedDate}"></td>
       <td th:text="${coupon.expirationDate}"></td>
-      <td th:text="${coupon.usedDate}"></td>
+      <td th:text="${coupon.usedDate}" class="used-date-cell hidden"></td>
       <td th:text="${coupon.status}"></td>
+      <td>
+        <button class="btn-delete">삭제</button>
+      </td>
     </tr>
     </tbody>
   </table>
 </div>
+<div class="pagination">
+  <!-- 이전 페이지 링크 -->
+  <a th:href="@{/admin/user/coupons(page=${adminCoupons.number - 1}, size=${adminCoupons.size}, status=${status})}" th:if="${adminCoupons.hasPrevious()}">&laquo; Previous</a>
+
+  <!-- 페이지 번호 링크 -->
+  <span th:each="i : ${#numbers.sequence(1, adminCoupons.totalPages)}">
+        <a th:href="@{/admin/user/coupons(page=${i - 1}, size=${adminCoupons.size}, status=${status})}" th:text="${i}" th:classappend="${adminCoupons.number + 1 == i} ? 'active'"></a>
+    </span>
+
+  <!-- 다음 페이지 링크 -->
+  <a th:href="@{/admin/user/coupons(page=${adminCoupons.number + 1}, size=${adminCoupons.size}, status=${status})}" th:if="${adminCoupons.hasNext()}">Next &raquo;</a>
+</div>
 <script>
   document.addEventListener("DOMContentLoaded", function() {
     const filterForm = document.getElementById("filterForm");
-    const cards = document.querySelectorAll('.card');
+    const cards = document.querySelectorAll('.card1');
+    const usedDateHeader = document.getElementById('usedDateHeader');
 
-    filterForm.addEventListener('change', function() {
+    function updateVisibility() {
       const status = document.querySelector('input[name="status"]:checked').value;
 
       cards.forEach(card => {
         const cardStatus = card.getAttribute('data-status');
+        const usedDateCell = card.querySelector('.used-date-cell');
 
-        if (status === 'ALL' || cardStatus === status) {
+        if (status === 'ALL') {
           card.classList.remove('hidden');
+          usedDateCell.classList.add('hidden');  // Always hide used date cells
+        } else if (cardStatus === status) {
+          card.classList.remove('hidden');
+          if (status === '사용완료') {
+            usedDateCell.classList.remove('hidden');
+          } else {
+            usedDateCell.classList.add('hidden');
+          }
         } else {
           card.classList.add('hidden');
         }
       });
-    });
+
+      if (status === '사용완료') {
+        usedDateHeader.classList.remove('hidden');
+      } else {
+        usedDateHeader.classList.add('hidden');
+      }
+    }
+
+    filterForm.addEventListener('change', updateVisibility);
+    updateVisibility();  // Initialize the visibility on page load
   });
 </script>
-
-
-
 </body>
 </html>
