@@ -14,21 +14,19 @@ import com.nhnacademy.codequestweb.response.order.nonclient.NonClientOrderForm;
 import com.nhnacademy.codequestweb.response.order.pack.PackageInfoResponseDto;
 import com.nhnacademy.codequestweb.response.product.book.BookProductGetResponseDto;
 import com.nhnacademy.codequestweb.response.shipping.ShippingPolicyGetResponseDto;
-import com.nhnacademy.codequestweb.service.coupon.CouponService;
 import com.nhnacademy.codequestweb.service.mypage.MyPageService;
 import com.nhnacademy.codequestweb.service.product.BookProductService;
 import com.nhnacademy.codequestweb.service.shippingpolicy.ShippingPolicyService;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 
 @Service
