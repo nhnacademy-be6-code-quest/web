@@ -8,7 +8,6 @@ import com.nhnacademy.codequestweb.request.coupon.CouponRegisterRequestDto;
 import com.nhnacademy.codequestweb.response.coupon.ClientCouponPaymentResponseDto;
 import com.nhnacademy.codequestweb.response.coupon.CouponAdminPageCouponResponseDto;
 import com.nhnacademy.codequestweb.response.coupon.CouponMyPageCouponResponseDto;
-import com.nhnacademy.codequestweb.response.coupon.CouponOrderResponseDto;
 import com.nhnacademy.codequestweb.response.coupon.CouponProvideTypeResponseDto;
 import com.nhnacademy.codequestweb.response.coupon.CouponTypeResponseDto;
 import java.util.List;
