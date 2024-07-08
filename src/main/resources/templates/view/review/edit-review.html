@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="writeReviewFragment ('writeReviewRequiredInfo')">
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Review</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+
+    <!-- CSS for better visual appearance -->
+    <style>
+        .write-review {
+            height: 90vh;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-items: center;
+            align-items: center;
+        }
+        .write-review-container {
+            width: 80%;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 10px;
+
+            justify-items: center;
+            align-items: center;
+        }
+        .write-review-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .write-review-header h1 {
+            margin: 0;
+            font-size: 30px;
+            font-weight: bold;
+            color: #333;
+        }
+        .review-details, .editor-container, .write-review-submit-section {
+            overflow:auto;
+            margin-bottom: 20px;
+        }
+        .review-category select, .write-review-search-bar input, .write-review-search-bar button {
+            padding: 10px;
+            margin-right: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .review-details img {
+            float: left;
+            margin-right: 20px;
+            border-radius: 10px;
+        }
+        .review-details h3 {
+            margin: 0;
+            font-size: 20px;
+            color: #333;
+        }
+        .review-details p {
+            margin: 5px 0;
+            color: #666;
+        }
+        .rating {
+            margin-top: 12px;
+        }
+        .rating select {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .review-summary input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .editor-container {
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .write-review-submit-section {
+            text-align: center;
+        }
+        .write-review-submit-btn {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+
+    <!-- TOAST UI Editor CDN URL(CSS) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.48.4/codemirror.min.css"/>
+    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
+</head>
+
+<section class="write-review">
+<div class="write-review-container">
+    <div class="write-review-header">
+        <h1>리뷰 작성</h1>
+    </div>
+
+    <div class="review-details">
+        <img th:src="${writeReviewRequiredInfo.cover}" alt="book cover" width="100" style="display: inline-block">
+        <h2>도서 제목 : <span th:text="${writeReviewRequiredInfo.title}"></span></h2>
+        <h3>저자 : <span th:text="${writeReviewRequiredInfo.author}"></span></h3>
+
+        <div class="rating">
+            <span>평점: </span>
+            <select id="rating" name="rating">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select>
+        </div>
+    </div>
+
+    <div id="editor" class="editor-container"></div>
+
+    <div class="write-review-submit-section">
+        <button class="write-review-submit-btn" onclick="submitReview()">리뷰 제출</button>
+    </div>
+</div>
+
+<!-- TOAST UI Editor CDN URL(JS) -->
+<script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+
+<!-- JavaScript to initialize TOAST UI Editor and handle form submission -->
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const editor = new toastui.Editor({
+        el: document.querySelector('#editor'),
+        previewStyle: 'vertical',
+        height: '50vh',
+        hooks: {
+            addImageBlobHook: (blob, callback) => {
+                uploadImage(blob)
+                    .then(path => {
+                        callback(path, blob.name);
+                    })
+                    .catch(error => {
+                        console.error('Image upload failed:', error);
+                        callback('image_upload_error', 'Error');
+                    });
+                return false;
+            }
+        }
+    });
+
+    function uploadImage(blob) {
+        const formData = new FormData();
+        formData.append('image', blob);
+
+        return fetch('/save/img', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Image upload failed');
+                }
+                return response.text(); // JSON 대신 text로 응답 처리
+            })
+            .then(imagePath => {
+                return imagePath; // 단순 문자열 반환
+            });
+    }
+
+    function submitReview() {
+        const reviewForm = document.getElementById('review-form');
+        const formData = new FormData(reviewForm);
+
+        // 리뷰 내용 추가
+        formData.append('content', editor.getMarkdown());
+
+        // 상품 아이디
+        formData.append('productId', [[${writeReviewRequiredInfo.productId}]])
+
+        // 리뷰 점수
+        const rating = document.getElementById('rating').value;
+        reviewForm.append('rating', rating);
+
+        // 주문 상세 아이디
+        // formData.append('productOrderDetailId', [[${writeReviewRequiredInfo.productOrderDetailId}]])
+
+        fetch('/write/review', {
+            method: 'POST',
+            body: formData,
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                // 성공 후 처리 (예: 페이지 리다이렉트 또는 알림 표시)
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                // 에러 처리
+            });
+    }
+    /*]]>*/
+</script>
+</section>
+</html>

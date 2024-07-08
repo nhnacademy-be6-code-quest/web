@@ -83,6 +83,10 @@
     <section th:replace="~{view/product/singleBookInfo :: singleBookFragment}"></section>
 </div>
 
+<div th:if="${view != null} and ${#strings.equals(view, 'writeReview')}">
+    <section th:replace="~{view/review/edit-review :: writeReviewFragment('writeReviewRequiredInfo')}"></section>
+</div>
+
 <div th:replace="~{layout/footer.html :: footerFragment}"></div>
 
 <div th:if="${alterMessage != null}" class="server-alert animate__animated animate__fadeInDown" th:text="${alterMessage}"></div>
