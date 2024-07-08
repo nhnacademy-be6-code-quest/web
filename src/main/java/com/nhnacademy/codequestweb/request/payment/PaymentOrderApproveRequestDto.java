@@ -12,8 +12,8 @@ public class PaymentOrderApproveRequestDto {
     long discountAmountByCoupon;
     String tossOrderId;
 
-    long clientId;
-    long couponId;
+    Long clientId;
+    Long couponId;
     long discountAmountByPoint;
     long accumulatedPoint;
     List<ProductOrderDetailRequestDto> productOrderDetailList;
