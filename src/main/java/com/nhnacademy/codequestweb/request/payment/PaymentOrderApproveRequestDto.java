@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Builder
 @Getter
-public class PaymentOrderRequestDto2 {
+public class PaymentOrderApproveRequestDto {
 
     long orderTotalAmount;
     long discountAmountByCoupon;

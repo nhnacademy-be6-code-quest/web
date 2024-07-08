@@ -18,15 +18,15 @@
     // https://docs.tosspayments.com/sdk/payment-js
 
     // amount: [[${payAmount}]], // 결제 금액
-    amount: [[${paymentOrderRequestDto.getOrderTotalAmount()}]]
-        - [[${paymentOrderRequestDto.getDiscountAmountByCoupon()}]]
-        - [[${paymentOrderRequestDto.getDiscountAmountByPoint()}]],
+    amount: [[${paymentOrderShowRequestDto.getOrderTotalAmount()}]]
+        - [[${paymentOrderShowRequestDto.getDiscountAmountByCoupon()}]]
+        - [[${paymentOrderShowRequestDto.getDiscountAmountByPoint()}]],
 
     // orderId: `[[${tossOrderId}]]`,
-    orderId: `[[${paymentOrderRequestDto.getTossOrderId()}]]`, // 주문번호(주문번호는 상점에서 직접 만들어주세요.)
+    orderId: `[[${paymentOrderShowRequestDto.getTossOrderId()}]]`, // 주문번호(주문번호는 상점에서 직접 만들어주세요.)
 
-    orderName: `[[${paymentOrderRequestDto.getProductNameList().getFirst()}]]` + ` 외 `
-        + `[[${paymentOrderRequestDto.getProductNameList().size() - 1}]]` + `건`, // 구매상품
+    orderName: `[[${paymentOrderShowRequestDto.getProductNameList().getFirst()}]]` + ` 외 `
+        + `[[${paymentOrderShowRequestDto.getProductNameList().size() - 1}]]` + `건`, // 구매상품
 
     successUrl: `[[${successUrl}]]`, // 결제 성공 시 이동할 페이지(이 주소는 예시입니다. 상점에서 직접 만들어주세요.)
 

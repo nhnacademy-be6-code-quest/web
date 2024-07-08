@@ -8,8 +8,8 @@ import com.nhnacademy.codequestweb.client.payment.PaymentProductClient;
 import com.nhnacademy.codequestweb.client.payment.TossPaymentsClient;
 import com.nhnacademy.codequestweb.request.payment.PaymentAccumulatePointRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentCompletedCouponRequestDto;
-import com.nhnacademy.codequestweb.request.payment.PaymentOrderRequestDto;
-import com.nhnacademy.codequestweb.request.payment.PaymentOrderRequestDto2;
+import com.nhnacademy.codequestweb.request.payment.PaymentOrderShowRequestDto;
+import com.nhnacademy.codequestweb.request.payment.PaymentOrderApproveRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentProductRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentUsePointRequestDto;
 import com.nhnacademy.codequestweb.request.payment.ProductOrderDetailOptionRequestDto;
@@ -53,13 +53,13 @@ public class PaymentService /*implements PaymentService*/ {
         paymentClient.savePayment(orderId, tossPaymentsResponseDto);
     }
 
-    public boolean isValidTossPayment(PaymentOrderRequestDto2 paymentOrderRequestDto2,
+    public boolean isValidTossPayment(PaymentOrderApproveRequestDto paymentOrderApproveRequestDto,
         String tossOrderId, long amount) {
-        return paymentOrderRequestDto2 != null
-            && paymentOrderRequestDto2.getTossOrderId().equals(tossOrderId)
-            && paymentOrderRequestDto2.getOrderTotalAmount()
-            - paymentOrderRequestDto2.getDiscountAmountByCoupon()
-            - paymentOrderRequestDto2.getDiscountAmountByPoint() == amount;
+        return paymentOrderApproveRequestDto != null
+            && paymentOrderApproveRequestDto.getTossOrderId().equals(tossOrderId)
+            && paymentOrderApproveRequestDto.getOrderTotalAmount()
+            - paymentOrderApproveRequestDto.getDiscountAmountByCoupon()
+            - paymentOrderApproveRequestDto.getDiscountAmountByPoint() == amount;
     }
 
     public TossPaymentsResponseDto approvePayment(String tossOrderId, long amount,
@@ -119,12 +119,12 @@ public class PaymentService /*implements PaymentService*/ {
             .build();
     }
 
-    public PaymentOrderRequestDto findPaymentOrderRequestDtoByOrderId(long orderId) {
-        return paymentOrderClient.findPaymentOrderRequestDtoByOrderId(orderId);
+    public PaymentOrderShowRequestDto findPaymentOrderShowRequestDtoByOrderId(long orderId) {
+        return paymentOrderClient.findPaymentOrderShowRequestDtoByOrderId(orderId);
     }
 
-    public PaymentOrderRequestDto2 findPaymentOrderRequestDto2ByOrderId(long orderId) {
-        return paymentOrderClient.findPaymentOrderRequestDto2ByOrderId(orderId);
+    public PaymentOrderApproveRequestDto findPaymentOrderApproveRequestDtoByOrderId(long orderId) {
+        return paymentOrderClient.findPaymentOrderApproveRequestDtoByOrderId(orderId);
     }
 
     public ResponseEntity<String> useCoupon(
@@ -132,12 +132,12 @@ public class PaymentService /*implements PaymentService*/ {
         return paymentCouponClient.paymentUsedCoupon(paymentCompletedCouponRequestDto);
     }
 
-    public void usePoint(PaymentUsePointRequestDto paymentUsePointRequestDto) {
-        paymentPointClient.usePoint(paymentUsePointRequestDto);
+    public ResponseEntity<String> usePoint(PaymentUsePointRequestDto paymentUsePointRequestDto) {
+        return paymentPointClient.usePoint(paymentUsePointRequestDto);
     }
 
-    public void accumulatePoint(PaymentAccumulatePointRequestDto paymentAccumulatePointRequestDto) {
-        paymentPointClient.accumulatePoint(paymentAccumulatePointRequestDto);
+    public ResponseEntity<String> accumulatePoint(PaymentAccumulatePointRequestDto paymentAccumulatePointRequestDto) {
+        return paymentPointClient.accumulatePoint(paymentAccumulatePointRequestDto);
     }
 
     public ResponseEntity<String> reduceInventory(List<ProductOrderDetailRequestDto> productOrderDetailRequestDtoList) {
@@ -155,5 +155,9 @@ public class PaymentService /*implements PaymentService*/ {
             }
         }
         return paymentProductClient.reduceInventory(productOrderDetailRequestDtoList);
+    }
+
+    public ResponseEntity<String> changeOrderStatusCompletePayment(Long orderId) {
+        return paymentOrderClient.changeOrderStatusCompletePayment(orderId);
     }
 }
