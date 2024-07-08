@@ -51,7 +51,7 @@ public class PaymentController {
             model.addAttribute("isSuccess", false);
             model.addAttribute("code", "INVALID_ORDER");
             model.addAttribute("message", "주문 정보가 일치하지 않습니다.");
-            log.info("Check payment history");
+            log.warn("주문 아이디 : {} 에서 결제 조작이 의심됩니다.", orderId);
             return "view/payment/failed";
         }
 
@@ -61,7 +61,7 @@ public class PaymentController {
             amount, paymentKey);
 
 //        응답의 형태에 따라 쿠폰, 포인트, 적립, 재고 등의 이벤트가 적절하게 발생했는지 판단하고, 사용자에게 보여줄 것은 보여주고, 시스템에 에러로 남길 것은 남겨 두기
-//        // 2) 쿠폰 사용 처리
+//        2) 쿠폰 사용 처리
         boolean couponResponse = paymentService.useCoupon(
             PaymentCompletedCouponRequestDto.builder()
                 .couponId(paymentOrderRequestDto2.getCouponId())
