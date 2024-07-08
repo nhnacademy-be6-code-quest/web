@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coupon Usage History</title>
+  <style>
+    .container {
+      max-width: 100%;
+      margin: 20px auto;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .tabs {
+      margin-bottom: 20px;
+    }
+
+    .tab {
+      display: inline-block;
+      padding: 10px 20px;
+      margin-right: 10px;
+      cursor: pointer;
+      background-color: #f2f2f2;
+      border-radius: 4px 4px 0 0;
+    }
+
+    .tab.active {
+      background-color: #e0e0e0;
+      font-weight: bold;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    .table-header th {
+      background-color: #f2f2f2;
+      font-weight: bold;
+      text-align: left;
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .table-row td {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      vertical-align: top;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 0.875rem;
+      border-radius: 20px;
+      text-align: center;
+    }
+
+    .badge-used {
+      background-color: #f44336;
+      color: white;
+    }
+
+    .btn-delete {
+      background-color: #f44336;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 0.875rem;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .btn-delete:hover {
+      background-color: #d32f2f;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h2 class="section-title">Coupon Usage History</h2>
+  <div class="tabs">
+    <div class="tab active" onclick="changeTab('ALL')">모든 쿠폰</div>
+    <div class="tab" onclick="changeTab('USED')">사용 완료 쿠폰</div>
+  </div>
+  <table class="table">
+    <thead class="table-header">
+    <tr>
+      <th>User ID</th>
+      <th>User Name</th>
+      <th>Coupon Description</th>
+      <th>Discount Type</th>
+      <th>Discount Amount</th>
+      <th>Min Discount</th>
+      <th>Max Discount</th>
+      <th>Issued Date</th>
+      <th>Expiration Date</th>
+      <th>Used Date</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody class="table-body">
+    <!-- Thymeleaf 반복문으로 쿠폰들을 동적으로 생성 -->
+    <tr th:each="coupon : ${coupons}">
+      <td th:text="${coupon.userId}">user123</td>
+      <td th:text="${coupon.userName}">John Doe</td>
+      <td th:text="${coupon.couponDescription}">10% off on all products</td>
+      <td th:text="${coupon.discountType}">Percentage</td>
+      <td th:text="${coupon.discountAmount}">10%</td>
+      <td th:text="${coupon.minDiscount}">$10</td>
+      <td th:text="${coupon.maxDiscount}">$50</td>
+      <td th:text="${coupon.issuedDate}">2023-05-01</td>
+      <td th:text="${coupon.expirationDate}">2023-06-30</td>
+      <td th:text="${coupon.usedDate}">2023-05-15</td>
+      <!-- 'ALL' 탭에서는 모든 쿠폰을, 'USED' 탭에서는 사용 완료 쿠폰만 표시 -->
+      <td th:classappend="{'badge-used': ${coupon.status == '사용완료'}}">
+        <span th:if="${tab == 'ALL'}">사용 완료</span>
+        <span th:if="${tab == 'USED' and coupon.status == '사용완료'}" class="badge badge-used">Used</span>
+      </td>
+      <td>
+        <button class="btn-delete" th:if="${tab == 'ALL' and coupon.status == '사용완료'}"
+                th:attr="onclick='handleDelete(' + ${coupon.id} + ')'" th:text="Delete"></button>
+        <button class="btn-delete" th:if="${tab == 'USED'}" onclick="handleDelete(${coupon.id})">Delete</button>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+
+<script>
+  function changeTab(tab) {
+    var tabs = document.querySelectorAll('.tab');
+    tabs.forEach(function(item) {
+      item.classList.remove('active');
+    });
+    var activeTab = document.querySelector('.tab.' + tab.toLowerCase());
+    activeTab.classList.add('active');
+  }
+
+  function handleDelete(id) {
+    console.log(`Deleting coupon with ID: ${id}`);
+    // 여기서 실제 삭제 로직을 구현할 수 있습니다.
+    // AJAX 요청이나 서버로의 데이터 전송 등의 처리가 이루어질 수 있습니다.
+  }
+</script>
+
+</body>
+</html>
