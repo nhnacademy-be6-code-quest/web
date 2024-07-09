@@ -63,7 +63,7 @@ public class CartController {
                             })
                             .collect(Collectors.toList());
                     model.addAttribute("jsonCartList", jsonCartList);
-                    model.addAttribute("orderUrl", "/non-client/order");
+                    model.addAttribute("orderUrl", "/non-client/orders");
                     return "index";
                 }else{
                     return "redirect:/";
@@ -94,7 +94,7 @@ public class CartController {
                     model.addAttribute("cartList", cartList);
                 }
                 model.addAttribute("view", "cart");
-                model.addAttribute("orderUrl", "/client/order");
+                model.addAttribute("orderUrl", "/client/orders");
                 return "index";
             }else {
                 return "redirect:/";

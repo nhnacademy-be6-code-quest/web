@@ -36,10 +36,8 @@ public interface CategoryClient {
     ResponseEntity<Page<CategoryGetResponseDto>> getAllCategories(@RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "desc", required = false) Boolean desc, @RequestParam(name = "sort", required = false) String sort);
 
     @GetMapping("/product/categories/containing")
-    ResponseEntity<Page<CategoryGetResponseDto>> getNameContainingCategories(@RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "desc", required = false) Boolean desc, @RequestParam(name = "sort", required = false) String sort, @RequestParam("categoryName") String categoryName);
-
-//    @GetMapping("/product/categories/sub")
-//    ResponseEntity<Page<CategoryGetResponseDto>> getSubCategories(@RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "desc", required = false) Boolean desc, @RequestParam(name = "sort", required = false) String sort, @RequestParam("categoryName") String categoryName);
+    ResponseEntity<Page<CategoryGetResponseDto>> getNameContainingCategories(@RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "desc", required = false) Boolean desc, @RequestParam(name = "sort", required = false) String sort,
+                                                                             @RequestParam("categoryName") String categoryName);
 
     @GetMapping("/product/categories/{categoryId}/sub")
     ResponseEntity<Page<CategoryGetResponseDto>> getSubCategories(@RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "desc", required = false) Boolean desc, @RequestParam(name = "sort", required = false) String sort,

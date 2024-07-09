@@ -1,5 +1,6 @@
 package com.nhnacademy.codequestweb.request.order.field;
 
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,7 +14,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class OrderItemDto{
+    @NotNull
     Long productId;
+    @NotNull
     Long quantity;
     List<Long> categoryIdList;
     boolean packable;

@@ -11,6 +11,7 @@ import com.nhnacademy.codequestweb.response.product.book.BookProductGetResponseD
 import com.nhnacademy.codequestweb.response.product.common.ProductRegisterResponseDto;
 import com.nhnacademy.codequestweb.response.product.common.ProductUpdateResponseDto;
 import com.nhnacademy.codequestweb.service.product.BookProductService;
+import com.nhnacademy.codequestweb.utils.BookPageUtils;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -55,6 +56,17 @@ public class BookController {
         req.setAttribute("adminPage", "bookProductRegisterForm");
         return "index";
     }
+
+    @GetMapping("/update/{productId}")
+    public String updateForm(HttpServletRequest req, @PathVariable("productId") Long productId){
+//        ResponseEntity<BookProductGetResponseDto> response = bookProductService.getSingleBookInfo(CookieUtils.setHeader(req), bookId);
+//        BookProductGetResponseDto bookProductGetResponseDto = response.getBody();
+        //이거 디비 조회해와야 하긴 하네.
+        req.setAttribute("view", "adminPage");
+        req.setAttribute("adminPage", "bookProductUpdateForm");
+        return "index";
+    }
+
 
     //register form 외에서는 호출 불가함. 자바스크립트로 통제해놓음
     @GetMapping("/aladinList")
@@ -140,8 +152,9 @@ public class BookController {
             @RequestParam(name = "productState", required = false) Integer productState,
             Model model) {
         ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getAllBookPage(CookieUtils.setHeader(req), page, size, sort, desc, productState);
-        model.addAttribute("books", response.getBody().getContent());
-        req.setAttribute("view", "bookPage");
+        BookPageUtils.setBookPage(response, page, sort, desc, model);
+        model.addAttribute("mainText", "관리자 페이지");
+        model.addAttribute("url", req.getRequestURI());
         return "index";
     }
 
@@ -156,8 +169,10 @@ public class BookController {
             @RequestParam("title")String title,
             Model model) {
         ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getNameContainingBookPage(CookieUtils.setHeader(req), page, size, sort, desc, title, productState);
-        model.addAttribute("books", response.getBody().getContent());
-        req.setAttribute("view", "bookPage");
+
+        BookPageUtils.setBookPage(response, page, sort, desc, model);
+        model.addAttribute("mainText", "관리자 페이지");
+        model.addAttribute("url", req.getRequestURI());
         return "index";
     }
 
@@ -173,12 +188,9 @@ public class BookController {
             @RequestParam(name = "productState", required = false) Integer productState,
             Model model) {
         ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getBookPageFilterByTag(CookieUtils.setHeader(req), page, size, sort, desc, tagNameSet, isAnd, productState);
-        model.addAttribute("books", response.getBody().getContent());
-        for(BookProductGetResponseDto book : response.getBody()) {
-            log.info("cover : {}",book.cover());
-        }
-        log.warn("response: {}", response.getBody().getContent());
-        req.setAttribute("view", "bookPage");
+        BookPageUtils.setBookPage(response, page, sort, desc, model);
+        model.addAttribute("mainText", "관리자 페이지");
+        model.addAttribute("url", req.getRequestURI());
         return "index";
     }
 
@@ -190,11 +202,12 @@ public class BookController {
             @RequestParam(name = "sort", required = false)String sort,
             @RequestParam(name = "desc", required = false)Boolean desc,
             @RequestParam(name = "productState", required = false) Integer productState,
-            @PathVariable("categoryId") Long categoryId) {
+            @PathVariable("categoryId") Long categoryId,
+            Model model) {
         ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getBookPageFilterByCategory(CookieUtils.setHeader(req), page, size, sort, desc, categoryId, productState);
-        req.setAttribute("books", response.getBody().getContent());
-        log.warn("response: {}", response.getBody().getContent());
-        req.setAttribute("view", "bookPage");
+        BookPageUtils.setBookPage(response, page, sort, desc, model);
+        model.addAttribute("mainText", "관리자 페이지");
+        model.addAttribute("url", req.getRequestURI());
         return "index";
     }
 
@@ -207,10 +220,9 @@ public class BookController {
             @RequestParam(name = "desc", required = false)Boolean desc,
             Model model) {
         ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getLikeBookPage(CookieUtils.setHeader(req), page, size, sort, desc);
-        model.addAttribute("books", response.getBody().getContent());
-
-        log.warn("response: {}", response.getBody().getContent());
-        req.setAttribute("view", "bookPage");
+        BookPageUtils.setBookPage(response, page, sort, desc, model);
+        model.addAttribute("mainText", "관리자 페이지");
+        model.addAttribute("url", req.getRequestURI());
         return "index";
     }
 

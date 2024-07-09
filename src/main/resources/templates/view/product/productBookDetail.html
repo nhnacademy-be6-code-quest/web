@@ -12,6 +12,20 @@
         }
     </script>
     <style>
+        img{
+            width: 500px;
+        }
+        .prod-favorite .prod-favorite-btn {
+            width: 40px;
+            height: 40px;
+            border: 0 none;
+            cursor: pointer;
+            outline: 0;
+            background: url(//img1a.coupangcdn.com/image/dragonstone/sdp/PCSDP_imageasset_180417-min.png) no-repeat -218px -209px;
+        }
+        .prod-favorite .prod-favorite-btn.prod-favorite-on {
+            background: url(//img1a.coupangcdn.com/image/dragonstone/sdp/PCSDP_imageasset_180417-min.png) no-repeat -262px -209px;
+        }
         .product-book-detail-wrapper {
             display: flex;
             justify-content: center;
@@ -147,18 +161,20 @@
                           style="text-decoration: line-through; color: #bdc3c7; font-size: 0.8em; margin-left: 10px;">정가</span>
                 </p>
                 <div th:if="${book.hasLike()}">
-                    좋아요 눌려있음!
                     <form action="/product/client/unlike"  method="post">
                         <input type="hidden" name="_method" value="DELETE"/>
                         <input type="hidden" name="productId" th:value="${book.productId()}">
-                        <button type="submit">좋아요 취소</button>
+                        <div class="prod-favorite ">
+                            <button type="submit" class="prod-favorite-btn prod-favorite-on"></button>
+                        </div>
                     </form>
                 </div>
                 <div th:unless="${book.hasLike()}">
-                    좋아요 눌려있지 않음!
                     <form action="/product/client/like" method="post">
                         <input type="hidden" name="productId" th:value="${book.productId()}">
-                        <button type="submit">좋아요</button>
+                        <div class="prod-favorite ">
+                            <button type="submit" class="prod-favorite-btn"></button>
+                        </div>
                     </form>
                 </div>
                 <div class="book-actions">
@@ -166,18 +182,17 @@
                         <input type="hidden" name="productId" th:value="${book.productId()}">
                         <input type="number" id="sharedQuantity" name="quantity" required min="1" onchange="copyQuantity()">
                     </form>
-                    <form id="purchase" action="/test" method="get">
+                    <form id="purchase" th:action="${orderURL}" method="post">
                         <input type="hidden" id="purchaseQuantity" min="1" name="quantity">
                         <input type="hidden" name="productId" th:value="${book.productId()}">
                         <span th:each="category : ${book.categorySet()}">
-                            <input type="hidden" name="categoryId" th:value="${category.productCategoryId()}">
+                            <input type="hidden" name="categoryIdList" th:value="${category.productCategoryId()}">
                         </span>
                     </form>
                     <button type="submit" form="saveCart" class="product-book-detail-btn product-book-detail-btn-cart">장바구니 담기</button>
                     <button class="product-book-detail-btn product-book-detail-btn-buy" type="submit" form="purchase">바로 구매</button>
 
                 </div>
-
                 <div class="book-meta">
                     <p th:text="'재고: ' + ${book.productInventory} + '권'">재고</p>
                     <p th:text="'조회수: ' + ${book.productViewCount}">조회수</p>
