@@ -40,14 +40,13 @@ public class TagController {
     public String getAllTagPage(@RequestParam(name = "page", required = false)Integer page, @RequestParam(name = "desc", required = false)Boolean desc, Model model) {
         ResponseEntity<Page<TagGetResponseDto>> response = tagService.getAllTags(page, desc);
         model.addAttribute("tagPage", response.getBody());
-//        model.addAttribute("view", "admin");
-        return "/view/product/tagPage";
+        return "view/product/tagPage";
     }
 
     @GetMapping("/tags/containing")
     public String getNameContainingTagPage(@RequestParam(name = "page", required = false)Integer page, @RequestParam(name = "desc", required = false)Boolean desc, @RequestParam("tagName") String tagName, Model model) {
         ResponseEntity<Page<TagGetResponseDto>> response = tagService.getNameContainingTagPage(page, desc, tagName);
         model.addAttribute("tagPage", response.getBody());
-        return "/view/product/tagPage";
+        return "view/product/tagPage";
     }
 }
