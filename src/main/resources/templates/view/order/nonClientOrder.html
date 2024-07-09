@@ -24,6 +24,10 @@
         input:focus {
             outline: none;
         }
+        textarea:focus {
+            outline: none;
+            resize: none;
+        }
         .not-border-input {
             width: 100%;
             border: none;
@@ -35,9 +39,12 @@
     </style>
 </head>
 <body>
-<div th:replace="~{layout/header.html :: headerFragment ('user', 'message')}"></div>
 
-<form th:action="@{/api/client/orders}" th:object="${nonClientOrderForm}" method="post">
+<div th:if="${view != 'adminPage'}">
+    <div th:replace="~{layout/header.html :: headerFragment ('isLogin', 'message', 'categories')}"></div>
+</div>
+
+<form th:action="@{/api/non-client/orders}" th:object="${nonClientOrderForm}" method="post">
 
     <div class="sub-container">
         <h3>주문 상품 목록</h3>
@@ -58,7 +65,7 @@
                              data-product-quantity=${orderDetailDto.quantity}">
                     <td>
                         <label>
-                            <input type="text" class="readonly-input" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].productName}" readonly/>
+                            <textarea type="text" class="readonly-input" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].productName}" readonly/>
                         </label>
                     </td>
                     <td>
@@ -76,7 +83,7 @@
                             <input type="text" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].productId}" th:value="${orderDetailDto.productId}"/>
                         </label>
                     </td>
-                    <td>
+                    <td th:hidden="!${orderDetailDto.packableProduct}">
                         <label>
                             <input type="checkbox" th:onclick="handleOnChangeUsedPackaging(this.checked, [[${iterStat.index}]])" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].usePackaging}" th:value="false"> 포장지선택
                             <input hidden="hidden" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].optionProductId}"/>
@@ -97,6 +104,9 @@
                                 </option>
                             </select>
                         </div>
+                    </td>
+                    <td th:hidden="${orderDetailDto.packableProduct}">
+                        포장불가능한 상품입니다
                     </td>
                 </tr>
             </tbody>
@@ -134,13 +144,13 @@
 
     <div class="sub-container">
         <h3>주문자 정보</h3>
-        <table style="border: 1px solid black; width: 60%">
+        <table class="table table-bordered border-primary" style="border: 1px solid black; width: 60%">
             <tr style="border: 1px solid black;">
                 <td>
                     비회원 주문자 성함
                 </td>
                 <td>
-                    <label style="border: 1px solid black;">
+                    <label style="width: 100%">
                         <input class="not-border-input" th:field="*{orderedPersonName}" type="text"/>
                     </label>
                 </td>
@@ -150,7 +160,7 @@
                     비회원 전화번호
                 </td>
                 <td>
-                    <label style="border: 1px solid black;">
+                    <label style="width: 100%">
                         <input class="not-border-input" th:field="*{phoneNumber}"/>
                     </label>
                 </td>
@@ -160,8 +170,18 @@
                     비회원 주문 비밀번호
                 </td>
                 <td style="border: 1px solid black;">
-                    <label>
+                    <label style="width: 100%">
                         <input class="not-border-input" type="password" th:field="*{orderPassword}"/>
+                    </label>
+                </td>
+            </tr>
+            <tr style="border: 1px solid black;">
+                <td>
+                    비회원 이메일
+                </td>
+                <td style="border: 1px solid black;">
+                    <label style="width: 100%">
+                        <input class="not-border-input" type="email" th:field="*{email}"/>
                     </label>
                 </td>
             </tr>
@@ -170,18 +190,24 @@
 
     <div class="sub-container">
         <h3>배송 정보</h3>
-        <table style="border: 1px solid black; width: 60%">
+        <label>
+            <input type="button" class="btn btn-outline-secondary" onclick="findNonClientAddress()" value="비회원 주소 찾기"><br>
+        </label>
+        <div id="nonclient-address-wrap" style="display:none;border:1px solid;width:500px;height:300px;margin:5px 0;position:relative">
+            <img src="//t1.daumcdn.net/postcode/resource/images/close.png" id="btnFoldWrap" style="cursor:pointer;position:absolute;right:0px;top:-1px;z-index:1" onclick="foldDaumPostcode()" alt="접기 버튼">
+        </div>
+        <table class="table table-bordered border-primary" style="border: 1px solid black; width: 60%">
             <tr style="border: 1px solid black;">
                 <td>우편번호</td>
-                <td style="border: 1px solid black;">
+                <td>
                     <label>
                         <input class="not-border-input" th:field="*{addressZipCode}"/><br/>
                     </label>
                 </td>
             </tr>
             <tr style="border: 1px solid black;">
-                <td>배송주소</td>
-                <td style="border: 1px solid black;">
+                <td>주소</td>
+                <td>
                     <label>
                         <input class="not-border-input" th:field="*{deliveryAddress}"/><br/>
                     </label>
@@ -189,7 +215,7 @@
             </tr>
             <tr style="border: 1px solid black;">
                 <td>상세주소</td>
-                <td style="border: 1px solid black;">
+                <td>
                     <label>
                         <input class="not-border-input" th:field="*{deliveryDetailAddress}"/><br/>
                     </label>
@@ -228,6 +254,75 @@
     <div class="sub-container">
         <button type="submit" class="btn text-white" style="background-color:#ecb54f; width: 15%;" onclick="tryOrder()">결제하기</button>
     </div>
+
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <script>
+        // 우편번호 찾기 찾기 화면을 넣을 element
+        var element_wrap = document.getElementById('nonclient-address-wrap');
+
+        function foldDaumPostcode() {
+            // iframe을 넣은 element를 안보이게 한다.
+            element_wrap.style.display = 'none';
+        }
+
+        function findNonClientAddress() {
+            // 현재 scroll 위치를 저장해놓는다.
+            var currentScroll = Math.max(document.body.scrollTop, document.documentElement.scrollTop);
+            new daum.Postcode({
+                oncomplete: function(data) {
+                    var addr = ''; // 주소 변수
+                    var extraAddr = ''; // 참고항목 변수
+
+                    //사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+                    if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
+                        addr = data.roadAddress;
+                    } else { // 사용자가 지번 주소를 선택했을 경우(J)
+                        addr = data.jibunAddress;
+                    }
+
+                    // 사용자가 선택한 주소가 도로명 타입일때 참고항목을 조합한다.
+                    if(data.userSelectedType === 'R'){
+                        // 법정동명이 있을 경우 추가한다. (법정리는 제외)
+                        // 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
+                        if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)){
+                            extraAddr += data.bname;
+                        }
+                        // 건물명이 있고, 공동주택일 경우 추가한다.
+                        if(data.buildingName !== '' && data.apartment === 'Y'){
+                            extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
+                        }
+                        // 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
+                        if(extraAddr !== ''){
+                            extraAddr = ' (' + extraAddr + ')';
+                        }
+
+                    }
+
+                    // 우편번호와 주소 정보를 해당 필드에 넣는다.
+                    document.getElementById('addressZipCode').value = data.zonecode;
+                    document.getElementById("deliveryAddress").value = addr;
+                    // 커서를 상세주소 필드로 이동한다.
+                    document.getElementById("sample3_detailAddress").focus();
+
+                    // iframe을 넣은 element를 안보이게 한다.
+                    // (autoClose:false 기능을 이용한다면, 아래 코드를 제거해야 화면에서 사라지지 않는다.)
+                    element_wrap.style.display = 'none';
+
+                    // 우편번호 찾기 화면이 보이기 이전으로 scroll 위치를 되돌린다.
+                    document.body.scrollTop = currentScroll;
+                },
+                // 우편번호 찾기 화면 크기가 조정되었을때 실행할 코드를 작성하는 부분. iframe을 넣은 element의 높이값을 조정한다.
+                onresize : function(size) {
+                    element_wrap.style.height = size.height+'px';
+                },
+                width : '100%',
+                height : '100%'
+            }).embed(element_wrap);
+
+            // iframe을 넣은 element를 보이게 한다.
+            element_wrap.style.display = 'block';
+        }
+    </script>
 
 <script th:inline="javascript">
 
@@ -280,54 +375,6 @@
         document.getElementById(calendar).hidden = !checked;
     }
 
-    <!--포인트 관련-->
-    function validatePoints() {
-        const remainingPoints = parseInt(document.getElementById('remaining-points').textContent);
-        const usePoints = parseInt(document.getElementById('use-points').value);
-        const errorMessage = document.getElementById('error-message');
-        if (usePoints > remainingPoints) {
-            errorMessage.style.display = 'block';
-            document.getElementById('use-points').value = remainingPoints;
-        } else {
-            errorMessage.style.display = 'none';
-        }
-        updateCurrentData();
-    }
-
-    <!--주소 선택 관련-->
-    function handleSelectAddress(selectedClientAddressDto) {
-        showSelectedAddressInfo();
-        updateSelectedAddressInfoData(selectedClientAddressDto);
-    }
-
-    function showSelectedAddressInfo() {
-        const selectedAddressInfo = document.getElementById("selectedAddressInfo");
-        selectedAddressInfo.children[0].hidden = true;
-        selectedAddressInfo.children[1].hidden = false;
-    }
-
-    function updateSelectedAddressInfoData(selectedClientAddressElement) {
-        document.getElementById("addressNickname").value = selectedClientAddressElement.children[0].innerText;
-        document.getElementById("addressZipCode").value = selectedClientAddressElement.children[1].innerText;
-        document.getElementById("deliveryAddress").value = selectedClientAddressElement.children[2].innerText + ", " +  selectedClientAddressElement.children[3].innerText;
-    }
-
-    <!--번호 선택 관련-->
-    function handleSelectPhoneNumber(phoneNumberElement){
-        showSelectedPhoneNumberInfo();
-        updateSelectedPhoneNumberInfoData(phoneNumberElement);
-    }
-
-    function showSelectedPhoneNumberInfo(){
-        const selectedPhoneNumberInfo = document.getElementById("selectedPhoneNumberForm")
-        selectedPhoneNumberInfo.children[0].hidden = true;
-        selectedPhoneNumberInfo.children[1].hidden = false;
-    }
-
-    function updateSelectedPhoneNumberInfoData(phoneNumberElement){
-        document.getElementById("phoneNumber").value = phoneNumberElement.children[0].innerText;
-    }
-
     <!--금액 관련-->
     function updateShippingFee(){
         const originShippingFee = [[${shippingPolicy.shippingFee}]];
@@ -360,21 +407,11 @@
     }
 
     function updatePayAmount(){
-        let pointDiscountAmount = document.getElementById("usedPointDiscountAmount").value;
-        let couponDiscountAmount = document.getElementById("couponDiscountAmount").value;
         const shippingFee = parseInt(document.getElementById("shippingFee").value);
         const productTotalAmount = parseInt(document.getElementById("productTotalAmount").value);
 
-        if(pointDiscountAmount == null) pointDiscountAmount = 0;
-        if(couponDiscountAmount == null) couponDiscountAmount = 0;
-
-        console.log("shippingFee: ", shippingFee);
-        console.log("productTotalAmount: ", productTotalAmount);
-        console.log("pointDiscountAmount: ", pointDiscountAmount);
-        console.log("couponDiscountAmount: ", couponDiscountAmount);
-
         // 최종 결제 금액
-        document.getElementById("payAmount").value = productTotalAmount + shippingFee - pointDiscountAmount - couponDiscountAmount;
+        document.getElementById("payAmount").value = productTotalAmount + shippingFee;
     }
 
 </script>

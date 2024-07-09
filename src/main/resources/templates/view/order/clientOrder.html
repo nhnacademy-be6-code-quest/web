@@ -24,6 +24,10 @@
         input:focus {
             outline: none;
         }
+        textarea:focus {
+            outline: none;
+            resize: none;
+        }
     </style>
 </head>
 <body>
@@ -51,8 +55,8 @@
                              data-product-price=${orderDetailDto.productSinglePrice},
                              data-product-quantity=${orderDetailDto.quantity}">
                     <td>
-                        <label>
-                            <input type="text" class="readonly-input" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].productName}" readonly/>
+                        <label style="width: 100%;">
+                            <textarea type="text" class="readonly-input" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].productName}" readonly></textarea>
                         </label>
                     </td>
                     <td>
@@ -70,7 +74,7 @@
                             <input type="text" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].productId}" th:value="${orderDetailDto.productId}"/>
                         </label>
                     </td>
-                    <td>
+                    <td th:hidden="!${orderDetailDto.packableProduct}">
                         <label>
                             <input type="checkbox" th:onclick="handleOnChangeUsedPackaging(this.checked, [[${iterStat.index}]])" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].usePackaging}" th:value="false"> 포장지선택
                             <input hidden="hidden" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].optionProductId}"/>
@@ -91,6 +95,9 @@
                                 </option>
                             </select>
                         </div>
+                    </td>
+                    <td th:hidden="${orderDetailDto.packableProduct}">
+                        포장불가능한 상품입니다
                     </td>
                 </tr>
             </tbody>
