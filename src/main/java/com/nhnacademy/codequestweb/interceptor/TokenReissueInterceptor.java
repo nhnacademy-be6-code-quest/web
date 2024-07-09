@@ -107,15 +107,15 @@ public class TokenReissueInterceptor implements HandlerInterceptor {
             });
 
             // Add original headers to the form
-            Enumeration<String> headerNames = request.getHeaderNames();
-            while (headerNames.hasMoreElements()) {
-                String headerName = headerNames.nextElement();
-                Enumeration<String> headers = request.getHeaders(headerName);
-                while (headers.hasMoreElements()) {
-                    String headerValue = headers.nextElement();
-                    out.println("<input type=\"hidden\" name=\"header_" + headerName + "\" value=\"" + headerValue + "\">");
-                }
-            }
+//            Enumeration<String> headerNames = request.getHeaderNames();
+//            while (headerNames.hasMoreElements()) {
+//                String headerName = headerNames.nextElement();
+//                Enumeration<String> headers = request.getHeaders(headerName);
+//                while (headers.hasMoreElements()) {
+//                    String headerValue = headers.nextElement();
+//                    out.println("<input type=\"hidden\" name=\"header_" + headerName + "\" value=\"" + headerValue + "\">");
+//                }
+//            }
 
             out.println("</form>");
             out.println("<script type=\"text/javascript\">");
