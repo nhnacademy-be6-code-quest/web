@@ -40,7 +40,7 @@ public class PaymentController {
             "https://localhost:8080/client/order/" + orderId + "/payment/success");
         model.addAttribute("failUrl",
             "https://localhost:8080/client/order/" + orderId + "/payment/fail");
-        return "/view/payment/tossPage";
+        return "view/payment/tossPage";
     }
 
     @GetMapping("/client/order/{orderId}/payment/success")
