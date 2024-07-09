@@ -51,7 +51,7 @@ public class CouponService {
         return couponTypeClient.findAllType(headers);
     }
 
-    public CouponProvideTypeResponseDto findCouponType(HttpHeaders headers,  long couponPolicyId){
+    public CouponProvideTypeResponseDto findCouponType(HttpHeaders headers,long couponPolicyId){
         return couponPolicyClient.findCouponType(headers, couponPolicyId);
     }
 

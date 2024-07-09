@@ -40,7 +40,7 @@ public class CouponController {
 
         Page<ClientCouponPaymentResponseDto> coupons = couponService.getClient(headers, page, size);
         model.addAttribute("couponPayments",coupons);
-        return "/view/coupon/coupon_client";
+        return "view/coupon/coupon_client";
     }
 
     @GetMapping("/admin/coupon/register/{couponPolicyId}")
@@ -55,7 +55,7 @@ public class CouponController {
         model.addAttribute("status",statuses);
         model.addAttribute("couponPolicyId",couponPolicyId);
         model.addAttribute("name", name);
-        return "/view/coupon/admin_coupon_register";
+        return "view/coupon/admin_coupon_register";
     }
 
     @PostMapping("/api/coupon/register/{couponPolicyId}")
