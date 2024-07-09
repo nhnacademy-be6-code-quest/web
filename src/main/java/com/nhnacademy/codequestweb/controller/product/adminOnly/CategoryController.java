@@ -99,7 +99,7 @@ public class CategoryController {
     @GetMapping("/categories/all")
     public String getAllCategoriesPage(@RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "desc", required = false) Boolean desc, @RequestParam(name = "sort", required = false) String sort, Model model) {
         ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getCategories(page, desc, sort);
-        List<CategoryGetResponseDto> categoryNamePage = getCategoryPathNameList(response);
+        List<CategoryGetResponseDto> categoryNamePage = response.getBody().getContent();
         Map<CategoryGetResponseDto, String> categoryNameMap = new LinkedHashMap<>();
         Set<Integer> pageNumbers = new LinkedHashSet<>();
         pageNumbers.add(1);
@@ -133,26 +133,20 @@ public class CategoryController {
         return stringBuilder.toString();
     }
 
-    private List<CategoryGetResponseDto> getCategoryPathNameList(ResponseEntity<Page<CategoryGetResponseDto>> response) {
-        if (response.getBody() != null) {
-            return response.getBody().getContent();
-        }else{
-            return new ArrayList<>();
-        }
-    }
-
 
     @GetMapping("/categories/containing")
     public String getCategoryContainingPage(@RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "desc", required = false) Boolean desc, @RequestParam(name = "sort", required = false) String sort, @RequestParam("categoryName") String categoryName, Model model) {
         ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getNameContainingCategories(page, desc, sort, categoryName);
-        List<CategoryGetResponseDto> categoryNamePage = getCategoryPathNameList(response);
+        Page<CategoryGetResponseDto> categoryNamePage = response.getBody();
+
+        List<CategoryGetResponseDto> categoryNameList = categoryNamePage.getContent();
         Map<CategoryGetResponseDto, String> categoryNameMap = new LinkedHashMap<>();
         Set<Integer> pageNumbers = new LinkedHashSet<>();
         pageNumbers.add(1);
         for (int i = 0; i < response.getBody().getTotalPages(); i++) {
             pageNumbers.add(i);
         }
-        for (CategoryGetResponseDto category : categoryNamePage) {
+        for (CategoryGetResponseDto category : categoryNameList) {
             categoryNameMap.put(category, getAllCategoryPathName(category));
         }
 
@@ -170,7 +164,7 @@ public class CategoryController {
                                      @PathVariable("categoryId") Long categoryId,
                                      Model model) {
         ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getSubCategories(page, desc, sort, categoryId);
-        List<CategoryGetResponseDto> categoryNamePage = getCategoryPathNameList(response);
+        List<CategoryGetResponseDto> categoryNamePage = response.getBody().getContent();
         Map<CategoryGetResponseDto, String> categoryNameMap = new LinkedHashMap<>();
         Set<Integer> pageNumbers = new LinkedHashSet<>();
         pageNumbers.add(1);

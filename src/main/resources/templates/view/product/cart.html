@@ -141,7 +141,7 @@
                     </div>
                 </div>
             </div>
-            <form id="cartForm" th:action="${orderUrl}" method="get" onsubmit="formValidation(event)">
+            <form id="cartForm" th:action="${orderUrl}" method="post" onsubmit="formValidation(event)">
 
             <div th:each="jsonCart : ${jsonCartList}">
                 <input type="checkbox" id="checkBox" class="box" name="test" th:value="${jsonCart}" onclick="check(this)">

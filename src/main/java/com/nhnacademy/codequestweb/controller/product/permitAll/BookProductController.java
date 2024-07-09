@@ -6,6 +6,7 @@ import com.nhnacademy.codequestweb.request.product.common.InventoryDecreaseReque
 import com.nhnacademy.codequestweb.response.product.book.BookProductGetResponseDto;
 import com.nhnacademy.codequestweb.response.product.productCategory.ProductCategory;
 import com.nhnacademy.codequestweb.service.product.BookProductService;
+import com.nhnacademy.codequestweb.utils.BookPageUtils;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -58,9 +59,12 @@ public class BookProductController {
         model.addAttribute("view", "productBookDetail");
         model.addAttribute("book", bookProductGetResponseDto);
         model.addAttribute("listOfCategoryList", allCategoryList);
+        if (CookieUtils.isGuest(req)){
+            model.addAttribute("orderURL", "/non-client/order");
+        }else{
+            model.addAttribute("orderURL", "/client/order");
+        }
         log.info("header of get : {}", CookieUtils.setHeader(req));
-        log.info(response.getBody().toString());
-        log.info("has like? {}", response.getBody().hasLike());
         return "index";
     }
 
@@ -86,14 +90,7 @@ public class BookProductController {
             model.addAttribute("mainText", "전체 검색");
         }
 
-
-        model.addAttribute("sort", sort);
-        model.addAttribute("desc", desc);
-        model.addAttribute("view", "productList");
-        model.addAttribute("productList", response.getBody().getContent());
-        page = page == null ? 1 : page;
-        model.addAttribute("page", page);
-        model.addAttribute("totalPage", response.getBody().getTotalPages());
+        BookPageUtils.setBookPage(response, page, sort, desc, model);
         model.addAttribute("url", req.getRequestURI());
         return "index";
     }
@@ -107,14 +104,7 @@ public class BookProductController {
             @RequestParam("title")String title,
             Model model) {
         ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getNameContainingBookPage(CookieUtils.setHeader(req), page, 10, sort, desc, title, 0);
-        model.addAttribute("sort", sort);
-        model.addAttribute("desc", desc);
-        model.addAttribute("view", "productList");
-        model.addAttribute("productList", response.getBody().getContent());
-        page = page == null ? 1 : page;
-        model.addAttribute("page", page);
-        model.addAttribute("totalPage", response.getBody().getTotalPages());
-        log.info("total : {}", response.getBody().getTotalPages());
+        BookPageUtils.setBookPage(response, page, sort, desc, model);
         model.addAttribute("mainText", "제목 검색");
         model.addAttribute("url", req.getRequestURI() + "?title=" + title);
         return "index";
@@ -130,13 +120,7 @@ public class BookProductController {
             @RequestParam(name = "isAnd", required = false)Boolean isAnd,
             Model model) {
         ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getBookPageFilterByTag(CookieUtils.setHeader(req), page, 10, sort, desc, tagNameSet, isAnd, 0);
-        model.addAttribute("sort", sort);
-        model.addAttribute("desc", desc);
-        model.addAttribute("view", "productList");
-        model.addAttribute("productList", response.getBody().getContent());
-        page = page == null ? 1 : page;
-        model.addAttribute("page", page);
-        model.addAttribute("totalPage", response.getBody().getTotalPages());
+        BookPageUtils.setBookPage(response, page, sort, desc, model);
         model.addAttribute("mainText", "태그 검색 - " + tagNameSet);
         StringJoiner stringJoiner = new StringJoiner(",");
         for (String tagName : tagNameSet) {
@@ -150,19 +134,12 @@ public class BookProductController {
     public String getBookPageFilterByCategory(
             HttpServletRequest req,
             @RequestParam(name = "page", required = false)Integer page,
-            @RequestParam(name= "size", required = false)Integer size,
             @RequestParam(name = "sort", required = false)String sort,
             @RequestParam(name = "desc", required = false)Boolean desc,
             @PathVariable("categoryId") Long categoryId,
             Model model) {
         ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getBookPageFilterByCategory(CookieUtils.setHeader(req), page, 10, sort, desc, categoryId, 0);
-        model.addAttribute("sort", sort);
-        model.addAttribute("desc", desc);
-        model.addAttribute("view", "productList");
-        model.addAttribute("productList", response.getBody().getContent());
-        page = page == null ? 1 : page;
-        model.addAttribute("page", page);
-        model.addAttribute("totalPage", response.getBody().getTotalPages());
+        BookPageUtils.setBookPage(response, page, sort, desc, model);
         model.addAttribute("mainText", "카테고리 검색 - " + "");
         model.addAttribute("url", req.getRequestURI());
         return "index";
@@ -172,18 +149,11 @@ public class BookProductController {
     public String getLikeBookPage(
             HttpServletRequest req,
             @RequestParam(name = "page", required = false)Integer page,
-            @RequestParam(name= "size", required = false)Integer size,
             @RequestParam(name = "sort", required = false)String sort,
             @RequestParam(name = "desc", required = false)Boolean desc,
             Model model) {
-        ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getLikeBookPage(CookieUtils.setHeader(req), page, size, sort, desc);
-        model.addAttribute("sort", sort);
-        model.addAttribute("desc", desc);
-        model.addAttribute("view", "productList");
-        model.addAttribute("productList", response.getBody().getContent());
-        page = page == null ? 1 : page;
-        model.addAttribute("page", page);
-        model.addAttribute("totalPage", response.getBody().getTotalPages());
+        ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getLikeBookPage(CookieUtils.setHeader(req), page, 10, sort, desc);
+        BookPageUtils.setBookPage(response, page, sort, desc, model);
         model.addAttribute("mainText", "좋아요 목록");
         model.addAttribute("url", req.getRequestURI());
         return "index";
