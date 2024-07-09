@@ -1,6 +1,7 @@
 package com.nhnacademy.codequestweb.client.coupon;
 
 import com.nhnacademy.codequestweb.request.coupon.CouponRegisterRequestDto;
+import com.nhnacademy.codequestweb.request.payment.PaymentCompletedCouponRequestDto;
 import com.nhnacademy.codequestweb.response.coupon.CouponAdminPageCouponResponseDto;
 import com.nhnacademy.codequestweb.response.coupon.CouponMyPageCouponResponseDto;
 import com.nhnacademy.codequestweb.response.coupon.CouponOrderResponseDto;
