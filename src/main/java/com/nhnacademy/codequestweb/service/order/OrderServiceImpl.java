@@ -85,6 +85,7 @@ public class OrderServiceImpl implements OrderService {
                             .productName(book.title())
                             .quantity(orderItemDto.getQuantity())
                             .categoryIdList(orderItemDto.getCategoryIdList())
+                            .packableProduct(book.packable())
                             .productSinglePrice(book.productPriceSales())
                             .build()
             );
@@ -140,6 +141,7 @@ public class OrderServiceImpl implements OrderService {
                         .productName(book.title())
                         .quantity(orderItemDto.getQuantity())
                         .categoryIdList(orderItemDto.getCategoryIdList())
+                        .packableProduct(book.packable())
                         .productSinglePrice(book.productPriceSales())
                         .build()
         );
@@ -185,6 +187,7 @@ public class OrderServiceImpl implements OrderService {
                         .productId(orderItemDto.getProductId())
                         .productName(book.title())
                         .quantity(orderItemDto.getQuantity())
+                        .packableProduct(book.packable())
                         .productSinglePrice(book.productPriceSales())
                         .build()
         );
@@ -222,6 +225,7 @@ public class OrderServiceImpl implements OrderService {
                             .productId(orderItemDto.getProductId())
                             .productName(book.title())
                             .quantity(orderItemDto.getQuantity())
+                            .packableProduct(book.packable())
                             .productSinglePrice(book.productPriceSales())
                             .build()
             );

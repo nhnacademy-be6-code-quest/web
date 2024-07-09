@@ -44,6 +44,7 @@ public class NonClientOrderForm {
         Long quantity; // 수량
         Long bookId; // 상품의 책 아이디 TODO 추후 삭제될 예정
         Long productSinglePrice; // 상품 단품 가격
+        Boolean packableProduct; // 포장가능 상품 여부
 
         Boolean usePackaging; // 포장 선택 여부
         Long optionProductId; // 옵션 상품 아이디
@@ -52,11 +53,12 @@ public class NonClientOrderForm {
         Long optionQuantity = 1L;
 
         @Builder
-        public OrderDetailDtoItem(Long productId, String productName, Long quantity, Long bookId, Long productSinglePrice){
+        public OrderDetailDtoItem(Long productId, String productName, Long quantity, Long bookId, Long productSinglePrice, Boolean packableProduct){
             this.productId = productId;
             this.productName = productName;
             this.quantity = quantity;
             this.bookId = bookId;
+            this.packableProduct = packableProduct;
             this.productSinglePrice = productSinglePrice;
         }
     }

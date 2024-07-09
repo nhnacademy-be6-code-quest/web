@@ -80,7 +80,7 @@
                             <input type="text" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].productId}" th:value="${orderDetailDto.productId}"/>
                         </label>
                     </td>
-                    <td>
+                    <td th:hidden="!${orderDetailDto.packableProduct}">
                         <label>
                             <input type="checkbox" th:onclick="handleOnChangeUsedPackaging(this.checked, [[${iterStat.index}]])" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].usePackaging}" th:value="false"> 포장지선택
                             <input hidden="hidden" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].optionProductId}"/>
@@ -101,6 +101,9 @@
                                 </option>
                             </select>
                         </div>
+                    </td>
+                    <td th:hidden="${orderDetailDto.packableProduct}">
+                        포장불가능한 상품입니다
                     </td>
                 </tr>
             </tbody>

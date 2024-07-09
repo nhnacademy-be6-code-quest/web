@@ -53,6 +53,7 @@ public class ClientOrderForm {
         List<Long> categoryIdList; // 상품의 카테고리
         Long bookId; // 상품의 책 아이디 TODO 추후 삭제될 예정
         Long productSinglePrice; // 상품 단품 가격
+        Boolean packableProduct; // 포장 가능 상품 여부
 
         Boolean usePackaging; // 포장 선택 여부
         Long optionProductId; // 옵션 상품 아이디
@@ -61,11 +62,12 @@ public class ClientOrderForm {
         Long optionQuantity = 1L;
 
         @Builder
-        public OrderDetailDtoItem(Long productId, String productName, Long quantity, List<Long> categoryIdList, Long bookId, Long productSinglePrice){
+        public OrderDetailDtoItem(Long productId, String productName, Long quantity, List<Long> categoryIdList, Boolean packableProduct, Long bookId, Long productSinglePrice){
             this.productId = productId;
             this.productName = productName;
             this.quantity = quantity;
             this.categoryIdList = categoryIdList;
+            this.packableProduct = packableProduct;
             this.bookId = bookId;
             this.productSinglePrice = productSinglePrice;
         }
