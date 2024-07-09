@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Order Details</title>
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 8px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+  </style>
+</head>
+<body>
+<h1>Order Details</h1>
+
+<h2>Products</h2>
+<table>
+  <thead>
+  <tr>
+    <th>제품명</th>
+    <th>수량</th>
+    <th>개당 가격</th>
+  </tr>
+  </thead>
+  <tbody>
+    <tr th:each="refundProductOrderDetailRequestDto : ${refundOrderRequestDto.getRefundProductOrderDetailRequestDtoList()}">
+      <td th:text="${refundProductOrderDetailRequestDto.getProductName()}"></td>
+      <td th:text="${refundProductOrderDetailRequestDto.getQuantity()}"></td>
+      <td th:text="${refundProductOrderDetailRequestDto.getPricePerProduct()}"></td>
+
+      <tr th:each="refundProductOrderDetailRequestDto : ${refundOrderRequestDto.getRefundProductOrderDetailRequestDtoList()}">
+        <td th:text="${refundProductOrderDetailRequestDto.getProductName()}"></td>
+        <td th:text="${refundProductOrderDetailRequestDto.getQuantity()}"></td>
+        <td th:text="${refundProductOrderDetailRequestDto.getPricePerProduct()}"></td>
+      </tr>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Order Information</h2>
+<table>
+  <tr>
+    <td>상품 총 금액</td>
+    <td th:text="${refundOrderRequestDto.getOrderTotalAmount()}"></td>
+  </tr>
+  <tr>
+    <td>쿠폰 할인 금액</td>
+    <td th:text="${refundOrderRequestDto.getDiscountAmountByCoupon()}"></td>
+  </tr>
+  <tr>
+    <td>포인트 할인 금액</td>
+    <td th:text="${refundOrderRequestDto.getDiscountAmountByPoint()}"></td>
+  </tr>
+  <tr>
+    <td>적립 포인트</td>
+    <td th:text="${refundOrderRequestDto.getAccumulatedPoint()}"></td>
+  </tr>
+  <tr>
+    <td>배송비</td>
+    <td th:text="${refundOrderRequestDto.getShippingFeeOfOrderDate()}"></td>
+  </tr>
+  <tr>
+    <td>반품 배송비 : 환불 요청 상태에 따라서 바뀌어야 함.</td>
+    <td th:text="${refundOrderRequestDto.getShippingFeeOfOrderDate()}"></td>
+  </tr>
+  <tr>
+    <td>환불액</td>
+    <td th:text="${refundOrderRequestDto.}"></td>
+  </tr>
+  <tr>
+    <td>환불 수단 : 회원 비회원 따라서 바뀌어야 함.</td>
+    <td>포인트</td>
+<!--    <td th:text="${포인트}"></td>-->
+  </tr>
+</table>
+</body>
+</html>
