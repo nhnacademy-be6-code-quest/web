@@ -12,9 +12,9 @@ import java.util.List;
 public interface OrderService {
     String viewClientOrder(HttpServletRequest req, Model model, List<String> orderItemDtoStringList);
     String viewClientOrder(HttpServletRequest req, Model model, OrderItemDto orderItemDto);
-    String viewTestClientOrder(HttpServletRequest req, Model model);
     Long createClientOrder(HttpServletRequest req, ClientOrderForm clientOrderForm);
-    String viewNonClientOrder(HttpServletRequest req, Model model);
+    String viewNonClientOrder(HttpServletRequest req, Model model, List<String> orderItemDtoStringList);
+    String viewNonClientOrder(HttpServletRequest req, Model model, OrderItemDto orderItemDto);
     Long createNonClientOrder(HttpServletRequest req, NonClientOrderForm nonClientOrderForm);
     ResponseEntity<String> getOrderStatus(Long orderDetailId);
 }

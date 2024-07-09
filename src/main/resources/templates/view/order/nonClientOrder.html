@@ -24,6 +24,10 @@
         input:focus {
             outline: none;
         }
+        textarea:focus {
+            outline: none;
+            resize: none;
+        }
         .not-border-input {
             width: 100%;
             border: none;
@@ -58,7 +62,7 @@
                              data-product-quantity=${orderDetailDto.quantity}">
                     <td>
                         <label>
-                            <input type="text" class="readonly-input" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].productName}" readonly/>
+                            <textarea type="text" class="readonly-input" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].productName}" readonly/>
                         </label>
                     </td>
                     <td>

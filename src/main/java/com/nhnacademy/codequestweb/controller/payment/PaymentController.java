@@ -45,11 +45,13 @@ public class PaymentController {
     }
 
     @GetMapping("/client/order/{orderId}/payment/success")
-    public String paymentResult(
-        @RequestHeader HttpHeaders headers, HttpServletRequest request,
+    public String paymentResult(HttpServletRequest request,
         @PathVariable long orderId, Model model,
         @RequestParam(value = "orderId") String tossOrderId,
         @RequestParam long amount, @RequestParam String paymentKey) throws ParseException {
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("access", CookieUtils.getCookieValue(request, "access"));
 
 //        2. 결제 검증 및 승인 창에서 필요한 요소를 Order 에서 받아 오기 TODO : @RequestHeader 로 해결함.
         PaymentOrderApproveRequestDto paymentOrderApproveRequestDto = paymentService.findPaymentOrderApproveRequestDtoByOrderId(
@@ -74,24 +76,21 @@ public class PaymentController {
 //        사용자에게 보여줄 것은 보여주고, 시스템에 에러로 남길 것은 남겨 두기
 
 //        2) 쿠폰 사용 처리 TODO : @Httpheaders headers 사용해서 303 -> 401로 오류 변경 && CookieUtils 사용해서 401 -> 400
-        headers.set("access", CookieUtils.getCookieValue(request, "access"));
         //boolean couponResponse =
 
-                ResponseEntity<String> couponRes = paymentService.useCoupon(headers,
-            PaymentCompletedCouponRequestDto.builder()
+        ResponseEntity<String> couponRes = paymentService.useCoupon(headers, PaymentCompletedCouponRequestDto.builder()
                 .couponId(paymentOrderApproveRequestDto.getCouponId())
-                .build()
-        );
-                log.debug("couponRes: " + couponRes);
+                .build());
+        log.debug("couponRes: " + couponRes);
         HttpStatusCode code = couponRes.getStatusCode();
         log.debug("code: " + code);
         boolean codeRes = code.is2xxSuccessful();
         log.debug("codeRes: " + codeRes);
 
-//        if (!couponResponse) {
-//            log.error("쿠폰 사용 처리에 실패했습니다.");
-//            log.error("쿠폰 아이디: {}", paymentOrderApproveRequestDto.getCouponId());
-//        }
+        if (!codeRes) {
+            log.error("쿠폰 사용 처리에 실패했습니다.");
+            log.error("쿠폰 아이디: {}", paymentOrderApproveRequestDto.getCouponId());
+        }
 
 //        // 3) 포인트 사용 처리
 //        boolean pointUseResponse = paymentService.usePoint(PaymentUsePointRequestDto.builder()

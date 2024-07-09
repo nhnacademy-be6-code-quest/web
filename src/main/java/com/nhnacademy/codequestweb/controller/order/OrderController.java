@@ -3,18 +3,17 @@ package com.nhnacademy.codequestweb.controller.order;
 import com.nhnacademy.codequestweb.request.order.field.OrderItemDto;
 import com.nhnacademy.codequestweb.response.order.client.ClientOrderForm;
 import com.nhnacademy.codequestweb.response.order.nonclient.NonClientOrderForm;
+import com.nhnacademy.codequestweb.response.product.productCategory.ProductCategory;
 import com.nhnacademy.codequestweb.service.order.OrderService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @Controller
 @RequiredArgsConstructor
@@ -23,37 +22,29 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    // 회원 단건 주문
+    // 회원 단건 주문 - 바로 주문
     @PostMapping("/client/order")
     public String order(OrderItemDto orderItemDto, Model model, HttpServletRequest req){
         return orderService.viewClientOrder(req, model, orderItemDto);
     }
 
-    // 회원 복수 주문
+    // 회원 복수 주문 - 장바구니 주문
     @PostMapping("/client/orders")
-    public String order(List<String> tests, Model model, HttpServletRequest req){
-        return orderService.viewClientOrder(req, model, tests);
+    public String order(@RequestParam("cartList") List<String> orderItemDtoStringList, Model model, HttpServletRequest req){
+        return orderService.viewClientOrder(req, model, orderItemDtoStringList);
     }
 
-    @GetMapping("/test/client/orders")
-    public String order(Model model, HttpServletRequest req){
-        return orderService.viewTestClientOrder(req, model);
-    }
-
-//    // TODO PostMapping 변경 후, 파라미터에 List<OrderItemDto> 추가
-    // 회원 단건 주문
+    // 회원 단건 주문 - 바로 주문
     @PostMapping("/non-client/order")
-    public String nonClientOrder(@RequestBody List<OrderItemDto> orderItemDtoList, Model model, HttpServletRequest req){
-        return orderService.viewNonClientOrder(req, model);
+    public String nonClientOrder(OrderItemDto orderItemDto, Model model, HttpServletRequest req){
+        return orderService.viewNonClientOrder(req, model, orderItemDto);
     }
 
     // 회원 복수 주묵
-//    @PostMapping("/non-client/orders")
-//    public String nonClientOrder(@RequestBody List<OrderItemDto> orderItemDtoList, Model model, HttpServletRequest req){
-//        return orderService.viewNonClientOrder(req, model);
-//    }
-
-
+    @PostMapping("/non-client/orders")
+    public String nonClientOrder(@RequestParam("cartList") List<String> orderItemDtoStringList, Model model, HttpServletRequest req){
+        return orderService.viewNonClientOrder(req, model, orderItemDtoStringList);
+    }
 
     @PostMapping("/api/client/orders")
     public String tryClientOrder(HttpServletRequest request, @ModelAttribute ClientOrderForm clientOrderForm){
