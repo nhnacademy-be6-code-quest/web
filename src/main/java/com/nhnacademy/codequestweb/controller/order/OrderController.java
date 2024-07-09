@@ -19,7 +19,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Slf4j
 public class OrderController {
-
+// 결제페이지 연결 중
     private final OrderService orderService;
 
     // 회원 단건 주문 - 바로 주문
