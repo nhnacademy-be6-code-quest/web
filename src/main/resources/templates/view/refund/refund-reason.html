@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Refund Management</title>
+</head>
+<body>
+<h1>Refund Management</h1>
+
+<div id="order-status-container">
+  <label for="order-status">Order Status:</label>
+  <span th:text="${orderStatus}" id="order-status-display"></span>
+</div>
+
+<div id="reason-container" th:style="${orderStatus == '결제대기' or orderStatus == '결제완료' or orderStatus == '배송중' or orderStatus == '배송완료' ? 'display: block;' : 'display: none;'}">
+  <label for="reason">Reason:</label>
+  <select id="reason">
+    <option value="배송지 오입력">배송지 오입력</option>
+    <option value="단순 변심">단순 변심</option>
+    <option value="다른 상품 추가 후 재주문 예정">다른 상품 추가 후 재주문 예정</option>
+    <option value="기타">기타</option>
+  </select>
+</div>
+
+<div id="detail-container" th:style="${orderStatus == '결제대기' or orderStatus == '결제완료' or orderStatus == '배송중' or orderStatus == '배송완료' ? 'display: block;' : 'display: none;'}">
+  <label for="detail">Detail:</label>
+  <textarea id="detail" maxlength="500"></textarea>
+</div>
+
+<button id="action-button">취소 또는 환불하러 가기</button>
+</body>
+</html>
