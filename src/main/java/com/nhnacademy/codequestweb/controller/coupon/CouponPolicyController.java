@@ -37,7 +37,6 @@ public class CouponPolicyController {
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
         Page<ProductGetResponseDto> books = couponPolicyService.getAllBooks(headers, page, sort, desc);
-
         model.addAttribute("books", books);
 
         return "view/coupon/productAdd";
