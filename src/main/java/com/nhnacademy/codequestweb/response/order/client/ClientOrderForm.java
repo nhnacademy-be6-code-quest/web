@@ -15,7 +15,6 @@ public class ClientOrderForm {
 
     List<OrderDetailDtoItem> orderDetailDtoItemList; // 상품-옵션 리스트
     Long couponId; // 적용한 쿠폰
-    Long pointPolicyId; // 포인트 적립 정책
     Integer shippingFee; // 배송비
     Long productTotalAmount; // 상품 총 금액(포인트 및 쿠폰 할인 전)
     Long payAmount; // 최종 결제 금액

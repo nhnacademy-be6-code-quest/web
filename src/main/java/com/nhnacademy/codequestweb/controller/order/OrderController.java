@@ -40,7 +40,7 @@ public class OrderController {
         return orderService.viewNonClientOrder(req, model, orderItemDto);
     }
 
-    // 회원 복수 주묵
+    // 회원 복수 주문
     @PostMapping("/non-client/orders")
     public String nonClientOrder(@RequestParam("cartList") List<String> orderItemDtoStringList, Model model, HttpServletRequest req){
         return orderService.viewNonClientOrder(req, model, orderItemDtoStringList);
@@ -49,8 +49,7 @@ public class OrderController {
     // 회원 주문 생성
     @PostMapping("/api/client/orders")
     public String tryClientOrder(HttpServletRequest request, @ModelAttribute ClientOrderForm clientOrderForm){
-        Long orderId = orderService.createClientOrder(request, clientOrderForm);
-        return String.format("redirect:/client/order/%d/payment", orderId);
+        return String.format("redirect:/client/order/%d/payment", orderService.createClientOrder(request, clientOrderForm));
     }
 
     // 비회원 주문 생성

@@ -78,18 +78,20 @@ public class PaymentController {
 //        2) 쿠폰 사용 처리 TODO : @Httpheaders headers 사용해서 303 -> 401로 오류 변경 && CookieUtils 사용해서 401 -> 400
         //boolean couponResponse =
 
-        ResponseEntity<String> couponRes = paymentService.useCoupon(headers, PaymentCompletedCouponRequestDto.builder()
-                .couponId(paymentOrderApproveRequestDto.getCouponId())
-                .build());
-        log.debug("couponRes: " + couponRes);
-        HttpStatusCode code = couponRes.getStatusCode();
-        log.debug("code: " + code);
-        boolean codeRes = code.is2xxSuccessful();
-        log.debug("codeRes: " + codeRes);
+        if (paymentOrderApproveRequestDto.getCouponId() != null) {
+            ResponseEntity<String> couponRes = paymentService.useCoupon(headers, PaymentCompletedCouponRequestDto.builder()
+                    .couponId(paymentOrderApproveRequestDto.getCouponId())
+                    .build());
+            log.debug("couponRes: " + couponRes);
+            HttpStatusCode code = couponRes.getStatusCode();
+            log.debug("code: " + code);
+            boolean codeRes = code.is2xxSuccessful();
+            log.debug("codeRes: " + codeRes);
 
-        if (!codeRes) {
-            log.error("쿠폰 사용 처리에 실패했습니다.");
-            log.error("쿠폰 아이디: {}", paymentOrderApproveRequestDto.getCouponId());
+            if (!codeRes) {
+                log.error("쿠폰 사용 처리에 실패했습니다.");
+                log.error("쿠폰 아이디: {}", paymentOrderApproveRequestDto.getCouponId());
+            }
         }
 
 //        // 3) 포인트 사용 처리
@@ -144,7 +146,7 @@ public class PaymentController {
 
         // 결제 성공 페이지로 이동
         paymentService.savePayment(headers, orderId, tossPaymentsResponseDto);
-        //model.addAttribute("couponResponse", couponResponse);
+        model.addAttribute("couponResponse", true);
         model.addAttribute("pointUseResponse", false);
         model.addAttribute("pointAccumulateResponse", false);
         //model.addAttribute("productReduceInventoryResponse", productReduceInventoryResponse);
