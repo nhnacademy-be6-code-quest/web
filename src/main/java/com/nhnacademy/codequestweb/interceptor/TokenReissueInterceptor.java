@@ -15,6 +15,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Enumeration;
 
 @Slf4j
 @Component
@@ -50,17 +51,18 @@ public class TokenReissueInterceptor implements HandlerInterceptor {
                     response.addCookie(refreshCookie);
 
                     log.info("Token reissued success");
-                    refreshPage(response);
+//                    refreshPage(response);
                 } else {
                     log.info("refresh token expired");
                     removeCookie(response);
-                    refreshPage(response);
+//                    refreshPage(response);
                 }
             } catch (Exception e) {
                 log.info("Token reissued failed");
                 removeCookie(response);
-                refreshPage(response);
+//                refreshPage(response);
             }
+            refreshPage(request, response);
         }
     }
 
@@ -75,13 +77,49 @@ public class TokenReissueInterceptor implements HandlerInterceptor {
         response.addCookie(refresh);
     }
 
-    private void refreshPage(HttpServletResponse response) {
+//    private void refreshPage(HttpServletResponse response) {
+//        try {
+//            response.setContentType("text/html");
+//            PrintWriter out = response.getWriter();
+//            out.println("<html><body>");
+//            out.println("<script type=\"text/javascript\">");
+//            out.println("window.location.reload(true);");
+//            out.println("</script>");
+//            out.println("</body></html>");
+//            out.close();
+//        } catch (IOException e) {
+//            log.error(e.getMessage());
+//        }
+//    }
+
+    private void refreshPage(HttpServletRequest request, HttpServletResponse response) {
         try {
             response.setContentType("text/html");
             PrintWriter out = response.getWriter();
             out.println("<html><body>");
+            out.println("<form id=\"resubmitForm\" method=\"" + request.getMethod() + "\" action=\"" + request.getRequestURI() + "\">");
+
+            // Add request parameters to the form
+            request.getParameterMap().forEach((key, values) -> {
+                for (String value : values) {
+                    out.println("<input type=\"hidden\" name=\"" + key + "\" value=\"" + value + "\">");
+                }
+            });
+
+            // Add original headers to the form
+//            Enumeration<String> headerNames = request.getHeaderNames();
+//            while (headerNames.hasMoreElements()) {
+//                String headerName = headerNames.nextElement();
+//                Enumeration<String> headers = request.getHeaders(headerName);
+//                while (headers.hasMoreElements()) {
+//                    String headerValue = headers.nextElement();
+//                    out.println("<input type=\"hidden\" name=\"header_" + headerName + "\" value=\"" + headerValue + "\">");
+//                }
+//            }
+
+            out.println("</form>");
             out.println("<script type=\"text/javascript\">");
-            out.println("window.location.reload(true);");
+            out.println("document.getElementById('resubmitForm').submit();");
             out.println("</script>");
             out.println("</body></html>");
             out.close();
