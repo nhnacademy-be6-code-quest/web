@@ -35,25 +35,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.commonmark.node.*;
-import org.commonmark.parser.Parser;
-import org.commonmark.renderer.html.HtmlRenderer;
+import com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter;
 
 @Slf4j
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/admin/products/book")
+@RequestMapping("/admin/product/book")
 public class BookController {
     private final BookProductService bookProductService;
 
     private final MessageSource messageSource;
 
-    public static String htmlToMarkdown(String html) {
-        Parser parser = Parser.builder().build();
-        Node document = parser.parse(html);
-        HtmlRenderer renderer = HtmlRenderer.builder().build();
-        return renderer.render(document);
-    }
+    private final FlexmarkHtmlConverter flexmarkHtmlConverter = FlexmarkHtmlConverter.builder().build();
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {
@@ -64,6 +57,8 @@ public class BookController {
     public String registerForm(HttpServletRequest req){
         req.setAttribute("view", "adminPage");
         req.setAttribute("adminPage", "bookProductRegisterForm");
+        req.setAttribute("register", true);
+        req.setAttribute("action", "register");
         return "index";
     }
 
@@ -71,11 +66,27 @@ public class BookController {
     public String updateForm(HttpServletRequest req, @PathVariable("productId") Long productId, Model model){
         ResponseEntity<BookProductGetResponseDto> response = bookProductService.getSingleBookInfo(CookieUtils.setHeader(req), productId);
         BookProductGetResponseDto bookProductGetResponseDto = response.getBody();
-        String markdown = htmlToMarkdown(bookProductGetResponseDto.productDescription());
+        String description = bookProductGetResponseDto.productDescription();
+        log.info("description: {}", description);
+        String markdown = flexmarkHtmlConverter.convert(description);
+        log.info("markdown: {}", markdown);
+        model.addAttribute("update", true);
+        model.addAttribute("productId", productId);
+        model.addAttribute("action", "update");
+        model.addAttribute("cover", bookProductGetResponseDto.cover());
+        model.addAttribute("title", bookProductGetResponseDto.title());
+        model.addAttribute("publisher", bookProductGetResponseDto.publisher());
+        model.addAttribute("author", bookProductGetResponseDto.author());
+        model.addAttribute("pubDate", bookProductGetResponseDto.pubDate());
+        model.addAttribute("isbn", bookProductGetResponseDto.isbn());
+        model.addAttribute("isbn13", bookProductGetResponseDto.isbn13());
+        model.addAttribute("priceStandard", bookProductGetResponseDto.productPriceStandard());
+        model.addAttribute("priceSales", bookProductGetResponseDto.productPriceSales());
+        model.addAttribute("productName", bookProductGetResponseDto.productName());
+        model.addAttribute("inventory", bookProductGetResponseDto.productInventory());
         model.addAttribute("initialValue", markdown);
-        //이거 디비 조회해와야 하긴 하네.
-        req.setAttribute("view", "adminPage");
-        req.setAttribute("adminPage", "bookProductUpdateForm");
+        model.addAttribute("view", "adminPage");
+        model.addAttribute("adminPage", "bookProductRegisterForm");
         return "index";
     }
 
@@ -166,7 +177,10 @@ public class BookController {
         ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getAllBookPage(CookieUtils.setHeader(req), page, size, sort, desc, productState);
         BookPageUtils.setBookPage(response, page, sort, desc, model);
         model.addAttribute("mainText", "관리자 페이지");
-        model.addAttribute("url", req.getRequestURI());
+        model.addAttribute("url", req.getRequestURI() + "?");
+        model.addAttribute("view", "adminPage");
+        model.addAttribute("adminPage", "productListPage");
+        model.addAttribute("admin", true);
         return "index";
     }
 
@@ -183,8 +197,9 @@ public class BookController {
         ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getNameContainingBookPage(CookieUtils.setHeader(req), page, size, sort, desc, title, productState);
 
         BookPageUtils.setBookPage(response, page, sort, desc, model);
-        model.addAttribute("mainText", "관리자 페이지");
-        model.addAttribute("url", req.getRequestURI());
+        model.addAttribute("mainText", "관리자 페이지 - 제목 : " + title);
+        model.addAttribute("url", req.getRequestURI()+ "?title=" + title + "&");
+        model.addAttribute("admin", true);
         return "index";
     }
 
@@ -201,8 +216,9 @@ public class BookController {
             Model model) {
         ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getBookPageFilterByTag(CookieUtils.setHeader(req), page, size, sort, desc, tagNameSet, isAnd, productState);
         BookPageUtils.setBookPage(response, page, sort, desc, model);
-        model.addAttribute("mainText", "관리자 페이지");
-        model.addAttribute("url", req.getRequestURI());
+        model.addAttribute("mainText", "관리자 페이지 - 태그 : " + tagNameSet);
+        model.addAttribute("url", req.getRequestURI() + "?");
+        model.addAttribute("admin", true);
         return "index";
     }
 
@@ -218,8 +234,9 @@ public class BookController {
             Model model) {
         ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getBookPageFilterByCategory(CookieUtils.setHeader(req), page, size, sort, desc, categoryId, productState);
         BookPageUtils.setBookPage(response, page, sort, desc, model);
-        model.addAttribute("mainText", "관리자 페이지");
-        model.addAttribute("url", req.getRequestURI());
+        model.addAttribute("mainText", "관리자 페이지 - 카테고리 필터");
+        model.addAttribute("url", req.getRequestURI()+ "?");
+        model.addAttribute("admin", true);
         return "index";
     }
 
@@ -233,8 +250,9 @@ public class BookController {
             Model model) {
         ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getLikeBookPage(CookieUtils.setHeader(req), page, size, sort, desc);
         BookPageUtils.setBookPage(response, page, sort, desc, model);
-        model.addAttribute("mainText", "관리자 페이지");
-        model.addAttribute("url", req.getRequestURI());
+        model.addAttribute("mainText", "관리자 페이지 - 즐겨찾기");
+        model.addAttribute("url", req.getRequestURI() + "?");
+        model.addAttribute("admin", true);
         return "index";
     }
 

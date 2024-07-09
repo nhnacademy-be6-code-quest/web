@@ -67,45 +67,44 @@
 </head>
 <section style="background-color: #fafafa;">
     <div class="pt-5 pb-5">
-
         <div th:if="${productList != null and not #lists.isEmpty(productList)}" class="container my-5">
-            <h2 class="mb-5" th:text="${mainText}"></h2>
-
+        <h2 class="mb-5" th:text="${mainText}"></h2>
             <div class="book-listing" th:each="product : ${productList}">
-                <div th:onclick="|location.href='@{/product/books/{id}(id = ${product.productId})}'|" class="row align-items-center">
+                <div th:with="url = ${admin != null ? '/admin/product/book/update/' + product.productId : '/product/books/' + product.productId}">
+                    <div th:onclick="|location.href='@{${url}}'|" class="row align-items-center">
                     <div class="col-md-2">
                         <img th:src="${product.cover}" class="img-fluid rounded-4" alt="Book Image" style="height: 12vh;">
                     </div>
                     <div class="col-md-8">
                         <p class="book-title" th:text="${product.title}"></p>
                         <p class="book-price">
-                               <div th:if="${product.productPriceSales < product.productPriceStandard}"
-                                     th:text="'(' + ${#numbers.formatDecimal(product.productPriceStandard, 0, 'COMMA', 0, 'POINT')} + '원)'"
-                                     style="text-decoration: line-through; color: #bdc3c7; font-size: 0.8em; margin-left: 10px;">정가</div>
-                            <span class="book-price" th:text="${#numbers.formatDecimal(product.productPriceSales, 0, 'COMMA', 0, 'POINT')} + '원'">판매가</span>
-<!--                            <span th:text="${product.productPriceSales}"></span>원</p>-->
+                        <div th:if="${product.productPriceSales < product.productPriceStandard}"
+                             th:text="'(' + ${#numbers.formatDecimal(product.productPriceStandard, 0, 'COMMA', 0, 'POINT')} + '원)'"
+                             style="text-decoration: line-through; color: #bdc3c7; font-size: 0.8em; margin-left: 10px;">정가</div>
+                        <span class="book-price" th:text="${#numbers.formatDecimal(product.productPriceSales, 0, 'COMMA', 0, 'POINT')} + '원'">판매가</span>
                     </div>
                     <div class="col-md-2 text-end">
                         <div th:if="${product.hasLike()}">
-                                <div class="prod-favorite ">
-                                    <button type="button" class="prod-favorite-btn prod-favorite-on"></button>
-                                </div>
+                            <div class="prod-favorite ">
+                                <button type="button" class="prod-favorite-btn prod-favorite-on"></button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+                </div>
 
+            </div>
             <div class="pagination" th:attr="data-total-pages=${totalPage},data-current-page=${page}">
                 <span th:if="${page > 1}">
-                    <a th:href="${url} + '?page=' + ${page - 1} + ${sort == null ? '' : '&sort=' + sort} + ${desc == null ? '' : '&desc=' + desc}">Previous</a>
+                    <a th:href="${url} + 'page=' + ${page - 1} + ${sort == null ? '' : '&sort=' + sort} + ${desc == null ? '' : '&desc=' + desc}">Previous</a>
                     <a>Previous</a>
                 </span>
                 <span th:each="pageNum : ${#numbers.sequence(1, totalPage)}">
                     <a th:if="${pageNum == page}" th:text="${pageNum}" th:class="'active'"></a>
-                    <a th:if="${pageNum != page}" th:href="${url} + '?page=' + ${pageNum} + ${sort == null ? '' : '&sort=' + sort} + ${desc == null ? '' : '&desc=' + desc}" th:text="${pageNum}"></a>
+                    <a th:if="${pageNum != page}" th:href="${url} + 'page=' + ${pageNum} + ${sort == null ? '' : '&sort=' + sort} + ${desc == null ? '' : '&desc=' + desc}" th:text="${pageNum}"></a>
                 </span>
                 <span th:if="${page < totalPage}">
-                    <a th:href="${url} + '?page=' + ${page + 1}+ ${sort == null ? '' : '&sort=' + sort} + ${desc == null ? '' : '&desc=' + desc}">Next</a>
+                    <a th:href="${url} + 'page=' + ${page + 1}+ ${sort == null ? '' : '&sort=' + sort} + ${desc == null ? '' : '&desc=' + desc}">Next</a>
                 </span>
             </div>
         </div>
