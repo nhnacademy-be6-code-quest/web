@@ -65,7 +65,7 @@
             var priceSales = document.getElementById('priceSales').value;
             var inventory = document.getElementById('productInventory').value;
             var description = document.getElementById('productDescriptionValue').value;
-
+            var categories = document.getElementById('categories').value;
 
             if (!title) {
                 alert('도서를 선택하세요.');
@@ -85,6 +85,10 @@
             }
             if (!description){
                 alert('설명을 입력하세요.');
+                return; // 유효하지 않으면 제출하지 않음
+            }
+            if (!categories){
+                alert('카테고리는 필수입니다.');
                 return; // 유효하지 않으면 제출하지 않음
             }
             event.target.submit(); // 폼 제출
@@ -185,10 +189,10 @@
                     discount = 0; // 기본값 0으로 설정
                 }
 
-                document.getElementById('discount').value = discount.toFixed(2); // 소수점 둘째자리까지 표시
+                document.getElementById('discount').innerText = discount.toFixed(0); // 소수점 둘째자리까지 표시
             } else {
                 // 정가나 판매가가 비어있는 경우 할인율 input을 비움
-                document.getElementById('discount').value = 0;
+                document.getElementById('discount').innerText = 0;
             }
         }
 
@@ -304,44 +308,44 @@
     </script>
 </head>
 <body>
-<h1>신규 도서 등록</h1>
+<h1 style="margin:0 auto">신규 도서 등록</h1>
 <div class="body">
 
-<div style="margin:0 auto">
+<div th:if="${register}" style="margin:0 auto">
     <label for="inputValue">제목 :</label>
     <input type="text" id="inputValue" name="inputValue" required>
     <button  onclick="openNewWindowWithParam()">검색</button>
 </div>
 <div id="errorMessage" style="color: red;"></div>
 
-<form action="/admin/products/book/register" id="bookProductRegister" method="post" onsubmit="formValidation(event)">
+<form th:action="'/admin/product/book/' + ${action}" id="bookProductRegister" method="post" onsubmit="formValidation(event)">
     <div class="book-container">
 
-        <input type="image" id="cover" src="https://i.postimg.cc/ydkCbCbC/image-2935360-1280.png" style="cursor: default;" width="300px" height="420px" readonly/><br>
+        <input type="image" id="cover" th:value="${cover}" th:src="${cover == null ? 'https://i.postimg.cc/ydkCbCbC/image-2935360-1280.png' : cover} " style="cursor: default;" width="300px" height="420px" readonly/><br>
 
         <div class="book-info">
-            <span id="titleText" th:text="'제목 : '"></span>
-            <span id="publisherText" th:text="'출판사 : '"></span>
-            <span id="authorText" th:text="'작가 : '"></span>
-            <span id="pubDateText" th:text="'출판일 : '"></span>
-            <span id="isbnText" th:text="'isbn10 : '"></span>
-            <span id="isbn13Text" th:text="'isbn13 : '"></span>
-            <span id="priceStandardText" th:text="'정가'"></span>
+            <span id="titleText" th:text="'제목 : ' + ${title == null ? '' : title}"></span>
+            <span id="publisherText" th:text="'출판사 : ' + ${publisher == null ? '' : publisher}"></span>
+            <span id="authorText" th:text="'작가 : ' + ${author == null ? '' : author}"></span>
+            <span id="pubDateText" th:text="'출판일 : ' + ${pubDate == null ? '' : pubDate}"></span>
+            <span id="isbnText" th:text="'isbn10 : ' + ${isbn == null ? '' : isbn}"></span>
+            <span id="isbn13Text" th:text="'isbn13 : ' + ${isb13 == null ? '' : isbn13}"></span>
+            <span id="priceStandardText" th:text="'정가' + ${priceStandard == null ? '' : priceStandard}"></span>
         </div>
     </div>
 
-    <label for="title"></label><input type="hidden" name="title" id="title" readonly/><br>
-    <label for="author"></label><input type="hidden" id="author" name="author" readonly/><br>
-    <label for="publisher"></label><input type="hidden" name="publisher" id="publisher" readonly/><br>
+    <label for="title"></label><input type="hidden" name="title" id="title" th:value="${title}" readonly/><br>
+    <label for="author"></label><input type="hidden" id="author" name="author" th:value="${author}" readonly/><br>
+    <label for="publisher"></label><input type="hidden" name="publisher" id="publisher" th:value="${publisher}" readonly/><br>
 <!--    <input type="image" id="cover" src="https://i.postimg.cc/ydkCbCbC/image-2935360-1280.png" style="cursor: default;" width="300px" height="420px" readonly/><br>-->
-    <input type="hidden" name="cover" id="coverURL" readonly/><br>
-    <label for="pubDate"></label><input type="hidden" name="pubDate" id="pubDate" readonly/><br>
-    <input type="hidden" name="isbn" id="isbn" readonly/><br>
-    <input type="hidden" name="isbn13" id="isbn13" readonly/><br>
-    <label for="productName">상품명 : </label><input type="text" name="productName" id="productName"/><br>
-    <label for="priceStandard"></label><input type="hidden" name="productPriceStandard" id="priceStandard" readonly/><br>
-    <label for="priceSales">판매가 : </label><input type="number" name="productPriceSales" id="priceSales" onchange="calculateDiscount()" required/><br>
-    <label for="discount">할인율 </label><input type="number" name="discount" id="discount" readonly/><br>
+    <input type="hidden" name="cover" id="coverURL" th:value="${cover}" readonly/><br>
+    <label for="pubDate"></label><input type="hidden" name="pubDate" id="pubDate" th:value="${pubDate}" readonly/><br>
+    <input type="hidden" name="isbn" id="isbn" th:value="${isbn}" readonly/><br>
+    <input type="hidden" name="isbn13" id="isbn13" th:value="${isbn13}" readonly/><br>
+    <label for="productName">상품명 : </label><input type="text" name="productName" id="productName" th:value="${productName}"/><br>
+    <label for="priceStandard"></label><input type="hidden" name="productPriceStandard" id="priceStandard" th:value="${priceStandard}" readonly/><br>
+    <label for="priceSales">판매가 : </label><input type="number" th:value="${priceSales}" name="productPriceSales" id="priceSales" onchange="calculateDiscount()" required/><br>
+    할인율 </label><span id="discount"></span><br>
     <label>
         포장 가능 여부
         <input type="radio" name="packable" value="true">
@@ -349,21 +353,30 @@
     <label>
         <input type="radio" name="packable" value="false" checked>
     </label><span th:text="불가능"></span>
-    <input type="number" name="productInventory" id="productInventory" placeholder="재고" th:default="0">
+    재고<input type="number" name="productInventory" id="productInventory" placeholder="재고" th:default="0" th:value="${inventory == null ? 0 : inventory}">
     <input type="hidden" name="productDescription" id="productDescription" placeholder="설명">
     <input type="hidden" name="productDescriptionValue" id="productDescriptionValue" placeholder="설명" required>
+    <div th:if="${update}">
+        <input type="hidden" name="productId" th:value="${productId}">
+        <input type="hidden" name="_method" value="PUT"/>
+        <input type="radio" name="productState" value="0" checked>0
+        <input type="radio" name="productState" value="1">1
+        <input type="radio" name="productState" value="2">2
+    </div>
 
     <div id="content">
 
     </div>
     <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
-    <script>
+    <script th:inline="javascript">
+        const initialValue = /*[[${initialValue}]]*/ '';
+        const init = initialValue == null ? '내용을 입력하세요.' : initialValue;
         const editor = new toastui.Editor({
             el: document.querySelector('#content'), // 에디터를 적용할 요소 (컨테이너)
             width: '700px',
             height: 'auto',                        // 에디터 영역의 높이 값 (OOOpx || auto)
             initialEditType: 'wysiwyg',            // 최초로 보여줄 에디터 타입 (markdown || wysiwyg)
-            initialValue: '내용을 입력해 주세요.',     // 내용의 초기 값으로, 반드시 마크다운 문자열 형태여야 함
+            initialValue: init,     // 내용의 초기 값으로, 반드시 마크다운 문자열 형태여야 함
             previewStyle: 'tab',                // 마크다운 프리뷰 스타일 (tab || vertical)
             hideModeSwitch: true,  // 모드 전환 버튼 숨기기
             toolbarItems: [
@@ -376,10 +389,10 @@
             hooks: {
                 async addImageBlobHook(blob, callback) {
                     const formData = new FormData();
-                    formData.append('file', blob);
+                    formData.append('image', blob);
 
                     try {
-                        const response = await fetch('/upload', {
+                        const response = await fetch('/save/img', {
                             method: 'POST',
                             body: formData
                         });

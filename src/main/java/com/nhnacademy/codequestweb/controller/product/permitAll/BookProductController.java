@@ -91,7 +91,7 @@ public class BookProductController {
         }
 
         BookPageUtils.setBookPage(response, page, sort, desc, model);
-        model.addAttribute("url", req.getRequestURI());
+        model.addAttribute("url", req.getRequestURI() + "?");
         return "index";
     }
 
@@ -106,7 +106,7 @@ public class BookProductController {
         ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getNameContainingBookPage(CookieUtils.setHeader(req), page, 10, sort, desc, title, 0);
         BookPageUtils.setBookPage(response, page, sort, desc, model);
         model.addAttribute("mainText", "제목 검색");
-        model.addAttribute("url", req.getRequestURI() + "?title=" + title);
+        model.addAttribute("url", req.getRequestURI() + "?title=" + title + "&");
         return "index";
     }
 
@@ -126,7 +126,7 @@ public class BookProductController {
         for (String tagName : tagNameSet) {
             stringJoiner.add(tagName);
         }
-        model.addAttribute("url", req.getRequestURI()+ "?tagName=" + stringJoiner.toString());
+        model.addAttribute("url", req.getRequestURI()+ "?tagName=" + stringJoiner.toString() + "&");
         return "index";
     }
 
@@ -140,8 +140,8 @@ public class BookProductController {
             Model model) {
         ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getBookPageFilterByCategory(CookieUtils.setHeader(req), page, 10, sort, desc, categoryId, 0);
         BookPageUtils.setBookPage(response, page, sort, desc, model);
-        model.addAttribute("mainText", "카테고리 검색 - " + "");
-        model.addAttribute("url", req.getRequestURI());
+        model.addAttribute("mainText", "카테고리 검색");
+        model.addAttribute("url", req.getRequestURI() + "?");
         return "index";
     }
 
@@ -155,7 +155,7 @@ public class BookProductController {
         ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getLikeBookPage(CookieUtils.setHeader(req), page, 10, sort, desc);
         BookPageUtils.setBookPage(response, page, sort, desc, model);
         model.addAttribute("mainText", "좋아요 목록");
-        model.addAttribute("url", req.getRequestURI());
+        model.addAttribute("url", req.getRequestURI() + "?");
         return "index";
     }
 
