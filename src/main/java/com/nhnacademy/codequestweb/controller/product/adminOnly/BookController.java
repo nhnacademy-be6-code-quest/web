@@ -35,6 +35,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.commonmark.node.*;
+import org.commonmark.parser.Parser;
+import org.commonmark.renderer.html.HtmlRenderer;
 
 @Slf4j
 @Controller
@@ -44,6 +47,13 @@ public class BookController {
     private final BookProductService bookProductService;
 
     private final MessageSource messageSource;
+
+    public static String htmlToMarkdown(String html) {
+        Parser parser = Parser.builder().build();
+        Node document = parser.parse(html);
+        HtmlRenderer renderer = HtmlRenderer.builder().build();
+        return renderer.render(document);
+    }
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {
@@ -58,9 +68,11 @@ public class BookController {
     }
 
     @GetMapping("/update/{productId}")
-    public String updateForm(HttpServletRequest req, @PathVariable("productId") Long productId){
-//        ResponseEntity<BookProductGetResponseDto> response = bookProductService.getSingleBookInfo(CookieUtils.setHeader(req), bookId);
-//        BookProductGetResponseDto bookProductGetResponseDto = response.getBody();
+    public String updateForm(HttpServletRequest req, @PathVariable("productId") Long productId, Model model){
+        ResponseEntity<BookProductGetResponseDto> response = bookProductService.getSingleBookInfo(CookieUtils.setHeader(req), productId);
+        BookProductGetResponseDto bookProductGetResponseDto = response.getBody();
+        String markdown = htmlToMarkdown(bookProductGetResponseDto.productDescription());
+        model.addAttribute("initialValue", markdown);
         //이거 디비 조회해와야 하긴 하네.
         req.setAttribute("view", "adminPage");
         req.setAttribute("adminPage", "bookProductUpdateForm");

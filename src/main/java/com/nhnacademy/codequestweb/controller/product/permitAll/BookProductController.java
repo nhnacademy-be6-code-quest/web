@@ -166,24 +166,19 @@ public class BookProductController {
 
         log.info("like: {}", productLikeRequestDto);
         ResponseEntity<Void> response = bookProductService.saveBookLike(CookieUtils.setHeader(req), productLikeRequestDto);
-        return "/view/product/refresh";
+        return "view/product/refresh";
     }
 
     @DeleteMapping("/product/client/unlike")
     public String unlike(HttpServletRequest req, Model model, @RequestParam("productId") long productId) {
         ResponseEntity<Void> response = bookProductService.deleteBookLike(CookieUtils.setHeader(req), productId);
-        return "/view/product/refresh";
+        return "view/product/refresh";
     }
 
     @PutMapping("/product/inventory/decrease")
     public String decreaseInventory(@ModelAttribute InventoryDecreaseRequestDto requestDtoList) {
         log.info("request : {}",requestDtoList);
         ResponseEntity<Void> response = bookProductService.decreaseBookInventory(Arrays.asList(requestDtoList));
-        return "/view/product/refresh";
-    }
-
-    @GetMapping("/test/decrease")
-    public String test(){
-        return "/view/product/testDecrease";
+        return "view/product/refresh";
     }
 }
