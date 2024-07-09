@@ -29,17 +29,11 @@
   </tr>
   </thead>
   <tbody>
-    <tr th:each="refundProductOrderDetailRequestDto : ${refundOrderRequestDto.getRefundProductOrderDetailRequestDtoList()}">
-      <td th:text="${refundProductOrderDetailRequestDto.getProductName()}"></td>
-      <td th:text="${refundProductOrderDetailRequestDto.getQuantity()}"></td>
-      <td th:text="${refundProductOrderDetailRequestDto.getPricePerProduct()}"></td>
-
-      <tr th:each="refundProductOrderDetailRequestDto : ${refundOrderRequestDto.getRefundProductOrderDetailRequestDtoList()}">
-        <td th:text="${refundProductOrderDetailRequestDto.getProductName()}"></td>
-        <td th:text="${refundProductOrderDetailRequestDto.getQuantity()}"></td>
-        <td th:text="${refundProductOrderDetailRequestDto.getPricePerProduct()}"></td>
-      </tr>
-    </tr>
+  <tr th:each="refundProductOrderDetailRequestDto : ${refundOrderRequestDto.getRefundProductOrderDetailRequestDtoList()}">
+    <td th:text="${refundProductOrderDetailRequestDto.getProductName()}"></td>
+    <td th:text="${refundProductOrderDetailRequestDto.getQuantity()}"></td>
+    <td th:text="${refundProductOrderDetailRequestDto.getPricePerProduct()}"></td>
+  </tr>
   </tbody>
 </table>
 
@@ -62,7 +56,7 @@
     <td th:text="${refundOrderRequestDto.getAccumulatedPoint()}"></td>
   </tr>
   <tr>
-    <td>배송비</td>
+    <td>배송비 : 무료 배송비였으면 바꿔야 함. (배송비는 일단 좀 고민해 보자)</td>
     <td th:text="${refundOrderRequestDto.getShippingFeeOfOrderDate()}"></td>
   </tr>
   <tr>
@@ -71,12 +65,12 @@
   </tr>
   <tr>
     <td>환불액</td>
-    <td th:text="${refundOrderRequestDto.}"></td>
+    <td th:text="${refundOrderRequestDto.getOrderTotalAmount() - refundOrderRequestDto.discountAmountByCoupon - refundOrderRequestDto.getDiscountAmountByPoint() - refundOrderRequestDto.getAccumulatedPoint()}"></td>
   </tr>
   <tr>
     <td>환불 수단 : 회원 비회원 따라서 바뀌어야 함.</td>
     <td>포인트</td>
-<!--    <td th:text="${포인트}"></td>-->
+    <!--    <td th:text="${포인트}"></td>-->
   </tr>
 </table>
 </body>
