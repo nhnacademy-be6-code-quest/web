@@ -53,13 +53,13 @@ public class CategoryController {
     @GetMapping("/admin/categories/registerForm")
     public String getCategoryRegisterForm(Model model) {
         model.addAttribute("action", "register");
-        return "/view/product/categoryForm";
+        return "view/product/categoryForm";
     }
 
     @GetMapping("/admin/categories/updateForm")
     public String getCategoryUpdateForm(Model model) {
         model.addAttribute("action", "update");
-        return "/view/product/categoryForm";
+        return "view/product/categoryForm";
     }
 
     @PostMapping("/admin/categories/register")
@@ -75,7 +75,7 @@ public class CategoryController {
         ResponseEntity<CategoryRegisterResponseDto> response = categoryService.saveCategory(CookieUtils.setHeader(req), dto);
         log.info("status code : {} body : {}",response.getStatusCode().value(), response.getBody());
         redirectAttributes.addFlashAttribute("message", "category saved successfully");
-        return "/view/product/window.close";
+        return "view/product/window.close";
     }
 
     @PutMapping("/admin/categories/update")
@@ -85,7 +85,7 @@ public class CategoryController {
             HttpServletRequest req){
         CategoryUpdateRequestDto dto = new CategoryUpdateRequestDto(currentCategoryName, categoryName);
         ResponseEntity<CategoryUpdateResponseDto> response = categoryService.updateCategory(CookieUtils.setHeader(req), dto);
-        return "/view/product/window.close";
+        return "view/product/window.close";
     }
 
     @PostMapping("/category/update")
@@ -113,7 +113,7 @@ public class CategoryController {
         model.addAttribute("register", false);
         model.addAttribute("pageNumbers", pageNumbers);
         model.addAttribute("url", "/categories/all?page=");
-        return "/view/product/categoryPage";
+        return "view/product/categoryPage";
     }
 
 
@@ -154,7 +154,7 @@ public class CategoryController {
         model.addAttribute("categoryNamePage", categoryNameMap);
         model.addAttribute("pageNumbers", pageNumbers);
         model.addAttribute("url", "/categories/containing?title=" + categoryName + "&page=");
-        return "/view/product/categoryPage";
+        return "view/product/categoryPage";
     }
 
     @GetMapping("/categories/{categoryId}/sub")
@@ -178,7 +178,7 @@ public class CategoryController {
         model.addAttribute("categoryNamePage", categoryNameMap);
         model.addAttribute("pageNumbers", pageNumbers);
         model.addAttribute("url", "/categories/" + categoryId + "/sub?page=");
-        return "/view/product/categoryPage";
+        return "view/product/categoryPage";
     }
 
     @GetMapping("/categories/{categoryId}/sub/all")
@@ -190,6 +190,6 @@ public class CategoryController {
 
     @GetMapping("/categories/search")
     public String test() {
-        return "/view/product/categorySearch";
+        return "view/product/categorySearch";
     }
 }
