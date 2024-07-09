@@ -44,7 +44,7 @@ public class ProductCategoryCouponController {
         }
         model.addAttribute("categoryNamePage", categoryNameMap);
         model.addAttribute("register", false);
-        return "/view/coupon/categoryAdd";
+        return "view/coupon/categoryAdd";
     }
 
     private String getAllCategoryPathName(CategoryGetResponseDto category) {
@@ -84,7 +84,7 @@ public class ProductCategoryCouponController {
 
         model.addAttribute("register", false);
         model.addAttribute("categoryNamePage", categoryNameMap);
-        return "/view/coupon/categoryAdd";
+        return "view/coupon/categoryAdd";
     }
 
     @GetMapping("/admin/categories/{categoryId}/sub")
@@ -98,6 +98,6 @@ public class ProductCategoryCouponController {
         }
         model.addAttribute("register", true);
         model.addAttribute("categoryNamePage", categoryNameMap);
-        return "/view/coupon/categoryAdd";
+        return "view/coupon/categoryAdd";
     }
 }

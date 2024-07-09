@@ -40,7 +40,7 @@ public class CouponPolicyController {
 
         model.addAttribute("books", books);
 
-        return "/view/coupon/productAdd";
+        return "view/coupon/productAdd";
     }
 
 
@@ -62,11 +62,12 @@ public class CouponPolicyController {
 
 
     @GetMapping("/admin/coupon/policy/register")
-    public String viewRegisterPolicy(Model model) {
+    public String viewRegisterPolicy(HttpServletRequest req, Model model) {
         List<DiscountType> discountTypes = List.of(DiscountType.AMOUNTDISCOUNT,
             DiscountType.PERCENTAGEDISCOUNT);
-        model.addAttribute("discountTypes", discountTypes);
-        return "/view/coupon/admin_policy_register";
+        req.setAttribute("view", "couponPolicy");
+        req.setAttribute( "discountTypes", discountTypes);
+        return "view/coupon/admin_policy_register";
     }
 
     @PostMapping("/admin/coupon/policy/register")
