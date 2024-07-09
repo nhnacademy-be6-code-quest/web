@@ -40,7 +40,7 @@ public class CouponController {
 
         Page<ClientCouponPaymentResponseDto> coupons = couponService.getClient(headers, page, size);
         model.addAttribute("couponPayments",coupons);
-        return "view/coupon/coupon_client";
+        return "/view/coupon/coupon_client";
     }
 
     @GetMapping("/admin/coupon/register/{couponPolicyId}")
