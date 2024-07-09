@@ -72,7 +72,7 @@ public class OrderServiceImpl implements OrderService {
         List<ClientPhoneNumberResponseDto> phoneNumberList = myPageService.getPhoneNumbers(headers).getBody();
 
         // 배송비 정책
-        ShippingPolicyGetResponseDto shippingPolicy = shippingPolicyService.getShippingPolicy("도서산간지역외");
+        ShippingPolicyGetResponseDto shippingPolicy = shippingPolicyService.getShippingPolicy(headers, "도서산간지역외");
 
         // 바인딩 객체에 주문 상품 가격 정보 추가.
         orderItemDtoList.forEach((orderItemDto)->{
@@ -128,7 +128,7 @@ public class OrderServiceImpl implements OrderService {
         List<ClientPhoneNumberResponseDto> phoneNumberList = myPageService.getPhoneNumbers(headers).getBody();
 
         // 배송비 정책
-        ShippingPolicyGetResponseDto shippingPolicy = shippingPolicyService.getShippingPolicy("도서산간지역외");
+        ShippingPolicyGetResponseDto shippingPolicy = shippingPolicyService.getShippingPolicy(headers, "도서산간지역외");
 
         // 바인딩 객체에 주문 상품 가격 정보 추가.
         // 책 상세 정보
@@ -177,7 +177,7 @@ public class OrderServiceImpl implements OrderService {
 
         // ** 화면에 뿌릴 정보 **
         // 배송비 정책
-        ShippingPolicyGetResponseDto shippingPolicy = shippingPolicyService.getShippingPolicy("도서산간지역외");
+        ShippingPolicyGetResponseDto shippingPolicy = shippingPolicyService.getShippingPolicy(headers, "도서산간지역외");
 
         // 책 상세 정보
         BookProductGetResponseDto book = bookProductService.getSingleBookInfo(headers, orderItemDto.getProductId()).getBody();
@@ -212,8 +212,7 @@ public class OrderServiceImpl implements OrderService {
 
         // ** 화면에 뿌릴 정보 **
         // 배송비 정책
-        ShippingPolicyGetResponseDto shippingPolicy = shippingPolicyService.getShippingPolicy("도서산간지역외");
-
+        ShippingPolicyGetResponseDto shippingPolicy = shippingPolicyService.getShippingPolicy(headers, "도서산간지역외");
 
         // 바인딩 객체에 주문 상품 가격 정보 추가.
         orderItemDtoList.forEach((orderItemDto)->{
@@ -232,7 +231,6 @@ public class OrderServiceImpl implements OrderService {
         });
 
         List<PackageInfoResponseDto> packageList = getAllPackages();
-
 
         model.addAttribute("nonClientOrderForm", nonClientOrderForm);
         model.addAttribute("packageList", packageList);

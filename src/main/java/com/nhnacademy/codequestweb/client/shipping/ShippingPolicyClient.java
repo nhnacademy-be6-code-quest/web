@@ -3,11 +3,9 @@ package com.nhnacademy.codequestweb.client.shipping;
 import com.nhnacademy.codequestweb.response.shipping.AdminShippingPolicyPutRequestDto;
 import com.nhnacademy.codequestweb.response.shipping.ShippingPolicyGetResponseDto;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -20,12 +18,12 @@ import java.util.List;
 public interface ShippingPolicyClient {
 
     @PutMapping("/admin/shipping-policy")
-    ResponseEntity<String> updateShippingPolicy(@RequestBody AdminShippingPolicyPutRequestDto adminShippingPolicyPutRequestDto);
+    ResponseEntity<String> updateShippingPolicy(@RequestHeader HttpHeaders headers, @RequestBody AdminShippingPolicyPutRequestDto adminShippingPolicyPutRequestDto);
 
-    @GetMapping("/shipping-policy")
-    ResponseEntity<ShippingPolicyGetResponseDto> getShippingPolicy(@RequestParam(name = "type", required = true) String type);
+    @GetMapping("/api/shipping-policy")
+    ResponseEntity<ShippingPolicyGetResponseDto> getShippingPolicy(@RequestHeader HttpHeaders headers, @RequestParam(name = "type", required = true) String type);
 
-    @GetMapping("/shipping-policy/all")
-    ResponseEntity<List<ShippingPolicyGetResponseDto>> getAllShippingPolicies();
+    @GetMapping("/api/shipping-policy/all")
+    ResponseEntity<List<ShippingPolicyGetResponseDto>> getAllShippingPolicies(@RequestHeader HttpHeaders headers);
 
 }

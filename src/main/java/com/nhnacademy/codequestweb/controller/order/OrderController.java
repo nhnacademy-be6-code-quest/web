@@ -46,12 +46,14 @@ public class OrderController {
         return orderService.viewNonClientOrder(req, model, orderItemDtoStringList);
     }
 
+    // 회원 주문 생성
     @PostMapping("/api/client/orders")
     public String tryClientOrder(HttpServletRequest request, @ModelAttribute ClientOrderForm clientOrderForm){
         Long orderId = orderService.createClientOrder(request, clientOrderForm);
         return String.format("redirect:/client/order/%d/payment", orderId);
     }
 
+    // 비회원 주문 생성
     @PostMapping("/api/non-client/orders")
     public String tryNonClientOrder(HttpServletRequest request, @ModelAttribute NonClientOrderForm nonClientOrderForm){
         return String.format("redirect:/client/order/%d/payment", orderService.createNonClientOrder(request, nonClientOrderForm));
