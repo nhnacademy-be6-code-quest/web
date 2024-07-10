@@ -72,7 +72,11 @@ public interface OrderClient {
     @PutMapping("/api/non-client/orders/{orderId}/refund")
     ResponseEntity<String> refundNonClientOrder(@RequestHeader HttpHeaders headers, @PathVariable long orderId);
 
-    // 주문상태 변경 - 무조건 바꿔주는
+    // 비회원 주문 단건 조회
+    @GetMapping("/api/non-client/orders/{orderId}")
+    ResponseEntity<OrderResponseDto> findNonClientOrder(@RequestHeader HttpHeaders headers, @PathVariable long orderId, @RequestParam("pwd") String orderPassword);
+
+    // 주문상태 변경 - 회원, 비회원 구분 없이 바꿔주는!
     @PutMapping("/api/order/{orderId}")
     ResponseEntity<String> updateOrderStatus(@RequestHeader HttpHeaders headers, @PathVariable(name = "orderId") Long orderId, @RequestParam(name = "status", required = true) String status);
 }
