@@ -31,4 +31,5 @@ public interface OrderService {
     void refundNonClientOrder(HttpHeaders headers, long orderId);
     OrderResponseDto findNonClientOrder(HttpHeaders headers, long orderId, String orderPassword);
     void updateOrderStatus(HttpHeaders headers, long orderId, String status);
+    void getAllOrderList(HttpHeaders headers, Pageable pageable);
 }

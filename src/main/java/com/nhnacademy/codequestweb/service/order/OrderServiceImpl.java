@@ -353,4 +353,8 @@ public class OrderServiceImpl implements OrderService {
         return headers;
     }
 
+    @Override
+    public void getAllOrderList(HttpHeaders headers, Pageable pageable) {
+
+    }
 }
