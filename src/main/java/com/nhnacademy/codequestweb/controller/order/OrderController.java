@@ -24,7 +24,7 @@ public class OrderController {
 
     // 회원 단건 주문 - 바로 주문
     @PostMapping("/client/order")
-    public String order(@RequestBody OrderItemDto orderItemDto, Model model, HttpServletRequest req){
+    public String order(@ModelAttribute OrderItemDto orderItemDto, Model model, HttpServletRequest req){
         return orderService.viewClientOrder(req, model, orderItemDto);
     }
 
@@ -36,7 +36,7 @@ public class OrderController {
 
     // 비회원 단건 주문 - 바로 주문
     @PostMapping("/non-client/order")
-    public String nonClientOrder(@RequestBody OrderItemDto orderItemDto, Model model, HttpServletRequest req){
+    public String nonClientOrder(@ModelAttribute OrderItemDto orderItemDto, Model model, HttpServletRequest req){
         return orderService.viewNonClientOrder(req, model, orderItemDto);
     }
 
