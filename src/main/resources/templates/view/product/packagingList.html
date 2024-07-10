@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script th:src="@{/js/product/window.opener.Only.js}"></script>
+    <style>
+        .packagingImg {
+            width: 150px;
+        }
+    </style>
+</head>
+<body>
+<div th:each="p : ${pList}">
+    <span th:text="'상품명 : ' + ${p.productName}"></span>
+    <img class="packagingImg" th:src="${p.packagingImage}" th:alt="${p.packagingName}">
+
+</div>
+</body>
+</html>

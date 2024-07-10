@@ -73,14 +73,9 @@
             border-radius: 5px;
         }
 
-        .pagination-container {
-            text-align: center;
-        }
-
-        .pagination-form {
-            display: inline-block;
-            margin: 5px;
-        }
+       .cart-preview {
+           width: 180px;
+       }
     </style>
     <script th:inline="javascript">
         /*<![CDATA[*/
@@ -119,7 +114,7 @@
             <div th:each="cart: ${cartList}">
                 <div class="book-button">
                     <div class="book-container">
-                        <a th:href="'/product/books/' + ${cart.productId}"><img th:src="${cart.productThumbnailImage()}" alt=""></a>
+                        <a th:href="'/product/books/' + ${cart.productId}"><img class="cart-preview" th:src="${cart.productThumbnailImage()}" alt=""></a>
                         <div class="book-info">
                             <a th:href="'/product/books/' + ${cart.productId}">
                                 <span th:text="${cart.productName()}"></span>

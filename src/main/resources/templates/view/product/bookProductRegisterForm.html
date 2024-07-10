@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="bookProductRegisterFragment ()">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" th:fragment="bookProductRegisterFragment ()">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -92,7 +92,6 @@
                 return; // 유효하지 않으면 제출하지 않음
             }
             event.target.submit(); // 폼 제출
-
         }
 
 
@@ -116,7 +115,7 @@
             var top = Math.max(0, (availHeight - newWindowHeight) / 2);
 
             // URL에 포함될 파라미터 문자열 생성
-            var url = "/admin/products/book/aladinList?title=" + encodeURIComponent(inputValue);
+            var url = "/admin/product/book/aladinList?title=" + encodeURIComponent(inputValue);
 
             // 새 창 열기
             var newWindow = window.open(url, "_blank", "width=" + newWindowWidth + ",height=" + newWindowHeight + ",top=" + top + ",left=" + left);
@@ -232,15 +231,15 @@
             if (event.key === "category") {
 
                 var result2Element = document.getElementById("categories");
-
-                document.getElementById("categoryResult").innerText = document.getElementById("categoryResult").innerText == "" ? event.newValue : document.getElementById("result").innerText + ", " + event.newValue;
-
-                result2Element.value = result2Element.value === "" ? event.newValue : result2Element.value + "," + event.newValue;
-
-                // 필요 시 `localStorage` 값 제거
+                var newValue = event.newValue;
                 localStorage.removeItem("category");
+                if (newValue){
+                    document.getElementById("categoryResult").innerText = document.getElementById("categoryResult").innerText == "" ? newValue : document.getElementById("categoryResult").innerText + ", " + newValue;
 
-                createCategoryRemoveButton(event.newValue);
+                    result2Element.value = result2Element.value === "" ? newValue : result2Element.value + "," + newValue;
+
+                    createCategoryRemoveButton(newValue);
+                }
             }
 
             if (event.key === "tag") {
@@ -258,52 +257,52 @@
                 createTagRemoveButton(event.newValue);
             }
 
-            function createCategoryRemoveButton(category) {
-                var button = document.createElement("button");
-                button.textContent = "삭제: " + category;
-                button.onclick = function() {
-                    removeCategory(category);
-                    this.remove(); // 삭제 버튼 자신도 함께 삭제
-                };
 
-                document.getElementById("removeCategoryButtons").appendChild(button);
-            }
-
-            function createTagRemoveButton(tag) {
-                var button = document.createElement("button");
-                button.textContent = "삭제: " + tag;
-                button.onclick = function() {
-                    removeTag(tag);
-                    this.remove(); // 삭제 버튼 자신도 함께 삭제
-                };
-
-                document.getElementById("removeTagButtons").appendChild(button);
-            }
-
-            function removeTag(tag) {
-                var tags = document.getElementById("tags").value.split(',');
-                var index = tags.indexOf(tag);
-
-                if (index !== -1) {
-                    tags.splice(index, 1); // 해당 카테고리 삭제
-                    document.getElementById("tags").value = tags.join(',');
-                    document.getElementById("tagResult").innerText = tags.join(','); // 화면에도 반영
-                }
-            }
-
-            // 카테고리 삭제 함수
-            function removeCategory(category) {
-                var categories = document.getElementById("categories").value.split(',');
-                var index = categories.indexOf(category);
-
-                if (index !== -1) {
-                    categories.splice(index, 1); // 해당 카테고리 삭제
-                    document.getElementById("categories").value = categories.join(',');
-                    document.getElementById("result").innerText = categories.join(','); // 화면에도 반영
-                }
-            }
         });
+        function createCategoryRemoveButton(category) {
+            var button = document.createElement("button");
+            button.textContent = "삭제: " + category;
+            button.onclick = function() {
+                removeCategory(category);
+                this.remove(); // 삭제 버튼 자신도 함께 삭제
+            };
 
+            document.getElementById("removeCategoryButtons").appendChild(button);
+        }
+
+        function createTagRemoveButton(tag) {
+            var button = document.createElement("button");
+            button.textContent = "삭제: " + tag;
+            button.onclick = function() {
+                removeTag(tag);
+                this.remove(); // 삭제 버튼 자신도 함께 삭제
+            };
+
+            document.getElementById("removeTagButtons").appendChild(button);
+        }
+
+        function removeTag(tag) {
+            var tags = document.getElementById("tags").value.split(',');
+            var index = tags.indexOf(tag);
+
+            if (index !== -1) {
+                tags.splice(index, 1); // 해당 카테고리 삭제
+                document.getElementById("tags").value = tags.join(',');
+                document.getElementById("tagResult").innerText = tags.join(','); // 화면에도 반영
+            }
+        }
+
+        // 카테고리 삭제 함수
+        function removeCategory(category) {
+            var categories = document.getElementById("categories").value.split(',');
+            var index = categories.indexOf(category);
+
+            if (index !== -1) {
+                categories.splice(index, 1); // 해당 카테고리 삭제
+                document.getElementById("categories").value = categories.join(',');
+                document.getElementById("categoryResult").innerText = categories.join(','); // 화면에도 반영
+            }
+        }
         /*]]>*/
     </script>
 </head>
@@ -318,7 +317,7 @@
 </div>
 <div id="errorMessage" style="color: red;"></div>
 
-<form th:action="'/admin/product/book/' + ${action}" id="bookProductRegister" method="post" onsubmit="formValidation(event)">
+<form th:action="'/admin/product/book/' + ${action}" id="bookProductRegister" method="post" enctype="application/x-www-form-urlencoded" onsubmit="formValidation(event)">
     <div class="book-container">
 
         <input type="image" id="cover" th:value="${cover}" th:src="${cover == null ? 'https://i.postimg.cc/ydkCbCbC/image-2935360-1280.png' : cover} " style="cursor: default;" width="300px" height="420px" readonly/><br>
@@ -359,9 +358,9 @@
     <div th:if="${update}">
         <input type="hidden" name="productId" th:value="${productId}">
         <input type="hidden" name="_method" value="PUT"/>
-        <input type="radio" name="productState" value="0" checked>0
-        <input type="radio" name="productState" value="1">1
-        <input type="radio" name="productState" value="2">2
+        <input type="radio" name="productState" value="0" checked>판매
+        <input type="radio" name="productState" value="1">판매 중단(임시)
+        <input type="radio" name="productState" value="2">판매 중단(영구)
     </div>
 
     <div id="content">
@@ -428,13 +427,17 @@
 
     <p id="categoryResult"></p>
     <div id="removeCategoryButtons"></div>
-    <input type="hidden" id="categories" name="categories">
-
+    <input type="text" id="categories" name="categories" th:value="${categorySet}">
+    <div th:each="category : ${categorySet}">
+        <button th:category="${category}" type="button" th:text="${category} + ' x'" onclick="removeCategory(this.getAttribute('category')), this.remove()"> </button>
+    </div>
     <button type="button" onclick="openTagSearch()">태그 검색</button>
-
+    <div th:each="tag : ${tagSet}">
+        <button th:tag="${tag}" type="button" th:text="${tag} + ' x'" onclick="removeTag(this.getAttribute('tag')), this.remove()"> </button>
+    </div>
     <p id="tagResult"></p>
     <div id="removeTagButtons"></div>
-    <input type="hidden" id="tags" name="tags">
+    <input type="text" id="tags" name="tags" th:value="${tagSet}">
 
     <button type="submit">등록</button>
 

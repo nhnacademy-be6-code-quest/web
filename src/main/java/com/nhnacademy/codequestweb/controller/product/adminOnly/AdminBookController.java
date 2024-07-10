@@ -10,14 +10,18 @@ import com.nhnacademy.codequestweb.response.product.book.AladinBookResponseDto;
 import com.nhnacademy.codequestweb.response.product.book.BookProductGetResponseDto;
 import com.nhnacademy.codequestweb.response.product.common.ProductRegisterResponseDto;
 import com.nhnacademy.codequestweb.response.product.common.ProductUpdateResponseDto;
+import com.nhnacademy.codequestweb.response.product.productCategory.ProductCategory;
+import com.nhnacademy.codequestweb.response.product.tag.Tag;
 import com.nhnacademy.codequestweb.service.product.BookProductService;
 import com.nhnacademy.codequestweb.utils.BookPageUtils;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.StringJoiner;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
@@ -41,7 +45,7 @@ import com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter;
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/admin/product/book")
-public class BookController {
+public class AdminBookController {
     private final BookProductService bookProductService;
 
     private final MessageSource messageSource;
@@ -70,6 +74,18 @@ public class BookController {
         log.info("description: {}", description);
         String markdown = flexmarkHtmlConverter.convert(description);
         log.info("markdown: {}", markdown);
+        List<String> categoryNameSet = bookProductGetResponseDto.categorySet().stream().map(ProductCategory::categoryName).toList();
+        StringJoiner categoryJoiner = new StringJoiner(",");
+        for (String categoryName : categoryNameSet) {
+            categoryJoiner.add(categoryName);
+        }
+
+        List<String> tagNameSet = bookProductGetResponseDto.tagSet().stream().map(Tag::tagName).toList();
+        StringJoiner tagJoiner = new StringJoiner(",");
+        for (String tagName : tagNameSet) {
+            tagJoiner.add(tagName);
+        }
+
         model.addAttribute("update", true);
         model.addAttribute("productId", productId);
         model.addAttribute("action", "update");
@@ -84,6 +100,8 @@ public class BookController {
         model.addAttribute("priceSales", bookProductGetResponseDto.productPriceSales());
         model.addAttribute("productName", bookProductGetResponseDto.productName());
         model.addAttribute("inventory", bookProductGetResponseDto.productInventory());
+        model.addAttribute("categorySet", categoryJoiner.toString());
+        model.addAttribute("tagSet", tagJoiner.toString());
         model.addAttribute("initialValue", markdown);
         model.addAttribute("view", "adminPage");
         model.addAttribute("adminPage", "bookProductRegisterForm");
@@ -133,8 +151,11 @@ public class BookController {
 
 
     @PostMapping("/register")
-    public String saveBook(@ModelAttribute @Valid BookProductRegisterRequestDto dto, HttpServletRequest req, Model model){
+    public String saveBook(@RequestParam("title")String title, @ModelAttribute @Valid BookProductRegisterRequestDto dto, HttpServletRequest req, Model model){
+        log.info("title: {}", title);
         log.info("dto : {}", dto);
+        String encodedData = new String(dto.toString().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
+        log.info("Encoded data: {}", encodedData);
         ResponseEntity<ProductRegisterResponseDto> responseEntity = bookProductService.saveBook(CookieUtils.setHeader(req), dto);
         return "redirect:/";
     }
@@ -147,23 +168,7 @@ public class BookController {
         return "redirect:/";
     }
 
-    @PutMapping("/state")
-    public String updateBookState(HttpServletRequest req, @ModelAttribute @Valid ProductStateUpdateRequestDto dto){
-        ResponseEntity<ProductUpdateResponseDto> responseEntity = bookProductService.updateBookState(CookieUtils.setHeader(req), dto);
-        return "redirect:/";
-    }
 
-    @PutMapping("/inventory/increase")
-    public String increaseBookInventory(HttpServletRequest req, @ModelAttribute @Valid InventoryIncreaseRequestDto dto){
-        ResponseEntity<Void> responseEntity = bookProductService.increaseBookInventory(CookieUtils.setHeader(req), dto);
-        return "redirect:/";
-    }
-
-    @PutMapping("/inventory/set")
-    public String setBookInventory(HttpServletRequest req, @ModelAttribute @Valid InventorySetRequestDto dto){
-        ResponseEntity<Void> responseEntity = bookProductService.setBookInventory(CookieUtils.setHeader(req), dto);
-        return "redirect:/";
-    }
 
     @GetMapping("/all")
     public String getAllBookPage(

@@ -158,27 +158,4 @@ public class BookProductController {
         model.addAttribute("url", req.getRequestURI() + "?");
         return "index";
     }
-
-
-    @PostMapping("/product/client/like")
-    public String like(HttpServletRequest req, Model model, @ModelAttribute ProductLikeRequestDto productLikeRequestDto) {
-        log.info(" header of like:{}", CookieUtils.setHeader(req));
-
-        log.info("like: {}", productLikeRequestDto);
-        ResponseEntity<Void> response = bookProductService.saveBookLike(CookieUtils.setHeader(req), productLikeRequestDto);
-        return "view/product/refresh";
-    }
-
-    @DeleteMapping("/product/client/unlike")
-    public String unlike(HttpServletRequest req, Model model, @RequestParam("productId") long productId) {
-        ResponseEntity<Void> response = bookProductService.deleteBookLike(CookieUtils.setHeader(req), productId);
-        return "view/product/refresh";
-    }
-
-    @PutMapping("/product/inventory/decrease")
-    public String decreaseInventory(@ModelAttribute InventoryDecreaseRequestDto requestDtoList) {
-        log.info("request : {}",requestDtoList);
-        ResponseEntity<Void> response = bookProductService.decreaseBookInventory(Arrays.asList(requestDtoList));
-        return "view/product/refresh";
-    }
 }

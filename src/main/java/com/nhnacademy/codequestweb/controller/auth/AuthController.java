@@ -85,6 +85,7 @@ public class AuthController {
         refresh.setPath("/");
         res.addCookie(access);
         res.addCookie(refresh);
+        CookieUtils.deleteCookieValue(res, "cart");
         return "redirect:/";
     }
 

@@ -69,6 +69,6 @@ public class TestController {
 
     @GetMapping("/4")
     public String test4(){
-        return "/view/product/test4";
+        return "packagingRegisterForm";
     }
 }
