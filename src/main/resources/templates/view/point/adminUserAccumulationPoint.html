@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ko" th:fragment="adminRewardPointFragment ('pointReward')">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>사용자 포인트 발급내역</title>
+  <style>
+    .card3 {
+      width: 100%;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+      padding: 16px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .card-title {
+      margin: 0;
+      font-size: 1.25em;
+      font-weight: bold;
+    }
+
+    .card-description {
+      margin: 0;
+      color: #666;
+    }
+
+    .card-content {
+      padding: 16px;
+    }
+
+    .overflow-x-auto {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    thead {
+      background-color: #f9f9f9;
+    }
+
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      font-size: 0.875em;
+      font-weight: 500;
+      color: #999;
+    }
+
+    td {
+      font-size: 0.875em;
+    }
+
+    .font-medium {
+      font-weight: 500;
+    }
+
+    .text-primary {
+      color: #007bff;
+    }
+
+    .text-green-500 {
+      color: #28a745;
+    }
+
+    .text-muted-foreground {
+      color: #6c757d;
+    }
+  </style>
+</head>
+<body>
+
+<div class="card3">
+  <div class="card-header">
+    <h2 class="card-title">관리자 회원 포인트 적립내역</h2>
+  </div>
+  <div class="card-content">
+    <div class="overflow-x-auto">
+      <table>
+        <thead>
+        <tr>
+          <th>회원 ID</th>
+          <th>포인트 적립 타입</th>
+          <th>적립 포인트</th>
+          <th>적립 날짜</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="point : ${points}">
+          <td th:text="${point.clientId}" class="font-medium"></td>
+          <td th:text= "${point.pointAccumulationType}" class="text-primary"></td>
+          <td th:text="${point.pointAccumulationAmount}" class="text-green-500"></td>
+          <td th:text="${point.pointAccumulationHistoryDate}" class="text-muted-foreground"></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
