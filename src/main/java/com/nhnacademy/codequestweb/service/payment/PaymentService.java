@@ -9,12 +9,11 @@ import com.nhnacademy.codequestweb.client.payment.PaymentProductClient;
 import com.nhnacademy.codequestweb.client.payment.TossPaymentsClient;
 import com.nhnacademy.codequestweb.request.payment.PaymentAccumulatePointRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentCompletedCouponRequestDto;
-import com.nhnacademy.codequestweb.request.payment.PaymentOrderShowRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentOrderApproveRequestDto;
-import com.nhnacademy.codequestweb.request.payment.PaymentProductRequestDto;
+import com.nhnacademy.codequestweb.request.payment.PaymentOrderApproveRequestDto.ProductOrderDetailOptionRequestDto;
+import com.nhnacademy.codequestweb.request.payment.PaymentOrderApproveRequestDto.ProductOrderDetailRequestDto;
+import com.nhnacademy.codequestweb.request.payment.PaymentOrderShowRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentUsePointRequestDto;
-import com.nhnacademy.codequestweb.request.payment.ProductOrderDetailOptionRequestDto;
-import com.nhnacademy.codequestweb.request.payment.ProductOrderDetailRequestDto;
 import com.nhnacademy.codequestweb.request.payment.TossPaymentsRequestDto;
 import com.nhnacademy.codequestweb.request.product.common.InventoryDecreaseRequestDto;
 import com.nhnacademy.codequestweb.response.payment.TossPaymentsResponseDto;
@@ -53,7 +52,8 @@ public class PaymentService /*implements PaymentService*/ {
         }
     }
 
-    public void savePayment(HttpHeaders headers, long orderId, TossPaymentsResponseDto tossPaymentsResponseDto) {
+    public void savePayment(HttpHeaders headers, long orderId,
+        TossPaymentsResponseDto tossPaymentsResponseDto) {
         paymentClient.savePayment(headers, orderId, tossPaymentsResponseDto);
     }
 
@@ -123,43 +123,54 @@ public class PaymentService /*implements PaymentService*/ {
             .build();
     }
 
-    public PaymentOrderShowRequestDto findPaymentOrderShowRequestDtoByOrderId(HttpHeaders headers, long orderId) {
+    public PaymentOrderShowRequestDto findPaymentOrderShowRequestDtoByOrderId(HttpHeaders headers,
+        long orderId) {
         return orderClient.getPaymentOrderShowRequestDto(headers, orderId).getBody();
     }
 
-    public PaymentOrderApproveRequestDto findPaymentOrderApproveRequestDtoByOrderId(HttpHeaders headers, long orderId) {
+    public PaymentOrderApproveRequestDto findPaymentOrderApproveRequestDtoByOrderId(
+        HttpHeaders headers, long orderId) {
         return orderClient.getPaymentOrderApproveRequestDto(headers, orderId).getBody();
     }
 
     public ResponseEntity<String> useCoupon(
-            HttpHeaders headers, PaymentCompletedCouponRequestDto paymentCompletedCouponRequestDto) {
+        HttpHeaders headers, PaymentCompletedCouponRequestDto paymentCompletedCouponRequestDto) {
         return paymentCouponClient.paymentUsedCoupon(headers, paymentCompletedCouponRequestDto);
     }
 
-    public ResponseEntity<String> usePoint(PaymentUsePointRequestDto paymentUsePointRequestDto) {
-        return paymentPointClient.usePoint(paymentUsePointRequestDto);
+    public ResponseEntity<String> usePaymentPoint(
+        PaymentUsePointRequestDto paymentUsePointRequestDto, HttpHeaders httpHeaders) {
+        return paymentPointClient.usePaymentPoint(paymentUsePointRequestDto, httpHeaders);
     }
 
-    public ResponseEntity<String> accumulatePoint(
+    public ResponseEntity<String> accumulatePoint(HttpHeaders httpHeaders,
         PaymentAccumulatePointRequestDto paymentAccumulatePointRequestDto) {
-        return paymentPointClient.accumulatePoint(paymentAccumulatePointRequestDto);
+        return paymentPointClient.rewardOrderPoint(httpHeaders, paymentAccumulatePointRequestDto);
     }
 
     public ResponseEntity<Void> decreaseProductInventory(
         List<ProductOrderDetailRequestDto> productOrderDetailRequestDtoList) {
         List<InventoryDecreaseRequestDto> inventoryDecreaseRequestDtoList = new ArrayList<>();
-        for (ProductOrderDetailRequestDto productOrderDetailRequestDto : productOrderDetailRequestDtoList) {
-            InventoryDecreaseRequestDto inventoryDecreaseRequestDto = new InventoryDecreaseRequestDto(productOrderDetailRequestDto.getProductId(), productOrderDetailRequestDto.getQuantity());
+
+        for (PaymentOrderApproveRequestDto.ProductOrderDetailRequestDto productOrderDetailRequestDto : productOrderDetailRequestDtoList) {
+            // 1) 상품을 재고 감소에 넣기
+            InventoryDecreaseRequestDto inventoryDecreaseRequestDto = new InventoryDecreaseRequestDto(
+                productOrderDetailRequestDto.getProductId(),
+                productOrderDetailRequestDto.getQuantity());
             inventoryDecreaseRequestDtoList.add(inventoryDecreaseRequestDto);
+
+            // 2) 상품이 가지고 있는 옵션 상품을 재고에 넣기
             for (ProductOrderDetailOptionRequestDto productOrderDetailOptionRequestDto : productOrderDetailRequestDto.getProductOrderDetailOptionRequestDtoList()) {
-                InventoryDecreaseRequestDto inventoryDecreaseRequestDto1 = new InventoryDecreaseRequestDto(productOrderDetailOptionRequestDto.getProductId(), productOrderDetailOptionRequestDto.getOptionProductQuantity());
+                InventoryDecreaseRequestDto inventoryDecreaseRequestDto1 = new InventoryDecreaseRequestDto(
+                    productOrderDetailOptionRequestDto.getProductId(),
+                    productOrderDetailOptionRequestDto.getOptionProductQuantity());
                 inventoryDecreaseRequestDtoList.add(inventoryDecreaseRequestDto1);
             }
         }
         return paymentProductClient.decreaseProductInventory(inventoryDecreaseRequestDtoList);
     }
 
-    public ResponseEntity<String> changeOrderStatusCompletePayment(HttpHeaders headers, Long orderId) {
-        return paymentOrderClient.changeOrderStatusCompletePayment(headers, orderId);
+    public ResponseEntity<String> changeOrderStatusCompletePayment(Long orderId, String status) {
+        return paymentOrderClient.updateOrderStatus(orderId, status);
     }
 }

@@ -1,12 +1,12 @@
 package com.nhnacademy.codequestweb.request.payment;
 
-import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Builder
+@Setter
 @Getter
+@NoArgsConstructor
 public class PaymentAccumulatePointRequestDto {
-
-    long clientId;
-    long accumulatedPoint;
+    Integer accumulatedPoint;
 }

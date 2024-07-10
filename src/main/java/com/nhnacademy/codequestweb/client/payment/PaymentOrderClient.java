@@ -6,7 +6,10 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * Order API 로 주문 관련 Request 를 보내는 FeignClient 파일입니다. 결제와 같은 서비스이기는 하나, 가독성 및 충돌 우려를 위해 분리했습니다.
@@ -19,11 +22,18 @@ import org.springframework.web.bind.annotation.RequestHeader;
 public interface PaymentOrderClient {
 
     @GetMapping("/api/client/views/order")
-    PaymentOrderShowRequestDto findPaymentOrderShowRequestDtoByOrderId(@RequestHeader HttpHeaders headers, long orderId);
+    PaymentOrderShowRequestDto findPaymentOrderShowRequestDtoByOrderId(
+        @RequestHeader HttpHeaders headers, long orderId);
 
     @GetMapping("/api/client/views/order")
-    PaymentOrderApproveRequestDto findPaymentOrderApproveRequestDtoByOrderId(@RequestHeader HttpHeaders headers,long orderId);
+    PaymentOrderApproveRequestDto findPaymentOrderApproveRequestDtoByOrderId(
+        @RequestHeader HttpHeaders headers, long orderId);
 
     @GetMapping("/api/client/views/order")
-    ResponseEntity<String> changeOrderStatusCompletePayment(@RequestHeader HttpHeaders headers, Long orderId);
+    ResponseEntity<String> changeOrderStatusCompletePayment(@RequestHeader HttpHeaders headers,
+        Long orderId);
+
+    @PutMapping("/api/order/{orderId}")
+    public ResponseEntity<String> updateOrderStatus(@PathVariable(name = "orderId") Long orderId,
+        @RequestParam(name = "status", required = true) String status);
 }
