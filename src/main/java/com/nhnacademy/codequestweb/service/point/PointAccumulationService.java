@@ -20,6 +20,5 @@ public class PointAccumulationService {
 
     public Page<PointAccumulationAdminPageResponseDto> userPoint(HttpHeaders headers, int page, int size){
         return pointAccumulationClient.findUserPoint(headers, page, size).getBody();
-
     }
 }
