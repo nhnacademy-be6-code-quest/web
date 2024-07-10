@@ -25,7 +25,8 @@ public class PointAccumulationController {
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
 
         req.setAttribute("view", "mypage");
-        req.setAttribute("mypage", "points");
+        req.setAttribute("mypage", "pointReward"
+            + "");
         Page<PointAccumulationMyPageResponseDto> dto = pointAccumulationService.clientPoint(headers, page, size);
         req.setAttribute("points", dto);
         return "index";
@@ -37,7 +38,7 @@ public class PointAccumulationController {
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
 
         req.setAttribute("view", "adminPage");
-        req.setAttribute("adminPage", "points");
+        req.setAttribute("adminPage", "pointReward");
         Page<PointAccumulationAdminPageResponseDto> dto = pointAccumulationService.userPoint(headers, page, size);
         req.setAttribute("points", dto);
         return "index";
