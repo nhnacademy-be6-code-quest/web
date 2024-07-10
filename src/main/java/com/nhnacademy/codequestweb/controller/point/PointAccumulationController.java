@@ -1,15 +1,20 @@
 package com.nhnacademy.codequestweb.controller.point;
 
-import com.nhnacademy.codequestweb.response.coupon.CouponMyPageCouponResponseDto;
+import com.nhnacademy.codequestweb.request.point.PointRewardOrderRequestDto;
+import com.nhnacademy.codequestweb.request.point.PointUsagePaymentRequestDto;
 import com.nhnacademy.codequestweb.response.point.PointAccumulationAdminPageResponseDto;
 import com.nhnacademy.codequestweb.response.point.PointAccumulationMyPageResponseDto;
+import com.nhnacademy.codequestweb.response.point.TotalPointAmountResponseDto;
+import com.nhnacademy.codequestweb.service.point.OrderPointService;
 import com.nhnacademy.codequestweb.service.point.PointAccumulationService;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -18,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class PointAccumulationController {
 
     private final PointAccumulationService pointAccumulationService;
+    private final OrderPointService orderPointService;
 
     @GetMapping("/mypage/point/reward")
     public String myPagePoint (HttpServletRequest req, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size){
@@ -25,8 +31,7 @@ public class PointAccumulationController {
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
 
         req.setAttribute("view", "mypage");
-        req.setAttribute("mypage", "pointReward"
-            + "");
+        req.setAttribute("mypage", "pointReward");
         Page<PointAccumulationMyPageResponseDto> dto = pointAccumulationService.clientPoint(headers, page, size);
         req.setAttribute("points", dto);
         return "index";
@@ -43,4 +48,5 @@ public class PointAccumulationController {
         req.setAttribute("points", dto);
         return "index";
     }
+
 }
