@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="adminPageFragment ('couponPolicy', 'adminCoupons','pointUsed','pointReward')">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="adminPageFragment ('couponPolicy', 'adminCoupons','pointUsed','pointReward','pointPolicy')">
 <head>
     <meta charset="UTF-8">
     <title>Account Page</title>
@@ -30,5 +30,10 @@
     <div class="adminPage-wrapper" th:if="${adminPage != null} and ${#strings.equals(adminPage, 'pointReward')}">
         <section th:replace="~{view/point/adminUserAccumulationPoint :: adminRewardPointFragment ('pointReward')}"></section>
     </div>
+    <div class="adminPage-wrapper" th:if="${adminPage != null} and ${#strings.equals(adminPage, 'pointPolicy')}">
+        <section th:replace="~{view/point/adminPoinPolicy.html :: adminPointPolicyFragment ('pointPolicy')}"></section>
+    </div>
+
+
 </div>
 </html>
