@@ -75,6 +75,7 @@ public class TokenReissueInterceptor implements HandlerInterceptor {
         refresh.setPath("/");
         response.addCookie(access);
         response.addCookie(refresh);
+        CookieUtils.deleteCookieValue(response, "cart");
     }
 
 //    private void refreshPage(HttpServletResponse response) {

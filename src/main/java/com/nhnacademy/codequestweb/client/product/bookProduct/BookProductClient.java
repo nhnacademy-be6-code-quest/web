@@ -8,13 +8,11 @@ import com.nhnacademy.codequestweb.request.product.bookProduct.BookProductUpdate
 import com.nhnacademy.codequestweb.request.product.common.InventoryDecreaseRequestDto;
 import com.nhnacademy.codequestweb.request.product.common.InventoryIncreaseRequestDto;
 import com.nhnacademy.codequestweb.request.product.common.InventorySetRequestDto;
-import com.nhnacademy.codequestweb.response.product.book.AladinBookListResponseDto;
 import com.nhnacademy.codequestweb.response.product.book.AladinBookResponseDto;
 import com.nhnacademy.codequestweb.response.product.book.BookProductGetResponseDto;
 import com.nhnacademy.codequestweb.response.product.common.ProductRegisterResponseDto;
 import com.nhnacademy.codequestweb.response.product.common.ProductUpdateResponseDto;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
 import java.util.List;
 import java.util.Set;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -48,10 +46,6 @@ public interface BookProductClient {
                 @RequestHeader HttpHeaders headers,
                 @RequestBody @Valid BookProductUpdateRequestDto bookProductUpdateRequestDto);
 
-        @PutMapping("/api/product/admin/update/state")
-        ResponseEntity<ProductUpdateResponseDto> updateBookState(
-                @RequestHeader HttpHeaders headers,
-                @RequestBody ProductStateUpdateRequestDto productStateUpdateRequestDto);
 
         @GetMapping("/api/product/book/{productId}")
         ResponseEntity<BookProductGetResponseDto> getSingleBookInfo(
@@ -110,28 +104,4 @@ public interface BookProductClient {
                 @RequestParam(name = "sort", required = false)String sort,
                 @RequestParam(name = "desc", required = false)Boolean desc);
 
-        @PostMapping("/api/product/client/like")
-        ResponseEntity<Void> saveBookProductLike(
-                @RequestHeader HttpHeaders headers,
-                @RequestBody @Valid ProductLikeRequestDto productLikeRequestDto);
-
-        @DeleteMapping("/api/product/client/unlike")
-        ResponseEntity<Void> deleteBookProductLike(
-                @RequestHeader HttpHeaders httpHeaders,
-                @RequestParam("productId") Long productId);
-
-        @PutMapping("/api/product/inventory/decrease")
-        ResponseEntity<Void> decreaseProductInventory(
-                @RequestBody @Valid List<InventoryDecreaseRequestDto> inventoryDecreaseRequestDtoList);
-
-
-        @PutMapping("/api/product/admin/inventory/increase")
-        ResponseEntity<Void> increaseProductInventory(
-                @RequestHeader HttpHeaders headers,
-                @RequestBody @Valid InventoryIncreaseRequestDto inventoryIncreaseRequestDto);
-
-        @PutMapping("/api/product/admin/inventory/set")
-        ResponseEntity<Void> setProductInventory(
-                @RequestHeader HttpHeaders headers,
-                @RequestBody @Valid InventorySetRequestDto inventorySetRequestDto);
 }

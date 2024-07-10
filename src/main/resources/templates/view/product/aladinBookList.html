@@ -43,17 +43,9 @@
             margin: 5px; /* 각 폼 간의 간격 */
         }
     </style>
+    <script th:src="@{/js/product/window.opener.Only.js}"></script>
     <script th:inline="javascript">
         /*<![CDATA[*/
-        if (!window.opener) {
-            alert('잘못된 접근입니다.');
-            // if(!window.opener){
-                history.go(-1);
-            // }else{
-            //     window.close(); // 자식 창 닫기 예시
-            // }
-        }
-
         function sendSelectedBookTitle(title, Author, publisher, cover, pubDate, isbn, isbn13, priceStandard) {
 
             const data = {
@@ -121,7 +113,7 @@
 </div>
 <div class="pagination-container">
     <span th:each="page : ${pageNumSet}">
-        <form action="/admin/products/book/aladinList" method="get" target="_self" class="pagination-form">
+        <form action="/admin/product/book/aladinList" method="get" target="_self" class="pagination-form">
             <input type="hidden" name="title" th:value="${title}">
             <input type="hidden" name="page" th:value="${page}">
             <input type="submit" th:value="${page}">

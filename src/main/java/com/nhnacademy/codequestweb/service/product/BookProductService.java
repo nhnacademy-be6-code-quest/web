@@ -43,11 +43,6 @@ public class BookProductService {
         return bookProductClient.updateBook(headers, bookProductUpdateRequestDto);
     }
 
-    public ResponseEntity<ProductUpdateResponseDto> updateBookState(
-            HttpHeaders headers,
-            ProductStateUpdateRequestDto productStateUpdateRequestDto){
-        return bookProductClient.updateBookState(headers, productStateUpdateRequestDto);
-    }
 
     public ResponseEntity<BookProductGetResponseDto> getSingleBookInfo(
             HttpHeaders headers,
@@ -87,29 +82,5 @@ public class BookProductService {
             HttpHeaders headers,
             Integer page, Integer size, String sort, Boolean desc) {
         return bookProductClient.getLikeBookPage(headers, page, size, sort, desc);
-    }
-
-    public ResponseEntity<Void> saveBookLike(HttpHeaders headers, ProductLikeRequestDto productLikeRequestDto) {
-        return bookProductClient.saveBookProductLike(headers, productLikeRequestDto);
-    }
-
-    public ResponseEntity<Void> deleteBookLike(HttpHeaders headers, Long productId) {
-        return bookProductClient.deleteBookProductLike(headers, productId);
-    }
-
-    public ResponseEntity<Void> decreaseBookInventory(List<InventoryDecreaseRequestDto> requestDtoList) {
-        return bookProductClient.decreaseProductInventory(requestDtoList);
-    }
-
-    public ResponseEntity<Void> increaseBookInventory(
-            HttpHeaders headers,
-            InventoryIncreaseRequestDto requestDto) {
-        return bookProductClient.increaseProductInventory(headers, requestDto);
-    }
-
-    public ResponseEntity<Void> setBookInventory(
-            HttpHeaders headers,
-            InventorySetRequestDto requestDto) {
-        return bookProductClient.setProductInventory(headers, requestDto);
     }
 }
