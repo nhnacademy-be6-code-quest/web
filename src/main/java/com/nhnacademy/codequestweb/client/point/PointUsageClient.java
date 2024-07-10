@@ -21,6 +21,7 @@ public interface PointUsageClient {
         @RequestParam int size);
     @GetMapping("/api/point/adminPage/use")
     ResponseEntity<Page<PointUsageAdminPageResponseDto>> usedUserPoint(
+        @RequestHeader HttpHeaders headers,
         @RequestParam int page,
 
         @RequestParam int size);
