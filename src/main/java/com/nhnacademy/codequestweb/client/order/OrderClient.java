@@ -62,17 +62,17 @@ public interface OrderClient {
 
     // 비회원 주문 결제 완료 상태 변경
     @PutMapping("/api/non-client/orders/{orderId}/payment-complete")
-    public ResponseEntity<String> paymentCompleteNonClientOrder(@RequestHeader HttpHeaders headers, @PathVariable long orderId);
+    ResponseEntity<String> paymentCompleteNonClientOrder(@RequestHeader HttpHeaders headers, @PathVariable long orderId);
 
     // 비회원 주문 취소 상태 변경
     @PutMapping("/api/non-client/orders/{orderId}/cancel")
-    public ResponseEntity<String> cancelNonClientOrder(@RequestHeader HttpHeaders headers, @PathVariable long orderId);
+    ResponseEntity<String> cancelNonClientOrder(@RequestHeader HttpHeaders headers, @PathVariable long orderId);
 
     // 비회원 주문 환불 상태 변경
     @PutMapping("/api/non-client/orders/{orderId}/refund")
-    public ResponseEntity<String> refundNonClientOrder(@RequestHeader HttpHeaders headers, @PathVariable long orderId);
+    ResponseEntity<String> refundNonClientOrder(@RequestHeader HttpHeaders headers, @PathVariable long orderId);
 
     // 주문상태 변경 - 무조건 바꿔주는
     @PutMapping("/api/order/{orderId}")
-    public ResponseEntity<String> updateOrderStatus(@PathVariable(name = "orderId") Long orderId, @RequestParam(name = "status", required = true) String status);
+    ResponseEntity<String> updateOrderStatus(@RequestHeader HttpHeaders headers, @PathVariable(name = "orderId") Long orderId, @RequestParam(name = "status", required = true) String status);
 }

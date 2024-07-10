@@ -14,6 +14,7 @@ import com.nhnacademy.codequestweb.response.mypage.ClientDeliveryAddressResponse
 import com.nhnacademy.codequestweb.response.mypage.ClientPhoneNumberResponseDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientPrivacyResponseDto;
 import com.nhnacademy.codequestweb.response.order.client.ClientOrderForm;
+import com.nhnacademy.codequestweb.response.order.common.OrderResponseDto;
 import com.nhnacademy.codequestweb.response.order.nonclient.NonClientOrderForm;
 import com.nhnacademy.codequestweb.response.order.pack.PackageInfoResponseDto;
 import com.nhnacademy.codequestweb.response.product.book.BookProductGetResponseDto;
@@ -27,6 +28,7 @@ import com.nhnacademy.codequestweb.utils.CookieUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -292,6 +294,51 @@ public class OrderServiceImpl implements OrderService {
             throw new RuntimeException(e);
         }
         return orderItemDtoList;
+    }
+
+    @Override
+    public List<OrderResponseDto> getClientOrders(HttpHeaders headers, int pageSize, int pageNo, String sortBy, String sortDir) {
+        return orderClient.getClientOrders(headers, pageSize, pageNo, sortBy, sortDir).getBody().getContent();
+    }
+
+    @Override
+    public OrderResponseDto getClientOrder(HttpHeaders headers, long orderId) {
+        return orderClient.getClientOrder(headers, orderId).getBody();
+    }
+
+    @Override
+    public void paymentCompleteClientOrder(HttpHeaders headers, long orderId) {
+        orderClient.paymentCompleteClientOrder(headers, orderId);
+    }
+
+    @Override
+    public void cancelClientOrder(HttpHeaders headers, long orderId) {
+        orderClient.cancelClientOrder(headers, orderId);
+    }
+
+    @Override
+    public void refundClientOrder(HttpHeaders headers, long orderId) {
+        orderClient.refundClientOrder(headers, orderId);
+    }
+
+    @Override
+    public void paymentCompleteNonClientOrder(HttpHeaders headers, long orderId) {
+        orderClient.paymentCompleteNonClientOrder(headers, orderId);
+    }
+
+    @Override
+    public void cancelNonClientOrder(HttpHeaders headers, long orderId) {
+        orderClient.cancelNonClientOrder(headers, orderId);
+    }
+
+    @Override
+    public void refundNonClientOrder(HttpHeaders headers, long orderId) {
+        orderClient.refundNonClientOrder(headers, orderId);
+    }
+
+    @Override
+    public void updateOrderStatus(HttpHeaders headers, long orderId, String status) {
+        orderClient.updateOrderStatus(headers, orderId, status);
     }
 
     private HttpHeaders getHeader(HttpServletRequest req){
