@@ -9,5 +9,7 @@ public class PointPolicyAdminListResponseDto {
     String pointPolicyType;
     Integer pointValue;
     String pointPolicyCreationDate;
+    String pointStatus;
+    long pointPolicyId;
 
 }

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,32 +33,29 @@ public class PointPolicyController {
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
 
-        req.setAttribute("view", "mypage");
-        req.setAttribute("mypage", "pointPolicy");
+        req.setAttribute("view", "adminPage");
+        req.setAttribute("adminPage", "pointPolicy");
         Page<PointPolicyAdminListResponseDto> dto = pointPolicyService.findPointPolicies(headers, page, size);
         req.setAttribute("points", dto);
+        List<PointPolicyType> pointPolicyTypes = List.of(PointPolicyType.REVIEW,PointPolicyType.MEMBERSHIP,PointPolicyType.MEMBERSHIP,PointPolicyType.PAYMENT);
+        req.setAttribute("pointTypes",pointPolicyTypes);
         return "index";
     }
 
-    @GetMapping("/admin/point/policy/register")
-    public String pointPolicyRegisterView(HttpServletRequest req, Model model){
-        List<PointPolicyType> pointPolicyTypes = List.of(PointPolicyType.REVIEW,PointPolicyType.MEMBERSHIP,PointPolicyType.REFUND,PointPolicyType.PAYMENT);
-        model.addAttribute("types",pointPolicyTypes);
-        return "";
-    }
     @PostMapping("/admin/point/policy/register")
-    public String pointPolicyRegister(HttpServletRequest req, @RequestBody PointPolicyRegisterRequestDto pointPolicyRegisterRequestDto){
+    public String pointPolicyRegister(HttpServletRequest req, @ModelAttribute PointPolicyRegisterRequestDto pointPolicyRegisterRequestDto){
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
 
         pointPolicyService.savePointPolicy(headers, pointPolicyRegisterRequestDto);
 
-        return "redirect://admin/point/policy";
+        return "redirect:/admin/point/policy";
     }
     @DeleteMapping("/admin/point/policy/{pointPolicyId}")
-    public void deletePointPolicy(HttpServletRequest req, @PathVariable long pointPolicyId){
+    public String deletePointPolicy(HttpServletRequest req, @PathVariable long pointPolicyId){
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
         pointPolicyService.deletePolicy(headers, pointPolicyId);
+        return "redirect:/admin/point/policy";
     }
 }
