@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @FeignClient(name = "paymentProduct", url = "http://localhost:8001")
 public interface PaymentProductClient {
 
-    @PutMapping("/api/product/inventory/decrease")
-    ResponseEntity<Void> decreaseProductInventory(
+    @PutMapping("api/product/inventory/decrease")
+    public ResponseEntity<Void> decreaseProductInventory(
         @RequestBody @Valid List<InventoryDecreaseRequestDto> inventoryDecreaseRequestDtoList);
 }
