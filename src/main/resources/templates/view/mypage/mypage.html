@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="mypageFragment ('mypage', 'profile', 'clientDeliveryAddresses', 'clientPhoneNumber', 'coupons')">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="mypageFragment ('mypage', 'profile', 'clientDeliveryAddresses', 'clientPhoneNumber', 'coupons','pointUsed','pointReward')">
 <head>
     <meta charset="UTF-8">
     <title>Account Page</title>
@@ -36,6 +36,11 @@
     <div class="mypage-wrapper" th:if="${mypage != null} and ${#strings.equals(mypage, 'coupons')}">
         <div th:replace="~{view/mypage/coupons.html :: CouponsFragment ('coupons')}"></div>
     </div>
-
+    <div class="mypage-wrapper" th:if="${mypage != null} and ${#strings.equals(mypage, 'pointUsed')}">
+        <div th:replace="~{view/point/clientUsagePoint :: myPageUsedPointFragment ('pointUsed')}"></div>
+    </div>
+    <div class="mypage-wrapper" th:if="${mypage != null} and ${#strings.equals(mypage, 'pointReward')}">
+    <div th:replace="~{view/point/clientAccumulationPoint :: myPageRewardPointFragment ('pointReward')}"></div>
+</div>
 </div>
 </html>
