@@ -338,6 +338,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public OrderResponseDto findNonClientOrder(HttpHeaders headers, long orderId, String orderPassword) {
+        return orderClient.findNonClientOrder(headers, orderId, orderPassword).getBody();
+    }
+
+    @Override
     public void updateOrderStatus(HttpHeaders headers, long orderId, String status) {
         orderClient.updateOrderStatus(headers, orderId, status);
     }
@@ -348,8 +353,4 @@ public class OrderServiceImpl implements OrderService {
         return headers;
     }
 
-    @Override
-    public void getAllOrderList(HttpHeaders headers, Pageable pageable) {
-
-    }
 }

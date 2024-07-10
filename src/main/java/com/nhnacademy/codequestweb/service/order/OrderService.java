@@ -29,6 +29,6 @@ public interface OrderService {
     void paymentCompleteNonClientOrder(HttpHeaders headers, long orderId);
     void cancelNonClientOrder(HttpHeaders headers, long orderId);
     void refundNonClientOrder(HttpHeaders headers, long orderId);
+    OrderResponseDto findNonClientOrder(HttpHeaders headers, long orderId, String orderPassword);
     void updateOrderStatus(HttpHeaders headers, long orderId, String status);
-    void getAllOrderList(HttpHeaders headers, Pageable pageable);
 }

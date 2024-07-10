@@ -84,4 +84,33 @@ public class OrderController {
         return "index";
     }
 
+    // 회원 단건 주문 조회 view
+    @GetMapping("/non-client/order/view")
+    public String orders(HttpServletRequest req){
+        return "view/order/nonClientFindOrder";
+    }
+
+    @GetMapping("/non-client/order")
+    @ResponseBody
+    public OrderResponseDto nonClientFindOrder(HttpServletRequest req, @RequestParam("orderId") String orderIdStr, @RequestParam("orderPassword") String orderPassword){
+
+        boolean tryToFindOrderSuccess = true;
+        Long orderId = null;
+        OrderResponseDto orderResponseDto = null;
+        try {
+            Long.parseLong(orderIdStr);
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("access", CookieUtils.getCookieValue(req, "access"));
+            orderId = Long.parseLong(orderIdStr);
+            orderResponseDto = orderService.findNonClientOrder(headers, orderId, orderPassword);
+        } catch (NumberFormatException e) {
+            tryToFindOrderSuccess = false;
+        } catch(RuntimeException e){
+            tryToFindOrderSuccess = false;
+        }
+
+        return orderResponseDto;
+
+    }
+
 }
