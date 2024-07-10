@@ -123,19 +123,20 @@
     function toggleDiscountInput(value) {
         const amountDiscountInput = document.getElementById('amountDiscountInput');
         const percentageDiscountInput = document.getElementById('percentageDiscountInput');
-
-        // Hide both inputs initially
+        const discountAmount = document.getElementById('discountAmount');
+        const discountPercentage = document.getElementById('discountPercentage');
         amountDiscountInput.classList.add('hidden');
         percentageDiscountInput.classList.add('hidden');
-
-        // Show corresponding input based on selected value
+        discountAmount.disabled = true;
+        discountPercentage.disabled = true;
         if (value === 'AMOUNTDISCOUNT') {
             amountDiscountInput.classList.remove('hidden');
+            discountAmount.disabled = false;
         } else if (value === 'PERCENTAGEDISCOUNT') {
             percentageDiscountInput.classList.remove('hidden');
+            discountPercentage.disabled = false;
         }
     }
-
     window.addEventListener('message', function(event) {
         // 메시지가 'categoryData'인 경우 처리
         if (event.data.type === 'categoryData') {
