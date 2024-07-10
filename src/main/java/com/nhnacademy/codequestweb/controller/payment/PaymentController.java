@@ -10,7 +10,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.parser.ParseException;
+import org.springframework.cloud.client.loadbalancer.Response;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -30,17 +32,16 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     @GetMapping("/client/order/{orderId}/payment")
-    public String savePayment(@RequestHeader HttpHeaders headers, @PathVariable long orderId,
-        Model model) {
+    public String savePayment(@RequestHeader HttpHeaders headers, @PathVariable long orderId, Model model) {
 //        1. 주문에서 받은 값을 토대로 사용자에게 보여 주기
         PaymentOrderShowRequestDto paymentOrderShowRequestDto = paymentService.findPaymentOrderShowRequestDtoByOrderId(
-            headers, orderId);
+                headers, orderId);
         model.addAttribute("paymentOrderShowRequestDto", paymentOrderShowRequestDto);
         model.addAttribute("successUrl",
-            "https://book-store.shop/client/order/" + orderId + "/payment/success");
+            "https://localhost:8080/client/order/" + orderId + "/payment/success");
         model.addAttribute("failUrl",
-            "https://book-store.shop/client/order/" + orderId + "/payment/fail");
-        return "view/payment/tossPage";
+            "https://localhost:8080/client/order/" + orderId + "/payment/fail");
+        return "/view/payment/tossPage";
     }
 
     @GetMapping("/client/order/{orderId}/payment/success")
@@ -52,9 +53,9 @@ public class PaymentController {
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(request, "access"));
 
-//        2. 결제 검증 및 승인 창에서 필요한 요소를 Order 에서 받아 오기 TODO : @RequestHeader 로 해결함. // 303 ->
+//        2. 결제 검증 및 승인 창에서 필요한 요소를 Order 에서 받아 오기 TODO : @RequestHeader 로 해결함.
         PaymentOrderApproveRequestDto paymentOrderApproveRequestDto = paymentService.findPaymentOrderApproveRequestDtoByOrderId(
-            headers, orderId);
+                headers, orderId);
 
 //        3. 조작 확인하기 : 주문 정보가 일치하지 않으면 실패 페이지로 이동하기.
         if (!paymentService.isValidTossPayment(paymentOrderApproveRequestDto, tossOrderId,
@@ -75,21 +76,21 @@ public class PaymentController {
 //        사용자에게 보여줄 것은 보여주고, 시스템에 에러로 남길 것은 남겨 두기
 
 //        2) 쿠폰 사용 처리 TODO : @Httpheaders headers 사용해서 303 -> 401로 오류 변경 && CookieUtils 사용해서 401 -> 400
-        boolean couponResponse = true;
+        //boolean couponResponse =
 
         if (paymentOrderApproveRequestDto.getCouponId() != null) {
-            ResponseEntity<String> couponRes = paymentService.useCoupon(headers,
-                PaymentCompletedCouponRequestDto.builder()
+            ResponseEntity<String> couponRes = paymentService.useCoupon(headers, PaymentCompletedCouponRequestDto.builder()
                     .couponId(paymentOrderApproveRequestDto.getCouponId())
                     .build());
-
+            log.debug("couponRes: " + couponRes);
             HttpStatusCode code = couponRes.getStatusCode();
-            boolean codeRes = code.equals(HttpStatusCode.valueOf(200));
+            log.debug("code: " + code);
+            boolean codeRes = code.is2xxSuccessful();
+            log.debug("codeRes: " + codeRes);
 
             if (!codeRes) {
                 log.error("쿠폰 사용 처리에 실패했습니다.");
                 log.error("쿠폰 아이디: {}", paymentOrderApproveRequestDto.getCouponId());
-                couponResponse = false;
             }
         }
 
@@ -145,7 +146,7 @@ public class PaymentController {
 
         // 결제 성공 페이지로 이동
         paymentService.savePayment(headers, orderId, tossPaymentsResponseDto);
-        model.addAttribute("couponResponse", couponResponse);
+        model.addAttribute("couponResponse", true);
         model.addAttribute("pointUseResponse", false);
         model.addAttribute("pointAccumulateResponse", false);
         //model.addAttribute("productReduceInventoryResponse", productReduceInventoryResponse);

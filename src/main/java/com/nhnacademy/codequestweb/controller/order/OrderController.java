@@ -34,13 +34,13 @@ public class OrderController {
         return orderService.viewClientOrder(req, model, orderItemDtoStringList);
     }
 
-    // 회원 단건 주문 - 바로 주문
+    // 비회원 단건 주문 - 바로 주문
     @PostMapping("/non-client/order")
     public String nonClientOrder(OrderItemDto orderItemDto, Model model, HttpServletRequest req){
         return orderService.viewNonClientOrder(req, model, orderItemDto);
     }
 
-    // 회원 복수 주문
+    // 비회원 복수 주문
     @PostMapping("/non-client/orders")
     public String nonClientOrder(@RequestParam("cartList") List<String> orderItemDtoStringList, Model model, HttpServletRequest req){
         return orderService.viewNonClientOrder(req, model, orderItemDtoStringList);
