@@ -1,13 +1,18 @@
 package com.nhnacademy.codequestweb.controller.order;
 
 import com.nhnacademy.codequestweb.request.order.field.OrderItemDto;
+import com.nhnacademy.codequestweb.response.coupon.CouponMyPageCouponResponseDto;
 import com.nhnacademy.codequestweb.response.order.client.ClientOrderForm;
+import com.nhnacademy.codequestweb.response.order.common.OrderResponseDto;
 import com.nhnacademy.codequestweb.response.order.nonclient.NonClientOrderForm;
 import com.nhnacademy.codequestweb.response.product.productCategory.ProductCategory;
 import com.nhnacademy.codequestweb.service.order.OrderService;
+import com.nhnacademy.codequestweb.utils.CookieUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -56,6 +61,27 @@ public class OrderController {
     @PostMapping("/api/non-client/orders")
     public String tryNonClientOrder(HttpServletRequest request, @ModelAttribute NonClientOrderForm nonClientOrderForm){
         return String.format("redirect:/client/order/%d/payment", orderService.createNonClientOrder(request, nonClientOrderForm));
+    }
+
+    @GetMapping("/mypage/orders")
+    public String maypageOrders(HttpServletRequest req,
+                                @RequestParam(value = "pageSize", defaultValue = "5", required = false) int pageSize,
+                                @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo){
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("access", CookieUtils.getCookieValue(req, "access"));
+
+        req.setAttribute("view", "mypage");
+        req.setAttribute("mypage", "orders");
+
+        Page<OrderResponseDto> orderResponseDtoList = orderService.getClientOrders(headers, pageSize, pageNo, "orderDatetime", "desc");
+
+        req.setAttribute("orders", orderResponseDtoList.getContent());
+        req.setAttribute("totalPages", orderResponseDtoList.getTotalPages());
+        req.setAttribute("currentPage", orderResponseDtoList.getNumber());
+        req.setAttribute("pageSize", orderResponseDtoList.getSize());
+
+        return "index";
     }
 
 }

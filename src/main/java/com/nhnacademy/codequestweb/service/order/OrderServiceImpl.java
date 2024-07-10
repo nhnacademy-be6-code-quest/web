@@ -29,6 +29,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -297,8 +298,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderResponseDto> getClientOrders(HttpHeaders headers, int pageSize, int pageNo, String sortBy, String sortDir) {
-        return orderClient.getClientOrders(headers, pageSize, pageNo, sortBy, sortDir).getBody().getContent();
+    public Page<OrderResponseDto> getClientOrders(HttpHeaders headers, int pageSize, int pageNo, String sortBy, String sortDir) {
+        return orderClient.getClientOrders(headers, pageSize, pageNo, sortBy, sortDir).getBody();
     }
 
     @Override
@@ -347,4 +348,8 @@ public class OrderServiceImpl implements OrderService {
         return headers;
     }
 
+    @Override
+    public void getAllOrderList(HttpHeaders headers, Pageable pageable) {
+
+    }
 }
