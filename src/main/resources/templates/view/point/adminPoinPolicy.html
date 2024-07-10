@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ko" th:fragment="adminPointPolicyFragment ('pointPolicy')">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>포인트 정책 관리</title>
+  <style>
+    /* CSS 스타일을 여기에 추가 */
+    .card { width: 100%; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 20px; }
+    .card-header { background-color: #f0f0f0; padding: 10px; border-bottom: 1px solid #ccc; }
+    .card-title { font-size: 18px; font-weight: bold; }
+    .card-description { font-size: 14px; color: #666; }
+    .card-content { padding: 20px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 10px; border-bottom: 1px solid #ddd; }
+    .bg-muted { background-color: #f0f0f0; font-weight: bold; }
+    .text-muted-foreground { color: #666; }
+    .text-primary { color: #007bff; }
+    .text-green-500 { color: #28a745; }
+    .text-danger { color: #dc3545; }
+    .button { background-color: #007bff; color: #fff; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; display: inline-block; text-decoration: none; }
+    .button:hover { background-color: #0056b3; }
+    .delete-button { background-color: #dc3545; color: #fff; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; }
+    .delete-button:hover { background-color: #bd2130; }
+
+    /* 모달 스타일 */
+    .modal { display: none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgb(0,0,0); background-color: rgba(0,0,0,0.4); }
+    .modal-content { background-color: #fefefe; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 80%; }
+    .close { color: #aaa; float: right; font-size: 28px; font-weight: bold; }
+    .close:hover, .close:focus { color: black; text-decoration: none; cursor: pointer; }
+  </style>
+</head>
+<body>
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">포인트 정책 관리</div>
+    <div class="card-description">포인트 정책 목록을 확인하고 관리할 수 있습니다.</div>
+  </div>
+  <div class="card-content">
+    <button class="button" onclick="openModal()">정책 등록</button>
+    <div class="overflow-x-auto">
+      <table>
+        <thead class="bg-muted">
+        <tr>
+          <th class="text-muted-foreground">포인트 정책 타입</th>
+          <th class="text-muted-foreground">포인트 값</th>
+          <th class="text-muted-foreground">정책 시작 시간</th>
+          <th class="text-muted-foreground">상태</th>
+          <th class="text-muted-foreground">삭제</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="point : ${points}">
+          <td th:text="${point.pointPolicyType}"></td>
+          <td th:text="${point.pointValue}" class="text-green-500"></td>
+          <td th:text="${point.pointPolicyCreationDate}" class="text-muted-foreground"></td>
+          <td th:text="${point.pointStatus}" class="text-primary"></td>
+          <td>
+            <form th:action="@{/admin/point/policy/{pointPolicyId}(pointPolicyId=${point.pointPolicyId})}" method="post">
+              <input type="hidden" name="_method" value="delete">
+              <button type="submit" class="delete-button">Delete</button>
+            </form>          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- 모달 -->
+<div id="myModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <form id="policyForm" th:action="@{/admin/point/policy/register}" method="post">
+      <div>
+        <label for="pointPolicyType">포인트 정책 타입:</label>
+        <select id="pointPolicyType" name="pointPolicyType">
+          <option th:each="type : ${pointTypes}" th:value="${type}" th:text="${type}"></option>
+        </select>
+      </div>
+      <div>
+        <label for="pointValue">포인트 값:</label>
+        <input type="number" id="pointValue" name="pointValue">
+      </div>
+      <button type="submit">등록</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  function openModal() {
+    document.getElementById("myModal").style.display = "block";
+  }
+
+  function closeModal() {
+    document.getElementById("myModal").style.display = "none";
+  }
+
+  window.onclick = function(event) {
+    if (event.target == document.getElementById("myModal")) {
+      closeModal();
+    }
+  };
+
+  function deletePointPolicy(pointPolicyId) {
+    if (confirm("정책을 삭제하시겠습니까?")) {
+      // 페이지 이동
+      window.location.href = `/admin/point/policy/${pointPolicyId}`;
+    }
+  }
+</script>
+
+</body>
+</html>
