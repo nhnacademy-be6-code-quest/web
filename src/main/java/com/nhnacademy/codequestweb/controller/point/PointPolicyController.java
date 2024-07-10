@@ -41,16 +41,7 @@ public class PointPolicyController {
         req.setAttribute("pointTypes",pointPolicyTypes);
         return "index";
     }
-//
-//    @GetMapping("/admin/point/policy/register")
-//    public String pointPolicyRegisterView(HttpServletRequest req, Model model){
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.set("access", CookieUtils.getCookieValue(req, "access"));
-//
-//        List<PointPolicyType> pointPolicyTypes = List.of(PointPolicyType.REVIEW,PointPolicyType.MEMBERSHIP,PointPolicyType.REFUND,PointPolicyType.PAYMENT);
-//        model.addAttribute("types",pointPolicyTypes);
-//        return "redircet://admin/point/policy";
-//    }
+
     @PostMapping("/admin/point/policy/register")
     public String pointPolicyRegister(HttpServletRequest req, @ModelAttribute PointPolicyRegisterRequestDto pointPolicyRegisterRequestDto){
         HttpHeaders headers = new HttpHeaders();
