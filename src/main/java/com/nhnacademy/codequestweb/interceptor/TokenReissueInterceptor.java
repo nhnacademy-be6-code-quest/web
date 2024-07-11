@@ -3,6 +3,7 @@ package com.nhnacademy.codequestweb.interceptor;
 import com.nhnacademy.codequestweb.client.auth.AuthClient;
 import com.nhnacademy.codequestweb.response.auth.TokenResponseDto;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
+import com.nhnacademy.codequestweb.utils.JwtUtil;
 import feign.FeignException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,6 +25,38 @@ public class TokenReissueInterceptor implements HandlerInterceptor {
 
     public TokenReissueInterceptor(AuthClient authClient) {
         this.authClient = authClient;
+    }
+
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        String access = CookieUtils.getCookieValue(request, "access");
+        if (access != null && JwtUtil.isTokenExpired(access)) {
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("access", CookieUtils.getCookieValue(request, "access"));
+            headers.set("refresh", CookieUtils.getCookieValue(request, "refresh"));
+            ResponseEntity<TokenResponseDto> reissueResponse = authClient.reissue(headers);
+            if (reissueResponse.getStatusCode().is2xxSuccessful() && reissueResponse.getBody() != null) {
+                Cookie accessCookie = new Cookie("access", reissueResponse.getBody().getAccess());
+                accessCookie.setHttpOnly(true);
+                accessCookie.setSecure(true);
+                accessCookie.setPath("/");
+                accessCookie.setMaxAge(60 * 60 * 2);
+                response.addCookie(accessCookie);
+
+                Cookie refreshCookie = new Cookie("refresh", reissueResponse.getBody().getRefresh());
+                refreshCookie.setHttpOnly(true);
+                refreshCookie.setSecure(true);
+                refreshCookie.setPath("/");
+                refreshCookie.setMaxAge(60 * 60 * 24 * 14);
+                response.addCookie(refreshCookie);
+
+                log.info("Token reissued success");
+            } else {
+                log.info("refresh token expired");
+                removeCookie(response);
+            }
+        }
+        return true;
     }
 
     @Override
