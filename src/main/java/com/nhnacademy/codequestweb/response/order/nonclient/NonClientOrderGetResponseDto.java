@@ -1,4 +1,4 @@
-package com.nhnacademy.codequestweb.response.order.common;
+package com.nhnacademy.codequestweb.response.order.nonclient;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -7,11 +7,8 @@ import java.util.List;
 
 @NoArgsConstructor
 @Getter
-public class OrderResponseDto {
-
+public class NonClientOrderGetResponseDto {
     private Long orderId;
-    private Long clientId;
-    private Long couponId;
     private String tossOrderId;
     private String orderDatetime;
     private String orderStatus;
@@ -22,19 +19,14 @@ public class OrderResponseDto {
     private String deliveryStartDate;
     private String phoneNumber;
     private String deliveryAddress;
-    private Long discountAmountByCoupon;
-    private Long discountAmountByPoint;
-    private Long accumulatedPoint;
     private String nonClientOrderPassword;
     private String nonClientOrdererName;
     private String nonClientOrdererEmail;
-    private List<OrderListItem> orderListItemList;
+    private List<NonClientProductOrderDetailListItem> nonClientProductOrderDetailList;
 
     @NoArgsConstructor
     @Getter
-    public static class OrderListItem{
-        private Long productOrderDetailId;
-
+    public static class NonClientProductOrderDetailListItem{
         private Long productId;
         private String productName;
         private Long productQuantity;
@@ -45,5 +37,4 @@ public class OrderResponseDto {
         private Long optionProductQuantity;
         private Long optionProductSinglePrice;
     }
-
 }

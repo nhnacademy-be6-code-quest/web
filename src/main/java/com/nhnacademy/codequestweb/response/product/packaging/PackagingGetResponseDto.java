@@ -16,6 +16,7 @@ public class PackagingGetResponseDto {
 
     private Long productId;
     private String productName;
+    private String productDescription;
     private int productState;
     private long productPriceStandard;
     private long productPriceSales;

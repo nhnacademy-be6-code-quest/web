@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -52,17 +53,29 @@ public class CartController {
                     List<CartGetResponseDto> cartList = responseEntity.getBody();
                     model.addAttribute("cartList", cartList);
                     model.addAttribute("view", "cart");
+                    Map<String, Boolean> jsonCartMap = cartList.stream()
+                            .collect(Collectors.toMap(
+                                    cart -> {
+                                        try {
+                                            return objectMapper.writeValueAsString(cart);
+                                        } catch (JsonProcessingException e) {
+                                            throw new RuntimeException(e);
+                                        }
+                                    },
+                                    cart -> cart.productInventory() >= cart.productQuantityOfCart() && cart.productState() == 0
+                            ));
+                    log.info("jsonCartMap: {}", jsonCartMap);
 
-                    List<String> jsonCartList = cartList.stream()
-                            .map(cart -> {
-                                try {
-                                    return objectMapper.writeValueAsString(cart);
-                                } catch (JsonProcessingException e) {
-                                    throw new RuntimeException(e);
-                                }
-                            })
-                            .collect(Collectors.toList());
-                    model.addAttribute("jsonCartList", jsonCartList);
+//                    List<String> jsonCartList = cartList.stream()
+//                            .map(cart -> {
+//                                try {
+//                                    return objectMapper.writeValueAsString(cart);
+//                                } catch (JsonProcessingException e) {
+//                                    throw new RuntimeException(e);
+//                                }
+//                            })
+//                            .toList();
+                    model.addAttribute("jsonCartMap", jsonCartMap);
                     model.addAttribute("orderUrl", "/non-client/orders");
                     return "index";
                 }else{
@@ -70,9 +83,6 @@ public class CartController {
                 }
             }
         }
-        // 아마도 CartControllerAdvice 의 로직이 잘 동작한다면 (쿠키에 담긴 회원 장바구니를 변조/삭제했을 시 데이터베이스 조회해서 자동 복구하고 쿠키에 새로 담음)
-        // 로직을 둘로 구분 (isGuest 인지 아닌지 경우로) 할 필요 없이 그냥 동일하게 위 로직 써도 될 것 같은데 어떻게 생각하시나요?
-        // 가독성 부분에선 그렇게 하는게 나을 것 같고, 혹시 모르니 안정성 관점에선 로직을 둘로 나눠야 할 것도 같고..
 
         else{
             ResponseEntity<List<CartGetResponseDto>> responseEntity = cartService.getClientCartList(CookieUtils.setHeader(req));
@@ -81,16 +91,28 @@ public class CartController {
                 if (cartList == null || cartList.isEmpty()) {
                     model.addAttribute("empty", true);
                 }else {
-                    List<String> jsonCartList = cartList.stream()
-                            .map(cart -> {
-                                try {
-                                    return objectMapper.writeValueAsString(cart);
-                                } catch (JsonProcessingException e) {
-                                    throw new RuntimeException(e);
-                                }
-                            })
-                            .collect(Collectors.toList());
-                    model.addAttribute("jsonCartList", jsonCartList);
+                    Map<String, Boolean> jsonCartMap = cartList.stream()
+                            .collect(Collectors.toMap(
+                                    cart -> {
+                                        try {
+                                            return objectMapper.writeValueAsString(cart);
+                                        } catch (JsonProcessingException e) {
+                                            throw new RuntimeException(e);
+                                        }
+                                    },
+                                    cart -> cart.productInventory() >= cart.productQuantityOfCart() && cart.productState() == 0
+                            ));
+                    log.info("jsonCartMap: {}", jsonCartMap);
+//                    List<String> jsonCartList = cartList.stream()
+//                            .map(cart -> {
+//                                try {
+//                                    return objectMapper.writeValueAsString(cart);
+//                                } catch (JsonProcessingException e) {
+//                                    throw new RuntimeException(e);
+//                                }
+//                            })
+//                            .toList();
+                    model.addAttribute("jsonCartMap", jsonCartMap);
                     model.addAttribute("cartList", cartList);
                 }
                 model.addAttribute("view", "cart");

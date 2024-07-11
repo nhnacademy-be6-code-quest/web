@@ -3,8 +3,10 @@ package com.nhnacademy.codequestweb.service.product;
 import com.nhnacademy.codequestweb.client.product.tag.TagClient;
 import com.nhnacademy.codequestweb.request.product.PageRequestDto;
 import com.nhnacademy.codequestweb.request.product.tag.TagRegisterRequestDto;
+import com.nhnacademy.codequestweb.request.product.tag.TagUpdateRequestDto;
 import com.nhnacademy.codequestweb.response.product.tag.TagGetResponseDto;
 import com.nhnacademy.codequestweb.response.product.tag.TagRegisterResponseDto;
+import com.nhnacademy.codequestweb.response.product.tag.TagUpdateResponseDto;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -26,11 +28,15 @@ public class TagService {
         return tagClient.saveTag(headers, dto);
     }
 
-    public ResponseEntity<Page<TagGetResponseDto>> getAllTags(Integer page, Boolean desc){
-        return tagClient.getAllTags(page, desc);
+    public ResponseEntity<TagUpdateResponseDto> updateTag(HttpHeaders headers, TagUpdateRequestDto dto) {
+        return tagClient.updateTag(headers, dto);
     }
 
-    public ResponseEntity<Page<TagGetResponseDto>> getNameContainingTagPage(Integer page, Boolean desc, String tagName){
-        return tagClient.getNameContainingTagPage(page, desc, tagName);
+    public ResponseEntity<Page<TagGetResponseDto>> getAllTags(Integer page, String sort, Boolean desc){
+        return tagClient.getAllTags(page, sort, desc);
+    }
+
+    public ResponseEntity<Page<TagGetResponseDto>> getNameContainingTagPage(Integer page, String sort, Boolean desc, String tagName){
+        return tagClient.getNameContainingTagPage(page, sort, desc, tagName);
     }
 }

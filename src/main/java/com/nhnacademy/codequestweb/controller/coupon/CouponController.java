@@ -78,7 +78,7 @@ public class CouponController {
         Page<CouponAdminPageCouponResponseDto> adminCoupons = couponService.findUsersCoupons(headers, page, size);
         req.setAttribute("view", "adminPage");
         req.setAttribute("adminPage", "adminCoupons");
-
+        req.setAttribute("activeSection", "coupon");
         req.setAttribute("adminCoupons", adminCoupons);
         return "index";
     }

@@ -33,7 +33,7 @@ public class ProductCategoryCouponController {
     }
 
 
-    @GetMapping("/admin/categories/all")
+    @GetMapping("/coupon/categories/all")
     public String getAllCategoriesPage(@RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "desc", required = false) Boolean desc, @RequestParam(name = "sort", required = false) String sort, Model model) {
         ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getCategories(page, desc, sort);
         List<CategoryGetResponseDto> categoryNamePage = getCategoryPathNameList(response);
@@ -72,7 +72,7 @@ public class ProductCategoryCouponController {
     }
 
 
-    @GetMapping("/admin/categories/containing")
+    @GetMapping("/coupon/categories/containing")
     public String getCategoryContainingPage(@RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "desc", required = false) Boolean desc, @RequestParam(name = "sort", required = false) String sort, @RequestParam("categoryName") String categoryName, Model model) {
         ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getNameContainingCategories(page, desc, sort, categoryName);
         List<CategoryGetResponseDto> categoryNamePage = getCategoryPathNameList(response);
@@ -87,7 +87,7 @@ public class ProductCategoryCouponController {
         return "view/coupon/categoryAdd";
     }
 
-    @GetMapping("/admin/categories/{categoryId}/sub")
+    @GetMapping("/coupon/categories/{categoryId}/sub")
     public String getCategorySubPage(@RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "desc", required = false) Boolean desc, @RequestParam(name = "sort", required = false) String sort, @PathVariable("categoryId") Long categoryId, Model model) {
         ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getSubCategories(page, desc, sort, categoryId);
         List<CategoryGetResponseDto> categoryNamePage = getCategoryPathNameList(response);

@@ -16,7 +16,7 @@ public class PackagingUpdateRequestDto {
 
     @NotBlank
     @NotNull
-    private String packageName;
+    private String packagingName;
 
     @NotBlank
     @NotNull

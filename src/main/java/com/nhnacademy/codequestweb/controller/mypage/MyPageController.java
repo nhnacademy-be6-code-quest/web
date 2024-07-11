@@ -7,6 +7,7 @@ import com.nhnacademy.codequestweb.response.coupon.CouponMyPageCouponResponseDto
 import com.nhnacademy.codequestweb.response.mypage.ClientDeliveryAddressResponseDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientPhoneNumberResponseDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientPrivacyResponseDto;
+import com.nhnacademy.codequestweb.response.order.client.ClientOrderGetResponseDto;
 import com.nhnacademy.codequestweb.response.order.common.OrderResponseDto;
 import com.nhnacademy.codequestweb.response.point.PointAccumulationMyPageResponseDto;
 import com.nhnacademy.codequestweb.response.point.PointUsageMyPageResponseDto;
@@ -69,6 +70,7 @@ public class MyPageController {
 
         req.setAttribute("view", "mypage");
         req.setAttribute("mypage", "profile");
+        req.setAttribute("activeSection", "client");
         req.setAttribute("profile", response.getBody());
         return "index";
     }
@@ -94,6 +96,7 @@ public class MyPageController {
 
         req.setAttribute("view", "mypage");
         req.setAttribute("mypage", "delivaryaddress");
+        req.setAttribute("activeSection", "client");
         req.setAttribute("clientDeliveryAddresses", response.getBody());
         return "index";
     }
@@ -142,6 +145,7 @@ public class MyPageController {
         }
         req.setAttribute("view", "mypage");
         req.setAttribute("mypage", "withdrawal");
+        req.setAttribute("activeSection", "client");
         return "index";
     }
 
@@ -173,6 +177,7 @@ public class MyPageController {
 
         req.setAttribute("view", "mypage");
         req.setAttribute("mypage", "phoneNumber");
+        req.setAttribute("activeSection", "client");
         req.setAttribute("clientPhoneNumber", response.getBody());
         return "index";
     }
@@ -286,19 +291,20 @@ public class MyPageController {
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
         req.setAttribute("view", "mypage");
         req.setAttribute("mypage", "coupons");
-
+        req.setAttribute("activeSection", "coupon");
         Page<CouponMyPageCouponResponseDto> coupons = couponService.findMyPageCoupons(headers, page ,size);
         req.setAttribute("coupons", coupons);
         return "index";
 
     }
     @GetMapping("/mypage/point/reward")
-    public String myPageRewardPoint (HttpServletRequest req, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size){
+    public String myPageRewardPoint (HttpServletRequest req, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "100") int size){
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
 
         req.setAttribute("view", "mypage");
         req.setAttribute("mypage", "pointReward");
+        req.setAttribute("activeSection", "coupon");
         Page<PointAccumulationMyPageResponseDto> dto = pointAccumulationService.clientPoint(headers, page, size);
         req.setAttribute("points", dto);
         return "index";
@@ -311,14 +317,16 @@ public class MyPageController {
 
         req.setAttribute("view", "mypage");
         req.setAttribute("mypage", "pointUsed");
+        req.setAttribute("activeSection", "point");
         Page<PointUsageMyPageResponseDto> dto = pointUsageService.clientUsePoint(headers, page, size);
         req.setAttribute("points", dto);
         return "index";
     }
+
     @GetMapping("/mypage/orders")
-    public String maypageOrders(HttpServletRequest req,
-        @RequestParam(value = "pageSize", defaultValue = "5", required = false) int pageSize,
-        @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo){
+    public String mypageOrders(HttpServletRequest req,
+                               @RequestParam(value = "pageSize", defaultValue = "5", required = false) int pageSize,
+                               @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo){
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
@@ -326,7 +334,7 @@ public class MyPageController {
         req.setAttribute("view", "mypage");
         req.setAttribute("mypage", "orders");
 
-        Page<OrderResponseDto> orderResponseDtoList = orderService.getClientOrders(headers, pageSize, pageNo, "orderDatetime", "desc");
+        Page<ClientOrderGetResponseDto> orderResponseDtoList = orderService.getClientOrders(headers, pageSize, pageNo, "orderDatetime", "desc");
 
         req.setAttribute("orders", orderResponseDtoList.getContent());
         req.setAttribute("totalPages", orderResponseDtoList.getTotalPages());

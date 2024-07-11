@@ -53,6 +53,21 @@
     <script th:src="@{js/product/categorySearch.js}"></script>
     <script th:inline="javascript">
         /*<![CDATA[*/
+        let isFormSubmitting = false;
+
+        // beforeunload 이벤트 리스너 추가
+        window.addEventListener('beforeunload', function (event) {
+            if (!isFormSubmitting) {
+                var confirmationMessage = '이 페이지를 떠나시겠습니까? 저장되지 않은 변경 사항이 손실될 수 있습니다.';
+                (event || window.event).returnValue = confirmationMessage;
+                return confirmationMessage;
+            }
+        });
+
+        // 폼 제출 시 isFormSubmitting을 true로 설정
+        function handleFormSubmit() {
+            isFormSubmitting = true;
+        }
 
         function formValidation(event){
             event.preventDefault(); // 폼 제출을 막음
@@ -439,7 +454,7 @@
     <div id="removeTagButtons"></div>
     <input type="text" id="tags" name="tags" th:value="${tagSet}">
 
-    <button type="submit">등록</button>
+    <button type="submit" onclick="handleFormSubmit()">등록</button>
 
 </form>
 </div>

@@ -1,11 +1,8 @@
 package com.nhnacademy.codequestweb.controller.product.adminOnly;
 
 
-import com.nhnacademy.codequestweb.request.product.ProductStateUpdateRequestDto;
 import com.nhnacademy.codequestweb.request.product.bookProduct.BookProductRegisterRequestDto;
 import com.nhnacademy.codequestweb.request.product.bookProduct.BookProductUpdateRequestDto;
-import com.nhnacademy.codequestweb.request.product.common.InventoryIncreaseRequestDto;
-import com.nhnacademy.codequestweb.request.product.common.InventorySetRequestDto;
 import com.nhnacademy.codequestweb.response.product.book.AladinBookResponseDto;
 import com.nhnacademy.codequestweb.response.product.book.BookProductGetResponseDto;
 import com.nhnacademy.codequestweb.response.product.common.ProductRegisterResponseDto;
@@ -63,6 +60,7 @@ public class AdminBookController {
         req.setAttribute("adminPage", "bookProductRegisterForm");
         req.setAttribute("register", true);
         req.setAttribute("action", "register");
+        req.setAttribute("activeSection", "product");
         return "index";
     }
 
@@ -186,6 +184,7 @@ public class AdminBookController {
         model.addAttribute("view", "adminPage");
         model.addAttribute("adminPage", "productListPage");
         model.addAttribute("admin", true);
+        req.setAttribute("activeSection", "product");
         return "index";
     }
 
