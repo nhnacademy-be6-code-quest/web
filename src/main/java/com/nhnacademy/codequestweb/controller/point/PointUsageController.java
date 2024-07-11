@@ -20,18 +20,6 @@ public class PointUsageController {
 
     private final PointUsageService pointUsageService;
 
-    @GetMapping("/mypage/point/use")
-    public String myPagePoint (HttpServletRequest req, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size){
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("access", CookieUtils.getCookieValue(req, "access"));
-
-        req.setAttribute("view", "mypage");
-        req.setAttribute("mypage", "pointUsed");
-        Page<PointUsageMyPageResponseDto> dto = pointUsageService.clientUsePoint(headers, page, size);
-        req.setAttribute("points", dto);
-        return "index";
-    }
-
     @GetMapping("/admin/point/use")
     public String adminPagePoint (HttpServletRequest req, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size){
         HttpHeaders headers = new HttpHeaders();
