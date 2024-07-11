@@ -33,7 +33,6 @@ public class CouponPolicyController {
         @RequestParam(name = "sort", required = false) String sort,
         @RequestParam(name = "desc", required = false) Boolean desc,
         Model model) {
-
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
         Page<ProductGetResponseDto> books = couponPolicyService.getAllBooks(headers, page, sort, desc);
@@ -41,8 +40,6 @@ public class CouponPolicyController {
 
         return "view/coupon/productAdd";
     }
-
-
 
     @GetMapping("/admin/coupon/policy")
     public String viewPolicy(HttpServletRequest req, @RequestParam(defaultValue = "0") int page,
@@ -54,11 +51,10 @@ public class CouponPolicyController {
             page, size);
         req.setAttribute("view", "adminPage");
         req.setAttribute("adminPage", "couponPolicy");
-
+        req.setAttribute("activeSection", "coupon");
         req.setAttribute("couponPolicies", couponPolicies);
         return "index";
     }
-
 
     @GetMapping("/admin/coupon/policy/register")
     public String viewRegisterPolicy(HttpServletRequest req, Model model) {
