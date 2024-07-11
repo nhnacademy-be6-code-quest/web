@@ -196,6 +196,7 @@ public class PaymentController {
 
         // 7. View 보여주기
         paymentService.savePayment(headers, orderId, tossPaymentsResponseDto);
+        model.addAttribute("isSuccess", true);
         model.addAttribute("isCouponProcessedNormally", isCouponProcessedNormally);
         model.addAttribute("isPointUsedNormally", isPointUsedNormally);
         model.addAttribute("isPointAccumulatedNormally", isPointAccumulatedNormally);
