@@ -61,27 +61,6 @@ public class OrderController {
         return String.format("redirect:/client/order/%d/payment", orderService.createNonClientOrder(request, nonClientOrderForm));
     }
 
-    @GetMapping("/mypage/orders")
-    public String mypageOrders(HttpServletRequest req,
-                                @RequestParam(value = "pageSize", defaultValue = "5", required = false) int pageSize,
-                                @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo){
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("access", CookieUtils.getCookieValue(req, "access"));
-
-        req.setAttribute("view", "mypage");
-        req.setAttribute("mypage", "orders");
-
-        Page<ClientOrderGetResponseDto> orderResponseDtoList = orderService.getClientOrders(headers, pageSize, pageNo, "orderDatetime", "desc");
-
-        req.setAttribute("orders", orderResponseDtoList.getContent());
-        req.setAttribute("totalPages", orderResponseDtoList.getTotalPages());
-        req.setAttribute("currentPage", orderResponseDtoList.getNumber());
-        req.setAttribute("pageSize", orderResponseDtoList.getSize());
-
-        return "index";
-    }
-
     // 회원 단건 주문 조회 view
     @GetMapping("/non-client/order/view")
     public String orders(HttpServletRequest req){

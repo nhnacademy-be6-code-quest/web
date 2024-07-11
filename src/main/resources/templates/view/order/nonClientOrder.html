@@ -150,7 +150,7 @@
                 </td>
                 <td>
                     <label style="width: 100%">
-                        <input class="not-border-input" th:field="*{orderedPersonName}" type="text"/>
+                        <input class="not-border-input" th:field="*{orderedPersonName}" type="text" required/>
                     </label>
                 </td>
             </tr>
@@ -160,7 +160,7 @@
                 </td>
                 <td>
                     <label style="width: 100%">
-                        <input class="not-border-input" th:field="*{phoneNumber}"/>
+                        <input class="not-border-input" th:field="*{phoneNumber}" required/>
                     </label>
                 </td>
             </tr>
@@ -170,7 +170,7 @@
                 </td>
                 <td style="border: 1px solid black;">
                     <label style="width: 100%">
-                        <input class="not-border-input" type="password" th:field="*{orderPassword}"/>
+                        <input class="not-border-input" type="password" th:field="*{orderPassword}" required/>
                     </label>
                 </td>
             </tr>
@@ -180,7 +180,7 @@
                 </td>
                 <td style="border: 1px solid black;">
                     <label style="width: 100%">
-                        <input class="not-border-input" type="email" th:field="*{email}"/>
+                        <input class="not-border-input" type="email" th:field="*{email}" required/>
                     </label>
                 </td>
             </tr>
@@ -200,7 +200,7 @@
                 <td>우편번호</td>
                 <td>
                     <label>
-                        <input class="not-border-input" th:field="*{addressZipCode}"/><br/>
+                        <input class="not-border-input" th:field="*{addressZipCode}" required/><br/>
                     </label>
                 </td>
             </tr>
@@ -208,7 +208,7 @@
                 <td>주소</td>
                 <td>
                     <label>
-                        <input class="not-border-input" th:field="*{deliveryAddress}"/><br/>
+                        <input class="not-border-input" th:field="*{deliveryAddress}" required/><br/>
                     </label>
                 </td>
             </tr>
@@ -216,7 +216,7 @@
                 <td>상세주소</td>
                 <td>
                     <label>
-                        <input class="not-border-input" th:field="*{deliveryDetailAddress}"/><br/>
+                        <input class="not-border-input" th:field="*{deliveryDetailAddress}" required/><br/>
                     </label>
                 </td>
             </tr>
