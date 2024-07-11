@@ -1,8 +1,10 @@
 package com.nhnacademy.codequestweb.client.payment;
 
+import com.nhnacademy.codequestweb.response.payment.PaymentGradeResponseDto;
 import com.nhnacademy.codequestweb.response.payment.TossPaymentsResponseDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpHeaders;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,4 +29,7 @@ public interface PaymentClient {
     @PostMapping("/api/order/{orderId}/payment")
     void savePayment(@RequestHeader HttpHeaders headers, @PathVariable long orderId,
                      @RequestBody TossPaymentsResponseDto tossPaymentsResponseDto);
+
+    @GetMapping("/api/payment/grade/{clientId}")
+    PaymentGradeResponseDto getPaymentRecordOfClient(@PathVariable Long clientId);
 }

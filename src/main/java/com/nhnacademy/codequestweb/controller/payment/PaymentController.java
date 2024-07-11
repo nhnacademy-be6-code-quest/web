@@ -1,10 +1,12 @@
 package com.nhnacademy.codequestweb.controller.payment;
 
+import com.nhnacademy.codequestweb.request.payment.ClientUpdateGradeRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentAccumulatePointRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentCompletedCouponRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentOrderApproveRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentOrderShowRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentUsePointRequestDto;
+import com.nhnacademy.codequestweb.response.payment.PaymentGradeResponseDto;
 import com.nhnacademy.codequestweb.response.payment.TossPaymentsResponseDto;
 import com.nhnacademy.codequestweb.service.payment.PaymentService;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
@@ -194,8 +196,17 @@ public class PaymentController {
         TossPaymentsResponseDto tossPaymentsResponseDto = paymentService.approvePayment(tossOrderId,
             amount, paymentKey);
 
-        // 7. View 보여주기
+        // 7. DB에 저장하기
         paymentService.savePayment(headers, orderId, tossPaymentsResponseDto);
+
+        // 8. 등급 바꾸기 TODO 이후 수정하고 확인해야 함.
+        PaymentGradeResponseDto paymentGradeResponseDto = paymentService.getClientHistory(paymentOrderApproveRequestDto.getClientId());
+        ResponseEntity<String> updateClientGradeResponseEntity = paymentService.updateClientGrade(ClientUpdateGradeRequestDto.builder()
+                .clientId(paymentOrderApproveRequestDto.getClientId())
+                .payment(paymentGradeResponseDto.getPaymentGradeValue())
+                .build());
+
+        // 7. View 보여주기
         model.addAttribute("isSuccess", true);
         model.addAttribute("isCouponProcessedNormally", isCouponProcessedNormally);
         model.addAttribute("isPointUsedNormally", isPointUsedNormally);

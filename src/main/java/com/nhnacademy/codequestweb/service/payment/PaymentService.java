@@ -2,11 +2,13 @@ package com.nhnacademy.codequestweb.service.payment;
 
 import com.nhnacademy.codequestweb.client.order.OrderClient;
 import com.nhnacademy.codequestweb.client.payment.PaymentClient;
+import com.nhnacademy.codequestweb.client.payment.PaymentClientClient;
 import com.nhnacademy.codequestweb.client.payment.PaymentCouponClient;
 import com.nhnacademy.codequestweb.client.payment.PaymentOrderClient;
 import com.nhnacademy.codequestweb.client.payment.PaymentPointClient;
 import com.nhnacademy.codequestweb.client.payment.PaymentProductClient;
 import com.nhnacademy.codequestweb.client.payment.TossPaymentsClient;
+import com.nhnacademy.codequestweb.request.payment.ClientUpdateGradeRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentAccumulatePointRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentCompletedCouponRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentOrderApproveRequestDto;
@@ -16,6 +18,7 @@ import com.nhnacademy.codequestweb.request.payment.PaymentOrderShowRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentUsePointRequestDto;
 import com.nhnacademy.codequestweb.request.payment.TossPaymentsRequestDto;
 import com.nhnacademy.codequestweb.request.product.common.InventoryDecreaseRequestDto;
+import com.nhnacademy.codequestweb.response.payment.PaymentGradeResponseDto;
 import com.nhnacademy.codequestweb.response.payment.TossPaymentsResponseDto;
 import jakarta.annotation.PostConstruct;
 import java.nio.charset.StandardCharsets;
@@ -43,6 +46,7 @@ public class PaymentService /*implements PaymentService*/ {
     private final PaymentPointClient paymentPointClient;
     private final PaymentProductClient paymentProductClient;
     private final OrderClient orderClient;
+    private final PaymentClientClient paymentClientClient;
     private final String secretKey;
 
     @PostConstruct
@@ -172,5 +176,13 @@ public class PaymentService /*implements PaymentService*/ {
 
     public ResponseEntity<String> changeOrderStatusCompletePayment(Long orderId, String status) {
         return paymentOrderClient.updateOrderStatus(orderId, status);
+    }
+
+    public PaymentGradeResponseDto getClientHistory(Long clientId) {
+        return paymentClient.getPaymentRecordOfClient(clientId);
+    }
+
+    public ResponseEntity<String> updateClientGrade(ClientUpdateGradeRequestDto clientUpdateGradeRequestDto) {
+        return paymentClientClient.updateClientGrade(clientUpdateGradeRequestDto);
     }
 }
