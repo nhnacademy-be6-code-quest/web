@@ -40,7 +40,7 @@ public class TokenReissueInterceptor implements HandlerInterceptor {
                 accessCookie.setHttpOnly(true);
                 accessCookie.setSecure(true);
                 accessCookie.setPath("/");
-                accessCookie.setMaxAge(60 * 60 * 2);
+                accessCookie.setMaxAge(60 * 60 * 24 * 14);
                 response.addCookie(accessCookie);
 
                 Cookie refreshCookie = new Cookie("refresh", reissueResponse.getBody().getRefresh());
@@ -73,7 +73,7 @@ public class TokenReissueInterceptor implements HandlerInterceptor {
                     accessCookie.setHttpOnly(true);
                     accessCookie.setSecure(true);
                     accessCookie.setPath("/");
-                    accessCookie.setMaxAge(60 * 60 * 2);
+                    accessCookie.setMaxAge(60 * 60 * 24 * 14);
                     response.addCookie(accessCookie);
 
                     Cookie refreshCookie = new Cookie("refresh", reissueResponse.getBody().getRefresh());
