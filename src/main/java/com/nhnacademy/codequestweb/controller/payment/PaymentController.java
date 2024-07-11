@@ -54,7 +54,7 @@ public class PaymentController {
 
         HttpHeaders headers = CookieUtils.setHeader(request);
 
-//        2. 결제 검증 및 승인 창에서 필요한 요소를 Order 에서 받아 오기 TODO : @RequestHeader 로 해결함. // 303 ->
+//        2. 결제 검증 및 승인 창에서 필요한 요소를 Order 에서 받아 오기 : @RequestHeader 로 해결함. // 303 ->
         PaymentOrderApproveRequestDto paymentOrderApproveRequestDto = paymentService.findPaymentOrderApproveRequestDtoByOrderId(
             headers, orderId);
 
@@ -68,90 +68,114 @@ public class PaymentController {
             return "view/payment/failed";
         }
 
-//        4. 토스 페이먼트에게 결제를 승인. 실제로 결제를 진행함.
-//        1) 토스에게 결제를 승인 받고 응답을 받아 오며, 사용자에게 보여주기 위해 Response Dto 형태로 파싱 함.
-        TossPaymentsResponseDto tossPaymentsResponseDto = paymentService.approvePayment(tossOrderId,
-            amount, paymentKey);
-
-//        응답의 형태에 따라 쿠폰, 포인트, 적립, 재고 등의 이벤트가 적절하게 발생했는지 판단하고,
-//        사용자에게 보여줄 것은 보여주고, 시스템에 에러로 남길 것은 남겨 두기
-
-//        2) 쿠폰 사용 처리 TODO : @Httpheaders headers 사용해서 303 -> 401로 오류 변경 && CookieUtils 사용해서 401 -> 400
-        boolean isCouponProcessedNormally = true;
-
-        if (paymentOrderApproveRequestDto.getCouponId() != null) {
-            ResponseEntity<String> couponRes = paymentService.useCoupon(headers,
-                PaymentCompletedCouponRequestDto.builder()
-                    .couponId(paymentOrderApproveRequestDto.getCouponId())
-                    .build());
-
-            HttpStatusCode code = couponRes.getStatusCode();
-            boolean couponUseStatusCodeIs200 = code.equals(HttpStatusCode.valueOf(200));
-
-            if (!couponUseStatusCodeIs200) {
-                log.error("쿠폰 사용 처리에 실패했습니다.\n쿠폰 아이디: {}",
-                    paymentOrderApproveRequestDto.getCouponId());
-                isCouponProcessedNormally = false;
-            }
-        }
-
-//        3) 포인트 사용 처리
-        boolean isPointUsedNormally = true;
-
-        PaymentUsePointRequestDto paymentUsePointRequestDto = new PaymentUsePointRequestDto();
-        paymentUsePointRequestDto.setPointUsagePayment(
-            (int) paymentOrderApproveRequestDto.getDiscountAmountByPoint());
-
-        ResponseEntity<String> pointUseResponseEntity = paymentService.usePaymentPoint(
-            paymentUsePointRequestDto, headers);
-
-        HttpStatusCode pointUseStatusCode = pointUseResponseEntity.getStatusCode();
-        boolean pointUseStatusCodeIs200 = pointUseStatusCode.equals(HttpStatusCode.valueOf(200));
-
-        if (!pointUseStatusCodeIs200) {
-            log.error("포인트 사용 처리에 실패했습니다.\nclientId: {}\ndiscountAmountByPoint: {}",
-                paymentOrderApproveRequestDto.getClientId(),
-                paymentOrderApproveRequestDto.getDiscountAmountByPoint());
-            isPointUsedNormally = false;
-        }
-
-//        4) 포인트 적립 처리
-        boolean isPointAccumulatedNormally = true;
-
-        PaymentAccumulatePointRequestDto paymentAccumulatePointRequestDto = new PaymentAccumulatePointRequestDto();
-        paymentAccumulatePointRequestDto.setAccumulatedPoint(
-            (int) paymentOrderApproveRequestDto.getAccumulatedPoint());
-
-        ResponseEntity<String> pointAccumulateResponseEntity = paymentService.accumulatePoint(
-            headers, paymentAccumulatePointRequestDto);
-
-        HttpStatusCode pointAccumulateStatusCode = pointAccumulateResponseEntity.getStatusCode();
-        boolean pointAccumulateStatusCodeIs200 = pointAccumulateStatusCode.equals(
-            HttpStatusCode.valueOf(200));
-
-        if (!pointAccumulateStatusCodeIs200) {
-            log.error("포인트 적립 처리에 실패했습니다.\nclientId: {}\naccumulatedPoint: {}",
-                paymentOrderApproveRequestDto.getClientId(),
-                paymentOrderApproveRequestDto.getAccumulatedPoint());
-            isPointAccumulatedNormally = false;
-        }
-
-//        5) 재고 감소 처리
+        // 4. 재고 없으면 재고 없다고 하고, 결제 fail URL 로 이동하게 만들기
         boolean isProductInventoryReducedNormally = true;
 
         try {
             paymentService.decreaseProductInventory(
                 paymentOrderApproveRequestDto.getProductOrderDetailList());
-        } catch (FeignException e) {
+        } catch (FeignException.BadRequest e) {
             if (e.status() != 200) {
-                log.error("상품의 재고 감소 처리에 실패했습니다.\norderId: {}", orderId);
-                isProductInventoryReducedNormally = false;
+                log.error("상품의 재고 감소 처리에 실패했습니다. 상품의 재고가 0일 수 있습니다.\norderId: {}", orderId);
+                model.addAttribute("isSuccess", false);
+                model.addAttribute("code", "NO_PRODUCT_INVENTORY");
+                model.addAttribute("message", "상품의 재고가 부족하거나 상품 관련 서비스 에러입니다.");
+                return "view/payment/failed";
             }
         } catch (Exception e) {
-            log.error("예상하지 못한 에러입니다.\n 에러 메시지: {}", e.toString());
+            log.error("재고 감소 처리 중 알 수 없는 에러가 발생했습니다.\nproductOrderDetailList: {}\nerrorMessage: {}",
+                paymentOrderApproveRequestDto.getProductOrderDetailList(),
+                e.getMessage());
+            isProductInventoryReducedNormally = false;
         }
 
-//        6) 주문 상태를 결제 완료로 바꾸기
+        // 5. 쿠폰 사용, 포인트 사용, 포인트 적립, 주문 상태 바꾸기
+
+        // 5-1) 쿠폰 사용하기
+        boolean isCouponProcessedNormally = true;
+
+        try {
+            if (paymentOrderApproveRequestDto.getCouponId() != null) {
+                ResponseEntity<String> couponRes = paymentService.useCoupon(headers,
+                    PaymentCompletedCouponRequestDto.builder()
+                        .couponId(paymentOrderApproveRequestDto.getCouponId())
+                        .build());
+
+                HttpStatusCode code = couponRes.getStatusCode();
+                boolean couponUseStatusCodeIs200 = code.equals(HttpStatusCode.valueOf(200));
+
+                if (!couponUseStatusCodeIs200) {
+                    log.error("쿠폰 사용 처리에 실패했습니다.\n쿠폰 아이디: {}",
+                        paymentOrderApproveRequestDto.getCouponId());
+                    isCouponProcessedNormally = false;
+                }
+            }
+        } catch (Exception e) {
+            log.error("쿠폰 사용 처리 중 알 수 없는 에러가 발생했습니다.\ncouponId: {}\nclientId: {}",
+                paymentOrderApproveRequestDto.getCouponId(),
+                paymentOrderApproveRequestDto.getClientId());
+            isCouponProcessedNormally = false;
+        }
+
+        // 5-2) 포인트 사용하기
+        boolean isPointUsedNormally = true;
+
+        try {
+            if (paymentOrderApproveRequestDto.getDiscountAmountByPoint() != 0) {
+                PaymentUsePointRequestDto paymentUsePointRequestDto = new PaymentUsePointRequestDto();
+                paymentUsePointRequestDto.setPointUsagePayment(
+                    (int) paymentOrderApproveRequestDto.getDiscountAmountByPoint());
+
+                ResponseEntity<String> pointUseResponseEntity = paymentService.usePaymentPoint(
+                    paymentUsePointRequestDto, headers);
+
+                HttpStatusCode pointUseStatusCode = pointUseResponseEntity.getStatusCode();
+                boolean pointUseStatusCodeIs200 = pointUseStatusCode.equals(
+                    HttpStatusCode.valueOf(200));
+
+                if (!pointUseStatusCodeIs200) {
+                    log.error("포인트 사용 처리에 실패했습니다.\nclientId: {}\ndiscountAmountByPoint: {}",
+                        paymentOrderApproveRequestDto.getClientId(),
+                        paymentOrderApproveRequestDto.getDiscountAmountByPoint());
+                    isPointUsedNormally = false;
+                }
+            }
+        } catch (Exception e) {
+            log.error("포인트 사용 처리 중 알 수 없는 에러가 발생했습니다.\ndiscountAmountByPoint: {}\nclientId: {}",
+                paymentOrderApproveRequestDto.getDiscountAmountByPoint(),
+                paymentOrderApproveRequestDto.getClientId());
+            isPointUsedNormally = false;
+        }
+
+        // 5-3) 포인트 적립하기
+        boolean isPointAccumulatedNormally = true;
+
+        try {
+            PaymentAccumulatePointRequestDto paymentAccumulatePointRequestDto = new PaymentAccumulatePointRequestDto();
+            paymentAccumulatePointRequestDto.setAccumulatedPoint(
+                (int) paymentOrderApproveRequestDto.getAccumulatedPoint());
+
+            ResponseEntity<String> pointAccumulateResponseEntity = paymentService.accumulatePoint(
+                headers, paymentAccumulatePointRequestDto);
+
+            HttpStatusCode pointAccumulateStatusCode = pointAccumulateResponseEntity.getStatusCode();
+            boolean pointAccumulateStatusCodeIs200 = pointAccumulateStatusCode.equals(
+                HttpStatusCode.valueOf(200));
+
+            if (!pointAccumulateStatusCodeIs200) {
+                log.error("포인트 적립 처리에 실패했습니다.\nclientId: {}\naccumulatedPoint: {}",
+                    paymentOrderApproveRequestDto.getClientId(),
+                    paymentOrderApproveRequestDto.getAccumulatedPoint());
+                isPointAccumulatedNormally = false;
+            }
+        } catch (Exception e) {
+            log.error("포인트 적립 처리 중 알 수 없는 에러가 발생했습니다.\naccumulatedPoint: {}\nclientId: {}",
+                paymentOrderApproveRequestDto.getAccumulatedPoint(),
+                paymentOrderApproveRequestDto.getClientId());
+            isPointAccumulatedNormally = false;
+        }
+
+        // 5-4) 주문 상태 바꾸기
         boolean isOrderStatusChangedToCompletedPayment = true;
 
         try {
@@ -159,12 +183,18 @@ public class PaymentController {
         } catch (FeignException e) {
             if (e.status() != 200) {
                 log.error("주문 상태를 결제 완료로 바꾸는 데에 실패했습니다.\norderId: {}", orderId);
+                isOrderStatusChangedToCompletedPayment = false;
             }
         } catch (Exception e) {
-            log.error("예상하지 못한 에러입니다.\norderId: {}\n에러메시지: {}", orderId, e.toString());
+            log.error("주문 상태를 결제 대기에서 결제 완료로 바꾸는 중 알 수 없는 에러가 발생했습니다.\norderId: {}", orderId);
+            isOrderStatusChangedToCompletedPayment = false;
         }
 
-//        결제 성공 페이지로 이동
+        // 6. 결제 승인하기
+        TossPaymentsResponseDto tossPaymentsResponseDto = paymentService.approvePayment(tossOrderId,
+            amount, paymentKey);
+
+        // 7. View 보여주기
         paymentService.savePayment(headers, orderId, tossPaymentsResponseDto);
         model.addAttribute("isCouponProcessedNormally", isCouponProcessedNormally);
         model.addAttribute("isPointUsedNormally", isPointUsedNormally);
