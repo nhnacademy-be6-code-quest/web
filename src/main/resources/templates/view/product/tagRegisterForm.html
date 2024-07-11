@@ -2,12 +2,50 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="tagRegisterFragment ()">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title></title>
+    <script th:src="@{/js/product/window.opener.Only.js}"></script>
+    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var textareas = document.querySelectorAll("textarea[data-content]");
+            textareas.forEach(function(textarea) {
+                textarea.value = textarea.dataset.content.replace(/<br>/g, '\n');
+            });
+        });
+    </script>
+    <style>
+        .mypage-delivary-address-header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .mypage-delivary-address-add-btn {
+            background-color: #007BFF; /* Blue */
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            font-size: 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .mypage-delivary-address-add-btn:hover {
+            background-color: #0056b3; /* Darker Blue */
+        }
+    </style>
 </head>
 <body>
 <form action="/admin/tags/register" method="post">
     <input type="text" name="tagName" placeholder="태그명"/>
     <button type="submit" value="등록"><span th:text="등록"></span></button>
 </form>
+<div class="mypage-delivary-address-header-container">
+    <h2 class="text-lg font-semibold" style="display: inline-block">주소</h2>
+    <button class="mypage-delivary-address-add-btn" data-bs-toggle="modal" data-bs-target="#addAddressModal"> Add + </button>
+</div>
+
 </body>
 </html>

@@ -24,6 +24,15 @@
     <div class="adminPage-wrapper" th:if="${adminPage != null} and ${#strings.equals(adminPage, 'productListPage')}">
         <section th:replace="~{view/product/productListPage.html :: productListFragment ('productList', 'mainText', 'page', 'totalPage', 'sort', 'desc')}"></section>
     </div>
+
+    <div class="adminPage-wrapper" th:if="${adminPage != null} and ${#strings.equals(adminPage, 'tags')}">
+        <section th:replace="~{view/product/admin/tags.html :: tagFragment}"></section>
+    </div>
+
+    <div class="adminPage-wrapper" th:if="${adminPage != null} and ${#strings.equals(adminPage, 'categories')}">
+        <section th:replace="~{view/product/admin/categories.html :: categoryFragment}"></section>
+    </div>
+
     <div class="adminPage-wrapper" th:if="${adminPage != null} and ${#strings.equals(adminPage, 'pointUsed')}">
         <section th:replace="~{view/point/adminUserUsagePoint :: adminUsedPointFragment ('pointUsed')}"></section>
     </div>
@@ -33,7 +42,6 @@
     <div class="adminPage-wrapper" th:if="${adminPage != null} and ${#strings.equals(adminPage, 'pointPolicy')}">
         <section th:replace="~{view/point/adminPoinPolicy.html :: adminPointPolicyFragment ('pointPolicy')}"></section>
     </div>
-
 
 </div>
 </html>
