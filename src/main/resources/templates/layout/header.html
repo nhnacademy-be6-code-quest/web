@@ -24,6 +24,39 @@
     <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
     <script type="text/javascript" th:src="@{/js/message/message.js}"></script>
     <link rel="stylesheet" th:href="@{/css/message/style.css}">
+    <style>
+        #search-results {
+            width: 20%;
+            max-width: 20%;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-top: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        #search-results .list-group-item {
+            padding: 10px 15px;
+            border-left: none;
+            border-right: none;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        #search-results .list-group-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        #search-results .list-group-item:first-child {
+            border-top: none;
+        }
+
+        #search-results .list-group-item:last-child {
+            border-bottom: none;
+        }
+    </style>
 </head>
 <div th:replace="~{icon/icon :: iconAsset}"></div>
 
