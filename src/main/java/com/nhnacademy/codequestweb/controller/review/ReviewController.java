@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 public class ReviewController {
     private final ReviewService reviewService;
 
-    @GetMapping("/write/review/{orderDetail}")
+    @GetMapping("/write/review/${orderDetail}")
     public String writeReview(@PathVariable Long orderDetailId, HttpServletRequest req) {
         WriteReviewResponseDto info = reviewService.writeReview(orderDetailId, CookieUtils.getCookieValue(req, "access"));
         req.setAttribute("view", "writeReview");
