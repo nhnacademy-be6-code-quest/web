@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" th:fragment="nonClientOrderFragment ()">
+<html lang="en" xmlns="http://www.w3.org/1999/html" th:fragment="nonClientOrderFragment ()">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -36,6 +36,9 @@
             font-size: inherit;
             font-family: inherit;
         }
+        label {
+            width: 100%;
+        }
     </style>
 </head>
 <body>
@@ -54,57 +57,57 @@
             </tr>
             </thead>
             <tbody id="orderItemList">
-                <tr th:each="orderDetailDto, iterStat:*{orderDetailDtoItemList}"
-                    th:attr="data-product-id=${orderDetailDto.productId},
+            <tr th:each="orderDetailDto, iterStat:*{orderDetailDtoItemList}"
+                th:attr="data-product-id=${orderDetailDto.productId},
                              data-product-index=${iterStat.index},
                              data-product-price=${orderDetailDto.productSinglePrice},
                              data-product-quantity=${orderDetailDto.quantity}">
-                    <td>
-                        <label>
-                            <textarea type="text" class="readonly-input" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].productName}" readonly/>
-                        </label>
-                    </td>
-                    <td>
-                        <label>
-                            <input type="text" class="readonly-input" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].productSinglePrice}" readonly/>
-                        </label>
-                    </td>
-                    <td>
-                        <label>
-                            <input type="text" class="readonly-input" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].quantity}" readonly/>
-                        </label>
-                    </td>
-                    <td hidden="hidden">
-                        <label>
-                            <input type="text" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].productId}" th:value="${orderDetailDto.productId}"/>
-                        </label>
-                    </td>
-                    <td th:hidden="!${orderDetailDto.packableProduct}">
-                        <label>
-                            <input type="checkbox" th:onclick="handleOnChangeUsedPackaging(this.checked, [[${iterStat.index}]])" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].usePackaging}" th:value="false"> 포장지선택
-                            <input hidden="hidden" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].optionProductId}"/>
-                            <input hidden="hidden" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].optionProductName}"/>
-                            <input hidden="hidden" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].optionProductSinglePrice}"/>
-                        </label>
-                        <div hidden="hidden" th:id="'packageSelectContainer[' + ${iterStat.index} + ']'">
-                            <select class="form-select form-select-sm" aria-label=".form-select-sm example" th:onchange="handleOnPackageProductSelectChange(this, [[${iterStat.index}]])">
-                                <option th:attr="data-option-product-id = '-1',
+                <td>
+                    <label>
+                        <textarea type="text" class="readonly-input" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].productName}" readonly/>
+                    </label>
+                </td>
+                <td>
+                    <label>
+                        <input type="text" class="readonly-input" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].productSinglePrice}" readonly/>
+                    </label>
+                </td>
+                <td>
+                    <label>
+                        <input type="text" class="readonly-input" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].quantity}" readonly/>
+                    </label>
+                </td>
+                <td hidden="hidden">
+                    <label>
+                        <input type="text" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].productId}" th:value="${orderDetailDto.productId}"/>
+                    </label>
+                </td>
+                <td th:hidden="!${orderDetailDto.packableProduct}">
+                    <label>
+                        <input type="checkbox" th:onclick="handleOnChangeUsedPackaging(this.checked, [[${iterStat.index}]])" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].usePackaging}" th:value="false"> 포장지선택
+                        <input hidden="hidden" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].optionProductId}"/>
+                        <input hidden="hidden" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].optionProductName}"/>
+                        <input hidden="hidden" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].optionProductSinglePrice}"/>
+                    </label>
+                    <div hidden="hidden" th:id="'packageSelectContainer[' + ${iterStat.index} + ']'">
+                        <select class="form-select form-select-sm" aria-label=".form-select-sm example" th:onchange="handleOnPackageProductSelectChange(this, [[${iterStat.index}]])">
+                            <option th:attr="data-option-product-id = '-1',
                                                  data-option-product-price = '0'">
-                                    == 포장지 선택 ==
-                                </option>
-                                <option th:each="packageDto : ${packageList}" th:value="${packageDto.productId}" th:text="${packageDto.packageName} + ' - ' + ${packageDto.productPriceSales} + '원'"
-                                        th:attr="data-option-product-id = ${packageDto.productId},
+                                == 포장지 선택 ==
+                            </option>
+                            <option th:each="packageDto : ${packageList}" th:value="${packageDto.productId}" th:text="${packageDto.packageName} + ' - ' + ${packageDto.productPriceSales} + '원'"
+                                    th:attr="data-option-product-id = ${packageDto.productId},
                                                  data-option-product-price=${packageDto.productPriceSales},
                                                  data-option-product-name=${packageDto.packageName}"
-                                >
-                                </option>
-                            </select>
-                        </div>
-                    </td>
-                    <td th:hidden="${orderDetailDto.packableProduct}">
-                        포장불가능한 상품입니다
-                    </td>
-                </tr>
+                            >
+                            </option>
+                        </select>
+                    </div>
+                </td>
+                <td th:hidden="${orderDetailDto.packableProduct}">
+                    포장불가능한 상품입니다
+                </td>
+            </tr>
             </tbody>
         </table>
     </div>
@@ -320,97 +323,97 @@
         }
     </script>
 
-<script th:inline="javascript">
+    <script th:inline="javascript">
 
-    document.addEventListener('DOMContentLoaded', function (){
-        // 캘린더 선택 가능 날짜 초기화
-        document.querySelector("input[type=date]").min = getMinDeliveryDate();
-        // 가격 정보 업데이트
-        updateProductTotalAmount();
-        updateShippingFee();
-        updatePayAmount();
-    });
-
-    <!--포장여부 선택 관련-->
-    function handleOnChangeUsedPackaging(checked, index){
-        const packageSelectContainer = document.getElementById("packageSelectContainer[" + index + "]");
-        packageSelectContainer.hidden = !checked;
-        if(checked) {
-            packageSelectContainer.querySelector('select').selectedIndex = 0;
-        }
-        document.getElementById("orderDetailDtoItemList" + index + ".optionProductId").value = null;
-        document.getElementById("orderDetailDtoItemList" + index + ".optionProductName").value = null;
-        document.getElementById("orderDetailDtoItemList" + index + ".optionProductSinglePrice").value = 0;
-        updateProductTotalAmount();
-        updateShippingFee();
-        updatePayAmount();
-    }
-
-    <!--포장 옵션 상품선택 변경 관련-->
-    function handleOnPackageProductSelectChange(selectElement, index){
-        const selectedOption = selectElement.options[selectElement.selectedIndex];
-        document.getElementById("orderDetailDtoItemList" + index + ".optionProductId").value = selectedOption.dataset.optionProductId;
-        document.getElementById("orderDetailDtoItemList" + index + ".optionProductName").value = selectedOption.dataset.optionProductName;
-        document.getElementById("orderDetailDtoItemList" + index + ".optionProductSinglePrice").value = selectedOption.dataset.optionProductPrice;
-        updateProductTotalAmount();
-        updateShippingFee();
-        updatePayAmount();
-    }
-
-    <!--캘린더 관련-->
-    function getMinDeliveryDate(){
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        const year = tomorrow.getFullYear();
-        const month = String(tomorrow.getMonth() + 1).padStart(2, '0');
-        const day = String(tomorrow.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    }
-
-    function toggleCalendar(checked, calendar){
-        document.getElementById(calendar).hidden = !checked;
-    }
-
-    <!--금액 관련-->
-    function updateShippingFee(){
-        const originShippingFee = [[${shippingPolicy.shippingFee}]];
-        const minPurchaseAmount = [[${shippingPolicy.minPurchaseAmount}]];
-        const productTotalAmount = document.getElementById("productTotalAmount").value;
-        if(productTotalAmount >= minPurchaseAmount){
-            document.getElementById("shippingFee").value = 0;
-        }else{
-            document.getElementById("shippingFee").value = originShippingFee;
-        }
-        updatePayAmount();
-    }
-
-    function updateProductTotalAmount(){
-        let totalPrice = 0;
-        document.querySelectorAll('tr[data-product-index]').forEach(function(row, index) {
-            // 순수 상품 총 가격
-            const price = parseInt(row.dataset.productPrice);
-            const quantity = parseInt(row.dataset.productQuantity);
-            const subtotal = price * quantity;
-            totalPrice += subtotal;
-            // 포장지 총 가격
-            const checkBox = row.querySelector('input[type="checkbox"]');
-            if(checkBox.checked){
-                const optionProductPrice = parseInt(document.getElementById("orderDetailDtoItemList" + index + ".optionProductSinglePrice").value);
-                totalPrice += optionProductPrice;
-            }
+        document.addEventListener('DOMContentLoaded', function (){
+            // 캘린더 선택 가능 날짜 초기화
+            document.querySelector("input[type=date]").min = getMinDeliveryDate();
+            // 가격 정보 업데이트
+            updateProductTotalAmount();
+            updateShippingFee();
+            updatePayAmount();
         });
-        document.getElementById("productTotalAmount").value = totalPrice
-    }
 
-    function updatePayAmount(){
-        const shippingFee = parseInt(document.getElementById("shippingFee").value);
-        const productTotalAmount = parseInt(document.getElementById("productTotalAmount").value);
+        <!--포장여부 선택 관련-->
+        function handleOnChangeUsedPackaging(checked, index){
+            const packageSelectContainer = document.getElementById("packageSelectContainer[" + index + "]");
+            packageSelectContainer.hidden = !checked;
+            if(checked) {
+                packageSelectContainer.querySelector('select').selectedIndex = 0;
+            }
+            document.getElementById("orderDetailDtoItemList" + index + ".optionProductId").value = null;
+            document.getElementById("orderDetailDtoItemList" + index + ".optionProductName").value = null;
+            document.getElementById("orderDetailDtoItemList" + index + ".optionProductSinglePrice").value = 0;
+            updateProductTotalAmount();
+            updateShippingFee();
+            updatePayAmount();
+        }
 
-        // 최종 결제 금액
-        document.getElementById("payAmount").value = productTotalAmount + shippingFee;
-    }
+        <!--포장 옵션 상품선택 변경 관련-->
+        function handleOnPackageProductSelectChange(selectElement, index){
+            const selectedOption = selectElement.options[selectElement.selectedIndex];
+            document.getElementById("orderDetailDtoItemList" + index + ".optionProductId").value = selectedOption.dataset.optionProductId;
+            document.getElementById("orderDetailDtoItemList" + index + ".optionProductName").value = selectedOption.dataset.optionProductName;
+            document.getElementById("orderDetailDtoItemList" + index + ".optionProductSinglePrice").value = selectedOption.dataset.optionProductPrice;
+            updateProductTotalAmount();
+            updateShippingFee();
+            updatePayAmount();
+        }
 
-</script>
+        <!--캘린더 관련-->
+        function getMinDeliveryDate(){
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const year = tomorrow.getFullYear();
+            const month = String(tomorrow.getMonth() + 1).padStart(2, '0');
+            const day = String(tomorrow.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function toggleCalendar(checked, calendar){
+            document.getElementById(calendar).hidden = !checked;
+        }
+
+        <!--금액 관련-->
+        function updateShippingFee(){
+            const originShippingFee = [[${shippingPolicy.shippingFee}]];
+            const minPurchaseAmount = [[${shippingPolicy.minPurchaseAmount}]];
+            const productTotalAmount = document.getElementById("productTotalAmount").value;
+            if(productTotalAmount >= minPurchaseAmount){
+                document.getElementById("shippingFee").value = 0;
+            }else{
+                document.getElementById("shippingFee").value = originShippingFee;
+            }
+            updatePayAmount();
+        }
+
+        function updateProductTotalAmount(){
+            let totalPrice = 0;
+            document.querySelectorAll('tr[data-product-index]').forEach(function(row, index) {
+                // 순수 상품 총 가격
+                const price = parseInt(row.dataset.productPrice);
+                const quantity = parseInt(row.dataset.productQuantity);
+                const subtotal = price * quantity;
+                totalPrice += subtotal;
+                // 포장지 총 가격
+                const checkBox = row.querySelector('input[type="checkbox"]');
+                if(checkBox.checked){
+                    const optionProductPrice = parseInt(document.getElementById("orderDetailDtoItemList" + index + ".optionProductSinglePrice").value);
+                    totalPrice += optionProductPrice;
+                }
+            });
+            document.getElementById("productTotalAmount").value = totalPrice
+        }
+
+        function updatePayAmount(){
+            const shippingFee = parseInt(document.getElementById("shippingFee").value);
+            const productTotalAmount = parseInt(document.getElementById("productTotalAmount").value);
+
+            // 최종 결제 금액
+            document.getElementById("payAmount").value = productTotalAmount + shippingFee;
+        }
+
+    </script>
 
 </body>
 </html>

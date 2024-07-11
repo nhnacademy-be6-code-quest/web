@@ -179,8 +179,6 @@ public class OrderServiceImpl implements OrderService {
     public String viewNonClientOrder(HttpServletRequest req, Model model, OrderItemDto orderItemDto) {
         HttpHeaders headers = getHeader(req);
 
-        List<OrderItemDto> orderItemDtoList = getOrderItemDtoList();
-
         // ** 바인딩할 객체 **
         NonClientOrderForm nonClientOrderForm = new NonClientOrderForm();
 
@@ -217,7 +215,7 @@ public class OrderServiceImpl implements OrderService {
     public String viewNonClientOrder(HttpServletRequest req, Model model, List<String> orderItemDtoStringList) {
         HttpHeaders headers = getHeader(req);
 
-        List<OrderItemDto> orderItemDtoList = getOrderItemDtoList();
+        List<OrderItemDto> orderItemDtoList = convertToOrderItemDtoList(orderItemDtoStringList);
 
         // ** 바인딩할 객체 **
         NonClientOrderForm nonClientOrderForm = new NonClientOrderForm();
@@ -275,13 +273,6 @@ public class OrderServiceImpl implements OrderService {
         res.add(pack1);
         res.add(pack2);
         return res;
-    }
-
-    private List<OrderItemDto> getOrderItemDtoList(){
-        return new ArrayList<>(Arrays.asList(
-                new OrderItemDto(4L, 1L, new ArrayList<>(List.of(1L)), false),
-                new OrderItemDto(5L,3L, new ArrayList<>(List.of(4L)), true)
-        ));
     }
 
     private List<OrderItemDto> convertToOrderItemDtoList(List<String> orderItemDtoStringList) {

@@ -68,9 +68,9 @@ public interface OrderClient {
                                                                                @PathVariable Long productOrderDetailId);
 
     // 회원 주문 상품 상세 옵션 조회
-    @GetMapping("/api/client/orders/{orderId}/detail/{detailId}/option")
+    @GetMapping("/api/client/orders/{orderId}/detail/{productOrderDetailId}/option")
     ResponseEntity<ProductOrderDetailOptionResponseDto> getClientProductOrderDetailOption(@RequestHeader HttpHeaders headers, @PathVariable Long orderId,
-                                                                                           @PathVariable Long detailId);
+                                                                                           @PathVariable Long productOrderDetailId);
 
 
 
@@ -114,7 +114,7 @@ public interface OrderClient {
     @GetMapping("/api/order/{orderId}/approve-request")
     ResponseEntity<PaymentOrderApproveRequestDto> getPaymentOrderApproveRequestDto(@RequestHeader HttpHeaders headers, @PathVariable Long orderId);
 
-
+    // 모든 주문 가져오기 (관리자 사용)
     @GetMapping("/api/order/all")
     ResponseEntity<Page<OrderResponseDto>> getOrder(@RequestParam(value = "pageSize", defaultValue = "5", required = false) int pageSize,
                                                            @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
@@ -127,7 +127,7 @@ public interface OrderClient {
     @GetMapping("/api/order/{orderId}/detail/{productOrderDetailId}")
     ResponseEntity<ProductOrderDetailResponseDto> getProductOrderDetail(@PathVariable Long orderId, @PathVariable Long productOrderDetailId);
 
-    @GetMapping("/api/order/{orderId}/detail/{detailId}/option")
-    ResponseEntity<ProductOrderDetailOptionResponseDto> getProductOrderDetailOption(@PathVariable Long orderId, @PathVariable Long detailId);
+    @GetMapping("/api/order/{orderId}/detail/{productOrderDetailId}/option")
+    ResponseEntity<ProductOrderDetailOptionResponseDto> getProductOrderDetailOption(@PathVariable Long orderId, @PathVariable Long productOrderDetailId);
 
 }

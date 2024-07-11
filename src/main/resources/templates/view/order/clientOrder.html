@@ -46,57 +46,57 @@
             </tr>
             </thead>
             <tbody id="orderItemList">
-                <tr th:each="orderDetailDto, iterStat:*{orderDetailDtoItemList}"
-                    th:attr="data-product-id=${orderDetailDto.productId},
+            <tr th:each="orderDetailDto, iterStat:*{orderDetailDtoItemList}"
+                th:attr="data-product-id=${orderDetailDto.productId},
                              data-product-index=${iterStat.index},
                              data-product-price=${orderDetailDto.productSinglePrice},
                              data-product-quantity=${orderDetailDto.quantity}">
-                    <td>
-                        <label style="width: 100%;">
-                            <textarea type="text" class="readonly-input" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].productName}" readonly></textarea>
-                        </label>
-                    </td>
-                    <td>
-                        <label>
-                            <input type="text" class="readonly-input" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].productSinglePrice}" readonly/>
-                        </label>
-                    </td>
-                    <td>
-                        <label>
-                            <input type="text" class="readonly-input" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].quantity}" readonly/>
-                        </label>
-                    </td>
-                    <td hidden="hidden">
-                        <label>
-                            <input type="text" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].productId}" th:value="${orderDetailDto.productId}"/>
-                        </label>
-                    </td>
-                    <td th:hidden="!${orderDetailDto.packableProduct}">
-                        <label>
-                            <input type="checkbox" th:onclick="handleOnChangeUsedPackaging(this.checked, [[${iterStat.index}]])" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].usePackaging}" th:value="false"> 포장지선택
-                            <input hidden="hidden" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].optionProductId}"/>
-                            <input hidden="hidden" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].optionProductName}"/>
-                            <input hidden="hidden" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].optionProductSinglePrice}"/>
-                        </label>
-                        <div hidden="hidden" th:id="'packageSelectContainer[' + ${iterStat.index} + ']'">
-                            <select class="form-select form-select-sm" aria-label=".form-select-sm example" th:onchange="handleOnPackageProductSelectChange(this, [[${iterStat.index}]])">
-                                <option th:attr="data-option-product-id = '-1',
+                <td>
+                    <label style="width: 100%;">
+                        <textarea type="text" class="readonly-input" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].productName}" readonly></textarea>
+                    </label>
+                </td>
+                <td>
+                    <label>
+                        <input type="text" class="readonly-input" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].productSinglePrice}" readonly/>
+                    </label>
+                </td>
+                <td>
+                    <label>
+                        <input type="text" class="readonly-input" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].quantity}" readonly/>
+                    </label>
+                </td>
+                <td hidden="hidden">
+                    <label>
+                        <input type="text" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].productId}" th:value="${orderDetailDto.productId}"/>
+                    </label>
+                </td>
+                <td th:hidden="!${orderDetailDto.packableProduct}">
+                    <label>
+                        <input type="checkbox" th:onclick="handleOnChangeUsedPackaging(this.checked, [[${iterStat.index}]])" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].usePackaging}" th:value="false"> 포장지선택
+                        <input hidden="hidden" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].optionProductId}"/>
+                        <input hidden="hidden" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].optionProductName}"/>
+                        <input hidden="hidden" th:field="*{orderDetailDtoItemList[__${iterStat.index}__].optionProductSinglePrice}"/>
+                    </label>
+                    <div hidden="hidden" th:id="'packageSelectContainer[' + ${iterStat.index} + ']'">
+                        <select class="form-select form-select-sm" aria-label=".form-select-sm example" th:onchange="handleOnPackageProductSelectChange(this, [[${iterStat.index}]])">
+                            <option th:attr="data-option-product-id = '-1',
                                                  data-option-product-price = '0'">
-                                    == 포장지 선택 ==
-                                </option>
-                                <option th:each="packageDto : ${packageList}" th:value="${packageDto.productId}" th:text="${packageDto.packageName} + ' - ' + ${packageDto.productPriceSales} + '원'"
-                                        th:attr="data-option-product-id = ${packageDto.productId},
+                                == 포장지 선택 ==
+                            </option>
+                            <option th:each="packageDto : ${packageList}" th:value="${packageDto.productId}" th:text="${packageDto.packageName} + ' - ' + ${packageDto.productPriceSales} + '원'"
+                                    th:attr="data-option-product-id = ${packageDto.productId},
                                                  data-option-product-price=${packageDto.productPriceSales},
                                                  data-option-product-name=${packageDto.packageName}"
-                                >
-                                </option>
-                            </select>
-                        </div>
-                    </td>
-                    <td th:hidden="${orderDetailDto.packableProduct}">
-                        포장불가능한 상품입니다
-                    </td>
-                </tr>
+                            >
+                            </option>
+                        </select>
+                    </div>
+                </td>
+                <td th:hidden="${orderDetailDto.packableProduct}">
+                    포장불가능한 상품입니다
+                </td>
+            </tr>
             </tbody>
         </table>
     </div>
@@ -149,7 +149,7 @@
     <div class="sub-container">
         <h3>쿠폰 적용</h3>
         <div class="coupons">
-            <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#couponSelectModal" id="use-coupon" style="font-size: small; padding: 0; height: 30px; width: 90px">쿠폰 선택하기</button>
+            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#couponSelectModal" id="use-coupon" style="font-size: small; padding: 0; height: 30px; width: 90px">쿠폰 선택하기</button>
             <div id="selectedCouponForm"></div>
         </div>
         <div id="selectedCouponInfo">
@@ -168,7 +168,7 @@
             <label th:for="usedPointDiscountAmount"> 사용할 포인트:
                 <input type="number" th:field="*{usedPointDiscountAmount}" min="0" oninput="validatePoints()" value="0"/>
             </label>
-            <button type="button" class="btn btn-outline-secondary" onclick="handleOnChange()" style="font-size: small; padding: 0; height: 30px; width: 90px">적용하기</button>
+            <button type="button" class="btn btn-outline-primary" onclick="handleOnChange()" style="font-size: small; padding: 0; height: 30px; width: 90px">적용하기</button>
         </div>
         <div id="error-message" style="color: red; display: none;">
             사용할 포인트는 총 잔여 포인트보다 많을 수 없습니다.
@@ -188,8 +188,8 @@
         <div>
             <span>배송지</span>
             <span class="btn-group" role="group" aria-label="Basic outlined example">
-                <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#addressRegisterModal" style="font-size: small; padding: 0; height: 30px; width: 90px">주소등록</button>
-                <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#addressSelectModal" style="font-size: small; padding: 0; height: 30px; width: 90px">주소선택</button>
+                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addressRegisterModal" style="font-size: small; padding: 0; height: 30px; width: 90px">주소등록</button>
+                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addressSelectModal" style="font-size: small; padding: 0; height: 30px; width: 90px">주소선택</button>
             </span>
         </div>
         <div id="selectedAddressInfo">
@@ -214,8 +214,8 @@
         </div>
         <div>전화번호
             <span class="btn-group" role="group" aria-label="Basic outlined example">
-                <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#phoneNumberRegisterModal" style="font-size: small; padding: 0; height: 30px; width: 90px">번호등록</button>
-                <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#phoneNumberSelectModal" style="font-size: small; padding: 0; height: 30px; width: 90px">번호선택</button>
+                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#phoneNumberRegisterModal" style="font-size: small; padding: 0; height: 30px; width: 90px">번호등록</button>
+                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#phoneNumberSelectModal" style="font-size: small; padding: 0; height: 30px; width: 90px">번호선택</button>
             </span>
         </div>
         <div id="selectedPhoneNumberForm">
