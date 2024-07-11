@@ -107,20 +107,19 @@ public class TokenReissueInterceptor implements HandlerInterceptor {
                 }
             });
 
-            // Add original headers to the form
-//            Enumeration<String> headerNames = request.getHeaderNames();
-//            while (headerNames.hasMoreElements()) {
-//                String headerName = headerNames.nextElement();
-//                Enumeration<String> headers = request.getHeaders(headerName);
-//                while (headers.hasMoreElements()) {
-//                    String headerValue = headers.nextElement();
-//                    out.println("<input type=\"hidden\" name=\"header_" + headerName + "\" value=\"" + headerValue + "\">");
-//                }
-//            }
-
             out.println("</form>");
             out.println("<script type=\"text/javascript\">");
-            out.println("document.getElementById('resubmitForm').submit();");
+            // 새로운 access 토큰을 가져와서 헤더에 추가
+            out.println("var form = document.getElementById('resubmitForm');");
+            out.println("var xhr = new XMLHttpRequest();");
+            out.println("xhr.open(form.method, form.action, true);");
+            out.println("xhr.setRequestHeader('access', '" + CookieUtils.getCookieValue(request, "access") + "');");
+            out.println("xhr.onload = function() {");
+            out.println("  document.open();");
+            out.println("  document.write(xhr.responseText);");
+            out.println("  document.close();");
+            out.println("};");
+            out.println("xhr.send(new FormData(form));");
             out.println("</script>");
             out.println("</body></html>");
             out.close();
