@@ -73,7 +73,7 @@ public class AdminCategoryController {
         return "index";
     }
 
-    @GetMapping("/admin/categories/containing2")
+    @GetMapping("/admin/categories/containing")
     public String getCategoryContainingPage(@RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "desc", required = false) Boolean desc, @RequestParam(name = "sort", required = false) String sort, @RequestParam("categoryName") String categoryName, Model model) {
         ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getNameContainingCategories(page, desc, sort, categoryName);
         Page<CategoryGetResponseDto> categoryNamePage = response.getBody();
@@ -206,7 +206,7 @@ public class AdminCategoryController {
 
 
 
-    @GetMapping("/admin/categories/{categoryId}/sub2")
+    @GetMapping("/admin/categories/{categoryId}/sub")
     public String getCategorySubPage(@RequestParam(name = "page", required = false) Integer page,
                                      @RequestParam(name = "desc", required = false) Boolean desc,
                                      @RequestParam(name = "sort", required = false) String sort,
@@ -235,12 +235,18 @@ public class AdminCategoryController {
         return "index";
     }
 
-//    @GetMapping("/categories/{categoryId}/sub/all")
-//    public String getCategorySubAllPage(@PathVariable("categoryId") Long categoryId, Model model){
-//        ResponseEntity<List<CategoryGetResponseDto>> response = categoryService.getAllSubCategories(categoryId);
-//        model.addAttribute("register", true);
-//        return null;
-//    }
+    @GetMapping("/categories/{categoryId}/sub")
+    public String getCategorySubAllPage(@PathVariable("categoryId") Long categoryId, Model model){
+        ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getSubCategories(null, null, null, categoryId);
+        List<CategoryGetResponseDto> categoryNameList = response.getBody().getContent();
+        Map<CategoryGetResponseDto, String> categoryNameMap = new LinkedHashMap<>();
+        for (CategoryGetResponseDto category : categoryNameList) {
+            categoryNameMap.put(category, getAllCategoryPathName(category));
+        }
+        model.addAttribute("categoryNamePage", categoryNameMap);
+        model.addAttribute("register", true);
+        return "view/product/categoryPage";
+    }
 
     @GetMapping("/categories/search")
     public String test() {

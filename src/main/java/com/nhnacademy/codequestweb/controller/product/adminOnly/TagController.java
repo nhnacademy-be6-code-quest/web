@@ -67,10 +67,12 @@ public class TagController {
         return "index";
     }
 
-//    @GetMapping("/admin/tags/registerForm")
-//    public String getRegisterForm(Model model) {
-//        return "view/product/tagRegisterForm";
-//    }
+    @GetMapping("/tags/all")
+    public String getRegisterForm(Model model) {
+        ResponseEntity<Page<TagGetResponseDto>> response = tagService.getAllTags(null, null, null);
+        model.addAttribute("tagPage", response.getBody());
+        return "view/product/tagPage";
+    }
 
     @PostMapping("/admin/tags/register")
     public ResponseEntity<Void> saveTag(HttpServletRequest req, @ModelAttribute TagRegisterRequestDto dto) {
