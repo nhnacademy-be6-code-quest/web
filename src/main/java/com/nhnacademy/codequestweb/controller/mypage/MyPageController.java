@@ -7,6 +7,7 @@ import com.nhnacademy.codequestweb.response.coupon.CouponMyPageCouponResponseDto
 import com.nhnacademy.codequestweb.response.mypage.ClientDeliveryAddressResponseDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientPhoneNumberResponseDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientPrivacyResponseDto;
+import com.nhnacademy.codequestweb.response.order.client.ClientOrderGetResponseDto;
 import com.nhnacademy.codequestweb.response.order.common.OrderResponseDto;
 import com.nhnacademy.codequestweb.response.point.PointAccumulationMyPageResponseDto;
 import com.nhnacademy.codequestweb.response.point.PointUsageMyPageResponseDto;
@@ -321,18 +322,19 @@ public class MyPageController {
         req.setAttribute("points", dto);
         return "index";
     }
+
     @GetMapping("/mypage/orders")
-    public String maypageOrders(HttpServletRequest req,
-        @RequestParam(value = "pageSize", defaultValue = "5", required = false) int pageSize,
-        @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo){
+    public String mypageOrders(HttpServletRequest req,
+                               @RequestParam(value = "pageSize", defaultValue = "5", required = false) int pageSize,
+                               @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo){
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
 
         req.setAttribute("view", "mypage");
         req.setAttribute("mypage", "orders");
-        req.setAttribute("activeSection", "order");
-        Page<OrderResponseDto> orderResponseDtoList = orderService.getClientOrders(headers, pageSize, pageNo, "orderDatetime", "desc");
+
+        Page<ClientOrderGetResponseDto> orderResponseDtoList = orderService.getClientOrders(headers, pageSize, pageNo, "orderDatetime", "desc");
 
         req.setAttribute("orders", orderResponseDtoList.getContent());
         req.setAttribute("totalPages", orderResponseDtoList.getTotalPages());

@@ -1,11 +1,10 @@
 package com.nhnacademy.codequestweb.controller.order;
 
 import com.nhnacademy.codequestweb.request.order.field.OrderItemDto;
-import com.nhnacademy.codequestweb.response.coupon.CouponMyPageCouponResponseDto;
 import com.nhnacademy.codequestweb.response.order.client.ClientOrderForm;
-import com.nhnacademy.codequestweb.response.order.common.OrderResponseDto;
+import com.nhnacademy.codequestweb.response.order.client.ClientOrderGetResponseDto;
 import com.nhnacademy.codequestweb.response.order.nonclient.NonClientOrderForm;
-import com.nhnacademy.codequestweb.response.product.productCategory.ProductCategory;
+import com.nhnacademy.codequestweb.response.order.nonclient.NonClientOrderGetResponseDto;
 import com.nhnacademy.codequestweb.service.order.OrderService;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,7 +17,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Set;
 
 @Controller
 @RequiredArgsConstructor
@@ -45,7 +43,7 @@ public class OrderController {
         return orderService.viewNonClientOrder(req, model, orderItemDto);
     }
 
-    // 비회원 복수 주문
+    // 비회원 복수 주문 - 장바구니 주문
     @PostMapping("/non-client/orders")
     public String nonClientOrder(@RequestParam("cartList") List<String> orderItemDtoStringList, Model model, HttpServletRequest req){
         return orderService.viewNonClientOrder(req, model, orderItemDtoStringList);
@@ -63,7 +61,6 @@ public class OrderController {
         return String.format("redirect:/client/order/%d/payment", orderService.createNonClientOrder(request, nonClientOrderForm));
     }
 
-
     // 회원 단건 주문 조회 view
     @GetMapping("/non-client/order/view")
     public String orders(HttpServletRequest req){
@@ -72,24 +69,24 @@ public class OrderController {
 
     @GetMapping("/non-client/order")
     @ResponseBody
-    public OrderResponseDto nonClientFindOrder(HttpServletRequest req, @RequestParam("orderId") String orderIdStr, @RequestParam("orderPassword") String orderPassword){
+    public NonClientOrderGetResponseDto nonClientFindOrder(HttpServletRequest req, @RequestParam("orderId") String orderIdStr, @RequestParam("orderPassword") String orderPassword){
 
         boolean tryToFindOrderSuccess = true;
         Long orderId = null;
-        OrderResponseDto orderResponseDto = null;
+        NonClientOrderGetResponseDto nonClientOrderGetResponseDto = null;
         try {
             Long.parseLong(orderIdStr);
             HttpHeaders headers = new HttpHeaders();
             headers.set("access", CookieUtils.getCookieValue(req, "access"));
             orderId = Long.parseLong(orderIdStr);
-            orderResponseDto = orderService.findNonClientOrder(headers, orderId, orderPassword);
+            nonClientOrderGetResponseDto = orderService.findNonClientOrder(headers, orderId, orderPassword);
         } catch (NumberFormatException e) {
             tryToFindOrderSuccess = false;
         } catch(RuntimeException e){
             tryToFindOrderSuccess = false;
         }
 
-        return orderResponseDto;
+        return nonClientOrderGetResponseDto;
 
     }
 
