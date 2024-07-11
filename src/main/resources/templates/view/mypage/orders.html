@@ -130,18 +130,18 @@
           <td th:text="${order.orderId}"></td>
           <td th:text="${order.orderStatus}"></td>
           <td>
-            <div th:each="item : ${order.clientOrderListItemList}">
+            <div th:each="item : ${order.clientProductOrderDetailList}">
               <hr/>
               <span th:text="${item.productName} + ' x ' + ${item.productQuantity}"></span>
               <div class="text-muted" th:text="${item.productSinglePrice} + '원 x ' + ${item.productQuantity}"></div>
-              <div th:if="${item.optionProductQuantity} == 0 or ${item.optionProductQuantity} == null">
+              <div th:if="${item.optionProductId} != null">
                 <span th:text="${item.optionProductName} + ' x ' + ${item.optionProductQuantity}"></span>
                 <div class="text-muted" th:text="${item.optionProductSinglePrice} + '원 x ' + ${item.optionProductQuantity}"></div>
               </div>
-              <div th:if="!(${item.optionProductQuantity} == 0 or ${item.optionProductQuantity} == null)">
+              <div th:if="${item.optionProductId} == null">
                 포장지 구매 안함
               </div>
-              <a class="yellow-btn" href="/write/review">
+              <a class="yellow-btn" th:href="@{/write/review/{productOrderDetailId}(productOrderDetailId=${item.productOrderDetailId})}">
                 리뷰 쓰러 가기
               </a>
               <hr/>

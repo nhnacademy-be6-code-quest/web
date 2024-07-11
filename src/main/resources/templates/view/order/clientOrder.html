@@ -162,7 +162,7 @@
         <h3>포인트 사용</h3>
         <div class="remaining-points">
             <label for="remaining-points"> 사용 가능 포인트: </label>
-            <span id="remaining-points" th:value="${usablePoint}"></span>
+            <span id="remaining-points" th:text="${usablePoint}"></span>
         </div>
         <div class="use-points">
             <label th:for="usedPointDiscountAmount"> 사용할 포인트:
