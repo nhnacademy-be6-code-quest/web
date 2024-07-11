@@ -63,7 +63,6 @@ public class TokenReissueInterceptor implements HandlerInterceptor {
 
                 // 요청 객체의 쿠키도 업데이트
                 updateRequestCookies(request, newAccess, newRefresh);
-
             } else {
                 log.info("refresh token expired(pre)");
                 removeCookie(response);
@@ -84,19 +83,6 @@ public class TokenReissueInterceptor implements HandlerInterceptor {
                 }
             }
         }
-
-        // 요청 객체의 쿠키를 직접 수정할 수 없으므로, 래퍼 클래스를 사용합니다.
-        HttpServletRequestWrapper wrappedRequest = new HttpServletRequestWrapper(request) {
-            @Override
-            public Cookie[] getCookies() {
-                return cookies;
-            }
-        };
-
-        // 원래의 request를 wrappedRequest로 교체합니다.
-        // 이 부분은 프레임워크나 서버 설정에 따라 다를 수 있습니다.
-        // 예를 들어, Spring의 RequestContextHolder를 사용할 수 있습니다.
-        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(wrappedRequest));
     }
 
     private void removeCookie(HttpServletResponse response) {
