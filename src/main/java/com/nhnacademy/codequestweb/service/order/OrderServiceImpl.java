@@ -14,8 +14,9 @@ import com.nhnacademy.codequestweb.response.mypage.ClientDeliveryAddressResponse
 import com.nhnacademy.codequestweb.response.mypage.ClientPhoneNumberResponseDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientPrivacyResponseDto;
 import com.nhnacademy.codequestweb.response.order.client.ClientOrderForm;
-import com.nhnacademy.codequestweb.response.order.common.OrderResponseDto;
+import com.nhnacademy.codequestweb.response.order.client.ClientOrderGetResponseDto;
 import com.nhnacademy.codequestweb.response.order.nonclient.NonClientOrderForm;
+import com.nhnacademy.codequestweb.response.order.nonclient.NonClientOrderGetResponseDto;
 import com.nhnacademy.codequestweb.response.order.pack.PackageInfoResponseDto;
 import com.nhnacademy.codequestweb.response.product.book.BookProductGetResponseDto;
 import com.nhnacademy.codequestweb.response.product.common.CartGetResponseDto;
@@ -34,6 +35,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,7 +57,7 @@ public class OrderServiceImpl implements OrderService {
     private final ShippingPolicyService shippingPolicyService;
 
     @Override
-    public String viewClientOrder(HttpServletRequest req, Model model, List<String> orderItemDtoStringList){
+    public String viewClientOrder(HttpServletRequest req, Model model, @ModelAttribute List<String> orderItemDtoStringList){
 
         HttpHeaders headers = getHeader(req);
 
@@ -103,6 +105,8 @@ public class OrderServiceImpl implements OrderService {
         // 사용가능 포인트 정보
         long usablePoint = 10000l; // TODO 추후 포인트 서비스에서 가져오기
 
+        model.addAttribute("view", "clientOrder");
+
         model.addAttribute("clientOrderForm", clientOrderForm);
         model.addAttribute("packageList", packageList);
         model.addAttribute("usablePoint", usablePoint);
@@ -112,7 +116,7 @@ public class OrderServiceImpl implements OrderService {
         model.addAttribute("orderedPerson", orderedPerson);
         model.addAttribute("couponList", couponList);
 
-        return "view/order/clientOrder";
+        return "index";
     }
 
     public String viewClientOrder(HttpServletRequest req, Model model, OrderItemDto orderItemDto){
@@ -157,6 +161,8 @@ public class OrderServiceImpl implements OrderService {
 
         long usablePoint = 10000l; // TODO 추후 포인트 서비스에서 가져오기
 
+        model.addAttribute("view", "clientOrder");
+
         model.addAttribute("clientOrderForm", clientOrderForm);
         model.addAttribute("packageList", packageList);
         model.addAttribute("usablePoint", usablePoint);
@@ -166,7 +172,7 @@ public class OrderServiceImpl implements OrderService {
         model.addAttribute("orderedPerson", orderedPerson);
         model.addAttribute("couponList", couponList);
 
-        return "view/order/clientOrder";
+        return "index";
     }
 
     @Override
@@ -197,11 +203,14 @@ public class OrderServiceImpl implements OrderService {
 
         List<PackageInfoResponseDto> packageList = getAllPackages();
 
+        model.addAttribute("view", "nonClientOrder");
+
         model.addAttribute("nonClientOrderForm", nonClientOrderForm);
         model.addAttribute("packageList", packageList);
         model.addAttribute("shippingPolicy", shippingPolicy);
 
-        return "view/order/nonClientOrder";
+
+        return "index";
     }
 
     @Override
@@ -235,11 +244,13 @@ public class OrderServiceImpl implements OrderService {
 
         List<PackageInfoResponseDto> packageList = getAllPackages();
 
+        model.addAttribute("view", "nonClientOrder");
+
         model.addAttribute("nonClientOrderForm", nonClientOrderForm);
         model.addAttribute("packageList", packageList);
         model.addAttribute("shippingPolicy", shippingPolicy);
 
-        return "view/order/nonClientOrder";
+        return "index";
     }
 
     @Override
@@ -298,12 +309,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Page<OrderResponseDto> getClientOrders(HttpHeaders headers, int pageSize, int pageNo, String sortBy, String sortDir) {
+    public Page<ClientOrderGetResponseDto> getClientOrders(HttpHeaders headers, int pageSize, int pageNo, String sortBy, String sortDir) {
         return orderClient.getClientOrders(headers, pageSize, pageNo, sortBy, sortDir).getBody();
     }
 
     @Override
-    public OrderResponseDto getClientOrder(HttpHeaders headers, long orderId) {
+    public ClientOrderGetResponseDto getClientOrder(HttpHeaders headers, long orderId) {
         return orderClient.getClientOrder(headers, orderId).getBody();
     }
 
@@ -338,7 +349,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderResponseDto findNonClientOrder(HttpHeaders headers, long orderId, String orderPassword) {
+    public NonClientOrderGetResponseDto findNonClientOrder(HttpHeaders headers, long orderId, String orderPassword) {
         return orderClient.findNonClientOrder(headers, orderId, orderPassword).getBody();
     }
 

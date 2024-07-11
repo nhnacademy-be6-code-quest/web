@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/html">
+<html lang="en" th:fragment="clientOrderFragment()">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -31,9 +31,6 @@
     </style>
 </head>
 <body>
-<div th:if="${view != 'adminPage'}">
-    <div th:replace="~{layout/header.html :: headerFragment ('isLogin', 'message', 'categories')}"></div>
-</div>
 
 <form th:action="@{/api/client/orders}" th:object="${clientOrderForm}" method="post">
 
@@ -492,7 +489,5 @@
     }
 
 </script>
-
-<div th:replace="~{layout/footer.html :: footerFragment}"></div>
 </body>
 </html>

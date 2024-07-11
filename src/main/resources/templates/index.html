@@ -87,6 +87,12 @@
     <section th:replace="~{view/review/edit-review :: writeReviewFragment('writeReviewRequiredInfo')}"></section>
 </div>
 
+<div th:if="${view != null} and ${#strings.equals(view, 'clientOrder')}">
+    <section th:replace="~{view/order/clientOrder.html :: clientOrderFragment}"></section>
+</div>
+<div th:if="${view != null} and ${#strings.equals(view, 'nonClientOrder')}">
+    <section th:replace="~{view/order/nonClientOrder.html :: nonClientOrderFragment}"></section>
+</div>
 
 
 <div th:replace="~{layout/footer.html :: footerFragment}"></div>
