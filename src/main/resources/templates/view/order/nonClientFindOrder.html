@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>비회원 주문 조회</title>
+    <style>
+        /* Add your CSS styles here */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+
+        .close {
+            color: #aaaaaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .yellow-btn {
+            background-color: yellow;
+            padding: 5px 10px;
+            text-decoration: none;
+            color: black;
+            border: 1px solid black;
+            border-radius: 3px;
+        }
+
+        .yellow-btn:hover {
+            background-color: #e6e600;
+        }
+
+        hr {
+            border: 0;
+            border-top: 1px solid #ccc;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+<h1>비회원 주문 조회</h1>
+<div>
+    <label>
+        주문 번호:
+        <input id="orderIdStr" name="orderIdStr" required/>
+    </label>
+    <label>
+        주문 비밀번호:
+        <input id="orderPassword" name="orderPassword" required/>
+    </label>
+    <button id="tryToFindOrder">주문조회하기</button>
+</div>
+<div id="findOrderModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>주문 조회 결과</h3>
+        <div id="findOrderModalContent">
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('tryToFindOrder').onclick = function() {
+        openNonClientOrderFindModal();
+    };
+
+    function openNonClientOrderFindModal() {
+        const inputOrderIdStr = document.getElementById('orderIdStr').value;
+        const orderPassword = document.getElementById('orderPassword').value;
+        const modal = document.getElementById('findOrderModal');
+        const modalContent = document.getElementById('findOrderModalContent');
+
+        fetch(`/non-client/order?orderId=${inputOrderIdStr}&orderPassword=${orderPassword}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('API 호출 오류가 발생했습니다.');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data); // API 결과 확인용
+
+                // Build HTML for order details
+                let orderDetails = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Order Date</th>
+                                <th>Order ID</th>
+                                <th>Status</th>
+                                <th>Items</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>${data.orderDatetime}</td>
+                                <td>${data.orderId}</td>
+                                <td>${data.orderStatus}</td>
+                                <td>
+                `;
+
+                data.clientOrderListItemList.forEach(item => {
+                    orderDetails += `
+                        <hr/>
+                        <div>
+                            <span>${item.productName} x ${item.productQuantity}</span>
+                            <div class="text-muted">${item.productSinglePrice}원 x ${item.productQuantity}</div>
+                    `;
+
+                    if (item.optionProductId !== null && item.optionProductQuantity > 0) {
+                        orderDetails += `
+                            <div>
+                                <span>${item.optionProductName} x ${item.optionProductQuantity}</span>
+                                <div class="text-muted">${item.optionProductSinglePrice}원 x ${item.optionProductQuantity}</div>
+                            </div>
+                        `;
+                    } else {
+                        orderDetails += `
+                            <div>
+                                포장지 구매 안함
+                            </div>
+                        `;
+                    }
+                });
+
+                orderDetails += `
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                `;
+
+                modalContent.innerHTML = orderDetails;
+                modal.style.display = 'block'; // Open modal
+            })
+            .catch(error => {
+                modalContent.innerHTML = `<p>${error.message}</p><p>비회원 주문 조회에 실패했습니다. 다시 시도하세요</p>`;
+                modal.style.display = 'block'; // Open modal
+            });
+    }
+
+    document.getElementsByClassName('close')[0].onclick = function() {
+        const modal = document.getElementById('findOrderModal');
+        modal.style.display = 'none'; // Close modal
+    };
+
+    window.onclick = function(event) {
+        const modal = document.getElementById('findOrderModal');
+        if (event.target === modal) {
+            modal.style.display = 'none'; // Close modal
+        }
+    };
+</script>
+
+</body>
+</html>

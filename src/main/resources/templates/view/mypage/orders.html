@@ -1,10 +1,168 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" th:fragment="OrdersFragment ('orders')">
 <head>
   <meta charset="UTF-8">
-  <title>$Title$</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order History</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 95%;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .title {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .card {
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-content {
+      padding: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .text-right {
+      text-align: right;
+    }
+
+    .yellow-btn{
+      display: inline-block;
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      background-color: #fff;
+      color: #d9bf8a;
+      text-decoration: none;
+      border-radius: 4px;
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 20px;
+    }
+
+    .pagination-content {
+      display: flex;
+      list-style-type: none;
+      padding: 0;
+    }
+
+    .pagination-item {
+      margin: 0 5px;
+    }
+
+    .pagination-link {
+      display: inline-block;
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      background-color: #fff;
+      color: #d9bf8a;
+      text-decoration: none;
+      border-radius: 4px;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .pagination-link:hover {
+      background-color: #d9bf8a;
+      color: #fff;
+    }
+
+    .pagination-link.active {
+      background-color: #e4ac3e;
+      color: #fff;
+      border-color: #d9bf8a;
+    }
+
+  </style>
 </head>
 <body>
-$END$
+<div class="container">
+  <div class="header">
+    <h1 class="title">주문 내역 조회</h1>
+  </div>
+  <div class="card">
+    <div class="card-content">
+      <table>
+        <thead>
+        <tr>
+          <th style="width:10%">주문날짜</th>
+          <th style="width:10%">주문번호</th>
+          <th style="width:10%">주문상태</th>
+          <th style="width:70%">주문 목록</th>
+        </tr>
+        </thead>
+        <tbody>
+          <tr th:each="order : ${orders}">
+            <td th:text="${order.orderDatetime}"></td>
+            <td th:text="${order.orderId}"></td>
+            <td th:text="${order.orderStatus}"></td>
+            <td>
+              <div th:each="item : ${order.clientOrderListItemList}">
+                <hr/>
+                <span th:text="${item.productName} + ' x ' + ${item.productQuantity}"></span>
+                <div class="text-muted" th:text="${item.productSinglePrice} + '원 x ' + ${item.productQuantity}"></div>
+                <div th:if="${item.optionProductQuantity} == 0 or ${item.optionProductQuantity} == null">
+                  <span th:text="${item.optionProductName} + ' x ' + ${item.optionProductQuantity}"></span>
+                  <div class="text-muted" th:text="${item.optionProductSinglePrice} + '원 x ' + ${item.optionProductQuantity}"></div>
+                </div>
+                <div th:if="!(${item.optionProductQuantity} == 0 or ${item.optionProductQuantity} == null)">
+                  포장지 구매 안함
+                </div>
+                <a class="yellow-btn" href="/write/review">
+                  리뷰 쓰러 가기
+                </a>
+                <hr/>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="pagination">
+    <div class="pagination-content">
+    <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}" class="pagination-item">
+      <a th:href="|/mypage/orders?pageNo=${i}&pageSize=${pageSize}|"
+         th:classappend="${i == currentPage} ? 'pagination-link active' : 'pagination-link'">
+        [[${i + 1}]]
+      </a>
+    </span>
+    </div>
+  </div>
+
+</div>
 </body>
 </html>

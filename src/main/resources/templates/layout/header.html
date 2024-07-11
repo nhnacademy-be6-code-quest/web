@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="headerFragment ('isLogin', 'message', 'categories')">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="headerFragment ('isLogin', 'message', 'categories', 'isAdmin')">
 <head>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
 
@@ -24,6 +24,39 @@
     <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
     <script type="text/javascript" th:src="@{/js/message/message.js}"></script>
     <link rel="stylesheet" th:href="@{/css/message/style.css}">
+    <style>
+        #search-results {
+            width: 20%;
+            max-width: 20%;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-top: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        #search-results .list-group-item {
+            padding: 10px 15px;
+            border-left: none;
+            border-right: none;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        #search-results .list-group-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        #search-results .list-group-item:first-child {
+            border-top: none;
+        }
+
+        #search-results .list-group-item:last-child {
+            border-bottom: none;
+        }
+    </style>
 </head>
 <div th:replace="~{icon/icon :: iconAsset}"></div>
 
@@ -43,14 +76,15 @@
             <div class="col-sm-6 offset-sm-2 offset-md-0 col-lg-5 d-none d-lg-block">
                 <div class="search-bar border rounded-2 px-3 border-dark-subtle">
                     <form id="search-form" class="text-center d-flex align-items-center" action="/product/books/containing" method="get">
-                        <input type="text" name="title" class="form-control border-0 bg-transparent"
-                               placeholder="Search for more than various books" />
+                        <input id="search-input" type="text" name="title" class="form-control border-0 bg-transparent"
+                               placeholder="Search for more than various books"/>
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                             <path fill="currentColor"
                                   d="M21.71 20.29L18 16.61A9 9 0 1 0 16.61 18l3.68 3.68a1 1 0 0 0 1.42 0a1 1 0 0 0 0-1.39ZM11 18a7 7 0 1 1 7-7a7 7 0 0 1-7 7Z" />
                         </svg>
                     </form>
                 </div>
+                <div id="search-results" class="list-group position-absolute w-100" style="z-index: 1000;"></div>
             </div>
 
             <div
@@ -164,7 +198,7 @@
                     <div class="d-none d-lg-flex align-items-end">
                         <ul class="d-flex justify-content-end list-unstyled m-0">
                             <li>
-                                <a th:href="${isLogin == null ? '/auth' : '/mypage'}" class="mx-3">
+                                <a th:href="@{/page/route}" class="mx-3">
                                     <iconify-icon icon="healthicons:person" class="fs-4"></iconify-icon>
                                 </a>
                             </li>
@@ -218,6 +252,33 @@
                 }
             });
         });
+
+        var searchInput = document.getElementById('search-input');
+        searchInput.addEventListener('input', function() {
+            performSearch();
+        });
+
     });
+
+    function performSearch() {
+        var input = document.getElementById('search-input');
+        var query = input.value;
+        var resultsContainer = document.getElementById('search-results');
+        resultsContainer.innerHTML = '';  // Clear previous results
+
+        if (query.length > 0) {  // Minimum 2 characters to trigger search
+            fetch('/search/title?keyword=' + query)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(title => {
+                        var resultItem = document.createElement('a');
+                        resultItem.classList.add('list-group-item', 'list-group-item-action');
+                        resultItem.href = '/product/books/containing?title=' + encodeURIComponent(title);
+                        resultItem.textContent = title;
+                        resultsContainer.appendChild(resultItem);
+                    });
+                });
+        }
+    }
 </script>
 </html>

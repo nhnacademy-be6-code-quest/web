@@ -3,14 +3,18 @@ package com.nhnacademy.codequestweb.interceptor;
 import com.nhnacademy.codequestweb.client.auth.AuthClient;
 import com.nhnacademy.codequestweb.response.auth.TokenResponseDto;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
+import com.nhnacademy.codequestweb.utils.JwtUtil;
 import feign.FeignException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import java.io.IOException;
@@ -27,42 +31,57 @@ public class TokenReissueInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
-        if (ex instanceof FeignException && ((FeignException) ex).status() == 303 && CookieUtils.getCookieValue(request, "refresh") != null) {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        String access = CookieUtils.getCookieValue(request, "access");
+        if (access != null && JwtUtil.isTokenExpired(access)) {
+            log.info("is expired (pre)");
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("access", CookieUtils.getCookieValue(request, "access"));
+            headers.set("refresh", CookieUtils.getCookieValue(request, "refresh"));
+            ResponseEntity<TokenResponseDto> reissueResponse = authClient.reissue(headers);
+            if (reissueResponse.getStatusCode().is2xxSuccessful() && reissueResponse.getBody() != null) {
+                String newAccess = reissueResponse.getBody().getAccess();
+                String newRefresh = reissueResponse.getBody().getRefresh();
 
-            try {
-                HttpHeaders headers = new HttpHeaders();
-                headers.set("access", CookieUtils.getCookieValue(request, "access"));
-                headers.set("refresh", CookieUtils.getCookieValue(request, "refresh"));
-                ResponseEntity<TokenResponseDto> reissueResponse = authClient.reissue(headers);
-                if (reissueResponse.getStatusCode().is2xxSuccessful() && reissueResponse.getBody() != null) {
-                    Cookie accessCookie = new Cookie("access", reissueResponse.getBody().getAccess());
-                    accessCookie.setHttpOnly(true);
-                    accessCookie.setSecure(true);
-                    accessCookie.setPath("/");
-                    accessCookie.setMaxAge(60 * 60 * 2);
-                    response.addCookie(accessCookie);
+                // 새 액세스 토큰으로 쿠키 업데이트
+                Cookie accessCookie = new Cookie("access", newAccess);
+                accessCookie.setHttpOnly(true);
+                accessCookie.setSecure(true);
+                accessCookie.setPath("/");
+                accessCookie.setMaxAge(60 * 60 * 24 * 14);
+                response.addCookie(accessCookie);
 
-                    Cookie refreshCookie = new Cookie("refresh", reissueResponse.getBody().getRefresh());
-                    refreshCookie.setHttpOnly(true);
-                    refreshCookie.setSecure(true);
-                    refreshCookie.setPath("/");
-                    refreshCookie.setMaxAge(60 * 60 * 24 * 14);
-                    response.addCookie(refreshCookie);
+                // 새 리프레시 토큰으로 쿠키 업데이트
+                Cookie refreshCookie = new Cookie("refresh", newRefresh);
+                refreshCookie.setHttpOnly(true);
+                refreshCookie.setSecure(true);
+                refreshCookie.setPath("/");
+                refreshCookie.setMaxAge(60 * 60 * 24 * 14);
+                response.addCookie(refreshCookie);
 
-                    log.info("Token reissued success");
-//                    refreshPage(response);
-                } else {
-                    log.info("refresh token expired");
-                    removeCookie(response);
-//                    refreshPage(response);
-                }
-            } catch (Exception e) {
-                log.info("Token reissued failed");
+                log.info("Token reissued success(pre)");
+
+                // 요청 객체의 쿠키도 업데이트
+                updateRequestCookies(request, newAccess, newRefresh);
+            } else {
+                log.info("refresh token expired(pre)");
                 removeCookie(response);
-//                refreshPage(response);
             }
-            refreshPage(request, response);
+        }
+        return true;
+    }
+
+    private void updateRequestCookies(HttpServletRequest request, String newAccess, String newRefresh) {
+        // 현재 요청의 쿠키를 가져옵니다.
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("access")) {
+                    cookie.setValue(newAccess);
+                } else if (cookie.getName().equals("refresh")) {
+                    cookie.setValue(newRefresh);
+                }
+            }
         }
     }
 
@@ -78,54 +97,4 @@ public class TokenReissueInterceptor implements HandlerInterceptor {
         CookieUtils.deleteCookieValue(response, "cart");
     }
 
-//    private void refreshPage(HttpServletResponse response) {
-//        try {
-//            response.setContentType("text/html");
-//            PrintWriter out = response.getWriter();
-//            out.println("<html><body>");
-//            out.println("<script type=\"text/javascript\">");
-//            out.println("window.location.reload(true);");
-//            out.println("</script>");
-//            out.println("</body></html>");
-//            out.close();
-//        } catch (IOException e) {
-//            log.error(e.getMessage());
-//        }
-//    }
-
-    private void refreshPage(HttpServletRequest request, HttpServletResponse response) {
-        try {
-            response.setContentType("text/html");
-            PrintWriter out = response.getWriter();
-            out.println("<html><body>");
-            out.println("<form id=\"resubmitForm\" method=\"" + request.getMethod() + "\" action=\"" + request.getRequestURI() + "\">");
-
-            // Add request parameters to the form
-            request.getParameterMap().forEach((key, values) -> {
-                for (String value : values) {
-                    out.println("<input type=\"hidden\" name=\"" + key + "\" value=\"" + value + "\">");
-                }
-            });
-
-            // Add original headers to the form
-//            Enumeration<String> headerNames = request.getHeaderNames();
-//            while (headerNames.hasMoreElements()) {
-//                String headerName = headerNames.nextElement();
-//                Enumeration<String> headers = request.getHeaders(headerName);
-//                while (headers.hasMoreElements()) {
-//                    String headerValue = headers.nextElement();
-//                    out.println("<input type=\"hidden\" name=\"header_" + headerName + "\" value=\"" + headerValue + "\">");
-//                }
-//            }
-
-            out.println("</form>");
-            out.println("<script type=\"text/javascript\">");
-            out.println("document.getElementById('resubmitForm').submit();");
-            out.println("</script>");
-            out.println("</body></html>");
-            out.close();
-        } catch (IOException e) {
-            log.error(e.getMessage());
-        }
-    }
 }
