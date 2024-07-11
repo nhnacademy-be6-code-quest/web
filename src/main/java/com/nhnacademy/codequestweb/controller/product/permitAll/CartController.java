@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -52,16 +53,29 @@ public class CartController {
                     List<CartGetResponseDto> cartList = responseEntity.getBody();
                     model.addAttribute("cartList", cartList);
                     model.addAttribute("view", "cart");
-                    List<String> jsonCartList = cartList.stream()
-                            .map(cart -> {
-                                try {
-                                    return objectMapper.writeValueAsString(cart);
-                                } catch (JsonProcessingException e) {
-                                    throw new RuntimeException(e);
-                                }
-                            })
-                            .toList();
-                    model.addAttribute("jsonCartList", jsonCartList);
+                    Map<String, Boolean> jsonCartMap = cartList.stream()
+                            .collect(Collectors.toMap(
+                                    cart -> {
+                                        try {
+                                            return objectMapper.writeValueAsString(cart);
+                                        } catch (JsonProcessingException e) {
+                                            throw new RuntimeException(e);
+                                        }
+                                    },
+                                    cart -> cart.productInventory() >= cart.productQuantityOfCart() && cart.productState() == 0
+                            ));
+                    log.info("jsonCartMap: {}", jsonCartMap);
+
+//                    List<String> jsonCartList = cartList.stream()
+//                            .map(cart -> {
+//                                try {
+//                                    return objectMapper.writeValueAsString(cart);
+//                                } catch (JsonProcessingException e) {
+//                                    throw new RuntimeException(e);
+//                                }
+//                            })
+//                            .toList();
+                    model.addAttribute("jsonCartMap", jsonCartMap);
                     model.addAttribute("orderUrl", "/non-client/orders");
                     return "index";
                 }else{
@@ -77,16 +91,28 @@ public class CartController {
                 if (cartList == null || cartList.isEmpty()) {
                     model.addAttribute("empty", true);
                 }else {
-                    List<String> jsonCartList = cartList.stream()
-                            .map(cart -> {
-                                try {
-                                    return objectMapper.writeValueAsString(cart);
-                                } catch (JsonProcessingException e) {
-                                    throw new RuntimeException(e);
-                                }
-                            })
-                            .toList();
-                    model.addAttribute("jsonCartList", jsonCartList);
+                    Map<String, Boolean> jsonCartMap = cartList.stream()
+                            .collect(Collectors.toMap(
+                                    cart -> {
+                                        try {
+                                            return objectMapper.writeValueAsString(cart);
+                                        } catch (JsonProcessingException e) {
+                                            throw new RuntimeException(e);
+                                        }
+                                    },
+                                    cart -> cart.productInventory() >= cart.productQuantityOfCart() && cart.productState() == 0
+                            ));
+                    log.info("jsonCartMap: {}", jsonCartMap);
+//                    List<String> jsonCartList = cartList.stream()
+//                            .map(cart -> {
+//                                try {
+//                                    return objectMapper.writeValueAsString(cart);
+//                                } catch (JsonProcessingException e) {
+//                                    throw new RuntimeException(e);
+//                                }
+//                            })
+//                            .toList();
+                    model.addAttribute("jsonCartMap", jsonCartMap);
                     model.addAttribute("cartList", cartList);
                 }
                 model.addAttribute("view", "cart");
