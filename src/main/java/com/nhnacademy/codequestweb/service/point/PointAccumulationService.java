@@ -22,6 +22,6 @@ public class PointAccumulationService {
         return pointAccumulationClient.findUserPoint(headers, page, size).getBody();
     }
     public void deleteUserPoint(HttpHeaders headers, long pointAccumulationHistoryId){
-        pointAccumulationClient.deleteuserPoint(headers,pointAccumulationHistoryId);
+        pointAccumulationClient.deleteUserPoint(headers,pointAccumulationHistoryId);
     }
 }
