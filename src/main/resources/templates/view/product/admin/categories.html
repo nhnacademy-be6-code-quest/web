@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="tagFragment">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="categoryFragment">
 <head>
     <meta charset="UTF-8">
-    <title>관리자 페이지 - 태그</title>
+    <title>관리자 페이지 - 카테고리</title>
     <style>
         .admin-category-add-container {
             display: flex;
@@ -69,23 +69,36 @@
         }
     </style>
     <script>
-        function openUpdateTagModal(tagName) {
-            document.getElementById("currentTagName").value = tagName;
-            document.getElementById("newTagName").value = tagName;
+        function getAllSubCategory(categoryId){
+            location.href= '/admin/categories/'+ categoryId + '/sub2'
         }
 
-        function saveTag(event) {
+        function openRegisterCategoryModal(parentCategoryName, parentCategoryNameValue) {
+            document.getElementById("parentCategoryName").value = parentCategoryName;
+            document.getElementById("parentCategoryNameValue").value = parentCategoryNameValue;
+        }
+
+        function openUpdateCategoryModal(categoryName, categoryNameValue) {
+            document.getElementById("currentCategoryName").value = categoryName;
+            document.getElementById("currentCategoryNameValue").value = categoryNameValue;
+            document.getElementById("innerText").innerText = '최하위 경로의 카테고리명 (=' + categoryNameValue + ')만 수정됩니다.';
+            document.getElementById("newCategoryName").value = categoryNameValue;
+        }
+
+        function saveCategory(event) {
             event.preventDefault();
 
-            const tagName = document.getElementById("tagName").value;
+            const categoryName = document.getElementById("categoryName").value;
+            const parentCategoryName = document.getElementById("parentCategoryName").value;
+            const parentCategoryNameValue = document.getElementById("parentCategoryNameValue").value;
 
-            if (tagName.includes(" ")){
+            if(categoryName.includes(" ")){
                 alert('공백은 포함할 수 없습니다.');
                 return;
             }
 
-            if (confirm('태그를 등록하시겠습니까? \n\n태그명 : ' + tagName)) {
-                fetch(`/admin/tags/register?tagName=` + tagName, {
+            if (confirm('카테고리를 등록하시겠습니까? \n\n상위카테고리:' + parentCategoryName + '\n카테고리명 : ' + categoryName)) {
+                fetch(`/admin/categories/register?categoryName=` + categoryName + '&parentCategoryName=' + parentCategoryNameValue, {
                     method: 'POST'
                 })
                     .then(response => {
@@ -93,9 +106,12 @@
                             alert('성공적으로 등록되었습니다.');
                             location.reload();
                         }else if(response.status === 409){
-                            alert('태그명이 중복됩니다.');
-                        } else {
-                            alert('태그 등록에 실패하였습니다.\n잠시 후 다시 시도해주세요.');
+                            alert('이미 존재하는 카테고리명입니다.');
+                        } else if(response.status === 404){
+                            alert('상위 카테고리를 찾을 수 없습니다.\n잠시 후 다시 시도해 주세요.')
+                        }
+                        else {
+                            alert('카테고리 등록에 실패하였습니다.\n잠시 후 다시 시도해주세요.');
                         }
                     })
                     .catch(error => {
@@ -105,24 +121,25 @@
             }
         }
 
-        function updateTag(event) {
+        function updateCategory(event) {
             event.preventDefault(); // Prevent form submission
 
-            const currentTagName = document.getElementById("currentTagName").value;
-            const newTagName = document.getElementById("newTagName").value;
+            const currentCategoryName = document.getElementById("currentCategoryName").value;
+            const currentCategoryNameValue = document.getElementById("currentCategoryNameValue").value;
+            const newCategoryName = document.getElementById("newCategoryName").value;
 
-            if(newTagName.includes(" ")){
+            if(newCategoryName.includes(" ")){
                 alert('공백은 포함할 수 없습니다.');
                 return;
             }
 
-            if(currentTagName === newTagName){
-                alert('기존과 동일한 태그명입니다.');
+            if (newCategoryName === currentCategoryNameValue){
+                alert('기존과 동일한 카테고리명입니다.');
                 return;
             }
 
-            if (confirm('태그를 수정하시겠습니까? \n\n변경 전 : ' + currentTagName + '\n변경 후 : ' + newTagName)) {
-                fetch(`/admin/tags/update?currentTagName=` + currentTagName +'&newTagName=' + newTagName, {
+            if (confirm('카테고리를 수정하시겠습니까? \n\n변경 전 : ' + currentCategoryName + '\n변경 후 : ' + newCategoryName)) {
+                fetch(`/admin/categories/update?currentCategoryName=` + currentCategoryNameValue +'&newCategoryName=' + newCategoryName, {
                     method: 'PUT'
                 })
                     .then(response => {
@@ -130,9 +147,9 @@
                             alert('성공적으로 수정되었습니다.');
                             location.reload();
                         }else if(response.status === 409){
-                            alert('태그명이 중복됩니다.');
+                            alert('이미 존재하는 카테고리명입니다.');
                         } else {
-                            alert('태그 수정에 실패하였습니다.\n잠시 후 다시 시도해주세요.');
+                            alert('카테고리 수정에 실패하였습니다.\n잠시 후 다시 시도해주세요.');
                         }
                     })
                     .catch(error => {
@@ -148,20 +165,20 @@
 <main class="main-content flex-grow-1" style="padding-top: 50px; padding-bottom: 50px;">
     <div class="container mx-auto max-w5xl">
         <div class="card shadow-sm">
-            <h1 class="text-2xl font-bold"><a href="/admin/tags">Tags</a></h1>
+            <h1 class="text-2xl font-bold"><a href="/admin/categories">Categories</a></h1>
         </div>
         <div class="card-body">
             <div class="mb-4">
                 <div class="admin-category-add-container">
-                    <h2 class="text-lg font-semibold" style="display: inline-block">태그</h2>
-                    <div class="admin-category-add-btn" data-bs-toggle="modal" data-bs-target="#registerTagModal"> 태그 추가 </div>
+                    <h2 class="text-lg font-semibold" style="display: inline-block">카테고리</h2>
+                    <div class="admin-category-add-btn" data-bs-toggle="modal" data-bs-target="#registerCategoryModal" onclick="openRegisterCategoryModal(null, null)"> 신규 최상위 카테고리 추가 </div>
                 </div>
                 <div class="pagination">
                     <div class="col-sm-6 offset-sm-2 offset-md-0 col-lg-5 d-none d-lg-block" >
                         <div class="search-bar border rounded-2 px-3 border-dark-subtle">
-                            <form id="search-form" class="text-center d-flex align-items-center" action="/admin/tags/containing" method="get">
-                                <input type="text" name="tagName" class="form-control border-0 bg-transparent"
-                                       placeholder="Search Tag" required/>
+                            <form id="search-form" class="text-center d-flex align-items-center" action="/admin/categories/containing2" method="get">
+                                <input type="text" name="categoryName" class="form-control border-0 bg-transparent"
+                                       placeholder="Search Category" required/>
                                 <button type="submit" class="search-form">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
                                         <path fill="currentColor"
@@ -174,15 +191,16 @@
                     </div>
                 </div>
                 <div th:unless="${empty}" class="pagination">
-                    <a th:class="'active'" th:href="${url}+ '&sort=tagId'">등록순</a>
-                    <a th:class="'active'" th:href="${url}+ '&sort=tagName'">이름순(역순)</a>
-                    <a th:class="'active'" th:href="${url}+ '&sort=tagName&desc=false'">이름순</a>
+                    <a th:class="'active'" th:href="${url}+ '&sort=productCategoryId'">등록순</a>
+                    <a th:class="'active'" th:href="${url}+ '&sort=categoryName'">이름순(역순)</a>
+                    <a th:class="'active'" th:href="${url}+ '&sort=categoryName&desc=false'">이름순</a>
                 </div>
-
-                <div class="pagination" th:each="tag : ${tagPage}">
+                <div class="pagination" th:each="category : ${categoryNamePage}">
                     <label></label>
-                    <textarea class="category-form-control" th:text="'#'+${tag.tagName}" style="resize: none; width: 600px" readonly></textarea>
-                    <div class="admin-category-add-btn" th:tagName="${tag.tagName}" onclick="openUpdateTagModal(this.getAttribute('tagName'))" data-bs-toggle="modal" th:on data-bs-target="#updateTagModal"> 수정</div>
+                    <textarea class="category-form-control" th:text="${category.getValue()}" style="resize: none; width: 600px" readonly></textarea>
+                    <div class="admin-category-add-btn"  th:categoryId="${category.getKey().productCategoryId()}" onclick="getAllSubCategory(this.getAttribute('categoryId'))">하위 카테고리 조회</div>
+                    <div class="admin-category-add-btn" th:parentCategoryName="${category.getValue()}" th:parentCategoryNameValue="${category.getKey().categoryName()}" onclick="openRegisterCategoryModal(this.getAttribute('parentCategoryName'), this.getAttribute('parentCategoryNameValue'))" data-bs-toggle="modal" th:on data-bs-target="#registerCategoryModal">하위 카테고리 추가</div>
+                    <div class="admin-category-add-btn" th:categoryName="${category.getValue()}" th:categoryNameValue="${category.getKey().categoryName()}" onclick="openUpdateCategoryModal(this.getAttribute('categoryName'), this.getAttribute('categoryNameValue'))" data-bs-toggle="modal" th:on data-bs-target="#updateCategoryModal"> 수정</div>
                 </div>
             </div>
         </div>
@@ -205,21 +223,22 @@
         </div>
     </div>
 </main>
-
 </body>
-
-<div class="modal fade" id="registerTagModal" tabindex="-1" aria-labelledby="registerTagModalLabel" aria-hidden="true">
+<div class="modal fade" id="registerCategoryModal" tabindex="-1" aria-labelledby="registerCategoryModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addAddressModalLabel">Save new Tag</h5>
+                <h5 class="modal-title" id="addAddressModalLabel">Save new Category</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form onsubmit="saveTag(event)">
+            <form onsubmit="saveCategory(event)">
                 <div class="modal-body">
                     <div class="form-group">
-                        <label>태그명</label>
-                        <input type="text" class="form-control" name="tagName" id="tagName"  required />
+                        <label>상위카테고리</label>
+                        <input type="text" class="form-control" name="parentCategoryName" id="parentCategoryName" readonly/>
+                        <input type="hidden" class="form-control" name="parentCategoryNameValue" id="parentCategoryNameValue"/>
+                        <label>카테고리명</label>
+                        <input type="text" class="form-control" name="categoryName" id="categoryName"  required />
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -230,20 +249,23 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="updateTagModal" tabindex="-1" aria-labelledby="updateTagLabel" aria-hidden="true">
+<div class="modal fade" id="updateCategoryModal" tabindex="-1" aria-labelledby="updateCategoryLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="updateTagLabel">Update Tag</h5>
+                <h5 class="modal-title" id="updateCategoryLabel">Update Category</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form onsubmit="updateTag(event)">
+            <form onsubmit="updateCategory(event)">
                 <div class="modal-body">
                     <div class="form-group">
-                        <label>기존 태그명</label>
-                        <input type="text" class="form-control" name="currentTagName" id="currentTagName"  readonly />
-                        <label>새로운 태그명</label>
-                        <input type="text" class="form-control" name="newTagName" id="newTagName" required />
+                        <label>기존 카테고리명</label>
+                        <input type="text" class="form-control" name="currentCategoryName" id="currentCategoryName"  readonly />
+                        <input type="hidden" class="form-control" name="currentCategoryNameValue" id="currentCategoryNameValue"  readonly />
+
+                        <label>새로운 카테고리명</label>
+                        <input type="text" class="form-control" name="newCategoryName" id="newCategoryName" required />
+                        <span id="innerText" style="font-size: 12px; color: #6c757d"></span>
                     </div>
                 </div>
                 <div class="modal-footer">

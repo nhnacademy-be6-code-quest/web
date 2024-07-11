@@ -30,7 +30,6 @@ public class TagController {
 
 
     @GetMapping("/admin/tags")
-
     public String getTags(@RequestParam(name = "page", required = false)Integer page, @RequestParam(name = "sort", required = false) String sort, @RequestParam(name = "desc", required = false)Boolean desc, Model model) {
         ResponseEntity<Page<TagGetResponseDto>> response = tagService.getAllTags(page, sort, desc);
         long totalElements = response.getBody().getTotalElements();
@@ -68,10 +67,10 @@ public class TagController {
         return "index";
     }
 
-    @GetMapping("/admin/tags/registerForm")
-    public String getRegisterForm(Model model) {
-        return "view/product/tagRegisterForm";
-    }
+//    @GetMapping("/admin/tags/registerForm")
+//    public String getRegisterForm(Model model) {
+//        return "view/product/tagRegisterForm";
+//    }
 
     @PostMapping("/admin/tags/register")
     public ResponseEntity<Void> saveTag(HttpServletRequest req, @ModelAttribute TagRegisterRequestDto dto) {
@@ -81,7 +80,7 @@ public class TagController {
         }catch (FeignException e){
             log.warn(e.getMessage());
             return switch (e.status()) {
-                case 303 -> ResponseEntity.status(303).body(null);
+                case 303 -> throw e;
                 case 401, 403 -> ResponseEntity.status(401).body(null);
                 case 409 -> ResponseEntity.status(409).body(null);
                 default -> ResponseEntity.status(500).body(null);
@@ -97,7 +96,7 @@ public class TagController {
         }catch (FeignException e){
             log.warn(e.getMessage());
             return switch (e.status()) {
-                case 303 -> ResponseEntity.status(303).body(null);
+                case 303 -> throw e;
                 case 401, 403 -> ResponseEntity.status(401).body(null);
                 case 405 -> ResponseEntity.status(405).body(null);
                 case 409 -> ResponseEntity.status(409).body(null);

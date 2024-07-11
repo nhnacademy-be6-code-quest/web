@@ -28,5 +28,9 @@
     <div class="adminPage-wrapper" th:if="${adminPage != null} and ${#strings.equals(adminPage, 'tags')}">
         <section th:replace="~{view/product/admin/tags.html :: tagFragment}"></section>
     </div>
+
+    <div class="adminPage-wrapper" th:if="${adminPage != null} and ${#strings.equals(adminPage, 'categories')}">
+        <section th:replace="~{view/product/admin/categories.html :: categoryFragment}"></section>
+    </div>
 </div>
 </html>
