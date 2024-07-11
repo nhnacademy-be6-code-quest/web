@@ -16,6 +16,7 @@
         newWindow.focus();
     }
 </script>
+
 <nav class="adminPage-sidebar">
     <div class="accordion" id="accordionExample">
         <div class="accordion-item">
@@ -25,7 +26,7 @@
                         회원 정보 관리
                     </button>
                 </h2>
-                <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingClient" data-bs-parent="#accordionExample">
+                <div id="collapseOne" class="accordion-collapse collapse" th:classappend="${activeSection == 'client' ? 'show' : ''}" aria-labelledby="headingClient" data-bs-parent="#accordionExample">
                     <div class="accordion-body">
                         <nav class="nav flex-column">
                             <a class="nav-link" href="#">회원 정보 수정</a>
@@ -34,11 +35,11 @@
                 </div>
             </div>
             <h2 class="accordion-header" id="headingTwo">
-                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="true" aria-controls="collapseOne" data-bs-parent="#accordionExample">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseOne" data-bs-parent="#accordionExample">
                     도서
                 </button>
             </h2>
-            <div id="collapseTwo" class="accordion-collapse collapse show" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+            <div id="collapseTwo" class="accordion-collapse collapse " th:classappend="${activeSection == 'book' || activeSection == 'product' ? 'show' : ''}" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
                 <div class="accordion-body">
                     <nav class="nav flex-column">
                         <button class="nav-link" onclick="openNewWindow('/admin/categories/registerForm')">카테고리 추가</button>
@@ -49,7 +50,7 @@
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseTwo">
                             상품
                         </button>
-                        <div id="collapseThree" class="accordion-collapse show" aria-labelledby="headingThree" data-bs-parent="#collapseTwo">
+                        <div id="collapseThree" class="accordion-collapse show" th:classappend="${activeSection == 'product' ? 'show' : ''}" aria-labelledby="headingThree" data-bs-parent="#collapseTwo">
                             <nav class="nav flex-column ms-3">
                                 <a class="nav-link" href="/admin/product/book/register">상품 추가</a>
                                 <a class="nav-link" href="/admin/product/book/all">상품 수정</a>
@@ -65,7 +66,7 @@
                     주문
                 </button>
             </h2>
-            <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#accordionExample">
+            <div id="collapseFour" class="accordion-collapse collapse" th:classappend="${activeSection == 'order' ? 'show' : ''}" aria-labelledby="headingFour" data-bs-parent="#accordionExample">
                 <div class="accordion-body">
                     <nav class="nav flex-column">
                         <a class="nav-link" href="#">배송정책 수정</a>
@@ -80,7 +81,7 @@
                     쿠폰
                 </button>
             </h2>
-            <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#accordionExample">
+            <div id="collapseFive" class="accordion-collapse collapse" th:classappend="${activeSection == 'coupon' ? 'show' : ''}" aria-labelledby="headingFive" data-bs-parent="#accordionExample">
                 <div class="accordion-body">
                     <nav class="nav flex-column">
                         <a class="nav-link" href="/admin/coupon/policy">쿠폰 정책</a>
@@ -95,10 +96,10 @@
                     포인트
                 </button>
             </h2>
-            <div id="collapseSix" class="accordion-collapse collapse" aria-labelledby="headingSix" data-bs-parent="#accordionExample">
+            <div id="collapseSix" class="accordion-collapse collapse" th:classappend="${activeSection == 'point' ? 'show' : ''}" aria-labelledby="headingSix" data-bs-parent="#accordionExample">
                 <div class="accordion-body">
                     <nav class="nav flex-column">
-                        <a class="nav-link" href="#">포인트 정책</a>
+                        <a class="nav-link" href="/admin/point/policy">포인트 정책</a>
                         <a class="nav-link" href="/admin/point/reward">포인트 적립내역</a>
                         <a class="nav-link" href="/admin/point/use">포인트 사용내역</a>
                     </nav>
@@ -111,7 +112,7 @@
                     리뷰
                 </button>
             </h2>
-            <div id="collapseSeven" class="accordion-collapse collapse" aria-labelledby="headingSeven" data-bs-parent="#accordionExample">
+            <div id="collapseSeven" class="accordion-collapse collapse" th:classappend="${activeSection == 'review' ? 'show' : ''}" aria-labelledby="headingSeven" data-bs-parent="#accordionExample">
                 <div class="accordion-body">
                     <nav class="nav flex-column">
                         <a class="nav-link" href="#">리뷰</a>

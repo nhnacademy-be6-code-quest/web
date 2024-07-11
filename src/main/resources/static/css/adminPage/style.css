@@ -4,8 +4,6 @@
 img.img-fluid{
     margin-left:5%;
     margin-right: 82%;
-    filter: opacity(0.5) drop-shadow(0 0 0 #ffffff);
-
 }
 #login,#logout{
     color: #ffffff;
@@ -18,7 +16,10 @@ text-align: right;
 .adminPage-wrapper {
     background-color: #fbf9fe;
     width: 100%;
-    height: 100%;
+    height: 74vh;
+    max-height:2000px;
+    overflow: auto;
+
 }
 
 @media (min-width: 768px) {
@@ -46,7 +47,6 @@ text-align: right;
 }
 
 .content-wrapper {
-    height: 100vh;
     display: flex;
     align-items: center;
 }
