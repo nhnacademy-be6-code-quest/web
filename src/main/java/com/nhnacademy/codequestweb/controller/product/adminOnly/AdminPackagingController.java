@@ -42,14 +42,18 @@ public class AdminPackagingController {
 
     @GetMapping("/registerForm")
     public String registerForm(Model model) {
+        model.addAttribute("action", "register");
 
         return "view/product/packagingRegisterForm";
     }
 
-    //아직 미구현
     @GetMapping("/updateForm/{productId}")
     public String updateForm(@PathVariable Long productId, Model model) {
-        return null;
+        ResponseEntity<PackagingGetResponseDto> response = packagingService.getPackagingByProductId(productId);
+        model.addAttribute("packaging", response.getBody());
+        model.addAttribute("action", "update");
+
+        return "view/product/packagingRegisterForm";
     }
 
     @PostMapping("/register")
@@ -69,8 +73,14 @@ public class AdminPackagingController {
     @PutMapping("/update")
     public String updatePackaging(
             HttpServletRequest req,
+            @RequestParam(name = "image", required = false) MultipartFile file,
             @ModelAttribute PackagingUpdateRequestDto requestDto,
             Model model){
+        if (!file.isEmpty()){
+            log.info("file : {}", file.getOriginalFilename());
+            String imageUrl = imageService.uploadImage(file);
+            requestDto.setProductThumbnailUrl(imageUrl);
+        }
         ResponseEntity<ProductUpdateResponseDto> response = packagingService.updatePackaging(CookieUtils.setHeader(req), requestDto);
 
         return "index";

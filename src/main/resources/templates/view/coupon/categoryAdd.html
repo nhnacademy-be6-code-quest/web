@@ -21,7 +21,7 @@
       }
 
       // URL에 포함될 파라미터 문자열 생성
-      var url = "/admin/categories/containing?categoryName=" + encodeURIComponent(inputValue);
+      var url = "/coupon/categories/containing?categoryName=" + encodeURIComponent(inputValue);
 
       window.location.href = url;
     }
@@ -54,7 +54,7 @@ console.log(name);
 
 <div th:unless="${register}">
   <div th:each="category : ${categoryNamePage}">
-      <a th:href="@{'/admin/categories/' + ${category.getKey().productCategoryId()} + '/sub'}" target="_self">
+      <a th:href="@{'/coupon/categories/' + ${category.getKey().productCategoryId()} + '/sub'}" target="_self">
       <span th:text="${category.getValue()}"></span>
     </a>
   </div>
