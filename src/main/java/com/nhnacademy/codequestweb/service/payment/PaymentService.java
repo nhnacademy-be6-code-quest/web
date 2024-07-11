@@ -148,7 +148,7 @@ public class PaymentService /*implements PaymentService*/ {
         return paymentPointClient.rewardOrderPoint(httpHeaders, paymentAccumulatePointRequestDto);
     }
 
-    public ResponseEntity<Void> decreaseProductInventory(
+    public void decreaseProductInventory(
         List<ProductOrderDetailRequestDto> productOrderDetailRequestDtoList) {
         List<InventoryDecreaseRequestDto> inventoryDecreaseRequestDtoList = new ArrayList<>();
 
@@ -167,7 +167,7 @@ public class PaymentService /*implements PaymentService*/ {
                 inventoryDecreaseRequestDtoList.add(inventoryDecreaseRequestDto1);
             }
         }
-        return paymentProductClient.decreaseProductInventory(inventoryDecreaseRequestDtoList);
+        paymentProductClient.decreaseProductInventory(inventoryDecreaseRequestDtoList);
     }
 
     public ResponseEntity<String> changeOrderStatusCompletePayment(Long orderId, String status) {
