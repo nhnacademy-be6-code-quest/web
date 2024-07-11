@@ -63,6 +63,7 @@ public class AdminBookController {
         req.setAttribute("adminPage", "bookProductRegisterForm");
         req.setAttribute("register", true);
         req.setAttribute("action", "register");
+        req.setAttribute("activeSection", "product");
         return "index";
     }
 
@@ -186,6 +187,7 @@ public class AdminBookController {
         model.addAttribute("view", "adminPage");
         model.addAttribute("adminPage", "productListPage");
         model.addAttribute("admin", true);
+        req.setAttribute("activeSection", "product");
         return "index";
     }
 
