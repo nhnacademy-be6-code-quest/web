@@ -69,6 +69,7 @@ public class MyPageController {
 
         req.setAttribute("view", "mypage");
         req.setAttribute("mypage", "profile");
+        req.setAttribute("activeSection", "client");
         req.setAttribute("profile", response.getBody());
         return "index";
     }
@@ -94,6 +95,7 @@ public class MyPageController {
 
         req.setAttribute("view", "mypage");
         req.setAttribute("mypage", "delivaryaddress");
+        req.setAttribute("activeSection", "client");
         req.setAttribute("clientDeliveryAddresses", response.getBody());
         return "index";
     }
@@ -142,6 +144,7 @@ public class MyPageController {
         }
         req.setAttribute("view", "mypage");
         req.setAttribute("mypage", "withdrawal");
+        req.setAttribute("activeSection", "client");
         return "index";
     }
 
@@ -173,6 +176,7 @@ public class MyPageController {
 
         req.setAttribute("view", "mypage");
         req.setAttribute("mypage", "phoneNumber");
+        req.setAttribute("activeSection", "client");
         req.setAttribute("clientPhoneNumber", response.getBody());
         return "index";
     }
@@ -286,19 +290,20 @@ public class MyPageController {
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
         req.setAttribute("view", "mypage");
         req.setAttribute("mypage", "coupons");
-
+        req.setAttribute("activeSection", "coupon");
         Page<CouponMyPageCouponResponseDto> coupons = couponService.findMyPageCoupons(headers, page ,size);
         req.setAttribute("coupons", coupons);
         return "index";
 
     }
     @GetMapping("/mypage/point/reward")
-    public String myPageRewardPoint (HttpServletRequest req, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size){
+    public String myPageRewardPoint (HttpServletRequest req, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "100") int size){
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
 
         req.setAttribute("view", "mypage");
         req.setAttribute("mypage", "pointReward");
+        req.setAttribute("activeSection", "coupon");
         Page<PointAccumulationMyPageResponseDto> dto = pointAccumulationService.clientPoint(headers, page, size);
         req.setAttribute("points", dto);
         return "index";
@@ -311,6 +316,7 @@ public class MyPageController {
 
         req.setAttribute("view", "mypage");
         req.setAttribute("mypage", "pointUsed");
+        req.setAttribute("activeSection", "point");
         Page<PointUsageMyPageResponseDto> dto = pointUsageService.clientUsePoint(headers, page, size);
         req.setAttribute("points", dto);
         return "index";
@@ -325,7 +331,7 @@ public class MyPageController {
 
         req.setAttribute("view", "mypage");
         req.setAttribute("mypage", "orders");
-
+        req.setAttribute("activeSection", "order");
         Page<OrderResponseDto> orderResponseDtoList = orderService.getClientOrders(headers, pageSize, pageNo, "orderDatetime", "desc");
 
         req.setAttribute("orders", orderResponseDtoList.getContent());
