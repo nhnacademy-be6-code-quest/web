@@ -51,6 +51,7 @@ public class TokenReissueInterceptor implements HandlerInterceptor {
                 response.addCookie(refreshCookie);
 
                 log.info("Token reissued success");
+                request.getHeader("Cookie").replace("access=" + access, "access=" + reissueResponse.getBody().getAccess());
             } else {
                 log.info("refresh token expired");
                 removeCookie(response);
@@ -85,6 +86,7 @@ public class TokenReissueInterceptor implements HandlerInterceptor {
 
                     log.info("Token reissued success");
 //                    refreshPage(response);
+                    request.getHeader("Cookie").replace("access=" + CookieUtils.getCookieValue(request, "access"), "access=" + reissueResponse.getBody().getAccess());
                 } else {
                     log.info("refresh token expired");
                     removeCookie(response);
