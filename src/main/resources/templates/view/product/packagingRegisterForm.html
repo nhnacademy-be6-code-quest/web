@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
@@ -15,6 +15,7 @@
             var reader = new FileReader();
             reader.onload = function(e) {
                 document.getElementById('preview').src = e.target.result;
+                document.getElementById('image').value = '';
             };
             reader.readAsDataURL(input.files[0]);
         } else {
@@ -40,19 +41,25 @@
 
 </script>
 <body>
-<form action="/admin/product/packaging/register" method="post" enctype="multipart/form-data">
-    <input type="file" name="image" onchange="readURL(this)" accept="image/jpeg,image/png,image/jpg">
-    포장지명 <input type="text" name="packagingName" required>
-    상품명 <input type="text" name="productName" required>
-    <input type="hidden" name="productThumbnailUrl" value="value~">
-    설명 <input type="text" name="productDescription" required>
-    정가 <input type="number" name="productPriceStandard" min="1" required>
-    판매가 <input type="number" name="productPriceSales" min="1" required>
-    재고 <input type="number" name="productInventory" min="1" required>
+<form th:action="'/admin/product/packaging/' + ${action}" method="post" enctype="multipart/form-data">
+    <input type="file" name="image" onchange="readURL(this)" accept="image/jpeg,image/png,image/jpg" th:required="${action == 'register'}" >
+    포장지명 <input type="text" name="packagingName" th:value="${packaging == null ? '' : packaging.packagingName}" required>
+    상품명 <input type="text" name="productName" th:value="${packaging == null ? '' : packaging.productName}" required>
+    <input type="text" id="image" name="productThumbnailUrl" th:value="${packaging == null ? 'value' : packaging.packagingImage}">
+    설명 <input type="text" name="productDescription" th:value="${packaging == null ? '' : packaging.productDescription}" required>
+    정가 <input type="number" name="productPriceStandard" th:value="${packaging == null ? '' : packaging.productPriceStandard}" min="1" required>
+    판매가 <input type="number" name="productPriceSales" th:value="${packaging == null ? '' : packaging.productPriceSales}" min="1" required>
+    재고 <input type="number" name="productInventory" th:value="${packaging == null ? '' : packaging.productInventory}" min="1" required>
     <div>
-        <img id="preview"  width="800px"/>
+        <img id="preview"  width="800px" th:src="${packaging == null ? '' : packaging.packagingImage}"/>
     </div>
-
+    <div th:if="${action == 'update'}" >
+        <input type="text" name="productId" th:value="${packaging.productId}">
+        <input type="radio" name="productState" value="0">판매
+        <input type="radio" name="productState" value="1">판매 일시 중지
+        <input type="radio" name="productState" value="2">판매 영구 중지
+        <input type="hidden" name="_method" value="PUT"/>
+    </div>
     <button type="submit" value="제출~"></button>
 </form>
 <button onclick="openPackagingSearch()"></button>

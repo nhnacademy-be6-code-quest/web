@@ -24,5 +24,9 @@
     <div class="adminPage-wrapper" th:if="${adminPage != null} and ${#strings.equals(adminPage, 'productListPage')}">
         <section th:replace="~{view/product/productListPage.html :: productListFragment ('productList', 'mainText', 'page', 'totalPage', 'sort', 'desc')}"></section>
     </div>
+
+    <div class="adminPage-wrapper" th:if="${adminPage != null} and ${#strings.equals(adminPage, 'tags')}">
+        <section th:replace="~{view/product/admin/tags.html :: tagFragment}"></section>
+    </div>
 </div>
 </html>

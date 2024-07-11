@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <script th:src="@{/js/product/window.opener.Only.js}"></script>
     <script th:inline="javascript">
         /*<![CDATA[*/
-        if (!window.opener) {
-            alert('잘못된 접근입니다.');
-            history.go(-1);
-        }
+        // if (!window.opener) {
+        //     alert('잘못된 접근입니다.');
+        //     history.go(-1);
+        // }
 
         function openNewWindowWithParam() {
             // 파라미터 값을 가져옵니다 (여기서는 input의 값을 사용합니다)
