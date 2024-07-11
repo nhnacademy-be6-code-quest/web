@@ -89,7 +89,7 @@
       <table>
         <thead>
         <tr>
-          <th>회원 ID</th>
+          <th>회원 이름</th>
           <th>포인트 적립 타입</th>
           <th>적립 포인트</th>
           <th>적립 날짜</th>
@@ -97,7 +97,7 @@
         </thead>
         <tbody>
         <tr th:each="point : ${points}">
-          <td th:text="${point.clientId}" class="font-medium"></td>
+          <td th:text="${point.clientName}" class="font-medium"></td>
           <td th:text= "${point.pointAccumulationType}" class="text-primary"></td>
           <td th:text="${point.pointAccumulationAmount}" class="text-green-500"></td>
           <td th:text="${point.pointAccumulationHistoryDate}" class="text-muted-foreground"></td>

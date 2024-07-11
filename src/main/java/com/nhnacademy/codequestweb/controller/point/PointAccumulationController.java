@@ -25,17 +25,7 @@ public class PointAccumulationController {
     private final PointAccumulationService pointAccumulationService;
     private final OrderPointService orderPointService;
 
-    @GetMapping("/mypage/point/reward")
-    public String myPagePoint (HttpServletRequest req, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size){
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("access", CookieUtils.getCookieValue(req, "access"));
 
-        req.setAttribute("view", "mypage");
-        req.setAttribute("mypage", "pointReward");
-        Page<PointAccumulationMyPageResponseDto> dto = pointAccumulationService.clientPoint(headers, page, size);
-        req.setAttribute("points", dto);
-        return "index";
-    }
 
     @GetMapping("/admin/point/reward")
     public String adminPagePoint (HttpServletRequest req, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size){
