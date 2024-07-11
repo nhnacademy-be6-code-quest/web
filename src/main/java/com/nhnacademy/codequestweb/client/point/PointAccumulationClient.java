@@ -2,6 +2,7 @@ package com.nhnacademy.codequestweb.client.point;
 
 import com.nhnacademy.codequestweb.response.point.PointAccumulationAdminPageResponseDto;
 import com.nhnacademy.codequestweb.response.point.PointAccumulationMyPageResponseDto;
+import jakarta.servlet.annotation.HttpConstraint;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
