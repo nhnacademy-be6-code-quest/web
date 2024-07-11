@@ -7,12 +7,14 @@ import com.nhnacademy.codequestweb.response.coupon.CouponMyPageCouponResponseDto
 import com.nhnacademy.codequestweb.response.mypage.ClientDeliveryAddressResponseDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientPhoneNumberResponseDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientPrivacyResponseDto;
+import com.nhnacademy.codequestweb.response.order.common.OrderResponseDto;
 import com.nhnacademy.codequestweb.response.point.PointAccumulationMyPageResponseDto;
 import com.nhnacademy.codequestweb.response.point.PointUsageMyPageResponseDto;
 import com.nhnacademy.codequestweb.response.review.NoPhotoReviewResponseDTO;
 import com.nhnacademy.codequestweb.response.review.PhotoReviewResponseDTO;
 import com.nhnacademy.codequestweb.service.coupon.CouponService;
 import com.nhnacademy.codequestweb.service.mypage.MyPageService;
+import com.nhnacademy.codequestweb.service.order.OrderService;
 import com.nhnacademy.codequestweb.service.point.PointAccumulationService;
 import com.nhnacademy.codequestweb.service.point.PointUsageService;
 import com.nhnacademy.codequestweb.service.review.NoPhotoReviewService;
@@ -54,6 +56,7 @@ public class MyPageController {
     private final PointUsageService pointUsageService;
     private final PointAccumulationService pointAccumulationService;
     private final CouponService couponService;
+    private final OrderService orderService;
 
     @GetMapping("/mypage")
     public String mypageMain(HttpServletRequest req, HttpServletResponse res) {
@@ -312,4 +315,25 @@ public class MyPageController {
         req.setAttribute("points", dto);
         return "index";
     }
+    @GetMapping("/mypage/orders")
+    public String maypageOrders(HttpServletRequest req,
+        @RequestParam(value = "pageSize", defaultValue = "5", required = false) int pageSize,
+        @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo){
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("access", CookieUtils.getCookieValue(req, "access"));
+
+        req.setAttribute("view", "mypage");
+        req.setAttribute("mypage", "orders");
+
+        Page<OrderResponseDto> orderResponseDtoList = orderService.getClientOrders(headers, pageSize, pageNo, "orderDatetime", "desc");
+
+        req.setAttribute("orders", orderResponseDtoList.getContent());
+        req.setAttribute("totalPages", orderResponseDtoList.getTotalPages());
+        req.setAttribute("currentPage", orderResponseDtoList.getNumber());
+        req.setAttribute("pageSize", orderResponseDtoList.getSize());
+
+        return "index";
+    }
+
 }
