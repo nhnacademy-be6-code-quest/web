@@ -56,10 +56,10 @@
           <td th:text="${point.pointPolicyCreationDate}" class="text-muted-foreground"></td>
           <td th:text="${point.pointStatus}" class="text-primary"></td>
           <td>
-            <form th:action="@{/admin/point/policy/{pointPolicyId}(pointPolicyId=${point.pointPolicyId})}" method="post">
+            <form th:action="@{/admin/point/policy/{pointPolicyId}(pointPolicyId=${point.pointPolicyId})}" method="post" class="delete-form">
               <input type="hidden" name="_method" value="delete">
-              <button type="submit" class="delete-button">Delete</button>
-            </form>          </td>
+              <button type="button" class="delete-button" onclick="confirmDelete(this.form)">삭제</button>
+            </form>       </td>
         </tr>
         </tbody>
       </table>
@@ -102,10 +102,9 @@
     }
   };
 
-  function deletePointPolicy(pointPolicyId) {
+  function confirmDelete(form) {
     if (confirm("정책을 삭제하시겠습니까?")) {
-      // 페이지 이동
-      window.location.href = `/admin/point/policy/${pointPolicyId}`;
+      form.submit();
     }
   }
 </script>
