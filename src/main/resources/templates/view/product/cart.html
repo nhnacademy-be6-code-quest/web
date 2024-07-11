@@ -96,13 +96,7 @@
 
         }
 
-        function check(box){
-            if(box.checked == true){
-                alert('체크되었습니다');
-            }else{
-                alert('체크해제되었습니다');
-            }
-        }
+
         /*]]>*/
 
     </script>
@@ -116,12 +110,14 @@
                     <div class="book-container">
                         <a th:href="'/product/books/' + ${cart.productId}"><img class="cart-preview" th:src="${cart.productThumbnailImage()}" alt=""></a>
                         <div class="book-info">
+<!--                            <div th:unless="">-->
+                                <span th:if="${cart.productQuantityOfCart() > cart.productInventory}" style="color: red; font-weight : 600;" th:text="' * 현재 재고보다 수량이 많아 구매할 수 없습니다. 구매하시려면 장바구니 수량을 줄여주세요. 현재 재고 : ('+${cart.productInventory} + ')'"></span>
+<!--                            </div>-->
                             <a th:href="'/product/books/' + ${cart.productId}">
                                 <span th:text="${cart.productName()}"></span>
                             </a>
                             <span th:text="'가격' + ${cart.productPriceStandard()}"></span>
                             <span th:text="' -> ' + ${cart.productPriceSales()} +'(할인율 : ' + (100 *(1 - ${cart.productPriceSales()} / ${cart.productPriceStandard()})) + '%)'"></span>
-
                             <form action="/cart/update" method="post">
                                 <input type="hidden" name="_method" value="PUT"/>
                                 <input type="hidden" name="productId" th:value="${cart.productId()}">
@@ -138,8 +134,8 @@
             </div>
             <form id="cartForm" th:action="${orderUrl}" method="post" onsubmit="formValidation(event)">
 
-            <div th:each="jsonCart : ${jsonCartList}">
-                <input type="checkbox" id="checkBox" class="box" name="cartList" th:value="${jsonCart}" onclick="check(this)"  disabled>
+            <div th:each="jsonCart : ${jsonCartMap}">
+                <input type="checkbox" id="checkBox" class="box" name="cartList" th:value="${jsonCart.getKey()}"  th:disabled="${!jsonCart.getValue()}">
             </div>
             </form>
         </div>
@@ -148,7 +144,7 @@
         <input type="hidden" name="_method" value="DELETE"/>
         <button type="submit">장바구니 모두 비우기</button>
     </form>
-    <div th:if="${jsonCartList != null and !#lists.isEmpty(jsonCartList)}">
+    <div th:if="${jsonCartMap != null and !#maps.isEmpty(jsonCartMap)}">
         <div class="cart-summary">
                 <div>
                     <div>주문 예상 금액</div>
