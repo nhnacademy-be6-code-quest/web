@@ -9,6 +9,7 @@ import com.nhnacademy.codequestweb.client.payment.PaymentPointClient;
 import com.nhnacademy.codequestweb.client.payment.PaymentProductClient;
 import com.nhnacademy.codequestweb.client.payment.TossPaymentsClient;
 import com.nhnacademy.codequestweb.request.payment.ClientUpdateGradeRequestDto;
+import com.nhnacademy.codequestweb.request.payment.CouponPaymentRewardRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentAccumulatePointRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentCompletedCouponRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentOrderApproveRequestDto;
@@ -182,7 +183,13 @@ public class PaymentService /*implements PaymentService*/ {
         return paymentClient.getPaymentRecordOfClient(clientId);
     }
 
-    public ResponseEntity<String> updateClientGrade(ClientUpdateGradeRequestDto clientUpdateGradeRequestDto) {
+    public ResponseEntity<String> updateClientGrade(
+        ClientUpdateGradeRequestDto clientUpdateGradeRequestDto) {
         return paymentClientClient.updateClientGrade(clientUpdateGradeRequestDto);
+    }
+
+    public ResponseEntity<String> giveRewardCoupon(
+        CouponPaymentRewardRequestDto couponPaymentRewardRequestDto) {
+        return paymentCouponClient.getUserPaymentValue(couponPaymentRewardRequestDto);
     }
 }
