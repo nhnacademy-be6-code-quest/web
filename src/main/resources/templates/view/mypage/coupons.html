@@ -1,34 +1,30 @@
-<!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="CouponsFragment('coupons')">
 <head>
   <meta charset="UTF-8">
   <title>쿠폰</title>
   <style>
+    /* Your existing styles */
     .section-title {
       margin-top: 20px;
     }
-body{
-  font-family: 'Noto Sans', Arial, sans-serif;
-
-}
+    body {
+      font-family: 'Noto Sans', Arial, sans-serif;
+    }
     .pagination {
-      text-align: center; /* 페이지네이션을 가운데 정렬 */
-      margin-top: 20px; /* 페이지네이션 위쪽 여백 설정 */
+      text-align: center;
+      margin-top: 20px;
       display: flex;
       justify-content: center;
     }
-
     .card {
       background-color: #fff;
       border-radius: 8px;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       margin-bottom: 20px;
     }
-
     .discount {
       float: right;
     }
-
     .status-available {
       background-color: #7fe495;
       color: #065f46;
@@ -38,7 +34,6 @@ body{
       font-weight: bold;
       text-transform: uppercase;
     }
-
     .status-used {
       background-color: #ffe7a3;
       color: #c27803;
@@ -48,7 +43,6 @@ body{
       font-weight: bold;
       text-transform: uppercase;
     }
-
     .status-expired {
       background-color: #fca5a5;
       color: #b91c1c;
@@ -58,56 +52,56 @@ body{
       font-weight: bold;
       text-transform: uppercase;
     }
-
     .card-content {
       padding: 16px;
     }
-
     .coupon-type {
       font-size: 16px;
       font-weight: bold;
       margin-bottom: 10px;
     }
-
     .description {
       font-size: 14px;
       color: #6b7280;
       margin-bottom: 10px;
     }
-
     .validity {
       font-size: 12px;
       color: #6b7280;
     }
-
     .hidden {
       display: none;
+    }
+    /* New styles for buttons */
+    .filter-button {
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 16px;
+      cursor: pointer;
+      margin-right: 10px;
+      transition: background-color 0.3s ease;
+    }
+    .filter-button:hover {
+      background-color: #0056b3;
     }
   </style>
 </head>
 <body>
 <div class="container">
   <h2 class="section-title">My Coupons</h2>
-  <!-- 라디오 버튼을 추가하여 쿠폰 상태 필터링 -->
-  <form id="filterForm">
-    <label>
-      <input type="radio" name="status" value="ALL" checked> 전체
-    </label>
-    <label>
-      <input type="radio" name="status" value="사용 가능"> 사용 가능
-    </label>
-    <label>
-      <input type="radio" name="status" value="사용완료"> 사용 완료
-    </label>
-    <label>
-      <input type="radio" name="status" value="사용 불가"> 사용 불가
-    </label>
-  </form>
+  <!-- Buttons for filtering coupon status -->
+  <div>
+    <button class="filter-button" onclick="filterCoupons('AVAILABLE')">사용 가능</button>
+    <button class="filter-button" onclick="filterCoupons('used')">사용 완료</button>
+    <button class="filter-button" onclick="filterCoupons('expired')">사용 불가</button>
+  </div>
 
-  <!-- Thymeleaf 반복문으로 쿠폰들을 동적으로 생성 -->
+  <!-- Thymeleaf iteration for coupons -->
   <div th:each="coupon : ${coupons}" class="card" th:attr="data-status=${coupon.status}">
     <div class="card-header">
-      <!-- 쿠폰 상태에 따라 동적으로 클래스 설정 -->
+      <!-- Dynamically set classes based on coupon status -->
       <span th:text="${coupon.status == '사용 가능' ? '사용 가능' : (coupon.status == '사용완료' ? '사용 완료' : '사용 불가')}"
             th:class="${coupon.status == '사용 가능' ? 'status-available'
                     : (coupon.status == '사용완료' ? 'status-used' : 'status-expired')}"
@@ -132,40 +126,39 @@ body{
   </div>
 </div>
 
+<!-- 페이지네이션 링크들 -->
 <div class="pagination">
-  <!-- 이전 페이지 링크 -->
-  <a th:href="@{/mypage/coupons(page=${coupons.number - 1}, size=${coupons.size}, status=${status})}" th:if="${coupons.hasPrevious()}">&laquo; Previous</a>
-
-  <!-- 페이지 번호 링크 -->
-  <span th:each="i : ${#numbers.sequence(1, coupons.totalPages)}">
-        <a th:href="@{/mypage/coupons(page=${i - 1}, size=${coupons.size}, status=${status})}" th:text="${i}" th:classappend="${coupons.number + 1 == i} ? 'active'"></a>
+  <div class="pagination-content">
+    <!-- 이전 페이지 링크 -->
+    <span th:if="${currentPage >=1}">
+      <a th:href="@{|/mypage/coupons?page=${currentPage - 1}&size=${pageSize}&status=${status}|}"
+         class="pagination-link">&laquo; Previous</a>
     </span>
 
-  <!-- 다음 페이지 링크 -->
-  <a th:href="@{/mypage/coupons(page=${coupons.number + 1}, size=${coupons.size}, status=${status})}" th:if="${coupons.hasNext()}">Next &raquo;</a>
+    <!-- 페이지 번호 링크 -->
+    <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}" class="pagination-item">
+      <a th:href="@{|/mypage/coupons?page=${i}&size=${pageSize}&status=${status}|}"
+         th:classappend="${i == currentPage} ? 'pagination-link active' : 'pagination-link'">
+        [[${i + 1}]]
+      </a>
+    </span>
+
+    <!-- 다음 페이지 링크 -->
+    <span th:if="${coupons.hasNext()}">
+      <a th:href="@{|/mypage/coupons?page=${currentPage + 1}&size=${pageSize}&status=${status}|}"
+         class="pagination-link">Next &raquo;</a>
+    </span>
+  </div>
 </div>
 
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-    const filterForm = document.getElementById("filterForm");
-    const cards = document.querySelectorAll('.card');
 
-    filterForm.addEventListener('change', function() {
-      const status = document.querySelector('input[name="status"]:checked').value;
-
-      cards.forEach(card => {
-        const cardStatus = card.getAttribute('data-status');
-
-        if (status === 'ALL' || cardStatus === status) {
-          card.classList.remove('hidden');
-        } else {
-          card.classList.add('hidden');
-        }
-      });
-    });
-  });
+<!-- JavaScript function to handle button clicks -->
+<script th:inline="javascript">
+  function filterCoupons(status) {
+    var url = '/mypage/coupons/' + status;
+    window.location.href = url;
+  }
 </script>
-
 
 </body>
 </html>

@@ -66,20 +66,4 @@ public class CouponController {
         return "redirect:/admin/coupon/policy";
     }
 
-
-
-
-    @GetMapping("/admin/user/coupons")
-    public String viewUserCoupon(HttpServletRequest req, @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "6") int size) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("access", CookieUtils.getCookieValue(req, "access"));
-
-        Page<CouponAdminPageCouponResponseDto> adminCoupons = couponService.findUsersCoupons(headers, page, size);
-        req.setAttribute("view", "adminPage");
-        req.setAttribute("adminPage", "adminCoupons");
-        req.setAttribute("activeSection", "coupon");
-        req.setAttribute("adminCoupons", adminCoupons);
-        return "index";
-    }
 }
