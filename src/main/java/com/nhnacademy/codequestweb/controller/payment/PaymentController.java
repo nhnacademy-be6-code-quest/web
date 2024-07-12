@@ -199,15 +199,25 @@ public class PaymentController {
         // 7. DB에 저장하기
         paymentService.savePayment(headers, orderId, tossPaymentsResponseDto);
 
-        // 8. 등급 바꾸기 TODO 이후 수정하고 확인해야 함.
-        PaymentGradeResponseDto paymentGradeResponseDto = paymentService.getClientHistory(paymentOrderApproveRequestDto.getClientId());
-        ResponseEntity<String> updateClientGradeResponseEntity = paymentService.updateClientGrade(ClientUpdateGradeRequestDto.builder()
+        // 8. 등급 바꾸기
+        try {
+            PaymentGradeResponseDto paymentGradeResponseDto = paymentService.getPaymentRecordOfClient(
+                paymentOrderApproveRequestDto.getClientId());
+            paymentService.updateClientGrade(ClientUpdateGradeRequestDto.builder()
                 .clientId(paymentOrderApproveRequestDto.getClientId())
                 .payment(paymentGradeResponseDto.getPaymentGradeValue())
                 .build());
+        } catch (FeignException e) {
+            log.error("회원의 결제 내역을 조회하고 등급을 바꾸는 데에 실패했습니다.\nclientId: {}",
+                paymentOrderApproveRequestDto.getClientId());
+        } catch (Exception e) {
+            log.error("회원의 결제 내역을 조회하고 등급을 바꾸는 데에 알 수 없는 오류가 발생하였습니다.\nclientId: {}",
+                paymentOrderApproveRequestDto.getClientId());
+        }
 
-        // 7. View 보여주기
+        // 9. View 보여주기
         model.addAttribute("isSuccess", true);
+        model.addAttribute("orderId", orderId);
         model.addAttribute("isCouponProcessedNormally", isCouponProcessedNormally);
         model.addAttribute("isPointUsedNormally", isPointUsedNormally);
         model.addAttribute("isPointAccumulatedNormally", isPointAccumulatedNormally);
