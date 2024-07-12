@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class AdminPageCouponController {
 
     private final CouponService couponService;
+    @GetMapping
     public String viewAdminCoupon(HttpServletRequest req, @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "6") int size, @RequestParam(defaultValue = "AVAILABLE") Status status) {
         HttpHeaders headers = new HttpHeaders();
