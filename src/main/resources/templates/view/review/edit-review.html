@@ -175,21 +175,21 @@
     }
 
     function submitReview() {
-        const reviewForm = document.getElementById('review-form');
-        const formData = new FormData(reviewForm);
+        //const reviewForm = document.getElementById('review-form');
+        const formData = new FormData();
 
         // 리뷰 내용 추가
-        formData.append('content', editor.getMarkdown());
+        formData.append('reviewContent', editor.getHTML());
 
         // 상품 아이디
         formData.append('productId', [[${writeReviewRequiredInfo.productId}]])
 
         // 리뷰 점수
         const rating = document.getElementById('rating').value;
-        reviewForm.append('rating', rating);
+        formData.append('reviewScore', rating);
 
         // 주문 상세 아이디
-        // formData.append('productOrderDetailId', [[${writeReviewRequiredInfo.productOrderDetailId}]])
+        formData.append('productOrderDetailId', [[${writeReviewRequiredInfo.productOrderDetailId}]])
 
         fetch('/write/review', {
             method: 'POST',
@@ -198,11 +198,12 @@
             .then(response => response.json())
             .then(data => {
                 console.log('Success:', data);
-                // 성공 후 처리 (예: 페이지 리다이렉트 또는 알림 표시)
+                alert(data.message); // 서버에서 반환한 메시지를 알림으로 표시
+                window.location.href = data.redirectUrl; // 서버에서 제공한 URL로 리다이렉트
             })
             .catch((error) => {
                 console.error('Error:', error);
-                // 에러 처리
+                alert('리뷰 작성 중 오류가 발생했습니다.');
             });
     }
     /*]]>*/
