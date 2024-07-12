@@ -33,6 +33,7 @@ public class AdminPageCouponController {
         req.setAttribute("currentPage", adminCoupons.getNumber());
         req.setAttribute("pageSize", adminCoupons.getSize());
         req.setAttribute("status",status);
+
         return "index";
     }
 
