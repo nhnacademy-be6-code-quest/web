@@ -19,6 +19,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
@@ -31,7 +32,17 @@ public class AdminController {
 
     @GetMapping("/admin")
     public String admin(HttpServletRequest request) {
-        Page<ClientPrivacyResponseDto> privacyPage = adminService.privacyList(0, 10, "clientId", false, CookieUtils.getCookieValue(request, "access"));
+        return "redirect:/admin/client/0";
+    }
+
+    @GetMapping("/admin/client/{page}")
+    public String adminClient(@PathVariable("page") int page, HttpServletRequest request) {
+        Page<ClientPrivacyResponseDto> privacyPage = adminService.privacyList(page, 4, "clientId", false, CookieUtils.getCookieValue(request, "access"));
+
+        request.setAttribute("clients", privacyPage.getContent());
+        request.setAttribute("page", page + 1);
+        request.setAttribute("totalPage", privacyPage.getTotalPages());
+        request.setAttribute("adminPage", "clientManager");
         request.setAttribute("view", "adminPage");
         return "index";
     }

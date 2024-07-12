@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="clientManagerFragment ('clients', 'page', 'totalPage')">
+<head>
+    <style>
+        .admin-client-manager-header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .pagination a {
+            color: #f8c471;
+            padding: 8px 16px;
+            text-decoration: none;
+            transition: background-color .3s;
+        }
+
+        .pagination a.active {
+            background-color: #f8c471;
+            color: white;
+            border-radius: 5px;
+        }
+
+        .pagination a:hover {
+            background-color: #ddd;
+            border-radius: 5px;
+        }
+    </style>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var textareas = document.querySelectorAll("textarea[data-content]");
+            textareas.forEach(function(textarea) {
+                textarea.value = textarea.dataset.content.replace(/<br>/g, '\n');
+            });
+        });
+    </script>
+</head>
+
+<body>
+
+<main class="main-content flex-grow-1"  style="padding-top: 50px; padding-bottom: 50px;">
+    <div class="container mx-auto max-w-5xl">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h1 class="text-2xl font-bold">Client Management</h1>
+            </div>
+            <div class="card-body">
+                <div class="mb-4">
+                    <div class="admin-client-manager-header-container">
+                        <h2 class="text-lg font-semibold" style="display: inline-block">회원 정보</h2>
+                    </div>
+                    <div class="mb-3" th:each="client : ${clients}">
+                        <label>Client : <span th:text="${client.clientEmail}"></span></label>
+                        <textarea rows="3" class="form-control" readonly
+                                  th:attr="data-content='이름 : ' + ${client.clientName} + '<br>등급 :' + ${client.clientGrade} + '<br>생일 :' + ${client.clientBirth}"
+                                  style="resize: none">
+                        </textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div class="pagination" th:attr="data-total-pages=${totalPage},data-current-page=${page}">
+                <span th:if="${page > 1}">
+                    <a th:href="'/admin/client/' + ${page - 1}">Previous</a>
+                </span>
+    <span th:each="pageNum : ${#numbers.sequence(1, totalPage)}">
+                    <a th:if="${pageNum == page + 1}" th:text="${pageNum}" th:class="'active'"></a>
+                    <a th:if="${pageNum != page + 1}" th:href="'/admin/client/' + ${pageNum - 1}" th:text="${pageNum}"></a>
+                </span>
+    <span th:if="${page < totalPage}">
+                    <a th:href="'/admin/client/' + ${page + 1}">Next</a>
+                </span>
+</div>
+
+</body>
+</html>

@@ -79,6 +79,9 @@
 <body>
 <h1>비회원 주문 조회</h1>
 <div>
+    <div>
+        <a href="/">홈으로 가기</a>
+    </div>
     <label>
         주문 번호:
         <input id="orderIdStr" name="orderIdStr" required/>
@@ -117,7 +120,6 @@
                 return response.json();
             })
             .then(data => {
-                console.log(data); // API 결과 확인용
 
                 // Build HTML for order details
                 let orderDetails = `
@@ -138,7 +140,7 @@
                                 <td>
                 `;
 
-                data.clientOrderListItemList.forEach(item => {
+                data.nonClientProductOrderDetailList.forEach(item => {
                     orderDetails += `
                         <hr/>
                         <div>

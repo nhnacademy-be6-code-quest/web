@@ -9,6 +9,10 @@
 <div class="adminPage-container">
     <div th:replace="~{view/adminPage/adminSideBar :: sidebarFragment}"></div>
 
+    <div class="adminPage-wrapper" th:if="${adminPage != null} and ${#strings.equals(adminPage, 'clientManager')}">
+        <div th:replace="~{view/adminPage/adminClientManager :: clientManagerFragment ('clients', 'page', 'totalPage')}"></div>
+    </div>
+
     <div class="adminPage-wrapper" th:if="${adminPage != null} and ${#strings.equals(adminPage, 'couponPolicy')}">
         <div th:replace="~{view/coupon/admin_policy_list :: couponPolicyFragment ('couponPolicy')}"></div>
     </div>

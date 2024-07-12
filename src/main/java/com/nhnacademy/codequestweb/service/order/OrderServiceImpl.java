@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhnacademy.codequestweb.client.coupon.CouponClient;
 import com.nhnacademy.codequestweb.client.order.OrderClient;
 import com.nhnacademy.codequestweb.client.order.OrderReviewClient;
+import com.nhnacademy.codequestweb.client.point.OrderPointClient;
 import com.nhnacademy.codequestweb.request.order.field.OrderItemDto;
 import com.nhnacademy.codequestweb.response.coupon.CouponOrderResponseDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientDeliveryAddressResponseDto;
@@ -55,6 +56,7 @@ public class OrderServiceImpl implements OrderService {
     private final MyPageService myPageService;
     private final BookProductService bookProductService;
     private final ShippingPolicyService shippingPolicyService;
+    private final OrderPointClient orderPointClient;
 
     @Override
     public String viewClientOrder(HttpServletRequest req, Model model, @ModelAttribute List<String> orderItemDtoStringList){
@@ -103,7 +105,7 @@ public class OrderServiceImpl implements OrderService {
         List<CouponOrderResponseDto> couponList = couponClient.findClientCoupon(headers);
 
         // 사용가능 포인트 정보
-        long usablePoint = 10000l; // TODO 추후 포인트 서비스에서 가져오기
+        Integer usablePoint = orderPointClient.findPoint(headers).getTotalPoint();
 
         model.addAttribute("view", "clientOrder");
 
@@ -159,7 +161,7 @@ public class OrderServiceImpl implements OrderService {
         // 쿠폰 정보
         List<CouponOrderResponseDto> couponList = couponClient.findClientCoupon(headers);
 
-        long usablePoint = 10000l; // TODO 추후 포인트 서비스에서 가져오기
+        Integer usablePoint = orderPointClient.findPoint(headers).getTotalPoint();
 
         model.addAttribute("view", "clientOrder");
 

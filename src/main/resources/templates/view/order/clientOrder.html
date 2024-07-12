@@ -162,16 +162,19 @@
         <h3>포인트 사용</h3>
         <div class="remaining-points">
             <label for="remaining-points"> 사용 가능 포인트: </label>
-            <span id="remaining-points" th:value="${usablePoint}"></span>
+            <span id="remaining-points" th:text="${usablePoint}"></span>
         </div>
         <div class="use-points">
             <label th:for="usedPointDiscountAmount"> 사용할 포인트:
-                <input type="number" th:field="*{usedPointDiscountAmount}" min="0" oninput="validatePoints()" value="0"/>
+                <input type="number" id="inputUsedPointAmount" min="0" th:value="0"/>
             </label>
-            <button type="button" class="btn btn-outline-primary" onclick="handleOnChange()" style="font-size: small; padding: 0; height: 30px; width: 90px">적용하기</button>
+            <button type="button" class="btn btn-outline-primary" onclick="applyPoints()" style="font-size: small; padding: 0; height: 30px; width: 90px">적용하기</button>
         </div>
-        <div id="error-message" style="color: red; display: none;">
+        <div id="exceed-remaining-point-message" style="color: red; display: none;">
             사용할 포인트는 총 잔여 포인트보다 많을 수 없습니다.
+        </div>
+        <div id="negative-amount-message" style="color: red; display: none;">
+            결제 금액이 0원 미만일 수 없습니다.
         </div>
     </div>
 
@@ -392,18 +395,47 @@
     }
 
     <!--포인트 관련-->
-    function validatePoints() {
-        const remainingPoints = parseInt(document.getElementById('remaining-points').textContent);
-        const usePoints = parseInt(document.getElementById('use-points').value);
-        const errorMessage = document.getElementById('error-message');
-        if (usePoints > remainingPoints) {
-            errorMessage.style.display = 'block';
-            document.getElementById('use-points').value = remainingPoints;
+    function applyPoints() {
+        const exceedMessage = document.getElementById('exceed-remaining-point-message');
+        const negativeAmountMessage = document.getElementById('negative-amount-message');
+
+        const inputUsedPointAmount = parseInt(document.getElementById('inputUsedPointAmount').value);
+        const remainingPoints = parseInt(document.getElementById('remaining-points').text);
+        const productTotalAmount = parseInt(document.getElementById('productTotalAmount').value);
+        const shippingFee = parseInt(document.getElementById('shippingFee').value);
+        const couponDiscountAmount = parseInt(document.getElementById('couponDiscountAmount').value);
+        const maxDiscountableAmount = productTotalAmount + shippingFee - couponDiscountAmount;
+
+        exceedMessage.style.display = 'none';
+        negativeAmountMessage.style.display = 'none';
+
+        if (inputUsedPointAmount > remainingPoints) {
+            exceedMessage.style.display = 'block';
         } else {
-            errorMessage.style.display = 'none';
+            exceedMessage.style.display = 'none';
         }
-        updateCurrentData();
+
+        if(inputUsedPointAmount > maxDiscountableAmount){
+            negativeAmountMessage.style.display = 'block';
+        } else {
+            negativeAmountMessage.style.display = 'none';
+        }
+
+        if(maxDiscountableAmount > remainingPoints){
+            document.getElementById('inputUsedPointAmount').value = remainingPoints;
+            document.getElementById('usedPointDiscountAmount').value = remainingPoints;
+        }
+        else {
+            document.getElementById('inputUsedPointAmount').value = inputUsedPointAmount;
+            document.getElementById('usedPointDiscountAmount').value = inputUsedPointAmount;
+        }
+
+
+        document.getElementById('payAmount').value = productTotalAmount + shippingFee - couponDiscountAmount - parseInt(document.getElementById('usedPointDiscountAmount').value);
+
     }
+
+
 
     <!--주소 선택 관련-->
     function handleSelectAddress(selectedClientAddressDto) {
@@ -479,12 +511,13 @@
         if(pointDiscountAmount == null) pointDiscountAmount = 0;
         if(couponDiscountAmount == null) couponDiscountAmount = 0;
 
-        console.log("shippingFee: ", shippingFee);
-        console.log("productTotalAmount: ", productTotalAmount);
-        console.log("pointDiscountAmount: ", pointDiscountAmount);
-        console.log("couponDiscountAmount: ", couponDiscountAmount);
+        // console.log("shippingFee: ", shippingFee);
+        // console.log("productTotalAmount: ", productTotalAmount);
+        // console.log("pointDiscountAmount: ", pointDiscountAmount);
+        // console.log("couponDiscountAmount: ", couponDiscountAmount);
 
         // 최종 결제 금액
+        document.getElementById("payAmount").text = productTotalAmount + shippingFee - pointDiscountAmount - couponDiscountAmount;
         document.getElementById("payAmount").value = productTotalAmount + shippingFee - pointDiscountAmount - couponDiscountAmount;
     }
 
