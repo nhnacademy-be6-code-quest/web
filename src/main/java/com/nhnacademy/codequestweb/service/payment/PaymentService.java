@@ -178,7 +178,7 @@ public class PaymentService /*implements PaymentService*/ {
         return paymentOrderClient.updateOrderStatus(orderId, status);
     }
 
-    public PaymentGradeResponseDto getClientHistory(Long clientId) {
+    public PaymentGradeResponseDto getPaymentRecordOfClient(Long clientId) {
         return paymentClient.getPaymentRecordOfClient(clientId);
     }
 
