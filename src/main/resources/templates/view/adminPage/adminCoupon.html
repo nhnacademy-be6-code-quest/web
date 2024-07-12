@@ -78,22 +78,13 @@
 </head>
 <body>
 <div class="container">
-  <h2 class="section-title">쿠폰 사용 이력</h2>
+  <h2 id="sectionTitle" class="section-title"></h2>
 
-  <form id="filterForm">
-    <label>
-      <input type="radio" name="status" value="ALL" checked> 전체
-    </label>
-    <label>
-      <input type="radio" name="status" value="사용 가능"> 사용 가능
-    </label>
-    <label>
-      <input type="radio" name="status" value="사용완료"> 사용 완료
-    </label>
-    <label>
-      <input type="radio" name="status" value="사용 불가"> 사용 불가
-    </label>
-  </form>
+  <div>
+    <button class="filter-button" onclick="filterCoupons('AVAILABLE')">사용 가능</button>
+    <button class="filter-button" onclick="filterCoupons('used')">사용 완료</button>
+    <button class="filter-button" onclick="filterCoupons('expired')">사용 불가</button>
+  </div>
   <table class="table">
     <thead class="table-header">
     <tr>
@@ -130,55 +121,48 @@
   </table>
 </div>
 <div class="pagination">
-  <!-- 이전 페이지 링크 -->
-  <a th:href="@{/admin/user/coupons(page=${adminCoupons.number - 1}, size=${adminCoupons.size}, status=${status})}" th:if="${adminCoupons.hasPrevious()}">&laquo; Previous</a>
-
-  <!-- 페이지 번호 링크 -->
-  <span th:each="i : ${#numbers.sequence(1, adminCoupons.totalPages)}">
-        <a th:href="@{/admin/user/coupons(page=${i - 1}, size=${adminCoupons.size}, status=${status})}" th:text="${i}" th:classappend="${adminCoupons.number + 1 == i} ? 'active'"></a>
+  <div class="pagination-content">
+    <!-- 이전 페이지 링크 -->
+    <span th:if="${currentPage >= 1}">
+      <a th:href="@{|/admin/user/coupons?page=${currentPage - 1}&size=${pageSize}&status=${status}|}"
+         class="pagination-link">&laquo; Previous</a>
     </span>
 
-  <!-- 다음 페이지 링크 -->
-  <a th:href="@{/admin/user/coupons(page=${adminCoupons.number + 1}, size=${adminCoupons.size}, status=${status})}" th:if="${adminCoupons.hasNext()}">Next &raquo;</a>
+    <!-- 페이지 번호 링크 -->
+    <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}" class="pagination-item">
+      <a th:href="@{|/admin/user/coupons?page=${i}&size=${pageSize}&status=${status}|}"
+         th:classappend="${i == currentPage} ? 'pagination-link active' : 'pagination-link'">
+        [[${i + 1}]]
+      </a>
+    </span>
+
+    <!-- 다음 페이지 링크 -->
+    <span th:if="${not #lists.isEmpty(coupons) and coupons.hasNext()}">
+      <a th:href="@{|/admin/user/coupons?page=${currentPage + 1}&size=${pageSize}&status=${status}|}"
+         class="pagination-link">Next &raquo;</a>
+    </span>
+  </div>
 </div>
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-    const filterForm = document.getElementById("filterForm");
-    const cards = document.querySelectorAll('.card1');
-    const usedDateHeader = document.getElementById('usedDateHeader');
 
-    function updateVisibility() {
-      const status = document.querySelector('input[name="status"]:checked').value;
-
-      cards.forEach(card => {
-        const cardStatus = card.getAttribute('data-status');
-        const usedDateCell = card.querySelector('.used-date-cell');
-
-        if (status === 'ALL') {
-          card.classList.remove('hidden');
-          usedDateCell.classList.add('hidden');  // Always hide used date cells
-        } else if (cardStatus === status) {
-          card.classList.remove('hidden');
-          if (status === '사용완료') {
-            usedDateCell.classList.remove('hidden');
-          } else {
-            usedDateCell.classList.add('hidden');
-          }
-        } else {
-          card.classList.add('hidden');
-        }
-      });
-
-      if (status === '사용완료') {
-        usedDateHeader.classList.remove('hidden');
-      } else {
-        usedDateHeader.classList.add('hidden');
-      }
+<script th:inline="javascript">
+  function filterCoupons(status) {
+    var url = '/admin/user/coupons/' + status;
+    window.location.href = url;
+    var sectionTitle = document.getElementById('sectionTitle');
+    switch (status) {
+      case 'AVAILABLE':
+        sectionTitle.innerText = '사용 가능 쿠폰';
+        break;
+      case 'used':
+        sectionTitle.innerText = '사용 완료 쿠폰';
+        break;
+      case 'expired':
+        sectionTitle.innerText = '사용 불가 쿠폰';
+        break;
+      default:
+        sectionTitle.innerText = '사용 가능 쿠폰';
     }
-
-    filterForm.addEventListener('change', updateVisibility);
-    updateVisibility();  // Initialize the visibility on page load
-  });
+  }
 </script>
 </body>
 </html>
