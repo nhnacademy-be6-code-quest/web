@@ -33,6 +33,8 @@ public class ClientOrderForm {
     @Builder
     public ClientOrderForm(String orderedPersonName){
         this.orderedPersonName = orderedPersonName;
+        usedPointDiscountAmount = 0L;
+        couponDiscountAmount = 0L;
     }
 
     public void addOrderDetailDtoItem(OrderDetailDtoItem orderDetailDtoItem){

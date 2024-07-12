@@ -62,7 +62,7 @@ public class OrderController {
     }
 
     // 회원 단건 주문 조회 view
-    @GetMapping("/non-client/order/view")
+    @GetMapping("/non-client/order/find")
     public String orders(HttpServletRequest req){
         return "view/order/nonClientFindOrder";
     }
