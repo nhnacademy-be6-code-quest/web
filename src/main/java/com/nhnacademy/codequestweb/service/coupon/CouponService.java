@@ -4,6 +4,7 @@ import com.nhnacademy.codequestweb.client.coupon.CouponClient;
 import com.nhnacademy.codequestweb.client.coupon.CouponPolicyClient;
 import com.nhnacademy.codequestweb.client.coupon.CouponTypeClient;
 import com.nhnacademy.codequestweb.client.coupon.UserCouponClient;
+import com.nhnacademy.codequestweb.domain.Status;
 import com.nhnacademy.codequestweb.request.coupon.CouponRegisterRequestDto;
 import com.nhnacademy.codequestweb.response.coupon.ClientCouponPaymentResponseDto;
 import com.nhnacademy.codequestweb.response.coupon.CouponAdminPageCouponResponseDto;
@@ -34,12 +35,12 @@ public class CouponService {
 
 
     public Page<CouponMyPageCouponResponseDto> findMyPageCoupons(HttpHeaders headers, int page,
-        int size) {
-        return couponClient.findMyPageCoupons(headers, page, size).getBody();
+        int size, Status status) {
+        return couponClient.findMyPageCoupons(headers, page, size, status).getBody();
     }
 
-    public Page<CouponAdminPageCouponResponseDto> findUsersCoupons(HttpHeaders headers, int page, int size) {
-        return couponClient.findUserCoupons(headers, page, size).getBody();
+    public Page<CouponAdminPageCouponResponseDto> findUsersCoupons(HttpHeaders headers, int page, int size, Status status) {
+        return couponClient.findUserCoupons(headers, page, size, status).getBody();
     }
 
     public Page<ClientCouponPaymentResponseDto> getClient(HttpHeaders httpHeaders, int page,
