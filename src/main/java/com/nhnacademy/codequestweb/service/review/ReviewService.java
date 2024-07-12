@@ -2,22 +2,22 @@ package com.nhnacademy.codequestweb.service.review;
 
 import com.nhnacademy.codequestweb.client.order.OrderClient;
 import com.nhnacademy.codequestweb.client.product.bookProduct.BookProductClient;
+import com.nhnacademy.codequestweb.client.review.ReviewClient;
+import com.nhnacademy.codequestweb.exception.order.ProductOrderDetailLoadFailException;
 import com.nhnacademy.codequestweb.exception.product.ProductLoadFailException;
-import com.nhnacademy.codequestweb.request.payment.PaymentOrderApproveRequestDto;
-import com.nhnacademy.codequestweb.response.order.common.OrderResponseDto;
+import com.nhnacademy.codequestweb.request.review.WriteReviewRequestDto;
+import com.nhnacademy.codequestweb.response.order.common.ProductOrderDetailResponseDto;
 import com.nhnacademy.codequestweb.response.product.book.BookProductGetResponseDto;
 import com.nhnacademy.codequestweb.response.review.WriteReviewResponseDto;
-import com.nhnacademy.codequestweb.service.order.OrderService;
-import com.nhnacademy.codequestweb.utils.CookieUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class ReviewService {
     private final OrderClient orderClient;
+    private final ReviewClient reviewClient;
     private final BookProductClient bookProductClient;
 
     /**
@@ -27,18 +27,29 @@ public class ReviewService {
      *
      * @return
      */
-    public WriteReviewResponseDto writeReview(Long orderDetailId, String access) {
+    public WriteReviewResponseDto writeReview(Long orderId, Long orderDetailId, String access) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", access);
 
-        BookProductGetResponseDto bookProduct = getProductInfo(5L);
+        ProductOrderDetailResponseDto orderDetail = getOrderDetail(orderId, orderDetailId, access);
+        BookProductGetResponseDto bookProduct = getProductInfo(orderDetail.getProductId());
         return WriteReviewResponseDto.builder()
-                .productOrderDetailId(null)
+                .productOrderDetailId(orderDetailId)
                 .productId(bookProduct.productId())
                 .title(bookProduct.title())
                 .author(bookProduct.author())
                 .cover(bookProduct.cover())
                 .build();
+    }
+
+    private ProductOrderDetailResponseDto getOrderDetail(Long orderId, Long orderDetailId, String access) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("access", access);
+        try {
+            return orderClient.getClientProductOrderDetail(headers, orderId, orderDetailId).getBody();
+        } catch (Exception e) {
+            throw new ProductOrderDetailLoadFailException(e.getMessage());
+        }
     }
 
     private BookProductGetResponseDto getProductInfo(Long productId) {
@@ -47,5 +58,9 @@ public class ReviewService {
         } catch (Exception e) {
             throw new ProductLoadFailException("Could not get product info");
         }
+    }
+
+    public String posttingReview(WriteReviewRequestDto writeReviewRequestDto, String access) {
+        return reviewClient.writeReview(writeReviewRequestDto, access).getBody();
     }
 }
