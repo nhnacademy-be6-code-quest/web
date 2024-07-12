@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-
+import java.util.LinkedHashMap;
 
 @Slf4j
 @Controller
@@ -49,7 +49,9 @@ public class CartController {
                                 throw new RuntimeException(e);
                             }
                         },
-                        cart -> cart.productInventory() >= cart.productQuantityOfCart() && cart.productState() == 0
+                        cart -> cart.productInventory() >= cart.productQuantityOfCart() && cart.productState() == 0,
+                        (oldValue, newValue) -> oldValue, // 병합 함수 (충돌 해결)
+                        LinkedHashMap::new // 맵 공급자
                 ));
     }
 
@@ -69,8 +71,6 @@ public class CartController {
                     model.addAttribute("cartList", cartList);
                     model.addAttribute("view", "cart");
                     Map<String, Boolean> jsonCartMap = makeJsonCartMap(cartList);
-                    log.info("jsonCartMap: {}", jsonCartMap);
-
                     model.addAttribute("jsonCartMap", jsonCartMap);
                     model.addAttribute("orderUrl", "/non-client/orders");
                     return "index";
@@ -88,7 +88,6 @@ public class CartController {
                     model.addAttribute("empty", true);
                 }else {
                     Map<String, Boolean> jsonCartMap = makeJsonCartMap(cartList);
-                    log.info("jsonCartMap: {}", jsonCartMap);
                     model.addAttribute("jsonCartMap", jsonCartMap);
                     model.addAttribute("cartList", cartList);
                 }

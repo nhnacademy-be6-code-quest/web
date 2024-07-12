@@ -181,12 +181,6 @@
                 <h3 class="book-title" th:text="${book.title}">책 제목</h3>
                 <p class="book-author" th:text="'저자: ' + ${book.author}">저자</p>
                 <p class="book-publisher" th:text="'출판사: ' + ${book.publisher} + ' | 출판일: ' + ${book.pubDate}">출판사 및 출판일</p>
-<!--                <p class="book-price">-->
-<!--                     <span th:if="${book.productPriceSales < book.productPriceStandard}"-->
-<!--                           th:text="'(' + ${#numbers.formatDecimal(book.productPriceStandard, 0, 'COMMA', 0, 'POINT')} + '원)'"-->
-<!--                           style="text-decoration: line-through; color: #bdc3c7; font-size: 0.8em; margin-left: 10px;">정가</span>-->
-<!--                    <span th:text="${#numbers.formatDecimal(book.productPriceSales, 0, 'COMMA', 0, 'POINT')} + '원'">판매가</span>-->
-<!--                </p>-->
                 <div style="margin-top: 23px;" >
                                 <span th:if="${book.productPriceSales < book.productPriceStandard}"
                                       th:text="'(' + ${#numbers.formatDecimal(book.productPriceStandard, 0, 'COMMA', 0, 'POINT')} + '원)'"
@@ -221,12 +215,10 @@
                         </span>
                     </form>
                     <div class="form-container">
-                        <form id="saveCart" onsubmit="addToCart()">
-                            <input type="hidden" name="productId" id="productId" th:value="${book.productId()}">
-                            <input type="number" id="sharedQuantity" name="quantity" required min="1" onchange="copyQuantity()" th:max="${book.productInventory}" th:value="${book.productInventory == 0 ? 0 : 1}" class="numberForm" th:readonly="${book.productInventory == 0}" >
-                        </form>
+                        <input type="hidden" name="productId" id="productId" th:value="${book.productId()}">
+                        <input type="number" id="sharedQuantity" name="quantity" required min="1" onchange="copyQuantity()" th:max="${book.productInventory}" th:value="${book.productInventory == 0 ? 0 : 1}" class="numberForm" th:readonly="${book.productInventory == 0}" >
                         <div th:if="${book.productInventory != 0}">
-                            <button type="submit" form="saveCart" class="product-book-detail-btn product-book-detail-btn-cart">장바구니 담기</button>
+                            <button type="button"  onclick="addToCart()" class="product-book-detail-btn product-book-detail-btn-cart">장바구니 담기</button>
                             <button class="product-book-detail-btn product-book-detail-btn-buy" type="submit" form="purchase">바로 구매</button>
                         </div>
                         <div th:if="${book.productInventory == 0}">
@@ -274,7 +266,6 @@
                         if(confirm('장바구니에 상품을 등록하였습니다.\n장바구니 페이지로 이동하시겠습니까?')){
                             location.href= '/cart/all';
                         }else {
-                            location.reload();
                         }
                     }else {
                         alert('장바구니 등록에 실패하였습니다.\n잠시 후 다시 시도해주세요.');
