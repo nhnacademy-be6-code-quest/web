@@ -1,5 +1,6 @@
 package com.nhnacademy.codequestweb.client.coupon;
 
+import com.nhnacademy.codequestweb.domain.Status;
 import com.nhnacademy.codequestweb.request.coupon.CouponRegisterRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentCompletedCouponRequestDto;
 import com.nhnacademy.codequestweb.response.coupon.CouponAdminPageCouponResponseDto;
@@ -25,13 +26,14 @@ public interface CouponClient {
     List<CouponOrderResponseDto> findClientCoupon(@RequestHeader HttpHeaders headers);
 
     @GetMapping("/api/coupon/myPage")
-    ResponseEntity<Page<CouponMyPageCouponResponseDto>> findMyPageCoupons(@RequestHeader HttpHeaders headers, @RequestParam int page, @RequestParam int size);
+    ResponseEntity<Page<CouponMyPageCouponResponseDto>> findMyPageCoupons(@RequestHeader HttpHeaders headers, @RequestParam int page, @RequestParam int size, @RequestParam Status status);
 
     @PostMapping("/api/coupon/register/{couponPolicyId}")
     ResponseEntity<CouponRegisterRequestDto> saveCoupon(@RequestHeader HttpHeaders headers, @PathVariable long couponPolicyId, @RequestBody CouponRegisterRequestDto couponRegisterRequestDto);
 
     @GetMapping("/api/coupon/adminPage")
-    ResponseEntity<Page<CouponAdminPageCouponResponseDto>> findUserCoupons(@RequestHeader HttpHeaders headers, @RequestParam int page, @RequestParam int size);
+    ResponseEntity<Page<CouponAdminPageCouponResponseDto>> findUserCoupons(@RequestHeader HttpHeaders headers, @RequestParam int page, @RequestParam int size, @RequestParam
+        Status status);
 
     @PutMapping("/api/coupon/refund")
     ResponseEntity<String> refundCoupon(@RequestBody RefundCouponResponseDto refundCouponResponseDto);
