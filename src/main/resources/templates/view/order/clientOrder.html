@@ -349,9 +349,9 @@
         // 캘린더 선택 가능 날짜 초기화
         document.querySelector("input[type=date]").min = getMinDeliveryDate();
         // 가격 정보 업데이트
-        updateProductTotalAmount();
+        updateProductTotalAmountClient();
         updateShippingFee();
-        updatePayAmount();
+        updatePayAmountClient();
     });
 
     <!--포장여부 선택 관련-->
@@ -364,9 +364,9 @@
         document.getElementById("orderDetailDtoItemList" + index + ".optionProductId").value = null;
         document.getElementById("orderDetailDtoItemList" + index + ".optionProductName").value = null;
         document.getElementById("orderDetailDtoItemList" + index + ".optionProductSinglePrice").value = 0;
-        updateProductTotalAmount();
+        updateProductTotalAmountClient();
         updateShippingFee();
-        updatePayAmount();
+        updatePayAmountClient();
     }
 
     <!--포장 옵션 상품선택 변경 관련-->
@@ -377,7 +377,7 @@
         document.getElementById("orderDetailDtoItemList" + index + ".optionProductSinglePrice").value = selectedOption.dataset.optionProductPrice;
         updateProductTotalAmount();
         updateShippingFee();
-        updatePayAmount();
+        updatePayAmountClient();
     }
 
     <!--캘린더 관련-->
@@ -435,8 +435,6 @@
 
     }
 
-
-
     <!--주소 선택 관련-->
     function handleSelectAddress(selectedClientAddressDto) {
         showSelectedAddressInfo();
@@ -481,10 +479,10 @@
         }else{
             document.getElementById("shippingFee").value = originShippingFee;
         }
-        updatePayAmount();
+        updatePayAmountClient();
     }
 
-    function updateProductTotalAmount(){
+    function updateProductTotalAmountClient(){
         let totalPrice = 0;
         document.querySelectorAll('tr[data-product-index]').forEach(function(row, index) {
             // 순수 상품 총 가격
@@ -502,23 +500,31 @@
         document.getElementById("productTotalAmount").value = totalPrice
     }
 
-    function updatePayAmount(){
-        let pointDiscountAmount = document.getElementById("usedPointDiscountAmount").value;
-        let couponDiscountAmount = document.getElementById("couponDiscountAmount").value;
+    function updatePayAmountClient(){
+        let pointDiscountAmount = 0;
+        let couponDiscountAmount = 0;
         const shippingFee = parseInt(document.getElementById("shippingFee").value);
         const productTotalAmount = parseInt(document.getElementById("productTotalAmount").value);
 
-        if(pointDiscountAmount == null) pointDiscountAmount = 0;
-        if(couponDiscountAmount == null) couponDiscountAmount = 0;
+        if(document.getElementById("usedPointDiscountAmount").value != null) {
+            pointDiscountAmount = parseInt(document.getElementById("usedPointDiscountAmount").value);
+        }
 
-        // console.log("shippingFee: ", shippingFee);
-        // console.log("productTotalAmount: ", productTotalAmount);
-        // console.log("pointDiscountAmount: ", pointDiscountAmount);
-        // console.log("couponDiscountAmount: ", couponDiscountAmount);
+        if(document.getElementById("usedPointDiscountAmount").value != null) {
+            couponDiscountAmount = parseInt(document.getElementById("couponDiscountAmount").value);
+        }
 
         // 최종 결제 금액
-        document.getElementById("payAmount").text = productTotalAmount + shippingFee - pointDiscountAmount - couponDiscountAmount;
         document.getElementById("payAmount").value = productTotalAmount + shippingFee - pointDiscountAmount - couponDiscountAmount;
+    }
+
+    <!--쿠폰 적용-->
+    function usableCoupon(){
+        // 1. 쿠폰을 적용할 수 있는 카테고리 상품이 있는가?
+
+        // 2. 쿠폰을 적용할 수 있는 상품이 있는가?
+
+        // 3. 상품 총 가격이 쿠폰의 최소금액 이상인가?
     }
 
 </script>

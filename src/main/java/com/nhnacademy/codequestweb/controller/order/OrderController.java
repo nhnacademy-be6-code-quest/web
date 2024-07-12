@@ -61,7 +61,7 @@ public class OrderController {
         return String.format("redirect:/client/order/%d/payment", orderService.createNonClientOrder(request, nonClientOrderForm));
     }
 
-    // 회원 단건 주문 조회 view
+    // 비회원 단건 주문 내역 조회 view
     @GetMapping("/non-client/order/find")
     public String orders(HttpServletRequest req){
         return "view/order/nonClientFindOrder";

@@ -207,7 +207,7 @@
                 </div>
                 <div class="book-actions">
                     <form id="purchase" th:action="${orderURL}" method="post">
-                        <input type="hidden" id="purchaseQuantity" min="1" name="quantity">
+                        <input type="hidden" id="purchaseQuantity" min="1" th:value="1" name="quantity">
                         <input type="hidden" name="productId" th:value="${book.productId()}">
                         <span th:each="category : ${book.categorySet()}">
                             <input type="hidden" name="categoryIdList" th:value="${category.productCategoryId()}">
