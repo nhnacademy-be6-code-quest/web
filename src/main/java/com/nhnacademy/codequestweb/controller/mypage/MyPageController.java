@@ -8,7 +8,6 @@ import com.nhnacademy.codequestweb.response.mypage.ClientDeliveryAddressResponse
 import com.nhnacademy.codequestweb.response.mypage.ClientPhoneNumberResponseDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientPrivacyResponseDto;
 import com.nhnacademy.codequestweb.response.order.client.ClientOrderGetResponseDto;
-import com.nhnacademy.codequestweb.response.order.common.OrderResponseDto;
 import com.nhnacademy.codequestweb.response.point.PointAccumulationMyPageResponseDto;
 import com.nhnacademy.codequestweb.response.point.PointUsageMyPageResponseDto;
 import com.nhnacademy.codequestweb.response.review.NoPhotoReviewResponseDTO;
