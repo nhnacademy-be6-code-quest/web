@@ -1,10 +1,12 @@
 package com.nhnacademy.codequestweb.controller.payment;
 
+import com.nhnacademy.codequestweb.request.payment.ClientUpdateGradeRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentAccumulatePointRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentCompletedCouponRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentOrderApproveRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentOrderShowRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentUsePointRequestDto;
+import com.nhnacademy.codequestweb.response.payment.PaymentGradeResponseDto;
 import com.nhnacademy.codequestweb.response.payment.TossPaymentsResponseDto;
 import com.nhnacademy.codequestweb.service.payment.PaymentService;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
@@ -194,9 +196,28 @@ public class PaymentController {
         TossPaymentsResponseDto tossPaymentsResponseDto = paymentService.approvePayment(tossOrderId,
             amount, paymentKey);
 
-        // 7. View 보여주기
+        // 7. DB에 저장하기
         paymentService.savePayment(headers, orderId, tossPaymentsResponseDto);
+
+        // 8. 등급 바꾸기
+        try {
+            PaymentGradeResponseDto paymentGradeResponseDto = paymentService.getPaymentRecordOfClient(
+                paymentOrderApproveRequestDto.getClientId());
+            paymentService.updateClientGrade(ClientUpdateGradeRequestDto.builder()
+                .clientId(paymentOrderApproveRequestDto.getClientId())
+                .payment(paymentGradeResponseDto.getPaymentGradeValue())
+                .build());
+        } catch (FeignException e) {
+            log.error("회원의 결제 내역을 조회하고 등급을 바꾸는 데에 실패했습니다.\nclientId: {}",
+                paymentOrderApproveRequestDto.getClientId());
+        } catch (Exception e) {
+            log.error("회원의 결제 내역을 조회하고 등급을 바꾸는 데에 알 수 없는 오류가 발생하였습니다.\nclientId: {}",
+                paymentOrderApproveRequestDto.getClientId());
+        }
+
+        // 9. View 보여주기
         model.addAttribute("isSuccess", true);
+        model.addAttribute("orderId", orderId);
         model.addAttribute("isCouponProcessedNormally", isCouponProcessedNormally);
         model.addAttribute("isPointUsedNormally", isPointUsedNormally);
         model.addAttribute("isPointAccumulatedNormally", isPointAccumulatedNormally);
