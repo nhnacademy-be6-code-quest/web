@@ -1,8 +1,21 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="bestsellerFragment ('popularBooks')">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="almostSoldOutBooksFragment ('almostSoldOutBooks')">
 <head>
     <meta charset="UTF-8">
     <title></title>
+    <style>
+        .prod-favorite .prod-favorite-btn.prod-favorite-on {
+            width: 40px;
+            height: 40px;
+            border: 0 none;
+            cursor: pointer;
+            outline: 0;
+            top: 310px;
+            right: 10px;
+            position: absolute;
+            background: url(//img1a.coupangcdn.com/image/dragonstone/sdp/PCSDP_imageasset_180417-min.png) no-repeat -262px -209px;
+        }
+    </style>
 </head>
 <div th:replace="~{icon/icon :: iconAsset}"></div>
 
@@ -10,9 +23,9 @@
     <div class="container pt-5 pb-5">
 
         <div class="section-header d-md-flex justify-content-between align-items-center mb-3" style="background-color: #f2dfbb; padding: 20px; border-radius: 10px;">
-            <h2 class="display-8 fw-normal m-0 d-flex align-items-center" style="line-height: 1.5; padding-top: 15px; color: #795548">인기 도서</h2>
+            <h2 class="display-8 fw-normal m-0 d-flex align-items-center" style="line-height: 1.5; padding-top: 15px; color: #795548">마감 임박 도서</h2>
             <div class="d-flex align-items-center">
-                <a th:href="@{/product/books?page=1&sort=product.productViewCount&desc=true}" class="btn btn-outline-dark btn-lg text-uppercase fs-6" style="background-color: #FFFFFF; border: none; color: #9e9e9e; border-radius: 15px;">
+                <a th:href="@{/product/books?page=1&sort=product.productInventory&desc=false}" class="btn btn-outline-dark btn-lg text-uppercase fs-6" style="background-color: #FFFFFF; border: none; color: #9e9e9e; border-radius: 15px;">
                     전체보기
                     <svg width="24" height="24" viewBox="0 0 24 24" class="mb-1">
                         <use xlink:href="#arrow-right"></use>
@@ -24,7 +37,7 @@
         <div class="products-carousel swiper">
             <div class="swiper-wrapper">
 
-                <div th:if="${popularBooks != null}" th:each="book : ${popularBooks}" class="swiper-slide" style="max-width: 230px;">
+                <div th:if="${almostSoldOutBooks != null}" th:each="book : ${almostSoldOutBooks}" class="swiper-slide" style="max-width: 230px;">
                     <div class="card position-relative">
                         <a th:href="@{/product/books/{id}(id = ${book.productId})}"><img th:src="${book.cover}" class="img-fluid rounded-4" alt="image" style="height: 360px; display: block; border: black solid 1px"></a>
                         <div class="col-md-2 text-end">
@@ -40,8 +53,8 @@
                             </a>
                             <div style="margin-top: -23px;" >
                                 <span th:if="${book.productPriceSales < book.productPriceStandard}"
-                                      th:text="'(' + ${#numbers.formatDecimal(book.productPriceStandard, 0, 'COMMA', 0, 'POINT')} + '원)'"
-                                      style="text-decoration: line-through; color: #bdc3c7; font-size: 0.8em; margin-left: 10px; margin-top: -23px;">정가</span>
+                                 th:text="'(' + ${#numbers.formatDecimal(book.productPriceStandard, 0, 'COMMA', 0, 'POINT')} + '원)'"
+                                 style="text-decoration: line-through; color: #bdc3c7; font-size: 0.8em; margin-left: 10px; margin-top: -23px;">정가</span>
                                 <span style="margin-left: 5px; color: #ff5f50" th:text="${book.productPriceSales < book.productPriceStandard? '(- ' + (100 - (100*book.productPriceSales/book.productPriceStandard) + '%)')  : ''}">할인율</span>
                             </div>
                             <h5 class="secondary-font text-primary" th:text="${book.productPriceSales < book.productPriceStandard? ' -> ' : ''} + ${#numbers.formatDecimal(book.productPriceSales, 0, 'COMMA', 0, 'POINT')} + '원'"></h5>

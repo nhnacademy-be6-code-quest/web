@@ -2,8 +2,10 @@ package com.nhnacademy.codequestweb.service.home;
 
 import com.nhnacademy.codequestweb.response.product.book.BookProductGetResponseDto;
 import com.nhnacademy.codequestweb.service.product.BookProductService;
+import com.nhnacademy.codequestweb.utils.CookieUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,18 +16,27 @@ import java.util.List;
 public class HomeService {
     private final BookProductService bookProductService;
 
-    public List<BookProductGetResponseDto> getPopularBooks() {
+    public List<BookProductGetResponseDto> getPopularBooks(HttpHeaders headers) {
         try {
-            return bookProductService.getAllBookPage(null, 1, 20, "product.productViewCount", true, 0)
+            return bookProductService.getAllBookPage(headers, 1, 20, "product.productViewCount", true, 0)
                     .getBody().getContent();
         } catch (Exception e) {
             return null;
         }
     }
 
-    public List<BookProductGetResponseDto> getNewBooks() {
+    public List<BookProductGetResponseDto> getNewBooks(HttpHeaders headers) {
         try {
-            return bookProductService.getAllBookPage(null, 1, 20, "pubDate", true, 0)
+            return bookProductService.getAllBookPage(headers, 1, 20, "pubDate", true, 0)
+                    .getBody().getContent();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public List<BookProductGetResponseDto> getAlmostSoldOutBooks(HttpHeaders headers) {
+        try {
+            return bookProductService.getAllBookPage(headers, 1, 20, "product.productInventory", false, 0)
                     .getBody().getContent();
         } catch (Exception e) {
             return null;

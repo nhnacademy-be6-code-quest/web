@@ -16,7 +16,7 @@ public class CommonController {
     public String headerPageRoute(HttpServletRequest request) {
         String access = CookieUtils.getCookieValue(request, "access");
         if (access == null) {
-            return "redirect:/auth";
+            return "redirect:/non-client/order/find";
         } else if (commonService.isAdmin(access)) {
             return "redirect:/admin";
         }

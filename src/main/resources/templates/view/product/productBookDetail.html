@@ -21,6 +21,7 @@
             border: 0 none;
             cursor: pointer;
             outline: 0;
+            margin-top: 30px;
             background: url(//img1a.coupangcdn.com/image/dragonstone/sdp/PCSDP_imageasset_180417-min.png) no-repeat -218px -209px;
         }
         .prod-favorite .prod-favorite-btn.prod-favorite-on {
@@ -182,12 +183,20 @@
                 <h3 class="book-title" th:text="${book.title}">책 제목</h3>
                 <p class="book-author" th:text="'저자: ' + ${book.author}">저자</p>
                 <p class="book-publisher" th:text="'출판사: ' + ${book.publisher} + ' | 출판일: ' + ${book.pubDate}">출판사 및 출판일</p>
-                <p class="book-price">
-                     <span th:if="${book.productPriceSales < book.productPriceStandard}"
-                           th:text="'(' + ${#numbers.formatDecimal(book.productPriceStandard, 0, 'COMMA', 0, 'POINT')} + '원)'"
-                           style="text-decoration: line-through; color: #bdc3c7; font-size: 0.8em; margin-left: 10px;">정가</span>
-                    <span th:text="${#numbers.formatDecimal(book.productPriceSales, 0, 'COMMA', 0, 'POINT')} + '원'">판매가</span>
-                </p>
+<!--                <p class="book-price">-->
+<!--                     <span th:if="${book.productPriceSales < book.productPriceStandard}"-->
+<!--                           th:text="'(' + ${#numbers.formatDecimal(book.productPriceStandard, 0, 'COMMA', 0, 'POINT')} + '원)'"-->
+<!--                           style="text-decoration: line-through; color: #bdc3c7; font-size: 0.8em; margin-left: 10px;">정가</span>-->
+<!--                    <span th:text="${#numbers.formatDecimal(book.productPriceSales, 0, 'COMMA', 0, 'POINT')} + '원'">판매가</span>-->
+<!--                </p>-->
+                <div style="margin-top: 23px;" >
+                                <span th:if="${book.productPriceSales < book.productPriceStandard}"
+                                      th:text="'(' + ${#numbers.formatDecimal(book.productPriceStandard, 0, 'COMMA', 0, 'POINT')} + '원)'"
+                                      style="text-decoration: line-through; color: #bdc3c7; font-size: 1.5em; margin-left: 10px; margin-top: -23px;">정가</span>
+                    <span style="margin-left: 5px; color: #ff5f50" th:text="${book.productPriceSales < book.productPriceStandard? '(- ' + (100 - (100 * book.productPriceSales/book.productPriceStandard) + '%)')  : ''}">할인율</span>
+                </div>
+                <span style="font-size: 1.5em;" class="secondary-font text-primary" th:text="${book.productPriceSales < book.productPriceStandard? ' -> ' : ''} + ${#numbers.formatDecimal(book.productPriceSales, 0, 'COMMA', 0, 'POINT')} + '원'"></span>
+
                 <div th:if="${book.hasLike()}">
                     <form action="/product/client/unlike"  method="post">
                         <input type="hidden" name="_method" value="DELETE"/>
@@ -207,15 +216,15 @@
                 </div>
                 <div class="book-actions">
                     <form id="purchase" th:action="${orderURL}" method="post">
-                        <input type="hidden" id="purchaseQuantity" min="1" name="quantity">
+                        <input type="hidden" id="purchaseQuantity" th:value="1" min="1" name="quantity">
                         <input type="hidden" name="productId" th:value="${book.productId()}">
                         <span th:each="category : ${book.categorySet()}">
                             <input type="hidden" name="categoryIdList" th:value="${category.productCategoryId()}">
                         </span>
                     </form>
                     <div class="form-container">
-                        <form id="saveCart" action="/cart/add" method="post">
-                            <input type="hidden" name="productId" th:value="${book.productId()}">
+                        <form id="saveCart" onsubmit="addToCart()">
+                            <input type="hidden" name="productId" id="productId" th:value="${book.productId()}">
                             <input type="number" id="sharedQuantity" name="quantity" required min="1" onchange="copyQuantity()" th:max="${book.productInventory}" th:value="${book.productInventory == 0 ? 0 : 1}" class="numberForm" th:readonly="${book.productInventory == 0}" >
                         </form>
                         <div th:if="${book.productInventory != 0}">
@@ -256,30 +265,26 @@
 
     <script th:inline="javascript">
         /*<![CDATA[*/
-        var bookId = /*[[${book.bookId}]]*/ '';
-
-        function buyNow() {
-            alert('구매 페이지로 이동합니다.');
-            // 실제 구매 로직 구현
-        }
-
         function addToCart() {
             const quantity = document.getElementById('sharedQuantity').value;
-            fetch('/api/cart/add', {
+            const productId = document.getElementById('productId').value;
+            fetch('/cart/add?productId=' + productId + '&quantity=' + quantity, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ productId:/*[[${book.productId}]]*/ '', quantity:quantity })
             })
-
-                .then(response => response.json())
-                .then(data => {
-                    alert('장바구니에 추가되었습니다.');
+                .then(response => {
+                    if (response.ok) {
+                        if(confirm('장바구니에 상품을 등록하였습니다.\n장바구니 페이지로 이동하시겠습니까?')){
+                            location.href= '/cart/all';
+                        }else {
+                            location.reload();
+                        }
+                    }else {
+                        alert('장바구니 등록에 실패하였습니다.\n잠시 후 다시 시도해주세요.');
+                    }
                 })
-                .catch((error) => {
+                .catch(error => {
                     console.error('Error:', error);
-                    alert('장바구니 추가 중 오류가 발생했습니다.');
+                    alert('An error occurred while adding product into cart..');
                 });
         }
         /*]]>*/

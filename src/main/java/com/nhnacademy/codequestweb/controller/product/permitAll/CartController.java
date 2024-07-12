@@ -7,6 +7,7 @@ import com.nhnacademy.codequestweb.response.product.common.CartGetResponseDto;
 import com.nhnacademy.codequestweb.response.product.common.SaveCartResponseDto;
 import com.nhnacademy.codequestweb.service.product.CartService;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
+import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -38,6 +39,20 @@ public class CartController {
 
     private final List<CartRequestDto> emptyList = new ArrayList<>();
 
+    private Map<String, Boolean> makeJsonCartMap(List<CartGetResponseDto> cartList) {
+        return cartList.stream()
+                .collect(Collectors.toMap(
+                        cart -> {
+                            try {
+                                return objectMapper.writeValueAsString(cart);
+                            } catch (JsonProcessingException e) {
+                                throw new RuntimeException(e);
+                            }
+                        },
+                        cart -> cart.productInventory() >= cart.productQuantityOfCart() && cart.productState() == 0
+                ));
+    }
+
     @GetMapping("/cart/all")
     public String cartAll(HttpServletRequest req, Model model) throws Exception {
         List<CartRequestDto> cartListOfCookie = (List<CartRequestDto>) model.getAttribute("cart");
@@ -53,28 +68,9 @@ public class CartController {
                     List<CartGetResponseDto> cartList = responseEntity.getBody();
                     model.addAttribute("cartList", cartList);
                     model.addAttribute("view", "cart");
-                    Map<String, Boolean> jsonCartMap = cartList.stream()
-                            .collect(Collectors.toMap(
-                                    cart -> {
-                                        try {
-                                            return objectMapper.writeValueAsString(cart);
-                                        } catch (JsonProcessingException e) {
-                                            throw new RuntimeException(e);
-                                        }
-                                    },
-                                    cart -> cart.productInventory() >= cart.productQuantityOfCart() && cart.productState() == 0
-                            ));
+                    Map<String, Boolean> jsonCartMap = makeJsonCartMap(cartList);
                     log.info("jsonCartMap: {}", jsonCartMap);
 
-//                    List<String> jsonCartList = cartList.stream()
-//                            .map(cart -> {
-//                                try {
-//                                    return objectMapper.writeValueAsString(cart);
-//                                } catch (JsonProcessingException e) {
-//                                    throw new RuntimeException(e);
-//                                }
-//                            })
-//                            .toList();
                     model.addAttribute("jsonCartMap", jsonCartMap);
                     model.addAttribute("orderUrl", "/non-client/orders");
                     return "index";
@@ -91,27 +87,8 @@ public class CartController {
                 if (cartList == null || cartList.isEmpty()) {
                     model.addAttribute("empty", true);
                 }else {
-                    Map<String, Boolean> jsonCartMap = cartList.stream()
-                            .collect(Collectors.toMap(
-                                    cart -> {
-                                        try {
-                                            return objectMapper.writeValueAsString(cart);
-                                        } catch (JsonProcessingException e) {
-                                            throw new RuntimeException(e);
-                                        }
-                                    },
-                                    cart -> cart.productInventory() >= cart.productQuantityOfCart() && cart.productState() == 0
-                            ));
+                    Map<String, Boolean> jsonCartMap = makeJsonCartMap(cartList);
                     log.info("jsonCartMap: {}", jsonCartMap);
-//                    List<String> jsonCartList = cartList.stream()
-//                            .map(cart -> {
-//                                try {
-//                                    return objectMapper.writeValueAsString(cart);
-//                                } catch (JsonProcessingException e) {
-//                                    throw new RuntimeException(e);
-//                                }
-//                            })
-//                            .toList();
                     model.addAttribute("jsonCartMap", jsonCartMap);
                     model.addAttribute("cartList", cartList);
                 }
@@ -126,14 +103,13 @@ public class CartController {
 
     @Transactional
     @PostMapping("/cart/add")
-    public String addCart(HttpServletRequest req, HttpServletResponse resp, @ModelAttribute @Valid CartRequestDto cartRequestDto, Model model) throws Exception {
-        log.info("call add cart");
-
+    public ResponseEntity<Void> addCart(HttpServletRequest req, HttpServletResponse resp, @ModelAttribute @Valid CartRequestDto cartRequestDto, Model model) throws Exception {
         List<CartRequestDto> cartListOfCookie = emptyList;
 
         try {
             cartListOfCookie = (List<CartRequestDto>) model.getAttribute("cart");
         }catch (ClassCastException | NullPointerException ignore){
+            return ResponseEntity.status(500).build();
         }
 
         ResponseEntity<SaveCartResponseDto> response;
@@ -150,34 +126,40 @@ public class CartController {
                 cartRequestDtoToDelete.add(cartItem);
             }
         }
+        try {
+            cartListOfCookie.removeAll(cartRequestDtoToDelete);
 
-        cartListOfCookie.removeAll(cartRequestDtoToDelete);
-
-        if (CookieUtils.isGuest(req)) {
-            response = cartService.addGuestCartItem(cartDto);
-        } else{
-            response = cartService.addClientCartItem(CookieUtils.setHeader(req), cartDto);
-        }
-        if (response.getStatusCode().is2xxSuccessful()) {
-            quantity = response.getBody().savedCartQuantity();
-
-            // 장바구니에 담으려 한 수량이 상품 재고보다 많은 경우.
-            if (!cartDto.quantity().equals(quantity)){
-                model.addAttribute("warn", true);
+            if (CookieUtils.isGuest(req)) {
+                response = cartService.addGuestCartItem(cartDto);
+            } else{
+                response = cartService.addClientCartItem(CookieUtils.setHeader(req), cartDto);
             }
+            if (response.getStatusCode().is2xxSuccessful()) {
+                quantity = response.getBody().savedCartQuantity();
+
+                // 장바구니에 담으려 한 수량이 상품 재고보다 많은 경우.
+                if (!cartDto.quantity().equals(quantity)){
+                    model.addAttribute("warn", true);
+                }
+            }
+            cartListOfCookie.add(CartRequestDto.builder()
+                    .productId(cartDto.productId())
+                    .quantity(quantity).build());
+
+
+            CookieUtils.deleteCookieValue(resp, "cart");
+            CookieUtils.setCartCookieValue(cartListOfCookie, objectMapper, resp);
+
+            return ResponseEntity.status(200).build();
+        }catch (FeignException e){
+            log.warn(e.getMessage());
+            return ResponseEntity.status(e.status()).body(null);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            return ResponseEntity.status(500).body(null);
         }
-        cartListOfCookie.add(CartRequestDto.builder()
-                        .productId(cartDto.productId())
-                        .quantity(quantity).build());
-        log.info("cartListOfCookie: {}", cartListOfCookie);
-
-
-        CookieUtils.deleteCookieValue(resp, "cart");
-        CookieUtils.setCartCookieValue(cartListOfCookie, objectMapper, resp);
-
-
-        return "redirect:/cart/all";
     }
+
 
     @PutMapping("/cart/update")
     public String updateCart(HttpServletRequest req, HttpServletResponse resp, @ModelAttribute @Valid CartRequestDto cartRequestDto, Model model) throws Exception {
