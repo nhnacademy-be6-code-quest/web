@@ -511,12 +511,13 @@
         if(pointDiscountAmount == null) pointDiscountAmount = 0;
         if(couponDiscountAmount == null) couponDiscountAmount = 0;
 
-        console.log("shippingFee: ", shippingFee);
-        console.log("productTotalAmount: ", productTotalAmount);
-        console.log("pointDiscountAmount: ", pointDiscountAmount);
-        console.log("couponDiscountAmount: ", couponDiscountAmount);
+        // console.log("shippingFee: ", shippingFee);
+        // console.log("productTotalAmount: ", productTotalAmount);
+        // console.log("pointDiscountAmount: ", pointDiscountAmount);
+        // console.log("couponDiscountAmount: ", couponDiscountAmount);
 
         // 최종 결제 금액
+        document.getElementById("payAmount").text = productTotalAmount + shippingFee - pointDiscountAmount - couponDiscountAmount;
         document.getElementById("payAmount").value = productTotalAmount + shippingFee - pointDiscountAmount - couponDiscountAmount;
     }
 
