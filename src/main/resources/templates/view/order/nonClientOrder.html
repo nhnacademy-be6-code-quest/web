@@ -402,7 +402,11 @@
                     totalPrice += optionProductPrice;
                 }
             });
+            console.log(totalPrice);
             document.getElementById("productTotalAmount").value = totalPrice
+            document.getElementById("productTotalAmount").text = totalPrice
+            console.log("document.getElementById(\"productTotalAmount\").value: ", document.getElementById("productTotalAmount").value);
+            console.log("document.getElementById(\"productTotalAmount\").text: ", document.getElementById("productTotalAmount").text);
         }
 
         function updatePayAmount(){
