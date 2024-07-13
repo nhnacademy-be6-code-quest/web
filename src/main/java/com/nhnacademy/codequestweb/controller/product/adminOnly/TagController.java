@@ -45,6 +45,7 @@ public class TagController {
         model.addAttribute("view", "adminPage");
         model.addAttribute("adminPage", "tags");
         model.addAttribute("url", "/admin/tags?");
+        model.addAttribute("activeSection","book");
         return "index";
     }
 

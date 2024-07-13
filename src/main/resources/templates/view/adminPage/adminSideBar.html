@@ -22,7 +22,7 @@
         <div class="accordion-item">
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingOne">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseTwo" data-bs-parent="#accordionExample">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne" data-bs-parent="#accordionExample">
                         회원 정보 관리
                     </button>
                 </h2>
@@ -35,26 +35,25 @@
                 </div>
             </div>
             <h2 class="accordion-header" id="headingTwo">
-                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseOne" data-bs-parent="#accordionExample">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo" data-bs-parent="#accordionExample">
                     도서
                 </button>
             </h2>
+            <div id="collapseTwo" class="accordion-collapse collapse " th:classappend="${activeSection == 'book' || activeSection == 'product' ? 'show' : ''}" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
             <h2 class="accordion-header" id="headingTag">
             <a class="nav-link" href="/admin/tags">태그</a>
             </h2>
             <h2 class="accordion-header" id="headingCategory">
                 <a class="nav-link" href="/admin/categories">카테고리</a>
             </h2>
-            <div id="collapseTwo" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
 
-            <div id="collapseTwo" class="accordion-collapse collapse " th:classappend="${activeSection == 'book' || activeSection == 'product' ? 'show' : ''}" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
                 <div class="accordion-body">
                     <nav class="nav flex-column">
                         <!-- 마이리뷰/좋아요 관리 추가 -->
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseTwo">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree" data-bs-parent="#accordionExample">
                             상품
                         </button>
-                        <div id="collapseThree" class="accordion-collapse show" th:classappend="${activeSection == 'product' ? 'show' : ''}" aria-labelledby="headingThree" data-bs-parent="#collapseTwo">
+                        <div id="collapseThree" class="accordion-collapse " th:classappend="${activeSection == 'product' ? 'show' : ''}" aria-labelledby="headingThree" data-bs-parent="#collapseThree">
                             <nav class="nav flex-column ms-3">
                                 <a class="nav-link" href="/admin/product/book/register">상품 추가</a>
                                 <a class="nav-link" href="/admin/product/book/all">상품 수정</a>
