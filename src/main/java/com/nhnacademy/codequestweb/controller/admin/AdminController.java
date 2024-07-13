@@ -44,6 +44,7 @@ public class AdminController {
         request.setAttribute("totalPage", privacyPage.getTotalPages());
         request.setAttribute("adminPage", "clientManager");
         request.setAttribute("view", "adminPage");
+        request.setAttribute("activeSection","client");
         return "index";
     }
 
@@ -91,7 +92,7 @@ public class AdminController {
         req.setAttribute("activeSection", "point");
         Page<PointPolicyAdminListResponseDto> dto = pointPolicyService.findPointPolicies(headers, page, size);
         req.setAttribute("points", dto);
-        List<PointPolicyType> pointPolicyTypes = List.of(PointPolicyType.REVIEW,PointPolicyType.MEMBERSHIP,PointPolicyType.MEMBERSHIP,PointPolicyType.PAYMENT);
+        List<String> pointPolicyTypes = List.of("결제", "환불", "회원가입", "사진리뷰", "리뷰");
         req.setAttribute("pointTypes",pointPolicyTypes);
         return "index";
     }
