@@ -11,14 +11,14 @@ import lombok.Setter;
 @NoArgsConstructor
 public class CouponOrderResponseDto {
     long couponId;
-    CouponPolicy couponPolicy;
+    CouponPolicyDto couponPolicyDto;
     ProductCoupon productCoupon;
     CategoryCoupon categoryCoupon;
 
     @Setter
     @NoArgsConstructor
     @Getter
-    public static class CouponPolicy {
+    public static class CouponPolicyDto {
         String couponPolicyDescription;
         String discountType;
         long discountValue;
