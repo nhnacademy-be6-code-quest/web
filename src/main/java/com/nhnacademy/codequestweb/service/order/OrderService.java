@@ -1,11 +1,11 @@
 package com.nhnacademy.codequestweb.service.order;
 
 import com.nhnacademy.codequestweb.request.order.field.OrderItemDto;
-import com.nhnacademy.codequestweb.response.order.client.ClientOrderForm;
-import com.nhnacademy.codequestweb.response.order.client.ClientOrderGetResponseDto;
+import com.nhnacademy.codequestweb.response.order.client.*;
 import com.nhnacademy.codequestweb.response.order.nonclient.NonClientOrderForm;
 import com.nhnacademy.codequestweb.response.order.nonclient.NonClientOrderGetResponseDto;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -17,6 +17,13 @@ import java.util.List;
 public interface OrderService {
     String viewClientOrder(HttpServletRequest req, Model model, List<String> orderItemDtoStringList);
     String viewClientOrder(HttpServletRequest req, Model model, OrderItemDto orderItemDto);
+
+    String viewClientOrder2(HttpServletRequest req, Model model, OrderItemDto orderItemDto);
+    String viewClientOrderDiscount(HttpServletRequest req, Model model);
+    String viewClientOrderPayMethod(HttpServletRequest req, Model model);
+    Long createClientOrder2(HttpServletRequest req, ClientOrderForm2 clientOrderForm2, ClientOrderDiscountForm clientOrderDiscountForm, ClientOrderPayMethodForm clientOrderPayMethodForm);
+
+
     Long createClientOrder(HttpServletRequest req, ClientOrderForm clientOrderForm);
     String viewNonClientOrder(HttpServletRequest req, Model model, List<String> orderItemDtoStringList);
     String viewNonClientOrder(HttpServletRequest req, Model model, OrderItemDto orderItemDto);

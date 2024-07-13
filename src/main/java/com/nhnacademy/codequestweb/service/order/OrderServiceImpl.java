@@ -9,15 +9,12 @@ import com.nhnacademy.codequestweb.client.coupon.CouponClient;
 import com.nhnacademy.codequestweb.client.order.OrderClient;
 import com.nhnacademy.codequestweb.client.order.OrderReviewClient;
 import com.nhnacademy.codequestweb.client.point.OrderPointClient;
-import com.nhnacademy.codequestweb.request.order.client.ClientOrderUsageCouponInfoDto;
 import com.nhnacademy.codequestweb.request.order.field.OrderItemDto;
 import com.nhnacademy.codequestweb.response.coupon.CouponOrderResponseDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientDeliveryAddressResponseDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientPhoneNumberResponseDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientPrivacyResponseDto;
-//import com.nhnacademy.codequestweb.response.order.client.ClientCouponUsableDto;
-import com.nhnacademy.codequestweb.response.order.client.ClientOrderForm;
-import com.nhnacademy.codequestweb.response.order.client.ClientOrderGetResponseDto;
+import com.nhnacademy.codequestweb.response.order.client.*;
 import com.nhnacademy.codequestweb.response.order.nonclient.NonClientOrderForm;
 import com.nhnacademy.codequestweb.response.order.nonclient.NonClientOrderGetResponseDto;
 import com.nhnacademy.codequestweb.response.order.pack.PackageInfoResponseDto;
@@ -29,7 +26,9 @@ import com.nhnacademy.codequestweb.service.mypage.MyPageService;
 import com.nhnacademy.codequestweb.service.product.BookProductService;
 import com.nhnacademy.codequestweb.service.shippingpolicy.ShippingPolicyService;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
+import com.sun.net.httpserver.HttpsServer;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -105,43 +104,47 @@ public class OrderServiceImpl implements OrderService {
         });
 
         // 쿠폰아이디 - 사용 가능 여부
-        Map<Long, Boolean> couponUsability = new HashMap(); // 상품 또는 카테고리에 적용 가능한지 + 일반 할인 쿠폰
-        // 쿠폰아이디 - 적용 가능 상품 아이디 리스트
+        Set<Long> couponUsability = new HashSet<>(); // 상품 또는 카테고리에 적용 가능한지 + 일반 할인 쿠폰
+        // 쿠폰아이디 - 적용 가능 상품 아이디 리스트. 사용할 수 있는 카테고리 할인 쿠폰, 상품 할인 쿠폰이 존재할 때 참고할 데이터.
         Map<Long, Set<Long>> appliableCouponProductListMap = new HashMap(); // 쿠폰을 적용할 수 있는 상품 리스트
 
-//        for(CouponOrderResponseDto couponOrderResponseDto : couponList){
-//            // 일반 할인 쿠폰인지 체크
-//            if(couponOrderResponseDto.getProductCoupon() == null &&
-//                    couponOrderResponseDto.getCategoryCoupon() == null &&
-//                    couponOrderResponseDto.getCouponPolicy() != null){
-//                couponUsability.put(couponOrderResponseDto.getCouponId(), true);
-//            }
-//            // 카테고리 적용 쿠폰
-//            else if(couponOrderResponseDto.getCategoryCoupon() != null){
-//                Long applicableProductCategoryId = couponOrderResponseDto.getCategoryCoupon().getProductCategoryId();
-//                for(OrderItemDto orderItemDto : orderItemDtoList){ // orderItem에 쿠폰을 적용할 수 있는지 없는지 확인.
-//                    if(orderItemDto.getCategoryIdList().contains(applicableProductCategoryId)){ // orderItem에 쿠폰을 적용할 수 있음
-//                        if(appliableCouponProductListMap.get(couponOrderResponseDto.getCouponId()) == null){
-//                            appliableCouponProductListMap.put(couponOrderResponseDto.getCouponId(), new HashSet());
-//                            appliableCouponProductListMap.get(couponOrderResponseDto.getCouponId()).add(orderItemDto.getProductId());
-//                        }
-//                        else {
-//                            appliableCouponProductListMap.get(couponOrderResponseDto.getCouponId()).add(orderItemDto.getProductId());
-//                        }
-//                    }
-//                }
-//            }
-//            // 상품 적용 쿠폰
-//            else if(couponOrderResponseDto.getProductCoupon() != null){
-//                Long applicableProductCategoryId = couponOrderResponseDto.getCouponId();
-//                for(OrderItemDto orderItemDto : orderItemDtoList){ // orderItem에 쿠폰을 적용할 수 있는지 없는지 확인.
-//                    if(){
-//
-//                    }
-//                }
-//            }
-//        }
-
+        for(CouponOrderResponseDto couponOrderResponseDto : couponList){
+            // 일반 할인 쿠폰인지 체크
+            if(couponOrderResponseDto.getProductCoupon() == null &&
+                    couponOrderResponseDto.getCategoryCoupon() == null &&
+                    couponOrderResponseDto.getCouponPolicy() != null){
+                couponUsability.add(couponOrderResponseDto.getCouponId());
+            }
+            // 카테고리 적용 쿠폰
+            else if(couponOrderResponseDto.getCategoryCoupon() != null){
+                // 적용할 수 있는 상품 카테고리 아이디
+                Long applicableProductCategoryId = couponOrderResponseDto.getCategoryCoupon().getProductCategoryId();
+                for(OrderItemDto orderItemDto : orderItemDtoList){ // orderItem에 쿠폰을 적용할 수 있는지 없는지 확인.
+                    if(orderItemDto.getCategoryIdList().contains(applicableProductCategoryId)){ // orderItem에 쿠폰을 적용할 수 있음
+                        if(appliableCouponProductListMap.get(couponOrderResponseDto.getCouponId()) == null){
+                            appliableCouponProductListMap.put(couponOrderResponseDto.getCouponId(), new HashSet());
+                            appliableCouponProductListMap.get(couponOrderResponseDto.getCouponId()).add(orderItemDto.getProductId());
+                        }
+                        else {
+                            appliableCouponProductListMap.get(couponOrderResponseDto.getCouponId()).add(orderItemDto.getProductId());
+                        }
+                    }
+                }
+            }
+            // 상품 적용 쿠폰
+            else if(couponOrderResponseDto.getProductCoupon() != null){
+                Long applicableProductId = couponOrderResponseDto.getProductCoupon().getProductId();
+                for(OrderItemDto orderItemDto : orderItemDtoList){ // orderItem에 쿠폰을 적용할 수 있는지 없는지 확인.
+                    if(applicableProductId.equals(orderItemDto.getProductId())){
+                        if(appliableCouponProductListMap.get(couponOrderResponseDto.getCouponId()) == null){
+                            appliableCouponProductListMap.put(couponOrderResponseDto.getCouponId(), new HashSet());
+                            appliableCouponProductListMap.get(couponOrderResponseDto.getCouponId()).add(orderItemDto.getProductId());
+                        }
+                        appliableCouponProductListMap.get(couponOrderResponseDto.getCouponId()).add(orderItemDto.getProductId());
+                    }
+                }
+            }
+        }
 
         // 포장지 정보
         List<PackageInfoResponseDto> packageList = getAllPackages();
@@ -159,6 +162,7 @@ public class OrderServiceImpl implements OrderService {
         model.addAttribute("phoneNumberList", phoneNumberList);
         model.addAttribute("orderedPerson", orderedPerson);
         model.addAttribute("couponList", couponList);
+        model.addAttribute("couponUsability", couponUsability); // 주문페이지에서 사용가능한 유효한 쿠폰들. 추후 주문페이지에서 옵션 상품 선택에 따라 달라질 수 있음(최소주문금액 때문에)
 
         return "index";
     }
@@ -219,6 +223,101 @@ public class OrderServiceImpl implements OrderService {
 
         return "index";
     }
+
+    // ###
+
+
+    @Override
+    public String viewClientOrder2(HttpServletRequest req, Model model, OrderItemDto orderItemDto) {
+
+        HttpHeaders headers = getHeader(req);
+
+        ClientPrivacyResponseDto orderedPerson = myPageService.getPrivacy(headers).getBody();
+
+        // ** 바인딩할 객체 **
+        ClientOrderForm2 clientOrderForm2 = ClientOrderForm2.builder().orderedPersonName(orderedPerson.getClientName()).build();
+
+        // 주소목록
+        List<ClientDeliveryAddressResponseDto> deliveryAddressList = myPageService.getDeliveryAddresses(headers).getBody();
+
+        // 핸드폰 번호
+        List<ClientPhoneNumberResponseDto> phoneNumberList = myPageService.getPhoneNumbers(headers).getBody();
+
+        // 배송비 정책
+        ShippingPolicyGetResponseDto shippingPolicy = shippingPolicyService.getShippingPolicy(headers, "도서산간지역외");
+
+        // 바인딩 객체에 주문 상품 가격 정보 추가.
+        // 책 상세 정보
+        BookProductGetResponseDto book = bookProductService.getSingleBookInfo(headers, orderItemDto.getProductId()).getBody();
+
+        // 폼에 추가
+        clientOrderForm2.addOrderDetailDtoItem(
+                ClientOrderForm2.OrderDetailDtoItem.builder()
+                        .productId(orderItemDto.getProductId())
+                        .productName(book.title())
+                        .quantity(orderItemDto.getQuantity())
+                        .categoryIdList(orderItemDto.getCategoryIdList())
+                        .packableProduct(book.packable())
+                        .productSinglePrice(book.productPriceSales())
+                        .build()
+        );
+
+        // 포장지 정보
+        List<PackageInfoResponseDto> packageList = getAllPackages();
+
+        model.addAttribute("view", "clientOrder2");
+
+        model.addAttribute("clientOrderForm2", clientOrderForm2);
+        model.addAttribute("packageList", packageList);
+        model.addAttribute("shippingPolicy", shippingPolicy);
+        model.addAttribute("deliveryAddressList", deliveryAddressList);
+        model.addAttribute("phoneNumberList", phoneNumberList);
+        model.addAttribute("orderedPerson", orderedPerson);
+
+        return "index";
+    }
+
+    @Override
+    public String viewClientOrderDiscount(HttpServletRequest req, Model model) {
+
+        HttpHeaders headers = getHeader(req);
+
+        ClientOrderForm2 clientOrderForm2 = (ClientOrderForm2) req.getSession().getAttribute("clientOrderForm2");
+
+        ClientOrderDiscountForm clientOrderDiscountForm = ClientOrderDiscountForm.builder().payAmount(clientOrderForm2.getProductTotalAmount() + clientOrderForm2.getShippingFee()).build();
+
+        Integer usablePoint = orderPointClient.findPoint(headers).getTotalPoint();
+
+        // 쿠폰 정보
+        List<CouponOrderResponseDto> couponList = couponClient.findClientCoupon(headers);
+
+        // 쿠폰 로직
+
+
+
+
+
+        model.addAttribute("view", "clientOrderDiscount");
+
+        model.addAttribute("clientOrderForm2", clientOrderForm2);
+        model.addAttribute("clientOrderDiscountForm", clientOrderDiscountForm);
+        model.addAttribute("usablePoint", usablePoint);
+
+        return "index";
+    }
+
+    @Override
+    public String viewClientOrderPayMethod(HttpServletRequest req, Model model) {
+        model.addAttribute("view", "clientOrderPayMethod");
+        return "index";
+    }
+
+    @Override
+    public Long createClientOrder2(HttpServletRequest req, ClientOrderForm2 clientOrderForm2, ClientOrderDiscountForm clientOrderDiscountForm, ClientOrderPayMethodForm clientOrderPayMethodForm) {
+        return 0L;
+    }
+
+    // ###
 
     @Override
     public String viewNonClientOrder(HttpServletRequest req, Model model, OrderItemDto orderItemDto) {

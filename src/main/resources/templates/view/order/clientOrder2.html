@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" th:fragment="clientOrderFragment()">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="clientOrder2Fragment()">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -31,9 +31,8 @@
     </style>
 </head>
 <body>
-
-<form th:action="@{/api/client/orders}" th:object="${clientOrderForm}" method="post">
-
+<form th:action="@{/client/order-discount}" th:object="${clientOrderForm2}" method="post">
+    <h1></h1>
     <div class="sub-container">
         <h3>주문 상품 목록</h3>
         <table class="table table-striped" id="order-item-table" th:border="1">
@@ -102,7 +101,7 @@
     </div>
 
     <div class="sub-container">
-        <h3>예상 결제가격</h3>
+        <h3>예상 결제 금액</h3>
         <div>(<span id="minPurchasePrice" th:text="${shippingPolicy.minPurchaseAmount}"></span>원 이상 구매시 무료배송)</div>
         <div>
             <span>배송비: </span>
@@ -121,60 +120,12 @@
             </span>
         </div>
         <div>
-            <span>쿠폰 할인 금액: </span>
+            <span>예상 결제 금액: </span>
             <span>
                 <label>
-                    <input class="readonly-input" th:field="*{couponDiscountAmount}" readonly/>
+                    <input class="readonly-input" id="payAmount" readonly/>
                 </label>
             </span>
-        </div>
-        <div>
-            <span>포인트 사용 금액: </span>
-            <span>
-                <label>
-                    <input class="readonly-input" th:field="*{usedPointDiscountAmount}" readonly/>
-                </label>
-            </span>
-        </div>
-        <div>
-            <span>최종 결제 금액: </span>
-            <span>
-                <label>
-                    <input class="readonly-input" th:field="*{payAmount}" readonly/>
-                </label>
-            </span>
-        </div>
-    </div>
-
-    <div class="sub-container">
-        <h3>쿠폰 적용</h3>
-        <div class="coupons">
-            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#couponSelectModal" id="use-coupon" style="font-size: small; padding: 0; height: 30px; width: 90px">쿠폰 선택하기</button>
-            <div id="selectedCouponForm"></div>
-        </div>
-        <div id="selectedCouponInfo">
-            <div>(쿠폰 중복 적용 불가합니다)</div>
-            <div class="border border-secondary-subtle rounded" style="width: 60%; padding: 1%; margin: 1%" hidden="hidden"></div>
-        </div>
-    </div>
-
-    <div class="sub-container">
-        <h3>포인트 사용</h3>
-        <div class="remaining-points">
-            <label for="remaining-points"> 사용 가능 포인트: </label>
-            <span id="remaining-points" th:text="${usablePoint}"></span>
-        </div>
-        <div class="use-points">
-            <label th:for="usedPointDiscountAmount"> 사용할 포인트:
-                <input type="number" id="inputUsedPointAmount" min="0" th:value="0"/>
-            </label>
-            <button type="button" class="btn btn-outline-primary" onclick="applyPoints()" style="font-size: small; padding: 0; height: 30px; width: 90px">적용하기</button>
-        </div>
-        <div id="exceed-remaining-point-message" style="color: red; display: none;">
-            사용할 포인트는 총 잔여 포인트보다 많을 수 없습니다.
-        </div>
-        <div id="negative-amount-message" style="color: red; display: none;">
-            결제 금액이 0원 미만일 수 없습니다.
         </div>
     </div>
 
@@ -246,29 +197,7 @@
     </div>
 
     <div class="sub-container">
-        <h3>예상 적립 금액</h3>
-        <div>
-            <span th:field="*{accumulatePoint}"></span>원
-        </div>
-    </div>
-
-    <div class="sub-container">
-        <div>
-            <h3>결제 수단 선택</h3>
-            <label>
-                <input type="radio" th:field="*{paymentMethod}" value="0"> 토스 페이먼츠
-            </label>
-            <label>
-                <input type="radio" name="paymentMethodId" value="1" disabled> 신용카드
-            </label>
-            <label>
-                <input type="radio" name="paymentMethodId" value="2" disabled> 페이코
-            </label>
-        </div>
-    </div>
-
-    <div class="sub-container">
-        <button type="submit" class="btn text-white" style="background-color:#ecb54f; width: 15%;" onclick="tryOrder()">결제하기</button>
+        <button type="submit" class="btn text-white" style="background-color:#ecb54f; width: 15%;" >다음단계</button>
     </div>
 
     <!-- 주소선택 Modal -->
@@ -326,14 +255,14 @@
                     <div class="border border-secondary-subtle rounded" th:each="coupon, iterStat : ${couponList}" style="margin: 10px; padding: 10px">
                         <div class="couponForm">
                             <div>
-                                [[${coupon.couponPolicyDto.couponPolicyDescription}]]
+                                [[${coupon.couponPolicy.couponPolicyDescription}]]
                             </div>
                             <div>할인금액:
-                                <span th:if="${coupon.couponPolicyDto.discountType == 'AMOUNTDISCOUNT'}"><span>[[${coupon.couponPolicyDto.discountValue}]]</span>원</span>
-                                <span th:if="${coupon.couponPolicyDto.discountType == 'PERCENTAGEDISCOUNT'}"><span>[[${coupon.couponPolicyDto.discountValue}]]</span>%</span>
+                                <span th:if="${coupon.couponPolicy.discountType == 'AMOUNTDISCOUNT'}"><span>[[${coupon.couponPolicy.discountValue}]]</span>원</span>
+                                <span th:if="${coupon.couponPolicy.discountType == 'PERCENTAGEDISCOUNT'}"><span>[[${coupon.couponPolicy.discountValue}]]</span>%</span>
                             </div>
-                            <div>최소구매금액: <span>[[${coupon.couponPolicyDto.minPurchaseAmount}]] 원</span></div>
-                            <div th:if="${coupon.couponPolicyDto.discountType == 'PERCENTAGEDISCOUNT'}">최대 할인 금액: <span>[[${coupon.couponPolicyDto.maxDiscountAmount}]] 원</span></div>
+                            <div>최소구매금액: <span>[[${coupon.couponPolicy.minPurchaseAmount}]] 원</span></div>
+                            <div th:if="${coupon.couponPolicy.discountType == 'PERCENTAGEDISCOUNT'}">최대 할인 금액: <span>[[${coupon.couponPolicy.maxDiscountAmount}]] 원</span></div>
                         </div>
                         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" th:onclick="handleSelectCoupon([[${coupon}]])" disabled=>선택</button>
                     </div>
@@ -375,7 +304,7 @@
         document.getElementById("orderDetailDtoItemList" + index + ".optionProductId").value = selectedOption.dataset.optionProductId;
         document.getElementById("orderDetailDtoItemList" + index + ".optionProductName").value = selectedOption.dataset.optionProductName;
         document.getElementById("orderDetailDtoItemList" + index + ".optionProductSinglePrice").value = selectedOption.dataset.optionProductPrice;
-        updateProductTotalAmount();
+        updateProductTotalAmountClient();
         updateShippingFee();
         updatePayAmountClient();
     }
@@ -392,47 +321,6 @@
 
     function toggleCalendar(checked, calendar){
         document.getElementById(calendar).hidden = !checked;
-    }
-
-    <!--포인트 관련-->
-    function applyPoints() {
-        const exceedMessage = document.getElementById('exceed-remaining-point-message');
-        const negativeAmountMessage = document.getElementById('negative-amount-message');
-
-        const inputUsedPointAmount = parseInt(document.getElementById('inputUsedPointAmount').value);
-        const remainingPoints = parseInt(document.getElementById('remaining-points').text);
-        const productTotalAmount = parseInt(document.getElementById('productTotalAmount').value);
-        const shippingFee = parseInt(document.getElementById('shippingFee').value);
-        const couponDiscountAmount = parseInt(document.getElementById('couponDiscountAmount').value);
-        const maxDiscountableAmount = productTotalAmount + shippingFee - couponDiscountAmount;
-
-        exceedMessage.style.display = 'none';
-        negativeAmountMessage.style.display = 'none';
-
-        if (inputUsedPointAmount > remainingPoints) {
-            exceedMessage.style.display = 'block';
-        } else {
-            exceedMessage.style.display = 'none';
-        }
-
-        if(inputUsedPointAmount > maxDiscountableAmount){
-            negativeAmountMessage.style.display = 'block';
-        } else {
-            negativeAmountMessage.style.display = 'none';
-        }
-
-        if(maxDiscountableAmount > remainingPoints){
-            document.getElementById('inputUsedPointAmount').value = remainingPoints;
-            document.getElementById('usedPointDiscountAmount').value = remainingPoints;
-        }
-        else {
-            document.getElementById('inputUsedPointAmount').value = inputUsedPointAmount;
-            document.getElementById('usedPointDiscountAmount').value = inputUsedPointAmount;
-        }
-
-
-        document.getElementById('payAmount').value = productTotalAmount + shippingFee - couponDiscountAmount - parseInt(document.getElementById('usedPointDiscountAmount').value);
-
     }
 
     <!--주소 선택 관련-->
@@ -501,26 +389,10 @@
     }
 
     function updatePayAmountClient(){
-        let pointDiscountAmount = 0;
-        let couponDiscountAmount = 0;
         const shippingFee = parseInt(document.getElementById("shippingFee").value);
         const productTotalAmount = parseInt(document.getElementById("productTotalAmount").value);
-
-        if(document.getElementById("usedPointDiscountAmount").value != null) {
-            pointDiscountAmount = parseInt(document.getElementById("usedPointDiscountAmount").value);
-        }
-
-        if(document.getElementById("usedPointDiscountAmount").value != null) {
-            couponDiscountAmount = parseInt(document.getElementById("couponDiscountAmount").value);
-        }
-
         // 최종 결제 금액
-        document.getElementById("payAmount").value = productTotalAmount + shippingFee - pointDiscountAmount - couponDiscountAmount;
-    }
-
-    <!--쿠폰 적용-->
-    function usableCoupon(){
-
+        document.getElementById("payAmount").value = productTotalAmount + shippingFee;
     }
 
 </script>
