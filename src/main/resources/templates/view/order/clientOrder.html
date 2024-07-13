@@ -326,14 +326,14 @@
                     <div class="border border-secondary-subtle rounded" th:each="coupon, iterStat : ${couponList}" style="margin: 10px; padding: 10px">
                         <div class="couponForm">
                             <div>
-                                [[${coupon.couponPolicy.couponPolicyDescription}]]
+                                [[${coupon.couponPolicyDto.couponPolicyDescription}]]
                             </div>
                             <div>할인금액:
-                                <span th:if="${coupon.couponPolicy.discountType == 'AMOUNTDISCOUNT'}"><span>[[${coupon.couponPolicy.discountValue}]]</span>원</span>
-                                <span th:if="${coupon.couponPolicy.discountType == 'PERCENTAGEDISCOUNT'}"><span>[[${coupon.couponPolicy.discountValue}]]</span>%</span>
+                                <span th:if="${coupon.couponPolicyDto.discountType == 'AMOUNTDISCOUNT'}"><span>[[${coupon.couponPolicyDto.discountValue}]]</span>원</span>
+                                <span th:if="${coupon.couponPolicyDto.discountType == 'PERCENTAGEDISCOUNT'}"><span>[[${coupon.couponPolicyDto.discountValue}]]</span>%</span>
                             </div>
-                            <div>최소구매금액: <span>[[${coupon.couponPolicy.minPurchaseAmount}]] 원</span></div>
-                            <div th:if="${coupon.couponPolicy.discountType == 'PERCENTAGEDISCOUNT'}">최대 할인 금액: <span>[[${coupon.couponPolicy.maxDiscountAmount}]] 원</span></div>
+                            <div>최소구매금액: <span>[[${coupon.couponPolicyDto.minPurchaseAmount}]] 원</span></div>
+                            <div th:if="${coupon.couponPolicyDto.discountType == 'PERCENTAGEDISCOUNT'}">최대 할인 금액: <span>[[${coupon.couponPolicyDto.maxDiscountAmount}]] 원</span></div>
                         </div>
                         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" th:onclick="handleSelectCoupon([[${coupon}]])">선택</button>
                     </div>
