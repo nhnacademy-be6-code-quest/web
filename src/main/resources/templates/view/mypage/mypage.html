@@ -40,12 +40,15 @@
         <div th:replace="~{view/point/clientUsagePoint :: myPageUsedPointFragment ('pointUsed')}"></div>
     </div>
     <div class="mypage-wrapper" th:if="${mypage != null} and ${#strings.equals(mypage, 'pointReward')}">
-    <div th:replace="~{view/point/clientAccumulationPoint :: myPageRewardPointFragment ('pointReward')}"></div>
-</div>
+        <div th:replace="~{view/point/clientAccumulationPoint :: myPageRewardPointFragment ('pointReward')}"></div>
+    </div>
 
     <div class="mypage-wrapper" th:if="${mypage != null} and ${#strings.equals(mypage, 'orders')}">
         <div th:replace="~{view/mypage/orders.html :: OrdersFragment ('orders')}"></div>
     </div>
 
+    <div class="mypage-wrapper" th:if="${mypage != null} and ${#strings.equals(mypage, 'review')}">
+        <div th:replace="~{view/mypage/myReview.html :: myReviewFragment ('reviews', 'page', 'totalPage')}"></div>
+    </div>
 </div>
 </html>

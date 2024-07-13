@@ -1,6 +1,5 @@
 package com.nhnacademy.codequestweb.controller.mypage;
 
-import com.nhnacademy.codequestweb.domain.Status;
 import com.nhnacademy.codequestweb.request.mypage.ClientRegisterAddressRequestDto;
 import com.nhnacademy.codequestweb.request.mypage.ClientRegisterPhoneNumberRequestDto;
 import com.nhnacademy.codequestweb.request.mypage.ClientUpdatePrivacyRequestDto;
@@ -11,15 +10,12 @@ import com.nhnacademy.codequestweb.response.mypage.ClientPrivacyResponseDto;
 import com.nhnacademy.codequestweb.response.order.client.ClientOrderGetResponseDto;
 import com.nhnacademy.codequestweb.response.point.PointAccumulationMyPageResponseDto;
 import com.nhnacademy.codequestweb.response.point.PointUsageMyPageResponseDto;
-import com.nhnacademy.codequestweb.response.review.NoPhotoReviewResponseDTO;
-import com.nhnacademy.codequestweb.response.review.PhotoReviewResponseDTO;
+import com.nhnacademy.codequestweb.response.review.ReviewInfoResponseDto;
 import com.nhnacademy.codequestweb.service.coupon.CouponService;
 import com.nhnacademy.codequestweb.service.mypage.MyPageService;
 import com.nhnacademy.codequestweb.service.order.OrderService;
 import com.nhnacademy.codequestweb.service.point.PointAccumulationService;
 import com.nhnacademy.codequestweb.service.point.PointUsageService;
-import com.nhnacademy.codequestweb.service.review.NoPhotoReviewService;
-import com.nhnacademy.codequestweb.service.review.PhotoReviewService;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
 import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,14 +24,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
@@ -52,8 +44,6 @@ public class MyPageController {
 
     private static final int DEFAULT_PAGE_SIZE = 3;
     private final MyPageService myPageService;
-    private final NoPhotoReviewService noPhotoReviewService;
-    private final PhotoReviewService photoReviewService;
     private final PointUsageService pointUsageService;
     private final PointAccumulationService pointAccumulationService;
     private final CouponService couponService;
@@ -232,57 +222,21 @@ public class MyPageController {
         return "redirect:" + (referer != null ? referer : "/") + "?alterMessage=" + encodedMessage;
     }
 
-    @GetMapping("/mypage/reviews/no-photo")
-    public String getNoPhotoReviews(HttpServletRequest req, Model model, Pageable pageable) {
+    @GetMapping("/mypage/coupons")
+    public String getCoupon( HttpServletRequest req,  @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "6") int size) {
         if (CookieUtils.getCookieValue(req, "access") == null) {
             return "redirect:/auth";
         }
-
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
-
         req.setAttribute("view", "mypage");
-        req.setAttribute("mypage", "noPhotoReviews");
-
-        Pageable pageRequest = PageRequest.of(pageable.getPageNumber(), DEFAULT_PAGE_SIZE, Sort.by(
-            Sort.Direction.DESC, "registerDate"));
-
-        ResponseEntity<Page<NoPhotoReviewResponseDTO>> noPhotoResponseEntity = noPhotoReviewService.getAllReviewsByClientId(
-            headers, pageRequest);
-        log.info("/mypage/reviews/no-photo response: {}", noPhotoResponseEntity.getBody());
-
-        Page<NoPhotoReviewResponseDTO> noPhotoReviews = noPhotoResponseEntity.getBody();
-        model.addAttribute("reviews", noPhotoReviews);
-
+        req.setAttribute("mypage", "coupons");
+        req.setAttribute("activeSection", "coupon");
+        Page<CouponMyPageCouponResponseDto> coupons = couponService.findMyPageCoupons(headers, page ,size);
+        req.setAttribute("coupons", coupons);
         return "index";
+
     }
-
-    @GetMapping("/mypage/reviews/photo")
-    public String getPhotoReviews(HttpServletRequest req, Model model, Pageable pageable) {
-        if (CookieUtils.getCookieValue(req, "access") == null) {
-            return "redirect:/auth";
-        }
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("access", CookieUtils.getCookieValue(req, "access"));
-
-        req.setAttribute("view", "mypage");
-        req.setAttribute("mypage", "photoReviews");
-
-        Pageable pageRequest = PageRequest.of(pageable.getPageNumber(), DEFAULT_PAGE_SIZE, Sort.by(
-            Sort.Direction.DESC, "registerDate"));
-
-        ResponseEntity<Page<PhotoReviewResponseDTO>> photoResponseEntity = photoReviewService.getAllReviewsByClientId(
-            headers, pageRequest);
-        log.info("/mypage/reviews/photo response: {}", photoResponseEntity.getBody());
-
-        Page<PhotoReviewResponseDTO> photoReviews = photoResponseEntity.getBody();
-        model.addAttribute("reviews", photoReviews);
-
-        return "index";
-    }
-
-
     @GetMapping("/mypage/point/reward")
     public String myPageRewardPoint (HttpServletRequest req, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "100") int size){
         HttpHeaders headers = new HttpHeaders();
@@ -330,4 +284,15 @@ public class MyPageController {
         return "index";
     }
 
+    @GetMapping("/mypage/my-review")
+    public String mypageReview(HttpServletRequest req,
+                               @RequestParam(name = "page") int page) {
+        Page<ReviewInfoResponseDto> reivewInfoPage = myPageService.getMyReviewInfo(CookieUtils.getCookieValue(req, "access"), page, 5);
+        req.setAttribute("view", "mypage");
+        req.setAttribute("mypage", "review");
+        req.setAttribute("reviews", reivewInfoPage.getContent());
+        req.setAttribute("totalPage", reivewInfoPage.getTotalPages());
+        req.setAttribute("page", page);
+        return "index";
+    }
 }
