@@ -319,6 +319,7 @@ public class MyPageController {
 
         req.setAttribute("view", "mypage");
         req.setAttribute("mypage", "orders");
+        req.setAttribute("activeSection", "order");
 
         Page<ClientOrderGetResponseDto> orderResponseDtoList = orderService.getClientOrders(headers, pageSize, pageNo, "orderDatetime", "desc");
 

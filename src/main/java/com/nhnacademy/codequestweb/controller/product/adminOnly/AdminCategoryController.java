@@ -70,6 +70,7 @@ public class AdminCategoryController {
         model.addAttribute("view", "adminPage");
         model.addAttribute("adminPage", "categories");
         model.addAttribute("url", "/admin/categories?");
+        model.addAttribute("activeSection","book");
         return "index";
     }
 
