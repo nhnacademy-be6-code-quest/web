@@ -34,6 +34,6 @@ public interface PaymentOrderClient {
         Long orderId);
 
     @PutMapping("/api/order/{orderId}")
-    public ResponseEntity<String> updateOrderStatus(@PathVariable(name = "orderId") Long orderId,
+    ResponseEntity<String> updateOrderStatus(@PathVariable(name = "orderId") Long orderId,
         @RequestParam(name = "status", required = true) String status);
 }

@@ -1,6 +1,7 @@
 package com.nhnacademy.codequestweb.controller.home;
 
 import com.nhnacademy.codequestweb.service.home.HomeService;
+import com.nhnacademy.codequestweb.utils.CookieUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,8 +20,9 @@ public class HomeController {
         if (req.getParameter("alterMessage") != null) {
             req.setAttribute("alterMessage", req.getParameter("alterMessage"));
         }
-        req.setAttribute("popularBooks", homeService.getPopularBooks());
-        req.setAttribute("newBooks", homeService.getNewBooks());
+        req.setAttribute("popularBooks", homeService.getPopularBooks(CookieUtils.setHeader(req)));
+        req.setAttribute("newBooks", homeService.getNewBooks(CookieUtils.setHeader(req)));
+        req.setAttribute("almostSoldOutBooks", homeService.getAlmostSoldOutBooks(CookieUtils.setHeader(req)));
         return "index";
     }
 }

@@ -27,20 +27,25 @@
 
                 <div th:if="${newBooks != null}" th:each="book : ${newBooks}" class="swiper-slide" style="max-width: 230px;">
                     <div class="card position-relative">
-                        <a th:href="@{/product/books/{id}(id = ${book.productId})}"><img th:src="${book.cover}" class="img-fluid rounded-4" alt="image" style="height: 360px"></a>
+                        <a th:href="@{/product/books/{id}(id = ${book.productId})}"><img th:src="${book.cover}" class="img-fluid rounded-4" alt="image" style="height: 360px; display: block; border: black solid 1px"></a>
+                        <div class="col-md-2 text-end">
+                            <div th:if="${book.hasLike()}">
+                                <div class="prod-favorite ">
+                                    <button type="button" class="prod-favorite-btn prod-favorite-on"></button>
+                                </div>
+                            </div>
+                        </div>
                         <div class="card-body p-0">
                             <a th:href="@{/product/books/{id}(id = ${book.productId})}">
                                 <h5 class="home-product-title card-title pt-4 m-0" th:text="${book.title}"></h5>
                             </a>
-                            <h5 class="secondary-font text-primary"><span th:text="${book.productPriceSales}"></span>원</h5>
-                            <div class="d-flex flex-wrap mt-2">
-                                <a href="#" class="btn-cart me-3 px-3 pt-3 pb-3">
-                                    <h6 class="text-uppercase m-0">장바구니 추가</h6>
-                                </a>
-                                <a href="#" class="btn-wishlist px-3 pt-3 ">
-                                    <iconify-icon icon="fluent:heart-28-filled" class="fs-5"></iconify-icon>
-                                </a>
+                            <div style="margin-top: -23px;" >
+                                <span th:if="${book.productPriceSales < book.productPriceStandard}"
+                                      th:text="'(' + ${#numbers.formatDecimal(book.productPriceStandard, 0, 'COMMA', 0, 'POINT')} + '원)'"
+                                      style="text-decoration: line-through; color: #bdc3c7; font-size: 0.8em; margin-left: 10px; margin-top: -23px;">정가</span>
+                                <span style="margin-left: 5px; color: #ff5f50" th:text="${book.productPriceSales < book.productPriceStandard? '(- ' + (100 - (100*book.productPriceSales/book.productPriceStandard) + '%)')  : ''}">할인율</span>
                             </div>
+                            <h5 class="secondary-font text-primary" th:text="${book.productPriceSales < book.productPriceStandard? ' -> ' : ''} + ${#numbers.formatDecimal(book.productPriceSales, 0, 'COMMA', 0, 'POINT')} + '원'"></h5>
                         </div>
                     </div>
                 </div>
