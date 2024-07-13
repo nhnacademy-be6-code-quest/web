@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org" th:fragment="productBookDetailFragment ('book')">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" th:fragment="productBookDetailFragment ('book', 'reviews', 'averageScore', 'page', 'totalPage')">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -35,12 +35,10 @@
             background-color: #f4f4f4;
         }
         .product-book-detail-container {
-            width: 1200px;
+            width: 50vw;
             overflow: hidden;
 
             display: flex;
-            justify-content: center;
-            align-items: center;
         }
         .book-container {
             min-width: 800px;
@@ -285,4 +283,7 @@
         /*]]>*/
     </script>
 </section>
+<div th:if="${reviews != null}">
+    <section th:replace="~{view/review/productReviewList.html :: reviewListFragment ('reviews', 'averageScore', 'book', 'page', 'totalPage')}"></section>
+</div>
 </html>

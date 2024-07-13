@@ -1,6 +1,8 @@
 package com.nhnacademy.codequestweb.service.mypage;
 
 import com.nhnacademy.codequestweb.client.auth.UserClient;
+import com.nhnacademy.codequestweb.client.product.bookProduct.BookProductClient;
+import com.nhnacademy.codequestweb.client.review.ReviewClient;
 import com.nhnacademy.codequestweb.request.auth.ClientRegisterRequestDto;
 import com.nhnacademy.codequestweb.request.mypage.ClientRegisterAddressRequestDto;
 import com.nhnacademy.codequestweb.request.mypage.ClientRegisterPhoneNumberRequestDto;
@@ -9,7 +11,9 @@ import com.nhnacademy.codequestweb.response.auth.ClientRegisterResponseDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientDeliveryAddressResponseDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientPhoneNumberResponseDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientPrivacyResponseDto;
+import com.nhnacademy.codequestweb.response.review.ReviewInfoResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -22,6 +26,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MyPageService {
     private final UserClient client;
+    private final ReviewClient reviewClient;
+    private final BookProductClient bookProductClient;
 
     public ResponseEntity<ClientRegisterResponseDto> register(ClientRegisterRequestDto clientRegisterRequestDto) {
         return client.register(clientRegisterRequestDto);
@@ -61,5 +67,14 @@ public class MyPageService {
 
     public ResponseEntity<String> updateClient(HttpHeaders headers, ClientUpdatePrivacyRequestDto clientUpdatePrivacyRequestDto) {
         return client.updateClient(headers, clientUpdatePrivacyRequestDto);
+    }
+
+    public Page<ReviewInfoResponseDto> getMyReviewInfo(String access, int page, int size) {
+        Page<ReviewInfoResponseDto> reviewInfoPage = reviewClient.getMyReviews(page, size, access).getBody();
+        if (reviewInfoPage != null) {
+            reviewInfoPage.getContent()
+                    .forEach(i -> i.setProductName(bookProductClient.getSingleBookInfo(null, i.getProductId()).getBody().productName()));
+        }
+        return reviewInfoPage;
     }
 }

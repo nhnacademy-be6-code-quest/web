@@ -10,6 +10,7 @@ import com.nhnacademy.codequestweb.response.mypage.ClientPrivacyResponseDto;
 import com.nhnacademy.codequestweb.response.order.client.ClientOrderGetResponseDto;
 import com.nhnacademy.codequestweb.response.point.PointAccumulationMyPageResponseDto;
 import com.nhnacademy.codequestweb.response.point.PointUsageMyPageResponseDto;
+import com.nhnacademy.codequestweb.response.review.ReviewInfoResponseDto;
 import com.nhnacademy.codequestweb.service.coupon.CouponService;
 import com.nhnacademy.codequestweb.service.mypage.MyPageService;
 import com.nhnacademy.codequestweb.service.order.OrderService;
@@ -283,4 +284,15 @@ public class MyPageController {
         return "index";
     }
 
+    @GetMapping("/mypage/my-review")
+    public String mypageReview(HttpServletRequest req,
+                               @RequestParam(name = "page") int page) {
+        Page<ReviewInfoResponseDto> reivewInfoPage = myPageService.getMyReviewInfo(CookieUtils.getCookieValue(req, "access"), page, 5);
+        req.setAttribute("view", "mypage");
+        req.setAttribute("mypage", "review");
+        req.setAttribute("reviews", reivewInfoPage.getContent());
+        req.setAttribute("totalPage", reivewInfoPage.getTotalPages());
+        req.setAttribute("page", page);
+        return "index";
+    }
 }

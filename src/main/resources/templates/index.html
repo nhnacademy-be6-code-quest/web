@@ -72,7 +72,7 @@
     <section th:replace="~{view/product/productListPage.html :: productListFragment ('productList', 'mainText', 'page', 'totalPage', 'sort', 'desc')}"></section>
 </div>
 <div th:if="${view != null} and ${#strings.equals(view, 'productBookDetail')}">
-    <section th:replace="~{view/product/productBookDetail.html :: productBookDetailFragment ('book')}"></section>
+    <section th:replace="~{view/product/productBookDetail.html :: productBookDetailFragment ('book', 'reviews', 'averageScore', 'page', 'totalPage')}"></section>
 </div>
 
 <div th:if="${view != null} and ${#strings.equals(view, 'bookPage')}">
@@ -85,6 +85,10 @@
 
 <div th:if="${view != null} and ${#strings.equals(view, 'writeReview')}">
     <section th:replace="~{view/review/edit-review :: writeReviewFragment('writeReviewRequiredInfo')}"></section>
+</div>
+
+<div th:if="${view != null} and ${#strings.equals(view, 'reviewDetail')}">
+    <section th:replace="~{view/review/reviewDetail :: reviewDetail('review', 'product')}"></section>
 </div>
 
 <div th:if="${view != null} and ${#strings.equals(view, 'clientOrder')}">

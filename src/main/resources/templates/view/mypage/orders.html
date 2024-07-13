@@ -128,7 +128,7 @@
               <div th:if="${item.optionProductId} == null">
                 포장지 구매 안함
               </div>
-              <a class="yellow-btn" th:href="@{/write/review/{productOrderDetailId}(productOrderDetailId=${item.productOrderDetailId})}">
+              <a class="yellow-btn" th:href="@{/write/review(orderDetailId=${item.productOrderDetailId}, orderId=${order.orderId})}">
                 리뷰 쓰러 가기
               </a>
               <hr/>
