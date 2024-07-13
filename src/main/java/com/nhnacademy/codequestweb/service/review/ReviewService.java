@@ -12,10 +12,12 @@ import com.nhnacademy.codequestweb.response.product.book.BookProductGetResponseD
 import com.nhnacademy.codequestweb.response.review.ReviewInfoResponseDto;
 import com.nhnacademy.codequestweb.response.review.WriteReviewResponseDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ReviewService {
@@ -60,6 +62,7 @@ public class ReviewService {
         try {
             return reviewClient.writeReview(writeReviewRequestDto, access).getBody();
         } catch (Exception e) {
+            log.info("Could not post review : {}", e.getMessage());
             return "이미 작성된 리뷰입니다.";
         }
     }
