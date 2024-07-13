@@ -222,21 +222,6 @@ public class MyPageController {
         return "redirect:" + (referer != null ? referer : "/") + "?alterMessage=" + encodedMessage;
     }
 
-    @GetMapping("/mypage/coupons")
-    public String getCoupon( HttpServletRequest req,  @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "6") int size) {
-        if (CookieUtils.getCookieValue(req, "access") == null) {
-            return "redirect:/auth";
-        }
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("access", CookieUtils.getCookieValue(req, "access"));
-        req.setAttribute("view", "mypage");
-        req.setAttribute("mypage", "coupons");
-        req.setAttribute("activeSection", "coupon");
-        Page<CouponMyPageCouponResponseDto> coupons = couponService.findMyPageCoupons(headers, page ,size);
-        req.setAttribute("coupons", coupons);
-        return "index";
-
-    }
     @GetMapping("/mypage/point/reward")
     public String myPageRewardPoint (HttpServletRequest req, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "100") int size){
         HttpHeaders headers = new HttpHeaders();
