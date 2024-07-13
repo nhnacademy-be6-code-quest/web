@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" th:fragment="reviewListFragment ('reviews', 'averageScore', 'book', 'page', 'totalPage')">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>제품 리뷰</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        .review-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f4f4f4;
+        }
+        .review-wrapper {
+            width: 50vw;
+        }
+        .review-score {
+            background-color: #f8c471;
+        }
+        .review-content {
+            max-height: 100px;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .review-content.expanded {
+            max-height: 1000px;
+        }
+
+        .product-pagination {
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+        }
+
+        .pagination a {
+            color: #f8c471;
+            padding: 8px 16px;
+            text-decoration: none;
+            transition: background-color .3s;
+        }
+
+        .pagination a.active {
+            background-color: #f8c471;
+            color: white;
+            border-radius: 5px;
+        }
+
+        .pagination a:hover {
+            background-color: #ddd;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<section class="review-section">
+    <div class="review-wrapper">
+        <div class="container">
+            <h2>제품 리뷰</h2>
+
+            <!-- 평균 평점 -->
+            <div class="review-score alert alert-info" th:if="${averageScore != null}">
+                평균 평점: <span th:text="${#numbers.formatDecimal(averageScore, 1, 1)}"></span> / 5.0
+            </div>
+
+            <!-- 리뷰 목록 -->
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="review-card card mb-3" th:each="review : ${reviews}">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                평점: <span th:text="${review.reviewScore}"></span> / 5
+                            </h5>
+                            <h6 class="card-subtitle mb-2 text-muted"
+                                th:text="${#temporals.format(review.reviewRegisterDate, 'yyyy-MM-dd HH:mm')}">
+                            </h6>
+                            <div class="review-content" th:id="'review-' + ${review.reviewId}">
+                                <p th:utext="${review.reviewContent}"></p>
+                            </div>
+                            <button class="btn btn-link" th:onclick="'toggleReview(' + ${review.reviewId} + ')'">
+                                펼치기/접기
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function toggleReview(reviewId) {
+            const reviewContent = document.getElementById('review-' + reviewId);
+            reviewContent.classList.toggle('expanded');
+        }
+    </script>
+</section>
+
+<section class="product-pagination">
+    <div th:if="${#lists.size(reviews) > 0}" class="pagination" th:attr="data-total-pages=${totalPage},data-current-page=${page}">
+        <span th:if="${page > 1}">
+            <a th:href="'/product/books/' + ${book.productId} + '?page=' + ${page - 1}">Previous</a>
+        </span>
+
+        <span th:each="pageNum : ${#numbers.sequence(1, totalPage)}">
+            <a th:if="${pageNum == page + 1}" th:text="${pageNum}" th:class="'active'"></a>
+            <a th:if="${pageNum != page + 1}" th:href="'/product/books/' + ${book.productId} + '?page=' + ${pageNum - 1}" th:text="${pageNum}"></a>
+        </span>
+
+        <span th:if="${page + 1 < totalPage}">
+            <a th:href="'/product/books/' + ${book.productId} + '?page=' + ${page + 1}">Next</a>
+        </span>
+    </div>
+</section>
+</html>

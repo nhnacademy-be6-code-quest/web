@@ -5,7 +5,9 @@ import com.nhnacademy.codequestweb.request.product.ProductLikeRequestDto;
 import com.nhnacademy.codequestweb.request.product.common.InventoryDecreaseRequestDto;
 import com.nhnacademy.codequestweb.response.product.book.BookProductGetResponseDto;
 import com.nhnacademy.codequestweb.response.product.productCategory.ProductCategory;
+import com.nhnacademy.codequestweb.response.review.ReviewInfoResponseDto;
 import com.nhnacademy.codequestweb.service.product.BookProductService;
+import com.nhnacademy.codequestweb.service.review.ReviewService;
 import com.nhnacademy.codequestweb.utils.BookPageUtils;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,6 +17,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.StringJoiner;
+
+import jakarta.validation.groups.Default;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -34,12 +38,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequiredArgsConstructor
 public class BookProductController {
 
+    private final ReviewService reviewService;
     private final BookProductService bookProductService;
 
     @GetMapping("/product/books/{bookId}")
     public String book(
             HttpServletRequest req,
             @PathVariable long bookId,
+            @RequestParam(defaultValue = "0") int page,
             Model model) {
         ResponseEntity<BookProductGetResponseDto> response = bookProductService.getSingleBookInfo(CookieUtils.setHeader(req), bookId);
         BookProductGetResponseDto bookProductGetResponseDto = response.getBody();
@@ -56,9 +62,19 @@ public class BookProductController {
             parentCategoryList.sort(Comparator.comparing(ProductCategory::productCategoryId));
             allCategoryList.add(parentCategoryList);
         }
+
+        Double totalReviewScore = reviewService.getReviewScore(bookId);
+        Page<ReviewInfoResponseDto> reviewPage = reviewService.getProductReviewPage(0, 10, bookId);
+
         model.addAttribute("view", "productBookDetail");
         model.addAttribute("book", bookProductGetResponseDto);
         model.addAttribute("listOfCategoryList", allCategoryList);
+
+        model.addAttribute("averageScore", totalReviewScore);
+        model.addAttribute("page", page);
+        model.addAttribute("totalPage", reviewPage.getTotalPages());
+        model.addAttribute("reviews", reviewPage.getContent());
+
         if (CookieUtils.isGuest(req)){
             model.addAttribute("orderURL", "/non-client/order");
         }else{

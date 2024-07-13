@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" th:fragment="reviewDetail ('review', 'product')">
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>리뷰 상세보기</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+
+    <!-- TOAST UI Editor CSS -->
+    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
+
+    <style>
+        .review-container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 10px;
+        }
+        .review-header {
+            margin-bottom: 20px;
+        }
+        .review-content {
+            margin-bottom: 20px;
+        }
+        .review-footer {
+            font-size: 0.9em;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+<div class="review-container">
+    <div class="review-header">
+        <h1 th:text="${product.productName}" class="mb-3">상품명</h1>
+        <p>평점: <span th:text="${review.reviewScore}"></span>/5</p>
+    </div>
+
+    <div class="review-content" id="reviewContent"></div>
+
+    <div class="review-footer">
+        <p>작성일: <span th:text="${#temporals.format(review.reviewRegisterDate, 'yyyy-MM-dd HH:mm')}"></span></p>
+        <p>최종 수정일: <span th:text="${#temporals.format(review.reviewLastModifyDate, 'yyyy-MM-dd HH:mm')}"></span></p>
+    </div>
+
+    <button class="btn btn-primary mt-3" onclick="enableEdit()">수정</button>
+    <button class="btn btn-success mt-3 d-none" id="saveBtn" onclick="saveReview()">저장</button>
+</div>
+
+<!-- TOAST UI Editor -->
+<script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const reviewContent = /*[[${review.reviewContent}]]*/ '';
+    let editor;
+
+    window.onload = function() {
+        const viewerEl = document.getElementById('reviewContent');
+        const viewer = toastui.Editor.factory({
+            el: viewerEl,
+            viewer: true,
+            initialValue: reviewContent
+        });
+    }
+
+    function enableEdit() {
+        const reviewContentEl = document.getElementById('reviewContent');
+        reviewContentEl.innerHTML = '';
+
+        editor = new toastui.Editor({
+            el: reviewContentEl,
+            height: '400px',
+            initialValue: reviewContent,
+            initialEditType: 'wysiwyg',
+            toolbarItems: [
+                ['heading', 'bold', 'italic', 'strike'],
+                ['hr', 'quote'],
+                ['ul', 'ol', 'task', 'indent', 'outdent'],
+                ['table', 'link'],
+                ['code', 'codeblock']
+            ],
+            hooks: {
+                addImageBlobHook: (blob, callback) => {
+                    alert('새 이미지 추가는 허용되지 않습니다.');
+                    return false;
+                }
+            },
+            events: {
+                change: () => {
+                    const currentContent = editor.getHTML();
+                    const imageRegex = /<img[^>]+src="([^">]+)"/g;
+                    const originalImages = [...reviewContent.matchAll(imageRegex)].map(match => match[1]);
+                    const currentImages = [...currentContent.matchAll(imageRegex)].map(match => match[1]);
+
+                    if (originalImages.length !== currentImages.length ||
+                        !originalImages.every(img => currentImages.includes(img))) {
+                        alert('기존 이미지 삭제는 허용되지 않습니다.');
+                        editor.setHTML(reviewContent);
+                    }
+                }
+            }
+        });
+
+        document.querySelector('.btn-primary').classList.add('d-none');
+        document.getElementById('saveBtn').classList.remove('d-none');
+    }
+
+    function saveReview() {
+        const formData = new FormData();
+        formData.append('reviewContent', editor.getHTML());
+        formData.append('reviewId', [[${review.reviewId}]]);
+
+        fetch(`/review/update`, {
+            method: 'PUT',
+            body: formData,
+            credentials: 'same-origin'
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text();
+        })
+        .then(data => {
+            alert('리뷰가 성공적으로 수정되었습니다.');
+            location.reload();
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            alert('리뷰 수정 중 오류가 발생했습니다.');
+        });
+    }
+    /*]]>*/
+</script>
+</body>
+</html>

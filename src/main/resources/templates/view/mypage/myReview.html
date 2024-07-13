@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" th:fragment="myReviewFragment ('reviews', 'page', 'totalPage')">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .my-table {
+            background-color: #f8c471;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .pagination a {
+            color: #f8c471;
+            padding: 8px 16px;
+            text-decoration: none;
+            transition: background-color .3s;
+        }
+
+        .pagination a.active {
+            background-color: #f8c471;
+            color: white;
+            border-radius: 5px;
+        }
+
+        .pagination a:hover {
+            background-color: #ddd;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<section class="m-yreview">
+    <div class="container mt-5">
+        <h1 class="mb-4">내가 쓴 리뷰 목록</h1>
+
+        <div th:if="${not #lists.isEmpty(reviews)}">
+            <table class="table table-striped table-hover">
+                <thead class="my-table">
+                <tr>
+                    <th>책 제목</th>
+                    <th>평점</th>
+                    <th>작성일</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="review : ${reviews}" th:onclick="'window.location.href=\'/review/detail?reviewId=' + ${review.reviewId} + '\''" style="cursor: pointer;">
+                    <td th:text="${review.productName}">책 제목</td>
+                    <td th:text="${review.reviewScore}">평점</td>
+                    <td th:text="${#temporals.format(review.reviewLastModifyDate, 'yyyy-MM-dd HH:mm')}">작성일</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div th:if="${#lists.isEmpty(reviews)}" class="alert alert-info" role="alert">
+            작성한 리뷰가 없습니다.
+        </div>
+    </div>
+
+    <div th:if="${#lists.size(reviews) > 0}" class="pagination" th:attr="data-total-pages=${totalPage},data-current-page=${page}">
+                <span th:if="${page > 1}">
+                    <a th:href="'/admin/client/' + ${page - 1}">Previous</a>
+                </span>
+        <span th:each="pageNum : ${#numbers.sequence(1, totalPage)}">
+                    <a th:if="${pageNum == page + 1}" th:text="${pageNum}" th:class="'active'"></a>
+                    <a th:if="${pageNum != page + 1}" th:href="'/admin/client/' + ${pageNum - 1}" th:text="${pageNum}"></a>
+                </span>
+        <span th:if="${page + 1 < totalPage}">
+                    <a th:href="'/admin/client/' + ${page + 1}">Next</a>
+                </span>
+    </div>
+</section>
+</html>

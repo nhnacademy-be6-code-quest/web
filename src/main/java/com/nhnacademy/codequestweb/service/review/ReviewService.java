@@ -5,11 +5,14 @@ import com.nhnacademy.codequestweb.client.product.bookProduct.BookProductClient;
 import com.nhnacademy.codequestweb.client.review.ReviewClient;
 import com.nhnacademy.codequestweb.exception.order.ProductOrderDetailLoadFailException;
 import com.nhnacademy.codequestweb.exception.product.ProductLoadFailException;
+import com.nhnacademy.codequestweb.request.review.ReviewUpdateRequestDto;
 import com.nhnacademy.codequestweb.request.review.WriteReviewRequestDto;
 import com.nhnacademy.codequestweb.response.order.common.ProductOrderDetailResponseDto;
 import com.nhnacademy.codequestweb.response.product.book.BookProductGetResponseDto;
+import com.nhnacademy.codequestweb.response.review.ReviewInfoResponseDto;
 import com.nhnacademy.codequestweb.response.review.WriteReviewResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
@@ -20,13 +23,6 @@ public class ReviewService {
     private final ReviewClient reviewClient;
     private final BookProductClient bookProductClient;
 
-    /**
-     * 주문 상세를 받아서 상품 정보를 전달
-     * 리뷰를 저장 할 때 필요한 별도의 상품아이디, 주문 상세 아이디를 제공
-     *
-     *
-     * @return
-     */
     public WriteReviewResponseDto writeReview(Long orderId, Long orderDetailId, String access) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", access);
@@ -52,7 +48,7 @@ public class ReviewService {
         }
     }
 
-    private BookProductGetResponseDto getProductInfo(Long productId) {
+    public BookProductGetResponseDto getProductInfo(Long productId) {
         try {
             return bookProductClient.getSingleBookInfo(null, productId).getBody();
         } catch (Exception e) {
@@ -61,6 +57,30 @@ public class ReviewService {
     }
 
     public String posttingReview(WriteReviewRequestDto writeReviewRequestDto, String access) {
-        return reviewClient.writeReview(writeReviewRequestDto, access).getBody();
+        try {
+            return reviewClient.writeReview(writeReviewRequestDto, access).getBody();
+        } catch (Exception e) {
+            return "이미 작성된 리뷰입니다.";
+        }
+    }
+
+    public boolean isWrited(String access, Long orderDetailId) {
+        return reviewClient.isWrited(orderDetailId, access).getBody();
+    }
+
+    public ReviewInfoResponseDto getReviewInfo(String access, Long orderDetailId) {
+        return reviewClient.getReviewInfo(orderDetailId, access).getBody();
+    }
+
+    public String updateReview(ReviewUpdateRequestDto reviewUpdateRequestDto, String access) {
+        return reviewClient.updateReview(reviewUpdateRequestDto, access).getBody();
+    }
+
+    public Double getReviewScore(Long productId) {
+        return reviewClient.getReviewScore(productId).getBody();
+    }
+
+    public Page<ReviewInfoResponseDto> getProductReviewPage(int page, int size, Long productId) {
+        return reviewClient.getReviewProducts(page, size, productId).getBody();
     }
 }
