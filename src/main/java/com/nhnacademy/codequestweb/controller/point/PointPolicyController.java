@@ -31,10 +31,5 @@ public class PointPolicyController {
         return "redirect:/admin/point/policy";
     }
 
-    @DeleteMapping("/admin/point/policy/{pointPolicyId}")
-    public String deletePointPolicy(HttpServletRequest req, @PathVariable long pointPolicyId) {
-        headers.set(NAME,CookieUtils.getCookieValue(req, NAME));
-        pointPolicyService.deletePolicy(headers, pointPolicyId);
-        return "redirect:/admin/point/policy";
-    }
+
 }
