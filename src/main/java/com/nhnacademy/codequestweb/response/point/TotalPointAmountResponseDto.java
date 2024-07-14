@@ -9,4 +9,5 @@ import lombok.Setter;
 @Setter
 public class TotalPointAmountResponseDto {
     Integer totalPoint;
+    Integer pointAccumulationRate;
 }
