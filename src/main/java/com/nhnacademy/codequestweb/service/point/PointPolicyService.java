@@ -21,7 +21,5 @@ public class PointPolicyService {
         return pointPolicyClient.findAllPointPolicy(headers, page, size).getBody();
     }
 
-    public void deletePolicy(HttpHeaders headers, long pointPolicyId){
-        pointPolicyClient.deletePointPolicy(headers, pointPolicyId);
-    }
+
 }
