@@ -52,8 +52,8 @@ public class OrderController {
     // 회원 복수 주문 - 장바구니 주문
     @PostMapping("/client/orders")
     public String order(@RequestParam("cartList") List<String> orderItemDtoStringList, Model model, HttpServletRequest req){
-        return orderService.viewClientOrder(req, model, orderItemDtoStringList);
-        //return orderService.viewClientOrder2(req, model, orderItemDtoStringList);
+        //return orderService.viewClientOrder(req, model, orderItemDtoStringList);
+        return orderService.viewClientOrder2(req, model, orderItemDtoStringList);
     }
 
     @PostMapping("/client/order/process")

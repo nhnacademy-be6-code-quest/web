@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ClientOrderDiscountForm {
-    Long payAmount; // 결제 금액
+    Long payAmount; // 실제 결제할 가격
     Long couponId; // 적용한 쿠폰
     Long couponDiscountAmount; // 쿠폰 할인 금액
     Long usedPointDiscountAmount; // 포인트 사용 금액

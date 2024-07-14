@@ -22,10 +22,15 @@ public class ClientOrderForm2 {
     String deliveryAddress; // 주소(주소,상세주소)
     Boolean useDesignatedDeliveryDate; // 배송날짜 지정 여부
     String designatedDeliveryDate; // 배송날짜 지정
+    Long totalQuantity;
 
     @Builder
     public ClientOrderForm2(String orderedPersonName){
         this.orderedPersonName = orderedPersonName;
+    }
+
+    public void updateTotalQuantity(Long totalQuantity){
+        this.totalQuantity = totalQuantity;
     }
 
     public void addOrderDetailDtoItem(ClientOrderForm2.OrderDetailDtoItem orderDetailDtoItem){

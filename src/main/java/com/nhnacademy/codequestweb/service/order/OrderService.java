@@ -19,6 +19,7 @@ public interface OrderService {
     String viewClientOrder(HttpServletRequest req, Model model, OrderItemDto orderItemDto);
 
     String viewClientOrder2(HttpServletRequest req, Model model, OrderItemDto orderItemDto);
+    String viewClientOrder2(HttpServletRequest req, Model model, List<String> orderItemDto);
     String viewClientOrderDiscount(HttpServletRequest req, Model model);
     String viewClientOrderPayMethod(HttpServletRequest req, Model model);
     Long createClientOrder2(HttpServletRequest req, ClientOrderForm2 clientOrderForm2, ClientOrderDiscountForm clientOrderDiscountForm, ClientOrderPayMethodForm clientOrderPayMethodForm);

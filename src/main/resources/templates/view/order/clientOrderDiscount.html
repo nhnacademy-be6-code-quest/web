@@ -43,30 +43,30 @@
 <form action="/client/order-pay-method" th:object="${clientOrderDiscountForm}" method="post">
 
     <div class="sub-container">
-        <h3>쿠폰 적용</h3>
+        <h3>예상 결제 금액</h3>
         <div>
             <span>쿠폰 할인 금액: </span>
             <span>
-                    <label>
-                        <input class="readonly-input" th:field="*{couponDiscountAmount}" th:value="0" readonly/>
-                    </label>
-                </span>
+                <label>
+                    <input class="readonly-input" th:field="*{couponDiscountAmount}" readonly/>
+                </label>
+            </span>
         </div>
         <div>
             <span>포인트 사용 금액: </span>
             <span>
-                    <label>
-                        <input class="readonly-input" th:field="*{usedPointDiscountAmount}" th:value="0" readonly/>
-                    </label>
-                </span>
+                <label>
+                    <input class="readonly-input" th:field="*{usedPointDiscountAmount}" th:value="0" readonly/>
+                </label>
+            </span>
         </div>
         <div>
             <span>예상 결제 금액: </span>
             <span>
-                    <label>
-                        <input class="readonly-input" th:field="*{payAmount}" readonly/>
-                    </label>
-                </span>
+                <label>
+                    <input class="readonly-input" th:field="*{payAmount}" readonly/>
+                </label>
+            </span>
         </div>
     </div>
 
@@ -76,9 +76,23 @@
             <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#couponSelectModal" id="use-coupon" style="font-size: small; padding: 0; height: 30px; width: 90px">쿠폰 선택하기</button>
             <div id="selectedCouponForm"></div>
         </div>
-        <div id="selectedCouponInfo">
-            <div>(쿠폰 중복 적용 불가합니다)</div>
-            <div class="border border-secondary-subtle rounded" style="width: 60%; padding: 1%; margin: 1%" hidden="hidden"></div>
+        <div>(쿠폰 중복 적용 불가합니다)</div>
+        <div hidden="hidden" id="selectedCouponInfo">
+            <div class="border border-secondary-subtle rounded" style="width: 60%; padding: 1%; margin: 1%">
+                <label hidden="hidden">
+                    <input class="readonly-input" th:field="*{couponId}">
+                </label>
+                <div>
+                    선택한 쿠폰: <span id="selectedCouponName"></span>
+                </div>
+                <div>
+                    할인 금액:
+                    <span class="readonly-input" id="selectedCouponDiscountAmount">0</span>
+                </div>
+                <div>
+                    <button type="button" class="btn btn-outline-danger" th:onclick="cancelCoupon()">쿠폰적용 취소</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -95,57 +109,14 @@
             <button type="button" class="btn btn-outline-primary" onclick="applyPoints()" style="font-size: small; padding: 0; height: 30px; width: 90px">적용하기</button>
         </div>
         <div id="exceed-remaining-point-message" style="color: red; display: none;">
-            사용할 포인트는 총 잔여 포인트보다 많을 수 없습니다.
+            사용할 포인트는 잔여 포인트보다 많을 수 없습니다.
         </div>
         <div id="negative-amount-message" style="color: red; display: none;">
             결제 금액이 0원 미만일 수 없습니다.
         </div>
     </div>
 
-    <!-- 주소선택 Modal -->
-    <div class="modal fade" id="addressSelectModal" tabindex="-1" aria-labelledby="addressSelectModal" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="addressSelectModalModalLabel">주소를 선택해 주세요</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="border border-secondary-subtle rounded" th:each="clientAddressDto, iterStat : ${deliveryAddressList}" style="margin: 10px; padding: 10px">
-                        <div id="addressForm">
-                            <div>[[${clientAddressDto.clientDeliveryAddressNickname}]]</div>
-                            <div>[[${clientAddressDto.clientDeliveryZipCode}]]</div>
-                            <div>[[${clientAddressDto.clientDeliveryAddress}]]</div>
-                            <div>[[${clientAddressDto.clientDeliveryAddressDetail}]]</div>
-                        </div>
-                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" onclick="handleSelectAddress(this.previousElementSibling)">선택</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 번호선택 Modal -->
-    <div class="modal fade" id="phoneNumberSelectModal" tabindex="-1" aria-labelledby="phoneNumberSelectModal" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="phoneNumberSelectModalModalLabel">전화번호를 선택해 주세요</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="border border-secondary-subtle rounded" th:each="phoneNumberDto, iterStat : ${phoneNumberList}" style="margin: 10px; padding: 10px">
-                        <div id="phoneNumberForm">
-                            <div>[[${phoneNumberDto.clientPhoneNumber}]]</div>
-                        </div>
-                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" onclick="handleSelectPhoneNumber(this.previousElementSibling)">선택</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!--쿠폰선택 Modal-->
+    <!-- 쿠폰선택 Modal -->
     <div class="modal fade" id="couponSelectModal" tabindex="-1" aria-labelledby="couponSelectModal" aria-hidden="true">
         <div class="modal-dialog modal-dialog-scrollable">
             <div class="modal-content">
@@ -157,22 +128,114 @@
                     <div class="border border-secondary-subtle rounded" th:each="coupon, iterStat : ${couponList}" style="margin: 10px; padding: 10px">
                         <div class="couponForm">
                             <div>
-                                [[${coupon.couponPolicy.couponPolicyDescription}]]
+                                [[${coupon.couponPolicyDto.couponPolicyDescription}]]
                             </div>
                             <div>할인금액:
-                                <span th:if="${coupon.couponPolicy.discountType == 'AMOUNTDISCOUNT'}"><span>[[${coupon.couponPolicy.discountValue}]]</span>원</span>
-                                <span th:if="${coupon.couponPolicy.discountType == 'PERCENTAGEDISCOUNT'}"><span>[[${coupon.couponPolicy.discountValue}]]</span>%</span>
+                                <span th:if="${coupon.couponPolicyDto.discountType == 'AMOUNTDISCOUNT'}"><span>[[${coupon.couponPolicyDto.discountValue}]]</span>원</span>
+                                <span th:if="${coupon.couponPolicyDto.discountType == 'PERCENTAGEDISCOUNT'}"><span>[[${coupon.couponPolicyDto.discountValue}]]</span>%</span>
                             </div>
-                            <div>최소구매금액: <span>[[${coupon.couponPolicy.minPurchaseAmount}]] 원</span></div>
-                            <div th:if="${coupon.couponPolicy.discountType == 'PERCENTAGEDISCOUNT'}">최대 할인 금액: <span>[[${coupon.couponPolicy.maxDiscountAmount}]] 원</span></div>
+                            <div>최소구매금액: <span>[[${coupon.couponPolicyDto.minPurchaseAmount}]] 원</span></div>
+                            <div th:if="${coupon.couponPolicyDto.discountType == 'PERCENTAGEDISCOUNT'}">최대 할인 금액: <span>[[${coupon.couponPolicyDto.maxDiscountAmount}]] 원</span></div>
                         </div>
-                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" th:onclick="handleSelectCoupon([[${coupon}]])" disabled=>선택</button>
+                        <button type="button" th:if="${couponDiscountInfoList[__${iterStat.index}__].isApplicable} == true" class="btn btn-outline-secondary" data-bs-dismiss="modal" th:onclick="handleSelectCoupon([[${iterStat.index}]])">선택</button>
+                        <button type="button" th:if="${couponDiscountInfoList[__${iterStat.index}__].isApplicable} == false" class="btn btn-outline-danger" disabled>사용불가</button>
+                        <div style="color:red;" th:if="${couponDiscountInfoList[__${iterStat.index}__].isApplicable} == false">[[${couponDiscountInfoList[__${iterStat.index}__].notApplicableDescription}]]</div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <button type="submit">next</button>
+    <div class="sub-container">
+        <button class="btn text-white" style="background-color:#ecb54f; width: 15%;" type="submit">다음단계</button>
+    </div>
 </form>
+
+
+<script th:inline="javascript">
+    <!-- 쿠폰 적용 -->
+    function handleSelectCoupon(index){
+        // 포인트 적용 무효화
+        document.getElementById("inputUsedPointAmount").value = 0;
+        document.getElementById("inputUsedPointAmount").textContent = 0;
+        document.getElementById("usedPointDiscountAmount").value = 0;
+
+        // 쿠폰 적용
+        let couponList = [[${couponList}]];
+        let couponDiscountInfoList = [[${couponDiscountInfoList}]];
+
+        document.getElementById("selectedCouponInfo").hidden = false;
+
+        document.getElementById("couponId").value = couponList[index].couponId;
+
+        // 적용한 쿠폰 이름 변경
+        document.getElementById("selectedCouponName").textContent = couponList[index].couponPolicyDto.couponPolicyDescription;
+
+        // 쿠폰 사용해서 할인받는 총 금액
+        const couponDiscountAmount = parseInt(couponDiscountInfoList[index].discountTotalAmount);
+        document.getElementById("couponDiscountAmount").value = couponDiscountAmount;
+        document.getElementById("selectedCouponDiscountAmount").textContent = couponDiscountAmount;
+
+        // 결제금액 업데이트
+        const originProductTotalAmount = [[${clientOrderForm2}]].productTotalAmount;
+        const originShippingFee = [[${clientOrderForm2}]].shippingFee;
+        console.log("originProductTotalAmount: ", originProductTotalAmount);
+        console.log("originShippingFee: ", originShippingFee);
+        document.getElementById("payAmount").value = originProductTotalAmount + originShippingFee - couponDiscountAmount;
+    }
+
+    function cancelCoupon(){
+
+        const usedPoint = parseInt(document.getElementById("usedPointDiscountAmount").value);
+
+        document.getElementById("couponId").value = null;
+        document.getElementById("selectedCouponName").textContent = null;
+        document.getElementById("couponDiscountAmount").value = 0;
+        document.getElementById("selectedCouponDiscountAmount").textContent = 0;
+
+        const originProductTotalAmount = [[${clientOrderForm2}]].productTotalAmount;
+        const originShippingFee = [[${clientOrderForm2}]].shippingFee;
+        document.getElementById("payAmount").value = originProductTotalAmount + originShippingFee - usedPoint;
+
+        document.getElementById("selectedCouponInfo").hidden = true;
+    }
+
+    <!-- 포인트 적용 -->
+    function applyPoints() {
+
+        const exceedMessage = document.getElementById('exceed-remaining-point-message');
+        const negativeAmountMessage = document.getElementById('negative-amount-message');
+
+        const originProductTotalAmount = [[${clientOrderForm2}]].productTotalAmount;
+        const originShippingFee = [[${clientOrderForm2}]].shippingFee;
+
+        let inputUsedPointAmount = parseInt(document.getElementById('inputUsedPointAmount').value);
+        const remainingPoints = parseInt(document.getElementById('remaining-points').text);
+        const couponDiscountAmount = parseInt(document.getElementById("couponDiscountAmount").value);
+        const payAmount = originProductTotalAmount + originShippingFee - couponDiscountAmount // 결제금액 = 포인트 사용 가능 최대치
+
+        exceedMessage.style.display = 'none';
+        negativeAmountMessage.style.display = 'none';
+
+        if (inputUsedPointAmount > remainingPoints) {
+            exceedMessage.style.display = 'block';
+            document.getElementById('inputUsedPointAmount').value = remainingPoints
+        } else {
+            exceedMessage.style.display = 'none';
+        }
+
+        inputUsedPointAmount = parseInt(document.getElementById('inputUsedPointAmount').value);
+
+        if(inputUsedPointAmount > payAmount){
+            negativeAmountMessage.style.display = 'block';
+            document.getElementById('inputUsedPointAmount').value = payAmount;
+        } else {
+            negativeAmountMessage.style.display = 'none';
+        }
+
+        document.getElementById("usedPointDiscountAmount").value = document.getElementById('inputUsedPointAmount').value
+        document.getElementById("payAmount").value = payAmount - document.getElementById('inputUsedPointAmount').value
+
+    }
+</script>
 </body>
 </html>

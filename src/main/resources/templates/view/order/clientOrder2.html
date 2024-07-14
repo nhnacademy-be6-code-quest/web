@@ -35,6 +35,9 @@
     <h1></h1>
     <div class="sub-container">
         <h3>주문 상품 목록</h3>
+        <label>
+            <input hidden="hidden" th:field="*{totalQuantity}">
+        </label>
         <table class="table table-striped" id="order-item-table" th:border="1">
             <thead>
             <tr>
