@@ -1,9 +1,6 @@
 package com.nhnacademy.codequestweb.response.order.client;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +8,8 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
+@AllArgsConstructor
+@Builder
 public class ClientOrderForm {
 
     List<OrderDetailDtoItem> orderDetailDtoItemList; // 상품-옵션 리스트
@@ -30,13 +29,6 @@ public class ClientOrderForm {
     Integer paymentMethod; // 결제 방식
     Long accumulatePoint; // 예상 적립금
 
-    @Builder
-    public ClientOrderForm(String orderedPersonName){
-        this.orderedPersonName = orderedPersonName;
-        usedPointDiscountAmount = 0L;
-        couponDiscountAmount = 0L;
-    }
-
     public void addOrderDetailDtoItem(OrderDetailDtoItem orderDetailDtoItem){
         if(this.orderDetailDtoItemList == null){
             this.orderDetailDtoItemList = new ArrayList<>();
@@ -45,6 +37,8 @@ public class ClientOrderForm {
     }
 
     @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
     @Getter
     @Setter
     public static class OrderDetailDtoItem{
@@ -52,7 +46,6 @@ public class ClientOrderForm {
         String productName; // 상품 이름
         Long quantity; // 수량
         List<Long> categoryIdList; // 상품의 카테고리
-        Long bookId; // 상품의 책 아이디 TODO 추후 삭제될 예정
         Long productSinglePrice; // 상품 단품 가격
         Boolean packableProduct; // 포장 가능 상품 여부
 
@@ -62,16 +55,15 @@ public class ClientOrderForm {
         Long optionProductSinglePrice; // 옵션 상품 단품 가격
         Long optionQuantity = 1L;
 
-        @Builder
-        public OrderDetailDtoItem(Long productId, String productName, Long quantity, List<Long> categoryIdList, Boolean packableProduct, Long bookId, Long productSinglePrice){
-            this.productId = productId;
-            this.productName = productName;
-            this.quantity = quantity;
-            this.categoryIdList = categoryIdList;
-            this.packableProduct = packableProduct;
-            this.bookId = bookId;
-            this.productSinglePrice = productSinglePrice;
-        }
+//        @Builder
+//        public OrderDetailDtoItem(Long productId, String productName, Long quantity, List<Long> categoryIdList, Boolean packableProduct, Long productSinglePrice){
+//            this.productId = productId;
+//            this.productName = productName;
+//            this.quantity = quantity;
+//            this.categoryIdList = categoryIdList;
+//            this.packableProduct = packableProduct;
+//            this.productSinglePrice = productSinglePrice;
+//        }
     }
 
 }

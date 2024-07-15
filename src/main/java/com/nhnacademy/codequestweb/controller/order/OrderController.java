@@ -56,36 +56,22 @@ public class OrderController {
         return orderService.viewClientOrder2(req, model, orderItemDtoStringList);
     }
 
-    @PostMapping("/client/order/process")
-    public String processClientOrderForm(@ModelAttribute ClientOrderForm2 clientOrderForm2, HttpSession session){
-        session.setAttribute("clientOrderForm2", clientOrderForm2);
-        return "redirect:/client/order-discount";
-    }
-
     @PostMapping("/client/order-discount")
     public String viewClientOrderDiscountForm(@ModelAttribute ClientOrderForm2 clientOrderForm2, Model model, HttpServletRequest req, HttpSession session){
         session.setAttribute("clientOrderForm2", clientOrderForm2);
         return orderService.viewClientOrderDiscount(req, model);
     }
 
-    @PostMapping("/client/order-discount/process")
-    public String processClientOrderDiscountForm(@ModelAttribute ClientOrderDiscountForm clientOrderDiscountForm, HttpSession session){
-        session.setAttribute("clientOrderDiscountForm", clientOrderDiscountForm);
-        return "redirect:/client/order-pay-method";
-    }
-
     @PostMapping("/client/order-pay-method")
-    public String viewClientOrderPayMethodForm(@ModelAttribute ClientOrderPayMethodForm clientOrderPayMethodForm, Model model, HttpServletRequest req, HttpSession session){
-        session.setAttribute("clientOrderPayMethodForm", clientOrderPayMethodForm);
+    public String viewClientOrderPayMethodForm(@ModelAttribute ClientOrderDiscountForm clientOrderDiscountForm, Model model, HttpServletRequest req, HttpSession session){
+        session.setAttribute("clientOrderDiscountForm", clientOrderDiscountForm);
         return orderService.viewClientOrderPayMethod(req, model);
     }
 
-    @PostMapping("/client/order-pay-method/process")
-    public String processClientOrderPayMethodForm(@ModelAttribute ClientOrderPayMethodForm clientOrderPayMethodForm, HttpServletRequest request,
-                                                  HttpSession session){
-        ClientOrderForm2 clientOrderForm2 = (ClientOrderForm2) session.getAttribute("clientOrderForm2");
-        ClientOrderDiscountForm clientOrderDiscountForm = (ClientOrderDiscountForm)session.getAttribute("clientOrderDiscountForm");
-        return String.format("redirect:/client/order/%d/payment", orderService.createClientOrder2(request, clientOrderForm2, clientOrderDiscountForm, clientOrderPayMethodForm));
+    @PostMapping("/client/order/process")
+    public String processClientOrderPayMethodForm(@ModelAttribute ClientOrderPayMethodForm clientOrderPayMethodForm, HttpServletRequest request){
+        request.getSession().setAttribute("clientOrderPayMethodForm", clientOrderPayMethodForm);
+        return String.format("redirect:/client/order/%d/payment", orderService.createClientOrder2(request));
     }
 
 
