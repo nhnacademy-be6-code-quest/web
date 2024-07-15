@@ -36,24 +36,16 @@ public class OrderController {
         return orderService.viewNonClientOrder(req, model, orderItemDtoStringList);
     }
 
-
-
-
-
-
-
     // 회원 단건 주문 - 바로 주문
     @PostMapping("/client/order")
     public String order(@ModelAttribute OrderItemDto orderItemDto, Model model, HttpServletRequest req){
-        //return orderService.viewClientOrder(req, model, orderItemDto);
-        return orderService.viewClientOrder2(req, model, orderItemDto);
+        return orderService.viewClientOrder(req, model, orderItemDto);
     }
 
     // 회원 복수 주문 - 장바구니 주문
     @PostMapping("/client/orders")
     public String order(@RequestParam("cartList") List<String> orderItemDtoStringList, Model model, HttpServletRequest req){
-        //return orderService.viewClientOrder(req, model, orderItemDtoStringList);
-        return orderService.viewClientOrder2(req, model, orderItemDtoStringList);
+        return orderService.viewClientOrder(req, model, orderItemDtoStringList);
     }
 
     @PostMapping("/client/order-discount")
@@ -71,15 +63,8 @@ public class OrderController {
     @PostMapping("/client/order/process")
     public String processClientOrderPayMethodForm(@ModelAttribute ClientOrderPayMethodForm clientOrderPayMethodForm, HttpServletRequest request){
         request.getSession().setAttribute("clientOrderPayMethodForm", clientOrderPayMethodForm);
-        return String.format("redirect:/client/order/%d/payment", orderService.createClientOrder2(request));
+        return String.format("redirect:/client/order/%d/payment", orderService.createClientOrder(request));
     }
-
-
-
-
-
-
-
 
     // 회원 주문 생성 feign 호출
     @PostMapping("/api/client/orders")

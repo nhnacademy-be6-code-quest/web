@@ -15,16 +15,11 @@ import org.springframework.ui.Model;
 import java.util.List;
 
 public interface OrderService {
-    String viewClientOrder(HttpServletRequest req, Model model, List<String> orderItemDtoStringList);
     String viewClientOrder(HttpServletRequest req, Model model, OrderItemDto orderItemDto);
-
-    String viewClientOrder2(HttpServletRequest req, Model model, OrderItemDto orderItemDto);
-    String viewClientOrder2(HttpServletRequest req, Model model, List<String> orderItemDto);
+    String viewClientOrder(HttpServletRequest req, Model model, List<String> orderItemDto);
     String viewClientOrderDiscount(HttpServletRequest req, Model model);
     String viewClientOrderPayMethod(HttpServletRequest req, Model model);
-    Long createClientOrder2(HttpServletRequest req);
-
-
+    Long createClientOrder(HttpServletRequest req);
     Long createClientOrder(HttpServletRequest req, ClientOrderForm clientOrderForm);
     String viewNonClientOrder(HttpServletRequest req, Model model, List<String> orderItemDtoStringList);
     String viewNonClientOrder(HttpServletRequest req, Model model, OrderItemDto orderItemDto);
