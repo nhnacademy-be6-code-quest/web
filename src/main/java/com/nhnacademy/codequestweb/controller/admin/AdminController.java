@@ -94,6 +94,8 @@ public class AdminController {
         req.setAttribute("points", dto);
         List<String> pointPolicyTypes = List.of("결제", "환불", "회원가입", "사진리뷰", "리뷰");
         req.setAttribute("pointTypes",pointPolicyTypes);
+
+
         return "index";
     }
 

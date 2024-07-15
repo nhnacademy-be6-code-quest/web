@@ -10,6 +10,6 @@ import lombok.Setter;
 @Getter
 public class PointPolicyRegisterRequestDto {
 
-    private PointPolicyType pointPolicyType;
+    private String pointAccumulationType;
     private Integer pointValue;
 }
