@@ -4,21 +4,9 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <style>
-        .cart-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-        }
-
-        .cart-items {
-            width: 70%;
-        }
-
         .cart-summary {
-            width: 28%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            width: 100%;
+            padding: 30px;
         }
 
         .cart-summary > div {
@@ -32,6 +20,22 @@
             align-items: center;
             margin-bottom: 5px;
             flex-direction: row; /* 가로 정렬 */
+        }
+
+        .book-listing {
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 30px;
+            width: 80%;
+            height: 222px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .book-listing:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
         }
 
         .book-body {
@@ -76,100 +80,189 @@
        .cart-preview {
            width: 180px;
        }
+       .cart-sidebar {
+           position: fixed;
+           right: 0px;
+           top: 300px;
+           width: 20%;
+           height: 25%;
+           min-height: 300px;
+           background-color: #f2dfbb;
+           border: 1px solid #d9bf8a;
+           cursor: default;
+       }
+       .jsonCheckBox{
+           height: 232px;
+       }
+       .jsonCheckBoxForm{
+           right: 40%;
+           position: absolute;
+           top: 300px;
+       }
+       .warning-message{
+           color: coral;
+           font-weight: 500;
+       }
+       .cart-control {
+           display: flex;
+       }
+       .cart-control-input {
+           width: 100px;
+           text-align: center;
+           margin-right: -10px;
+       }
+       .cart-control-button {
+           width: 50px;
+           background: #F2DFBA;
+           border: 1px solid #d9bf8a;
+           height: 40px;
+       }
     </style>
     <script th:inline="javascript">
         /*<![CDATA[*/
+        function jsonParsing(event) {
+            const jsonCart = event.target;
+            const json = jsonCart.value;
+            const parsed = JSON.parse(json);
+            const priceStandard = document.getElementById('totalPriceStandard');
+            // const currentPriceStandard = parseFloat(priceStandard.innerText) || 0;
 
+            const priceSales = document.getElementById('totalPriceSales');
+
+            // ${#numbers.formatDecimal(book.productPriceSales, 0, 'COMMA', 0, 'POINT')}
+
+            const priceReal = document.getElementById('totalRealPrice');
+            // const currentPriceReal = parseFloat(priceReal.innerText) || 0;
+
+            const currentPriceStandard = parseFloat(priceStandard.innerText.replace(/[^\d.-]/g, '')) || 0;
+            const currentPriceReal = parseFloat(priceReal.innerText.replace(/[^\d.-]/g, '')) || 0;
+
+            const quantity = parsed.productQuantityOfCart;
+
+            if (jsonCart.checked) {
+                const newPriceStandard = currentPriceStandard + (parsed.productPriceStandard * quantity);
+                priceStandard.innerText = newPriceStandard.toLocaleString();
+
+                const newPriceReal = currentPriceReal + (parsed.productPriceSales * quantity);
+                priceReal.innerText = newPriceReal.toLocaleString();
+
+                priceSales.innerText = (newPriceStandard - newPriceReal).toLocaleString();
+            }else {
+                const newPriceStandard = currentPriceStandard - (parsed.productPriceStandard * quantity);
+                priceStandard.innerText = newPriceStandard.toLocaleString();
+                const newPriceReal = currentPriceReal - (parsed.productPriceSales * quantity);
+                priceReal.innerText = newPriceReal.toLocaleString();
+
+                priceSales.innerText = (newPriceStandard - newPriceReal).toLocaleString();
+
+            }
+        }
 
         function formValidation(event) {
             event.preventDefault();
 
-            var checkBoxes = document.getElementById("checkBox");
-
-            if (!checkBoxes) {
-                document.getElementById('errorMessage').innerText = '최소 하나 이상의 상품을 선택해주세요';
-
-                // alert('최소 하나의 상품을 선택해주세요');
+            const checkBoxes = document.querySelectorAll(".jsonCheckBox:checked");
+            if (!checkBoxes || checkBoxes.length === 0) {
+                alert('최소 하나의 상품을 선택해주세요');
                 return;
             }
             event.target.submit(); // 폼 제출
-
         }
-
-
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.jsonCheckBox:checked').forEach(checkbox => {
+                jsonParsing({ target: checkbox });
+            });
+        });
         /*]]>*/
-
     </script>
 </head>
 <body>
-<div class="cart-container">
-    <div class="cart-items">
-        <div class="book-body">
-            <div th:each="cart: ${cartList}">
-                <div class="book-button">
-                    <div class="book-container">
-                        <a th:href="'/product/books/' + ${cart.productId}"><img class="cart-preview" th:src="${cart.productThumbnailImage()}" alt=""></a>
-                        <div class="book-info">
-<!--                            <div th:unless="">-->
-                                <span th:if="${cart.productQuantityOfCart() > cart.productInventory}" style="color: red; font-weight : 600;" th:text="' * 현재 재고보다 수량이 많아 구매할 수 없습니다. 구매하시려면 장바구니 수량을 줄여주세요. 현재 재고 : ('+${cart.productInventory} + ')'"></span>
-<!--                            </div>-->
-                            <a th:href="'/product/books/' + ${cart.productId}">
-                                <span th:text="${cart.productName()}"></span>
-                            </a>
-                            <span th:text="'가격' + ${cart.productPriceStandard()}"></span>
-                            <span th:text="' -> ' + ${cart.productPriceSales()} +'(할인율 : ' + (100 *(1 - ${cart.productPriceSales()} / ${cart.productPriceStandard()})) + '%)'"></span>
-                            <form action="/cart/update" method="post">
-                                <input type="hidden" name="_method" value="PUT"/>
-                                <input type="hidden" name="productId" th:value="${cart.productId()}">
-                                <label>수량<input type="number" name="quantity" th:value="${cart.productQuantityOfCart()}" min="1" th:max="${cart.productInventory()}"/></label>
-                                <button type="submit">수정</button>
-                            </form>
-                            <form th:action="'/cart/' + ${cart.productId()}" method="post">
-                                <input type="hidden" name="_method" value="DELETE"/>
-                                <button type="submit">삭제</button>
-                            </form>
+<section style="background-color: #fafafa;">
+    <div class="pt-5 pb-5">
+        <div th:if="${cartList != null and not #lists.isEmpty(cartList)}" class="container my-5">
+            <div class="book-listing" th:each="cart : ${cartList}">
+                <div th:with="url = ${admin != null ? '/admin/product/book/update/' + cart.productId : '/product/books/' + cart.productId}">
+                    <div class="row align-items-center">
+                        <div class="col-md-2">
+                            <img th:onclick="|location.href='@{${url}}'|" th:src="${cart.productThumbnailImage()}" class="img-fluid rounded-4" alt="Book Image" style="height: 12vh; border: black solid 1px">
+                        </div>
+                        <div class="col-md-8">
+                            <p class="book-title" th:onclick="|location.href='@{${url}}'|" th:text="${cart.productName()}"></p>
+                            <p class="book-price">
+                            <div style="margin-top: -23px;" >
+                                <span th:if="${cart.productPriceSales < cart.productPriceStandard}"
+                                      th:text="'(' + ${#numbers.formatDecimal(cart.productPriceStandard, 0, 'COMMA', 0, 'POINT')} + '원)'"
+                                      style="text-decoration: line-through; color: #bdc3c7; font-size: 0.8em; margin-left: 10px; margin-top: -23px;">정가</span>
+                                <span style="margin-left: 5px; color: coral" th:text="${cart.productPriceSales < cart.productPriceStandard? '(- ' + (100 - (100 * cart.productPriceSales/cart.productPriceStandard) + '%)')  : ''}">할인율</span>
+                            </div>
+                            <h5 class="secondary-font text-primary" th:text="${cart.productPriceSales < cart.productPriceStandard? ' -> ' : ''} + ${#numbers.formatDecimal(cart.productPriceSales, 0, 'COMMA', 0, 'POINT')} + '원'"></h5>
+                            <div class="warning-message">
+                                <div th:if="${cart.productState == 0}">
+                                    <span th:if="${cart.productInventory == 0}"  th:text="' * 임시 품절'"></span>
+                                    <span th:if="${cart.productQuantityOfCart() > cart.productInventory && cart.productInventory != 0}" th:text="' * 현재 상품 재고보다 수량이 많습니다. 현재 재고 : ('+${cart.productInventory} + ')'"></span>
+                                </div>
+                                <div th:if="${cart.productState != 0}">
+                                    <span th:text="'* 일시적으로 판매 중지된 상품입니다.'"></span>
+                                </div>
+                            </div>
+                            <div class="cart-control">
+                                <form action="/cart/update" method="post">
+                                    <input type="hidden" name="_method" value="PUT"/>
+                                    <input type="hidden" name="productId" th:value="${cart.productId()}">
+                                    <label><input type="number" class="cart-control-input" name="quantity" th:value="${cart.productQuantityOfCart()}" min="1" th:max="${cart.productInventory()}"/></label>
+                                    <button class="cart-control-button" type="submit">수정</button>
+                                </form>
+                                <form th:action="'/cart/' + ${cart.productId()}" method="post">
+                                    <input type="hidden" name="_method" value="DELETE"/>
+                                    <button class="cart-control-button" type="submit">삭제</button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <form id="cartForm" th:action="${orderUrl}" method="post" onsubmit="formValidation(event)">
-
-            <div th:each="jsonCart : ${jsonCartMap}">
-                <input type="checkbox" id="checkBox" class="box" name="cartList" th:value="${jsonCart.getKey()}"  th:disabled="${!jsonCart.getValue()}">
-            </div>
-            </form>
         </div>
     </div>
+</section>
+<div class="jsonCheckBoxForm">
+    <form id="cartForm" th:action="${orderUrl}" method="post" onsubmit="formValidation(event)">
+        <div th:each="jsonCart : ${jsonCartMap}">
+            <input type="checkbox" class="jsonCheckBox" name="cartList"  th:value="${jsonCart.getKey()}" th:checked="${jsonCart.getValue()}" th:disabled="${!jsonCart.getValue()}" onclick="jsonParsing(event)">
+        </div>
+    </form>
+</div>
+<div class="cart-sidebar" th:if="${jsonCartMap != null and !#maps.isEmpty(jsonCartMap)}">
     <form action="/cart/clear" method="post">
         <input type="hidden" name="_method" value="DELETE"/>
         <button type="submit">장바구니 모두 비우기</button>
     </form>
-    <div th:if="${jsonCartMap != null and !#maps.isEmpty(jsonCartMap)}">
-        <div class="cart-summary">
-                <div>
-                    <div>주문 예상 금액</div>
-                    <div>
-                        <div>총 상품 가격</div>
-                        <div id="totalPrice" th:text="'원'"></div>
-                    </div>
-                    <div>
-                        <div>총 할인</div>
-                        <div id="sale" th:text="'원'"></div>
-                    </div>
-                    <div>
-                        <div>총 배송비</div>
-                        <div id="totalShippingFee" th:text="'원'"></div>
-                    </div>
-                    <div>
-                        <div id="realPrice" th:text="'원'"></div>
-                    </div>
-                </div>
-                <button type="submit" form="cartForm">구매하기</button>
+    <div class="cart-summary">
+        <div>
+            <div>주문 예상 금액</div>
+            <div>
+                <div>총 상품 가격</div>
+                <span id="totalPriceStandard">0</span>
+                <div th:text="'원'"></div>
+            </div>
+            <div>
+                <div>총 할인</div>
+                <span id="totalPriceSales">0</span>
+                <div  th:text="'원'"></div>
+            </div>
+            <div>
+                <div>총 배송비</div>
+                <span id="totalShippingFee">0</span>
+                <div th:text="'원'"></div>
+            </div>
+            <div>
+                <div>총 결제금액</div>
+                <span id="totalRealPrice">0</span>
+                <div  th:text="'원'"></div>
+            </div>
         </div>
+        <button type="submit" form="cartForm">구매하기</button>
     </div>
 </div>
-
-<div id="errorMessage" style="color: red;"></div>
-
+<!--<span id="json" >asddd</span>-->
 </body>
 </html>
