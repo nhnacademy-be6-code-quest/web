@@ -1,15 +1,13 @@
 package com.nhnacademy.codequestweb.response.point;
 
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @NoArgsConstructor
-@Data
-public class PointPolicyAdminListResponseDto {
+@Setter
+@Getter
+public class PointPolicyDetailResponseDto {
     String pointAccumulationType;
     Integer pointValue;
-    String pointPolicyCreationDate;
-    String pointStatus;
-    long pointPolicyId;
-
 }
