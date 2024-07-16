@@ -107,8 +107,8 @@
         <h3>주문 상태 관리</h3>
         <div>현재 주문 상태: <span id="orderStatusModal"></span></div>
         <div>주문 상태 변경:</div>
-        <form id="order-status-change-form" action="" method="">
-            <button id="order-status-change-btn" type="submit"></button>
+        <form id="order-status-change-form">
+
         </form>
     </div>
 </div>
@@ -145,13 +145,12 @@
             orderListItemListModal.append(itemDiv);
         });
 
-        // 주문 상태 변경 버튼 설정
-        orderStatusChangeBtn = document.getElementById("order-status-change-btn");
-        orderStatusChangeForm = document.getElementById("order-status-change-form");
-        const currentOrderStatus = button.getAttribute('');
-
-
-
+        // 주문상태 변경 버튼 달기
+        // const orderStatusChangeForm = document.getElementById('order-status-change-form');
+        // const changeOrderStatusButton = document.createElement('button');
+        // changeOrderStatusButton.type = "submit";
+        //
+        // orderStatusChangeForm.append();
 
         // 모달 닫기 기능
         const closeBtn = document.getElementsByClassName("close")[0];
