@@ -23,9 +23,9 @@ public class RefundService {
 //        return refundClient.findOrderStatusByOrderId(orderId);
 //    }
 
-    public String getOrderStatus(long orderId) {
-        return refundOrderClient.findOrderStatusByOrderId(orderId);
-    }
+//    public String getOrderStatus(long orderId) {
+//        return refundOrderClient.findOrderStatusByOrderId(orderId);
+//    }
 
     public boolean isRefund(String orderStatus) {
         return orderStatus.equals("배송중") || orderStatus.equals("배송완료");
