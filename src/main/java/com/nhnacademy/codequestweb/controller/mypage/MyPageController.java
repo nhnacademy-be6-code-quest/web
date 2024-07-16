@@ -279,6 +279,7 @@ public class MyPageController {
         req.setAttribute("reviews", reivewInfoPage.getContent());
         req.setAttribute("totalPage", reivewInfoPage.getTotalPages());
         req.setAttribute("page", page);
+        req.setAttribute("activeSection", "review");
         return "index";
     }
 }

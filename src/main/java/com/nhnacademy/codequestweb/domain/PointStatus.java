@@ -19,21 +19,5 @@ public enum PointStatus {
         return value;
     }
 
-    public static PointStatus fromCode(int code) {
-        for (PointStatus type : PointStatus.values()) {
-            if (type.code == code) {
-                return type;
-            }
-        }
-        throw new IllegalArgumentException("Invalid DiscountType code: " + code);
-    }
 
-    public static PointStatus fromValue(String value) {
-        for (PointStatus type : PointStatus.values()) {
-            if (type.value.equals(value)) {
-                return type;
-            }
-        }
-        throw new IllegalArgumentException("Invalid DiscountType value: " + value);
-    }
 }

@@ -12,6 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface PaymentProductClient {
 
     @PutMapping("api/product/inventory/decrease")
-    public ResponseEntity<Void> decreaseProductInventory(
+    ResponseEntity<Void> decreaseProductInventory(
         @RequestBody @Valid List<InventoryDecreaseRequestDto> inventoryDecreaseRequestDtoList);
 }

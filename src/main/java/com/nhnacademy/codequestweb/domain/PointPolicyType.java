@@ -19,21 +19,4 @@ public enum PointPolicyType {
         return value;
     }
 
-    public static PointPolicyType fromCode(int code) {
-        for (PointPolicyType type : PointPolicyType.values()) {
-            if (type.code == code) {
-                return type;
-            }
-        }
-        throw new IllegalArgumentException("Invalid DiscountType code: " + code);
-    }
-
-    public static PointPolicyType fromValue(String value) {
-        for (PointPolicyType type : PointPolicyType.values()) {
-            if (type.value.equals(value)) {
-                return type;
-            }
-        }
-        throw new IllegalArgumentException("Invalid DiscountType value: " + value);
-    }
 }

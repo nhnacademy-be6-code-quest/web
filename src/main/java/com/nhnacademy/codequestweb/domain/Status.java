@@ -21,21 +21,5 @@ public enum Status {
         return value;
     }
 
-    public static Status fromCode(int code) {
-        for (Status type : Status.values()) {
-            if (type.code == code) {
-                return type;
-            }
-        }
-        throw new IllegalArgumentException("Invalid DiscountType code: " + code);
-    }
 
-    public static Status fromValue(String value) {
-        for (Status type : Status.values()) {
-            if (type.value.equals(value)) {
-                return type;
-            }
-        }
-        throw new IllegalArgumentException("Invalid DiscountType value: " + value);
-    }
 }

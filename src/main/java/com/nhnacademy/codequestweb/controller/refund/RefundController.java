@@ -1,12 +1,8 @@
 package com.nhnacademy.codequestweb.controller.refund;
 
-import com.nhnacademy.codequestweb.client.refund.TossPayRefundClient;
-import com.nhnacademy.codequestweb.request.payment.PaymentCompletedCouponRequestDto;
-import com.nhnacademy.codequestweb.request.payment.TossPaymentsRequestDto;
 import com.nhnacademy.codequestweb.request.refund.RefundTossRequestDto;
 import com.nhnacademy.codequestweb.response.refund.PaymentRefundResponseDto;
 import com.nhnacademy.codequestweb.response.refund.TossPaymentRefundResponseDto;
-import com.nhnacademy.codequestweb.service.refund.PaymentRefundService;
 import com.nhnacademy.codequestweb.service.refund.RefundService;
 import com.nhnacademy.codequestweb.service.refund.TossRefundService;
 import java.text.ParseException;
@@ -16,9 +12,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import java.util.List;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /*
@@ -44,7 +37,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class RefundController {
 
     private final RefundService refundService;
-    private final PaymentRefundService paymentRefundService;
     private final TossRefundService tossRefundService;
 
     // 1. 환불 및 취소 사유 선택 받기
@@ -52,7 +44,7 @@ public class RefundController {
     public String saveRefund(@PathVariable long orderId,
         Model model, RedirectAttributes redirectAttributes) throws ParseException {
 
-        PaymentRefundResponseDto paymentRefundResponseDto = paymentRefundService.findTossKey(
+        PaymentRefundResponseDto paymentRefundResponseDto = refundService.findTossKey(
             orderId);
         if(paymentRefundResponseDto.getOrderStatus().equals("결제완료")){
             RefundTossRequestDto dto = RefundTossRequestDto.builder()
@@ -63,7 +55,10 @@ public class RefundController {
             TossPaymentRefundResponseDto test = tossRefundService.tossRefund(dto);
            log.error("{}",test.getCancelReason());
            redirectAttributes.addFlashAttribute("alterMessage", "결재 취소");
+
+           refundService.saveRefund(orderId, dto);
             return "redirect:/mypage/orders";
+
         }else{
             model.addAttribute("orderId", orderId);
             model.addAttribute("dto", paymentRefundResponseDto);
