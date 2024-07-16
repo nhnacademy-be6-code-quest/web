@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="productListFragment ('productList', 'mainText', 'page', 'totalPage', 'sort', 'desc')">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="packagingListFragment ()">
 <head>
     <meta charset="UTF-8">
     <title>Product Search</title>
@@ -67,33 +67,28 @@
 </head>
 <section style="background-color: #fafafa;">
     <div class="pt-5 pb-5">
-        <div th:if="${productList != null and not #lists.isEmpty(productList)}" class="container my-5">
-        <h2 class="mb-5" th:text="${mainText}"></h2>
-            <div class="book-listing" th:each="product : ${productList}">
-                <div th:with="url = ${admin != null ? '/admin/product/book/' + product.productId : '/product/books/' + product.productId}">
+        <div th:if="${packagingList != null and not #lists.isEmpty(packagingList)}" class="container my-5">
+            <h2 class="mb-5" th:text="${mainText}"></h2>
+            <div class="book-listing" th:each="product : ${packagingList}">
+<!--                <div th:with="url = ${admin != null ? '/admin/product/book/' + product.productId : '/product/books/' + product.productId}">-->
+                    <div th:with="url = '/admin/product/packaging/updateForm/' + ${product.productId}">
+
                     <div th:onclick="|location.href='@{${url}}'|" class="row align-items-center">
-                    <div class="col-md-2">
-                        <img th:src="${product.cover}" class="img-fluid rounded-4" alt="Book Image" style="height: 12vh; width: 8vh; border: black solid 1px">
-                    </div>
-                    <div class="col-md-8">
-                        <p class="book-title" th:text="${product.title}"></p>
-                        <p class="book-price">
-                        <div style="margin-top: -23px;" >
+                        <div class="col-md-2">
+                            <img th:src="${product.packagingImage}" class="img-fluid rounded-4" alt="Book Image" style="height: 12vh; width: 8vh; border: black solid 1px">
+                        </div>
+                        <div class="col-md-8">
+                            <p class="book-title" th:text="${product.productName}"></p>
+                            <p class="book-price">
+                            <div style="margin-top: -23px;" >
                                 <span th:if="${product.productPriceSales < product.productPriceStandard}"
                                       th:text="'(' + ${#numbers.formatDecimal(product.productPriceStandard, 0, 'COMMA', 0, 'POINT')} + '원)'"
                                       style="text-decoration: line-through; color: #bdc3c7; font-size: 0.8em; margin-left: 10px; margin-top: -23px;">정가</span>
-                            <span style="margin-left: 5px; color: #ff5f50" th:text="${product.productPriceSales < product.productPriceStandard? '(- ' + (100 - (100 * product.productPriceSales/product.productPriceStandard) + '%)')  : ''}">할인율</span>
-                        </div>
-                        <h5 class="secondary-font text-primary" th:text="${product.productPriceSales < product.productPriceStandard? ' -> ' : ''} + ${#numbers.formatDecimal(product.productPriceSales, 0, 'COMMA', 0, 'POINT')} + '원'"></h5>
-                    </div>
-                    <div class="col-md-2 text-end">
-                        <div th:if="${product.hasLike()}">
-                            <div class="prod-favorite ">
-                                <button type="button" class="prod-favorite-btn prod-favorite-on"></button>
+                                <span style="margin-left: 5px; color: #ff5f50" th:text="${product.productPriceSales < product.productPriceStandard? '(- ' + (100 - (100 * product.productPriceSales/product.productPriceStandard) + '%)')  : ''}">할인율</span>
                             </div>
+                            <h5 class="secondary-font text-primary" th:text="${product.productPriceSales < product.productPriceStandard? ' -> ' : ''} + ${#numbers.formatDecimal(product.productPriceSales, 0, 'COMMA', 0, 'POINT')} + '원'"></h5>
                         </div>
                     </div>
-                </div>
                 </div>
 
             </div>
@@ -111,7 +106,7 @@
             </div>
         </div>
 
-        <div th:if="${productList == null or #lists.isEmpty(productList)}">
+        <div th:if="${packagingList == null or #lists.isEmpty(packagingList)}">
             <h2 class="mb-4" th:text="${mainText}"></h2>
             <div class="mb-4 text-center border" >
                 <h3>검색 결과 없음</h3>

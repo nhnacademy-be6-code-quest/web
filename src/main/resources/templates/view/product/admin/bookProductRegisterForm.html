@@ -49,6 +49,21 @@
         .body{
             margin-left:15%;
         }
+        .book-image-container{
+            align-content: center;
+            text-align: center;
+            width:330px;
+            height:450px;
+            background: whitesmoke;
+            border: 1px solid black;
+
+        }
+        #preview{
+            width: 330px;
+            height: 450px;
+            border: 1px solid black;
+            background: whitesmoke;
+        }
     </style>
     <script th:src="@{js/product/categorySearch.js}"></script>
     <script th:inline="javascript">
@@ -69,46 +84,50 @@
             isFormSubmitting = true;
         }
 
-        function formValidation(event){
+        function formValidation(event) {
             event.preventDefault(); // 폼 제출을 막음
 
             // 여기서 추가적인 처리를 수행할 수 있음
 
             // 폼을 제출하거나 다른 동작을 수행하도록 원하는 경우
-            var title = document.getElementById('title').value;
-            var productName = document.getElementById('productName').value;
-            var priceSales = document.getElementById('priceSales').value;
-            var inventory = document.getElementById('productInventory').value;
-            var description = document.getElementById('productDescriptionValue').value;
-            var categories = document.getElementById('categories').value;
+            const title = document.getElementById('title').value;
+            const productName = document.getElementById('productName').value;
+            const priceSales = document.getElementById('priceSales').value;
+            const inventory = document.getElementById('productInventory').value;
+            const description = document.getElementById('productDescriptionValue').value;
+            const categories = document.getElementById('categories').value;
+            const isbnCheck = document.getElementById('isbnExist').value;
 
             if (!title) {
                 alert('도서를 선택하세요.');
                 return; // 유효하지 않으면 제출하지 않음
             }
-            if (inventory < 0){
+            if (inventory < 0) {
                 alert('재고는 음수일 수 없습니다.');
                 return; // 유효하지 않으면 제출하지 않음
             }
-            if (priceSales < 0){
+            if (priceSales < 0) {
                 alert('판매가는 음수일 수 없습니다.');
                 return; // 유효하지 않으면 제출하지 않음
             }
-            if (!productName){
+            if (!productName) {
                 alert('상품명을 입력하세요.');
                 return; // 유효하지 않으면 제출하지 않음
             }
-            if (!description){
+            if (!description) {
                 alert('설명을 입력하세요.');
                 return; // 유효하지 않으면 제출하지 않음
             }
-            if (!categories){
+            if (!categories) {
                 alert('카테고리는 필수입니다.');
+                return; // 유효하지 않으면 제출하지 않음
+            }
+            if (isbnCheck === 'false') {
+                alert('도서 중복 여부가 확인되지 않았거나, 중복된 도서입니다.');
                 return; // 유효하지 않으면 제출하지 않음
             }
             event.target.submit(); // 폼 제출
         }
-
 
 
         function openNewWindowWithParam() {
@@ -139,21 +158,22 @@
             newWindow.focus();
 
 
-            window.addEventListener('message', function(event) {
+            window.addEventListener('message', function (event) {
+                document.getElementById("isbnExist").value = false;
                 // 자식 창이 보낸 메시지 처리
-                switch (event.data.type){
+                switch (event.data.type) {
                     case 'title':
                         document.getElementById('title').value = event.data.data;
-                        document.getElementById('titleText').innerText = "제목 : " +  event.data.data;
+                        document.getElementById('titleText').innerText = "제목 : " + event.data.data;
                         break;
                     case 'author':
                         document.getElementById('author').value = event.data.data;
-                        document.getElementById('authorText').innerText = "작가 : " +  event.data.data;
+                        document.getElementById('authorText').innerText = "작가 : " + event.data.data;
 
                         break;
                     case 'publisher':
                         document.getElementById('publisher').value = event.data.data;
-                        document.getElementById('publisherText').innerText = "출판사 : " +  event.data.data;
+                        document.getElementById('publisherText').innerText = "출판사 : " + event.data.data;
 
                         break;
                     case 'cover':
@@ -161,13 +181,13 @@
                         document.getElementById('coverURL').value = event.data.data; // Assuming you want to set the source of an image element
                         break;
                     case 'pubDate':
-                        if(event.data.data !== null){
+                        if (event.data.data !== null) {
                             const date = new Date(event.data.data);
                             // LocalDate 형식으로 변환 (yyyy-MM-dd)
                             const localDate = date.toISOString().split('T')[0];
                             document.getElementById('pubDate').value = localDate;
-                            document.getElementById('pubDateText').innerText = "발매일 : " +  localDate;
-                        }else{
+                            document.getElementById('pubDateText').innerText = "발매일 : " + localDate;
+                        } else {
                             document.getElementById('pubDate').value = null;
                             document.getElementById('pubDateText').innerText = '발매일 : 확인되지 않음';
                         }
@@ -182,7 +202,7 @@
                         break;
                     case 'priceStandard':
                         document.getElementById('priceStandard').value = event.data.data;
-                        document.getElementById('priceStandardText').innerText = "정가 : " +  event.data.data;
+                        document.getElementById('priceStandardText').innerText = "정가 : " + event.data.data;
                         break;
                     default:
                         console.warn('Unhandled event type:', event.data.type);
@@ -210,7 +230,7 @@
             }
         }
 
-        function openCategorySearch(){
+        function openCategorySearch() {
             var url = "/categories/all";
 
             var newWindowWidth = 600;  // 새 창의 너비
@@ -226,7 +246,7 @@
             newWindow.focus();
         }
 
-        function openTagSearch(){
+        function openTagSearch() {
             var url = "/tags/all";
 
             var newWindowWidth = 600;  // 새 창의 너비
@@ -242,13 +262,13 @@
             newWindow.focus();
         }
 
-        window.addEventListener("storage", function(event) {
+        window.addEventListener("storage", function (event) {
             if (event.key === "category") {
 
                 var result2Element = document.getElementById("categories");
                 var newValue = event.newValue;
                 localStorage.removeItem("category");
-                if (newValue){
+                if (newValue) {
                     document.getElementById("categoryResult").innerText = document.getElementById("categoryResult").innerText == "" ? newValue : document.getElementById("categoryResult").innerText + ", " + newValue;
 
                     result2Element.value = result2Element.value === "" ? newValue : result2Element.value + "," + newValue;
@@ -274,10 +294,11 @@
 
 
         });
+
         function createCategoryRemoveButton(category) {
             var button = document.createElement("button");
             button.textContent = "삭제: " + category;
-            button.onclick = function() {
+            button.onclick = function () {
                 removeCategory(category);
                 this.remove(); // 삭제 버튼 자신도 함께 삭제
             };
@@ -288,7 +309,7 @@
         function createTagRemoveButton(tag) {
             var button = document.createElement("button");
             button.textContent = "삭제: " + tag;
-            button.onclick = function() {
+            button.onclick = function () {
                 removeTag(tag);
                 this.remove(); // 삭제 버튼 자신도 함께 삭제
             };
@@ -318,26 +339,80 @@
                 document.getElementById("categoryResult").innerText = categories.join(','); // 화면에도 반영
             }
         }
-        /*]]>*/
+
+        function isbnCheck() {
+            const isbn = document.getElementById("isbn").value;
+
+            if (isbn.length !== 0) {
+                fetch(`/admin/product/book/isbnCheck?isbn=` + isbn, {
+                    method: 'GET'
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            return response.json(); // 응답 본문을 JSON으로 파싱
+                        } else {
+                            throw new Error('ISBN 조회에 실패했습니다.');
+                        }
+                    })
+                    .then(data => {
+                        if (data === true) {
+                            alert('이미 존재하는 Isbn입니다.');
+                        } else {
+                            alert('등록 가능한 도서입니다.');
+                            document.getElementById("isbnExist").value = true;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while checking ISBN');
+                    });
+            }
+        }
+
+            function readURL(input) {
+            if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+            document.getElementById('preview').src = e.target.result;
+            document.getElementById('image').value = '';
+        };
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            document.getElementById('preview').src = "";
+        }
+        }
+    /*]]>*/
     </script>
 </head>
 <body>
 <h1 style="margin:0 auto">신규 도서 등록</h1>
 <div class="body">
 
-<div th:if="${register}" style="margin:0 auto">
-    <label for="inputValue">제목 :</label>
-    <input type="text" id="inputValue" name="inputValue" required>
-    <button  onclick="openNewWindowWithParam()">검색</button>
-</div>
-<div id="errorMessage" style="color: red;"></div>
+    <div th:if="${register}" style="margin:0 auto">
+        <div th:if="${aladin != null}">
+            <label for="inputValue">제목 :</label>
+            <input type="text" id="inputValue" name="inputValue" required>
+            <button onclick="openNewWindowWithParam()">검색</button>
+        </div>
+    </div>
+    <div id="errorMessage" style="color: red;"></div>
 
-<form th:action="'/admin/product/book/' + ${action}" id="bookProductRegister" method="post" enctype="application/x-www-form-urlencoded" onsubmit="formValidation(event)">
+    <form th:action="'/admin/product/book/' + ${action}" id="bookProductRegister" method="post" enctype="application/x-www-form-urlencoded" onsubmit="formValidation(event)">
     <div class="book-container">
+        <div th:if="${aladin != null}" class="book-image-container">
 
-        <input type="image" id="cover" th:value="${cover}" th:src="${cover == null ? 'https://i.postimg.cc/ydkCbCbC/image-2935360-1280.png' : cover} " style="cursor: default;" width="300px" height="420px" readonly/><br>
+            <input type="image" id="cover" th:value="${cover}" th:src="${cover == null ? 'https://i.postimg.cc/ydkCbCbC/image-2935360-1280.png' : cover} " style="cursor: default; width: 100%; height: 100%" readonly/><br>
+        </div>
 
-        <div class="book-info">
+        <div th:if="${aladin == null}" class="book-container">
+            <input type="file" name="coverImage" onchange="readURL(this)" accept="image/jpeg,image/png,image/jpg" th:required="${action == 'register'}" >
+
+            <div>
+                <img alt="책 표지" id="preview"  width="30vh" th:src="${cover == null ? 'https://i.postimg.cc/ydkCbCbC/image-2935360-1280.png' : cover}"/>
+            </div>
+        </div>
+
+        <div th:if="${aladin != null}" class="book-info">
             <span id="titleText" th:text="'제목 : ' + ${title == null ? '' : title}"></span>
             <span id="publisherText" th:text="'출판사 : ' + ${publisher == null ? '' : publisher}"></span>
             <span id="authorText" th:text="'작가 : ' + ${author == null ? '' : author}"></span>
@@ -345,21 +420,21 @@
             <span id="isbnText" th:text="'isbn10 : ' + ${isbn == null ? '' : isbn}"></span>
             <span id="isbn13Text" th:text="'isbn13 : ' + ${isb13 == null ? '' : isbn13}"></span>
             <span id="priceStandardText" th:text="'정가' + ${priceStandard == null ? '' : priceStandard}"></span>
+            <button type="button" onclick="isbnCheck()">중복 확인</button>
         </div>
     </div>
-
-    <label for="title"></label><input th:type="${aladin != null ? 'hidden' : 'text'}" name="title" id="title" th:value="${title}" readonly/><br>
-    <label for="author"></label><input type="hidden" id="author" name="author" th:value="${author}" readonly/><br>
-    <label for="publisher"></label><input type="hidden" name="publisher" id="publisher" th:value="${publisher}" readonly/><br>
-<!--    <input type="image" id="cover" src="https://i.postimg.cc/ydkCbCbC/image-2935360-1280.png" style="cursor: default;" width="300px" height="420px" readonly/><br>-->
+    <input type="hidden" id="isbnExist" th:value="${action eq 'update'}">
+    <label for="title"></label><input th:type="${aladin != null ? 'hidden' : 'text'}" name="title" id="title" th:value="${title}" required placeholder="제목"/><br>
+    <label for="author"></label><input th:type="${aladin != null ? 'hidden' : 'text'}" id="author" name="author" th:value="${author}" /><br>
+    <label for="publisher"></label><input th:type="${aladin != null ? 'hidden' : 'text'}" name="publisher" id="publisher" th:value="${publisher}"/><br>
     <input type="hidden" name="cover" id="coverURL" th:value="${cover}" readonly/><br>
-    <label for="pubDate"></label><input type="hidden" name="pubDate" id="pubDate" th:value="${pubDate}" readonly/><br>
-    <input type="hidden" name="isbn" id="isbn" th:value="${isbn}" readonly/><br>
-    <input type="hidden" name="isbn13" id="isbn13" th:value="${isbn13}" readonly/><br>
+    <label for="pubDate"></label><input th:type="${aladin != null ? 'hidden' : 'date'}" name="pubDate" id="pubDate" th:value="${pubDate}"/><br>
+    <input th:type="${aladin != null ? 'hidden' : 'text'}" name="isbn" id="isbn" th:value="${isbn}" /><br>
+    <input th:type="${aladin != null ? 'hidden' : 'text'}" name="isbn13" id="isbn13" th:value="${isbn13}" /><br>
     <label for="productName">상품명 : </label><input type="text" name="productName" id="productName" th:value="${productName}"/><br>
-    <label for="priceStandard"></label><input type="hidden" name="productPriceStandard" id="priceStandard" th:value="${priceStandard}" readonly/><br>
+    <label for="priceStandard">정가 : </label><input th:type="${aladin != null ? 'hidden' : 'number'}" name="productPriceStandard" id="priceStandard" th:value="${priceStandard}" required/><br>
     <label for="priceSales">판매가 : </label><input type="number" th:value="${priceSales}" name="productPriceSales" id="priceSales" onchange="calculateDiscount()" required/><br>
-    할인율 </label><span id="discount"></span><br>
+    <label for="discount"> 할인율 : </label><span id="discount"></span><br>
     <label>
         포장 가능 여부
         <input type="radio" name="packable" value="true">
@@ -442,7 +517,7 @@
 
     <p id="categoryResult"></p>
     <div id="removeCategoryButtons"></div>
-    <input type="text" id="categories" name="categories" th:value="${categorySet}">
+    <input type="hidden" id="categories" name="categories" th:value="${categorySet}">
     <div th:each="category : ${categorySet}">
         <button th:category="${category}" type="button" th:text="${category} + ' x'" onclick="removeCategory(this.getAttribute('category')), this.remove()"> </button>
     </div>
@@ -452,7 +527,7 @@
     </div>
     <p id="tagResult"></p>
     <div id="removeTagButtons"></div>
-    <input type="text" id="tags" name="tags" th:value="${tagSet}">
+    <input type="hidden" id="tags" name="tags" th:value="${tagSet}">
 
     <button type="submit" onclick="handleFormSubmit()">등록</button>
 

@@ -27,6 +27,18 @@
         .admin-category-add-btn:hover {
             background-color: #0056b3; /* Darker Blue */
         }
+        .admin-category-add-btn-not-activated {
+            cursor: default;
+            background-color: #6c757d;
+            color: #bdc3c7;
+            padding: 8px 16px;
+            border: none;
+            font-size: 12px;
+            border-radius: 8px;
+            height: 40px;
+            align-content: center;
+            text-decoration: line-through;
+        }
         .category-form-control {
             color: #908F8D;
             line-height: normal;
@@ -70,6 +82,7 @@
         }
         .foot-info {
             font-weight: lighter;
+            margin-left: 30px;
         }
     </style>
     <script>
@@ -209,6 +222,7 @@
                     <label></label>
                     <textarea class="category-form-control" th:text="'#'+${tag.tagName}" style="resize: none; width: 600px" readonly></textarea>
                     <div class="admin-category-add-btn" th:tagName="${tag.tagName}" onclick="openUpdateTagModal(this.getAttribute('tagName'))" data-bs-toggle="modal" th:on data-bs-target="#updateTagModal"> 수정</div>
+                    <div th:if="${tag.productCount != 0}" class="admin-category-add-btn-not-activated"> 삭제</div><br>
                     <div th:if="${tag.productCount == 0}" class="admin-category-add-btn" th:tagId="${tag.tagId}" onclick="deleteTag(this.getAttribute('tagId'))"> 삭제</div><br>
                     <div class="foot-info">
                         <span th:text="'해당 태그가 달린 상품 수 : ' + ${tag.productCount}"></span>

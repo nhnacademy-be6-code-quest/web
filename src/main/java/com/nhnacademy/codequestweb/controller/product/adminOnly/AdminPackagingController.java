@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -33,18 +34,35 @@ public class AdminPackagingController {
     private final ImageService imageService;
 
     @GetMapping("/all")
-    public String all(
+    public String getPackagingList(
             @RequestParam(required = false, name = "productState") Integer productState,
             Model model) {
-        ResponseEntity<List<PackagingGetResponseDto>> response = packagingService.getPackaging(productState);
+        ResponseEntity<List<PackagingGetResponseDto>> response = packagingService.getPackagingList(productState);
+        return "index";
+    }
+
+    @GetMapping("/page")
+    public String getPackagingPage(
+            @RequestParam(required = false, name = "productState") Integer productState,
+            @RequestParam(required = false, name = "page") Integer page,
+            Model model) {
+        page = page == null ? 1 : page;
+        ResponseEntity<Page<PackagingGetResponseDto>> response = packagingService.getPackagingPage(productState, page, 10);
+        model.addAttribute("packagingList", response.getBody().getContent());
+        model.addAttribute("page", page);
+        model.addAttribute("totalPage", response.getBody().getTotalPages());
+        model.addAttribute("view", "adminPage");
+        model.addAttribute("adminPage", "packagingListPage");
+        model.addAttribute("url", "?");
         return "index";
     }
 
     @GetMapping("/registerForm")
-    public String registerForm(Model model) {
-        model.addAttribute("action", "register");
-
-        return "view/product/packagingRegisterForm";
+    public String registerForm(HttpServletRequest req) {
+        req.setAttribute("action", "register");
+        req.setAttribute("view", "adminPage");
+        req.setAttribute("adminPage", "packagingRegisterForm");
+        return "index";
     }
 
     @GetMapping("/updateForm/{productId}")
@@ -52,8 +70,9 @@ public class AdminPackagingController {
         ResponseEntity<PackagingGetResponseDto> response = packagingService.getPackagingByProductId(productId);
         model.addAttribute("packaging", response.getBody());
         model.addAttribute("action", "update");
-
-        return "view/product/packagingRegisterForm";
+        model.addAttribute("view", "adminPage");
+        model.addAttribute("adminPage", "packagingRegisterForm");
+        return "index";
     }
 
     @PostMapping("/register")

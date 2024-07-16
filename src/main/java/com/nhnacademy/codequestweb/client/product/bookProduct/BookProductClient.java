@@ -46,6 +46,11 @@ public interface BookProductClient {
                 @RequestHeader HttpHeaders headers,
                 @RequestBody @Valid BookProductUpdateRequestDto bookProductUpdateRequestDto);
 
+        @GetMapping("/api/product/book/isbnCheck")
+        ResponseEntity<Boolean> isbnCheck(
+                @RequestParam("isbn") String isbn
+        );
+
 
         @GetMapping("/api/product/book/{productId}")
         ResponseEntity<BookProductGetResponseDto> getSingleBookInfo(

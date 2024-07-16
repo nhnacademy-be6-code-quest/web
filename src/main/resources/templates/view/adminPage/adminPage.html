@@ -22,11 +22,19 @@
     </div>
 
     <div class="adminPage-wrapper" th:if="${adminPage != null} and ${#strings.equals(adminPage, 'bookProductRegisterForm')}">
-        <section th:replace="~{view/product/bookProductRegisterForm.html :: bookProductRegisterFragment}"></section>
+        <section th:replace="~{view/product/admin/bookProductRegisterForm.html :: bookProductRegisterFragment}"></section>
     </div>
 
     <div class="adminPage-wrapper" th:if="${adminPage != null} and ${#strings.equals(adminPage, 'selfMadeBookRegisterForm')}">
         <section th:replace="~{view/product/admin/selfMadeBookRegisterForm.html :: selfMadeBookRegisterFragment}"></section>
+    </div>
+
+    <div class="adminPage-wrapper" th:if="${adminPage != null} and ${#strings.equals(adminPage, 'packagingRegisterForm')}">
+        <section th:replace="~{view/product/admin/packagingRegisterForm.html :: packagingRegisterFragment}"></section>
+    </div>
+
+    <div class="adminPage-wrapper" th:if="${adminPage != null} and ${#strings.equals(adminPage, 'packagingListPage')}">
+        <section th:replace="~{view/product/packagingListPage.html :: packagingListFragment}"></section>
     </div>
 
     <div class="adminPage-wrapper" th:if="${adminPage != null} and ${#strings.equals(adminPage, 'productListPage')}">

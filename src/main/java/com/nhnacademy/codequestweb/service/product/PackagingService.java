@@ -8,6 +8,7 @@ import com.nhnacademy.codequestweb.response.product.common.ProductUpdateResponse
 import com.nhnacademy.codequestweb.response.product.packaging.PackagingGetResponseDto;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -29,9 +30,14 @@ public class PackagingService {
         return packagingClient.updatePackaging(headers, requestDto);
     }
 
-    public ResponseEntity<List<PackagingGetResponseDto>> getPackaging(
+    public ResponseEntity<List<PackagingGetResponseDto>> getPackagingList(
             Integer productState){
-        return packagingClient.getPackaging(productState);
+        return packagingClient.getPackagingList(productState);
+    }
+
+    public ResponseEntity<Page<PackagingGetResponseDto>> getPackagingPage(
+            Integer productState, int page, int size){
+        return packagingClient.getPackagingPage(productState, page, size);
     }
 
     public ResponseEntity<PackagingGetResponseDto> getPackagingByProductId(

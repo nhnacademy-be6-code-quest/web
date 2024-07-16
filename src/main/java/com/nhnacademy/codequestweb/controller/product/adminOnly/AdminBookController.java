@@ -16,6 +16,7 @@ import com.nhnacademy.codequestweb.service.product.BookProductService;
 import com.nhnacademy.codequestweb.service.review.ReviewService;
 import com.nhnacademy.codequestweb.utils.BookPageUtils;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
+import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.nio.charset.StandardCharsets;
@@ -101,15 +102,10 @@ public class AdminBookController {
         String markdown = flexmarkHtmlConverter.convert(description);
         log.info("markdown: {}", markdown);
         List<String> categoryNameSet = bookProductGetResponseDto.categorySet().stream().map(ProductCategory::categoryName).toList();
-        StringJoiner categoryJoiner = new StringJoiner(",");
-        for (String categoryName : categoryNameSet) {
-            categoryJoiner.add(categoryName);
-        }
-
         List<String> tagNameSet = bookProductGetResponseDto.tagSet().stream().map(Tag::tagName).toList();
-        StringJoiner tagJoiner = new StringJoiner(",");
-        for (String tagName : tagNameSet) {
-            tagJoiner.add(tagName);
+
+        if (bookProductGetResponseDto.isbn() != null && !bookProductGetResponseDto.isbn().isBlank()){
+            model.addAttribute("aladin", true);
         }
 
         model.addAttribute("update", true);
@@ -126,8 +122,8 @@ public class AdminBookController {
         model.addAttribute("priceSales", bookProductGetResponseDto.productPriceSales());
         model.addAttribute("productName", bookProductGetResponseDto.productName());
         model.addAttribute("inventory", bookProductGetResponseDto.productInventory());
-        model.addAttribute("categorySet", categoryJoiner.toString());
-        model.addAttribute("tagSet", tagJoiner.toString());
+        model.addAttribute("categorySet", categoryNameSet);
+        model.addAttribute("tagSet", tagNameSet);
         model.addAttribute("initialValue", markdown);
         model.addAttribute("view", "adminPage");
         model.addAttribute("adminPage", "bookProductRegisterForm");
@@ -135,6 +131,16 @@ public class AdminBookController {
         return "index";
     }
 
+    @GetMapping("/isbnCheck")
+    public ResponseEntity<Boolean> checkIsbnExists(@RequestParam("isbn") String isbn){
+        try {
+            ResponseEntity<Boolean> result = bookProductService.isbnCheck(isbn);
+            log.info("isbn: {} exist : {}", isbn, result.getBody());
+            return bookProductService.isbnCheck(isbn);
+        } catch (FeignException e) {
+            return null;
+        }
+    }
 
     //register form 외에서는 호출 불가함. 자바스크립트로 통제해놓음
     @GetMapping("/aladinList")
@@ -179,7 +185,6 @@ public class AdminBookController {
 
     @PostMapping("/register")
     public String saveBook(@RequestParam(name = "coverImage", required = false) MultipartFile file, @ModelAttribute @Valid BookProductRegisterRequestDto dto, HttpServletRequest req, Model model){
-//        log.info("title: {}", title);
         if (file != null && !file.isEmpty()){
             log.info("image exist!");
             String imageUrl = imageService.uploadImage(file);
