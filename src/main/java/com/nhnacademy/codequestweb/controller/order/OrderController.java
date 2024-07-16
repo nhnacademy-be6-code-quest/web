@@ -4,6 +4,7 @@ import com.nhnacademy.codequestweb.request.order.field.OrderItemDto;
 import com.nhnacademy.codequestweb.response.order.client.*;
 import com.nhnacademy.codequestweb.response.order.nonclient.NonClientOrderForm;
 import com.nhnacademy.codequestweb.response.order.nonclient.NonClientOrderGetResponseDto;
+import com.nhnacademy.codequestweb.service.order.AdminOrderService;
 import com.nhnacademy.codequestweb.service.order.OrderService;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,6 +24,7 @@ import java.util.List;
 public class OrderController {
 
     private final OrderService orderService;
+    private final AdminOrderService adminOrderService;
 
     // 비회원 단건 주문 - 바로 주문
     @PostMapping("/non-client/order")
@@ -106,6 +108,12 @@ public class OrderController {
 
         return nonClientOrderGetResponseDto;
 
+    }
+
+    @PostMapping("/order/{orderId}/update")
+    public String updateOrderStatus(HttpServletRequest request, @PathVariable long orderId, @RequestParam("status") String orderStatus, @RequestParam(value = "orderNo", defaultValue = "0") int orderNo){
+        adminOrderService.updateOrderStatus(request, orderId, orderStatus);
+        return String.format("redirect:/admin/orders?pageNo=%d&pageSize=20", orderNo);
     }
 
 }

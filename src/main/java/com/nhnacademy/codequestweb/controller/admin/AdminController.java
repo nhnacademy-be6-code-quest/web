@@ -106,7 +106,7 @@ public class AdminController {
 
     @GetMapping("/admin/orders")
     public String adminFindOrder(HttpServletRequest req,
-                                 @RequestParam(value = "pageSize", defaultValue = "5", required = false) int pageSize,
+                                 @RequestParam(value = "pageSize", defaultValue = "20", required = false) int pageSize,
                                  @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo){
 
         HttpHeaders headers = new HttpHeaders();

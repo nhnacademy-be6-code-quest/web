@@ -58,6 +58,10 @@ public interface OrderClient {
     @PutMapping("/api/client/orders/{orderId}/refund")
     ResponseEntity<String> refundClientOrder(@RequestHeader HttpHeaders headers, @PathVariable long orderId);
 
+    // 회원 주문 환불 요청 상태 변경
+    @PutMapping("/api/client/orders/{orderId}/refund-request")
+    ResponseEntity<String> refundRequestOrder(@RequestHeader HttpHeaders headers, @PathVariable long orderId);
+
     // 회원 주문 상품 상세 리스트 조회
     @GetMapping("/api/client/orders/{orderId}/detail")
     ResponseEntity<List<ProductOrderDetailResponseDto>> getClientProductOrderDetailList(@RequestHeader HttpHeaders headers, @PathVariable Long orderId);
