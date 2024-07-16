@@ -19,23 +19,5 @@ public enum DiscountType {
     public String getValue() {
         return value;
     }
-
-    public static DiscountType fromCode(int code) {
-        for (DiscountType type : DiscountType.values()) {
-            if (type.code == code) {
-                return type;
-            }
-        }
-        throw new IllegalArgumentException("Invalid DiscountType code: " + code);
-    }
-
-    public static DiscountType fromValue(String value) {
-        for (DiscountType type : DiscountType.values()) {
-            if (type.value.equals(value)) {
-                return type;
-            }
-        }
-        throw new IllegalArgumentException("Invalid DiscountType value: " + value);
-    }
 }
 

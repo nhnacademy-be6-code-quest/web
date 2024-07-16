@@ -24,10 +24,6 @@ public class PointPolicyService {
         return pointPolicyClient.findAllPointPolicy(headers, page, size).getBody();
     }
 
-
-    public PointPolicyDetailResponseDto findPolicy (long pointPolicyId){
-        return pointPolicyClient.findPointPolicy(pointPolicyId).getBody();
-    }
     public void modifyPolicy(PointPolicyModifyRequestDto pointPolicyModifyRequestDto){
         pointPolicyClient.modifyPointPolicy(pointPolicyModifyRequestDto);
     }

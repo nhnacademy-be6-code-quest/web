@@ -25,14 +25,6 @@
         <div th:replace="~{view/mypage/withdrawal :: withdrawalFragment}"></div>
     </div>
 
-    <div class="mypage-wrapper" th:if="${mypage != null} and ${#strings.equals(mypage, 'noPhotoReviews')}">
-        <div th:replace="~{view/mypage/noPhotoReviews :: noPhotoReviewsFragment}"></div>
-    </div>
-
-    <div class="mypage-wrapper" th:if="${mypage != null} and ${#strings.equals(mypage, 'photoReviews')}">
-        <div th:replace="~{view/mypage/photoReviews :: photoReviewsFragment}"></div>
-    </div>
-
     <div class="mypage-wrapper" th:if="${mypage != null} and ${#strings.equals(mypage, 'coupons')}">
         <div th:replace="~{view/mypage/coupons.html :: CouponsFragment ('coupons')}"></div>
     </div>

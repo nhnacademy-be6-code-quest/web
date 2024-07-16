@@ -1,4 +1,4 @@
-package com.nhnacademy.codequestweb.controller.refund;
+package com.nhnacademy.codequestweb.request.refund;
 
 import lombok.Builder;
 import lombok.Getter;

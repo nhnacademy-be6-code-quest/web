@@ -11,8 +11,4 @@ public class CouponTypeResponseDto {
     long couponTypeId;
     CouponKind couponKind;
 
-    public CouponTypeResponseDto(long couponTypeId, CouponKind couponKind) {
-        this.couponTypeId = couponTypeId;
-        this.couponKind = couponKind;
-    }
 }

@@ -19,23 +19,6 @@ public enum PointUsageKind {
         return value;
     }
 
-    public static PointUsageKind fromCode(int code) {
-        for (PointUsageKind type : PointUsageKind.values()) {
-            if (type.code == code) {
-                return type;
-            }
-        }
-        throw new IllegalArgumentException("Invalid DiscountType code: " + code);
-    }
-
-    public static PointUsageKind fromValue(String value) {
-        for (PointUsageKind type : PointUsageKind.values()) {
-            if (type.value.equals(value)) {
-                return type;
-            }
-        }
-        throw new IllegalArgumentException("Invalid DiscountType value: " + value);
-    }
 }
 
 

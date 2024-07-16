@@ -30,9 +30,6 @@ public interface PointPolicyClient {
     ResponseEntity<Page<PointPolicyAdminListResponseDto>> findAllPointPolicy(@RequestHeader
     HttpHeaders headers, @RequestParam int page, @RequestParam int size);
 
-    @GetMapping("/api/point/policy/{pointPolicyId}")
-    ResponseEntity<PointPolicyDetailResponseDto> findPointPolicy(@PathVariable long pointPolicyId);
-
     @PutMapping("/api/point/policy/modify")
     ResponseEntity<String> modifyPointPolicy(
         @RequestBody PointPolicyModifyRequestDto pointPolicyModifyRequestDto);

@@ -1,9 +1,10 @@
 package com.nhnacademy.codequestweb.service.refund;
 
 import com.nhnacademy.codequestweb.client.refund.RefundClient;
-import com.nhnacademy.codequestweb.client.refund.RefundOrderClient;
-import com.nhnacademy.codequestweb.controller.refund.RefundPolicyRequestDto;
-import java.util.List;
+import com.nhnacademy.codequestweb.request.refund.RefundRegisterRequestDto;
+import com.nhnacademy.codequestweb.request.refund.RefundTossRequestDto;
+import com.nhnacademy.codequestweb.response.refund.PaymentRefundResponseDto;
+import java.text.ParseException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,31 +12,25 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class RefundService {
 
-//    private final RefundClient refundClient;
-    private final RefundOrderClient refundOrderClient;
     private final RefundClient refundClient;
+    private final TossRefundService tossRefundService;
 
-//    public RefundOrderRequestDto findRefundOrderRequestDtoByOrderId(long orderId) {
-//        return refundClient.findRefundOrderRequestDtoByOrderId(orderId);
-//    }
-//
-//    public String findOrderStatusByOrderId(Long orderId) {
-//        return refundClient.findOrderStatusByOrderId(orderId);
-//    }
-
-//    public String getOrderStatus(long orderId) {
-//        return refundOrderClient.findOrderStatusByOrderId(orderId);
-//    }
-
-    public boolean isRefund(String orderStatus) {
-        return orderStatus.equals("배송중") || orderStatus.equals("배송완료");
+    public PaymentRefundResponseDto findTossKey(long orderId) throws ParseException {
+        PaymentRefundResponseDto dto = refundClient.findPaymentKey(orderId).getBody();
+        return dto;
     }
 
-    public boolean isCancel(String orderStatus) {
-        return orderStatus.equals("결제대기") || orderStatus.equals("결제완료");
+
+    public void saveRefund(long orderId, RefundTossRequestDto request){
+        RefundRegisterRequestDto dto = RefundRegisterRequestDto.builder()
+            .cancelReason(request.getCancelReason())
+            .paymentId(request.getPaymentId())
+            .orderStatus(request.getOrderStatus())
+            .orderId(orderId).build();
+
+    }
+    public void requestRefund(long orderId){
+
     }
 
-    public List<RefundPolicyRequestDto> findAllRefundPolicyRequestDtoList() {
-        return refundClient.findAllRefundPolicyRequestDtoList();
-    }
 }
