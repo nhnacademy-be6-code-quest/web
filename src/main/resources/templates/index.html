@@ -100,7 +100,7 @@
     <section th:replace="~{view/order/nonClientOrder.html :: nonClientOrderFragment}"></section>
 </div>
 <div th:if="${view != null} and ${#strings.equals(view, 'clientOrder2')}">
-    <section th:replace="~{view/order/clientOrder2.html :: clientOrder2Fragment}"></section>
+    <section th:replace="~{view/order/clientOrder.html :: clientOrder2Fragment}"></section>
 </div>
 <div th:if="${view != null} and ${#strings.equals(view, 'clientOrderDiscount')}">
     <section th:replace="~{view/order/clientOrderDiscount.html :: clientOrderDiscountFragment}"></section>

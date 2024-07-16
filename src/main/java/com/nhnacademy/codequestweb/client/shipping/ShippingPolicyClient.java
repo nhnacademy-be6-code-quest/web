@@ -1,6 +1,6 @@
 package com.nhnacademy.codequestweb.client.shipping;
 
-import com.nhnacademy.codequestweb.response.shipping.AdminShippingPolicyPutRequestDto;
+import com.nhnacademy.codequestweb.request.shipping.AdminShippingPolicyPutRequestDto;
 import com.nhnacademy.codequestweb.response.shipping.ShippingPolicyGetResponseDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpHeaders;

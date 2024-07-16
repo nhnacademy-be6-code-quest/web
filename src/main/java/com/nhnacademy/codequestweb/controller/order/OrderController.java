@@ -51,8 +51,8 @@ public class OrderController {
     }
 
     @PostMapping("/client/order-discount")
-    public String viewClientOrderDiscountForm(@ModelAttribute ClientOrderForm2 clientOrderForm2, Model model, HttpServletRequest req, HttpSession session){
-        session.setAttribute("clientOrderForm2", clientOrderForm2);
+    public String viewClientOrderDiscountForm(@ModelAttribute ClientOrderForm clientOrderForm, Model model, HttpServletRequest req, HttpSession session){
+        session.setAttribute("clientOrderForm", clientOrderForm);
         return orderService.viewClientOrderDiscount(req, model);
     }
 
@@ -70,8 +70,8 @@ public class OrderController {
 
     // 회원 주문 생성 feign 호출
     @PostMapping("/api/client/orders")
-    public String tryClientOrder(HttpServletRequest request, @ModelAttribute ClientOrderForm clientOrderForm){
-        return String.format("redirect:/client/order/%d/payment", orderService.createClientOrder(request, clientOrderForm));
+    public String tryClientOrder(HttpServletRequest request, @ModelAttribute ClientOrderCreateForm clientOrderCreateForm){
+        return String.format("redirect:/client/order/%d/payment", orderService.createClientOrder(request, clientOrderCreateForm));
     }
 
     // 비회원 주문 생성 feign 호출

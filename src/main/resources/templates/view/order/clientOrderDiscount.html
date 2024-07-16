@@ -182,8 +182,8 @@
         }
 
         // 결제금액 업데이트
-        const originProductTotalAmount = [[${clientOrderForm2}]].productTotalAmount;
-        const originShippingFee = [[${clientOrderForm2}]].shippingFee;
+        const originProductTotalAmount = [[${clientOrderForm}]].productTotalAmount;
+        const originShippingFee = [[${clientOrderForm}]].shippingFee;
         console.log("originProductTotalAmount: ", originProductTotalAmount);
         console.log("originShippingFee: ", originShippingFee);
         document.getElementById("payAmount").value = originProductTotalAmount + originShippingFee - couponDiscountAmount;
@@ -198,8 +198,8 @@
         document.getElementById("couponDiscountAmount").value = 0;
         document.getElementById("selectedCouponDiscountAmount").textContent = 0;
 
-        const originProductTotalAmount = [[${clientOrderForm2}]].productTotalAmount;
-        const originShippingFee = [[${clientOrderForm2}]].shippingFee;
+        const originProductTotalAmount = [[${clientOrderForm}]].productTotalAmount;
+        const originShippingFee = [[${clientOrderForm}]].shippingFee;
         document.getElementById("payAmount").value = originProductTotalAmount + originShippingFee - usedPoint;
 
         document.getElementById("selectedCouponInfo").hidden = true;
@@ -211,8 +211,8 @@
         const exceedMessage = document.getElementById('exceed-remaining-point-message');
         const negativeAmountMessage = document.getElementById('negative-amount-message');
 
-        const originProductTotalAmount = [[${clientOrderForm2}]].productTotalAmount;
-        const originShippingFee = [[${clientOrderForm2}]].shippingFee;
+        const originProductTotalAmount = [[${clientOrderForm}]].productTotalAmount;
+        const originShippingFee = [[${clientOrderForm}]].shippingFee;
 
         let inputUsedPointAmount = parseInt(document.getElementById('inputUsedPointAmount').value);
         const remainingPoints = parseInt(document.getElementById('remaining-points').text);

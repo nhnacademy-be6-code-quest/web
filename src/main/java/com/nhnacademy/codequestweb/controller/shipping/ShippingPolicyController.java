@@ -1,13 +1,11 @@
 package com.nhnacademy.codequestweb.controller.shipping;
 
-import com.nhnacademy.codequestweb.response.shipping.AdminShippingPolicyPutRequestDto;
+import com.nhnacademy.codequestweb.request.shipping.AdminShippingPolicyPutRequestDto;
 import com.nhnacademy.codequestweb.response.shipping.ShippingPolicyGetResponseDto;
 import com.nhnacademy.codequestweb.service.order.AdminOrderService;
-import com.nhnacademy.codequestweb.service.shippingpolicy.ShippingPolicyService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

@@ -3,9 +3,8 @@ package com.nhnacademy.codequestweb.service.order;
 import com.nhnacademy.codequestweb.client.order.OrderClient;
 import com.nhnacademy.codequestweb.client.shipping.ShippingPolicyClient;
 import com.nhnacademy.codequestweb.response.order.common.OrderResponseDto;
-import com.nhnacademy.codequestweb.response.shipping.AdminShippingPolicyPutRequestDto;
+import com.nhnacademy.codequestweb.request.shipping.AdminShippingPolicyPutRequestDto;
 import com.nhnacademy.codequestweb.response.shipping.ShippingPolicyGetResponseDto;
-import com.nhnacademy.codequestweb.service.shippingpolicy.ShippingPolicyService;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +19,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class AdminOrderService {
-    private static final String ID_HEADER = "X-User-Id";
 
     private final OrderClient orderClient;
     private final ShippingPolicyClient shippingPolicyClient;
