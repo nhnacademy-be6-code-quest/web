@@ -70,10 +70,10 @@
         <div th:if="${productList != null and not #lists.isEmpty(productList)}" class="container my-5">
         <h2 class="mb-5" th:text="${mainText}"></h2>
             <div class="book-listing" th:each="product : ${productList}">
-                <div th:with="url = ${admin != null ? '/admin/product/book/update/' + product.productId : '/product/books/' + product.productId}">
+                <div th:with="url = ${admin != null ? '/admin/product/book/' + product.productId : '/product/books/' + product.productId}">
                     <div th:onclick="|location.href='@{${url}}'|" class="row align-items-center">
                     <div class="col-md-2">
-                        <img th:src="${product.cover}" class="img-fluid rounded-4" alt="Book Image" style="height: 12vh; border: black solid 1px">
+                        <img th:src="${product.cover}" class="img-fluid rounded-4" alt="Book Image" style="height: 12vh; width: 8vh; border: black solid 1px">
                     </div>
                     <div class="col-md-8">
                         <p class="book-title" th:text="${product.title}"></p>

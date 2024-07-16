@@ -10,7 +10,9 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,6 +30,11 @@ public interface TagClient {
     ResponseEntity<TagUpdateResponseDto> updateTag(
             @RequestHeader HttpHeaders headers,
             @Valid @RequestBody TagUpdateRequestDto dto);
+
+    @DeleteMapping("/product/admin/tag/delete/{tagId}")
+    ResponseEntity<Void> deleteTag(
+            @RequestHeader HttpHeaders headers,
+            @PathVariable("tagId") Long tagId);
 
     @GetMapping("/product/tags/all")
     ResponseEntity<Page<TagGetResponseDto>> getAllTags(

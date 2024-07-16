@@ -25,8 +25,16 @@
         <section th:replace="~{view/product/bookProductRegisterForm.html :: bookProductRegisterFragment}"></section>
     </div>
 
+    <div class="adminPage-wrapper" th:if="${adminPage != null} and ${#strings.equals(adminPage, 'selfMadeBookRegisterForm')}">
+        <section th:replace="~{view/product/admin/selfMadeBookRegisterForm.html :: selfMadeBookRegisterFragment}"></section>
+    </div>
+
     <div class="adminPage-wrapper" th:if="${adminPage != null} and ${#strings.equals(adminPage, 'productListPage')}">
         <section th:replace="~{view/product/productListPage.html :: productListFragment ('productList', 'mainText', 'page', 'totalPage', 'sort', 'desc')}"></section>
+    </div>
+
+    <div class="adminPage-wrapper" th:if="${adminPage != null} and ${#strings.equals(adminPage, 'productBookDetail')}">
+        <section th:replace="~{view/product/productBookDetail.html :: productBookDetailFragment ('book', 'reviews', 'averageScore', 'page', 'totalPage')}"></section>
     </div>
 
     <div class="adminPage-wrapper" th:if="${adminPage != null} and ${#strings.equals(adminPage, 'tags')}">

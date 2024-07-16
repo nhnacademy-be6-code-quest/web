@@ -1,55 +1,10 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org" th:fragment="bookProductRegisterFragment ()">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" th:fragment="selfMadeBookRegisterFragment ()">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Title</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.48.4/codemirror.min.css"/>
     <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
-    <style>
-        .book-button {
-            display: flex;
-            align-items: center;
-            border: 1px solid bisque;
-            background: none;
-            padding: 10px;
-            cursor: pointer;
-            width: 550px;
-        }
-
-        .book-info {
-            display: flex;
-            flex-direction: column;
-            margin-left: 30px;
-            text-align: left;
-        }
-
-        .book-info span {
-            margin-bottom: 5px;
-        }
-
-        .book-container {
-            width: 50%;
-            display: flex; /* Flexbox를 사용하여 요소들을 배치합니다 */
-            align-items: center; /* 요소들을 수직 가운데 정렬합니다 */
-            padding: 30px; /* 각 요소 주위에 여백을 줍니다 */
-            border: 1px solid black; /* 네모 테두리를 추가합니다 */
-            background-color: rgb(0, 122, 252);
-            border-radius: 5px; /* 모서리를 둥글게 만듭니다 */
-            /*margin:0 auto;*/
-        }
-
-        .pagination-container {
-            text-align: center; /* 컨테이너를 가운데 정렬 */
-        }
-        .pagination-form {
-            display: inline-block; /* 폼을 인라인 블록으로 배치 */
-            margin: 5px; /* 각 폼 간의 간격 */
-        }
-        .body{
-            margin-left:15%;
-        }
-    </style>
     <script th:src="@{js/product/categorySearch.js}"></script>
     <script th:inline="javascript">
         /*<![CDATA[*/
@@ -75,12 +30,14 @@
             // 여기서 추가적인 처리를 수행할 수 있음
 
             // 폼을 제출하거나 다른 동작을 수행하도록 원하는 경우
-            var title = document.getElementById('title').value;
-            var productName = document.getElementById('productName').value;
-            var priceSales = document.getElementById('priceSales').value;
-            var inventory = document.getElementById('productInventory').value;
-            var description = document.getElementById('productDescriptionValue').value;
-            var categories = document.getElementById('categories').value;
+            const title = document.getElementById('title').value;
+            const productName = document.getElementById('productName').value;
+            const priceSales = document.getElementById('priceSales').value;
+            const inventory = document.getElementById('productInventory').value;
+            const description = document.getElementById('productDescriptionValue').value;
+            const categories = document.getElementById('categories').value;
+            const isbn = document.getElementById('isbn').value;
+            const isbn13 = document.getElementById('isbn13').value;
 
             if (!title) {
                 alert('도서를 선택하세요.');
@@ -106,10 +63,29 @@
                 alert('카테고리는 필수입니다.');
                 return; // 유효하지 않으면 제출하지 않음
             }
+            if (isbn.length !== 0 && isbn.length !== 10){
+                alert('isbn은 비워지거나 10자리여야 합니다.');
+                return;
+            }
+            if (isbn13.length !== 0 && isbn13.length !== 13){
+                alert('isbn13은 비워지거나 13자리여야 합니다.');
+                return;
+            }
             event.target.submit(); // 폼 제출
         }
 
-
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('preview').src = e.target.result;
+                    document.getElementById('image').value = '';
+                };
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                document.getElementById('preview').src = "";
+            }
+        }
 
         function openNewWindowWithParam() {
             // 파라미터 값을 가져옵니다 (여기서는 input의 값을 사용합니다)
@@ -324,139 +300,121 @@
 <body>
 <h1 style="margin:0 auto">신규 도서 등록</h1>
 <div class="body">
+    <form th:action="'/admin/product/book/' + ${action}" id="bookProductRegister" method="post" enctype="multipart/form-data" onsubmit="formValidation(event)">
+        <div class="book-container">
+            <input type="file" name="coverImage" onchange="readURL(this)" accept="image/jpeg,image/png,image/jpg" th:required="${action == 'register'}" >
 
-<div th:if="${register}" style="margin:0 auto">
-    <label for="inputValue">제목 :</label>
-    <input type="text" id="inputValue" name="inputValue" required>
-    <button  onclick="openNewWindowWithParam()">검색</button>
-</div>
-<div id="errorMessage" style="color: red;"></div>
+            <div>
+                <img alt="책 표지" id="preview"  width="30vh" th:src="${cover == null ? 'https://i.postimg.cc/ydkCbCbC/image-2935360-1280.png' : cover}"/>
+            </div>
 
-<form th:action="'/admin/product/book/' + ${action}" id="bookProductRegister" method="post" enctype="application/x-www-form-urlencoded" onsubmit="formValidation(event)">
-    <div class="book-container">
-
-        <input type="image" id="cover" th:value="${cover}" th:src="${cover == null ? 'https://i.postimg.cc/ydkCbCbC/image-2935360-1280.png' : cover} " style="cursor: default;" width="300px" height="420px" readonly/><br>
-
-        <div class="book-info">
-            <span id="titleText" th:text="'제목 : ' + ${title == null ? '' : title}"></span>
-            <span id="publisherText" th:text="'출판사 : ' + ${publisher == null ? '' : publisher}"></span>
-            <span id="authorText" th:text="'작가 : ' + ${author == null ? '' : author}"></span>
-            <span id="pubDateText" th:text="'출판일 : ' + ${pubDate == null ? '' : pubDate}"></span>
-            <span id="isbnText" th:text="'isbn10 : ' + ${isbn == null ? '' : isbn}"></span>
-            <span id="isbn13Text" th:text="'isbn13 : ' + ${isb13 == null ? '' : isbn13}"></span>
-            <span id="priceStandardText" th:text="'정가' + ${priceStandard == null ? '' : priceStandard}"></span>
         </div>
-    </div>
 
-    <label for="title"></label><input th:type="${aladin != null ? 'hidden' : 'text'}" name="title" id="title" th:value="${title}" readonly/><br>
-    <label for="author"></label><input type="hidden" id="author" name="author" th:value="${author}" readonly/><br>
-    <label for="publisher"></label><input type="hidden" name="publisher" id="publisher" th:value="${publisher}" readonly/><br>
-<!--    <input type="image" id="cover" src="https://i.postimg.cc/ydkCbCbC/image-2935360-1280.png" style="cursor: default;" width="300px" height="420px" readonly/><br>-->
-    <input type="hidden" name="cover" id="coverURL" th:value="${cover}" readonly/><br>
-    <label for="pubDate"></label><input type="hidden" name="pubDate" id="pubDate" th:value="${pubDate}" readonly/><br>
-    <input type="hidden" name="isbn" id="isbn" th:value="${isbn}" readonly/><br>
-    <input type="hidden" name="isbn13" id="isbn13" th:value="${isbn13}" readonly/><br>
-    <label for="productName">상품명 : </label><input type="text" name="productName" id="productName" th:value="${productName}"/><br>
-    <label for="priceStandard"></label><input type="hidden" name="productPriceStandard" id="priceStandard" th:value="${priceStandard}" readonly/><br>
-    <label for="priceSales">판매가 : </label><input type="number" th:value="${priceSales}" name="productPriceSales" id="priceSales" onchange="calculateDiscount()" required/><br>
-    할인율 </label><span id="discount"></span><br>
-    <label>
-        포장 가능 여부
-        <input type="radio" name="packable" value="true">
-    </label><span th:text="가능"></span>
-    <label>
-        <input type="radio" name="packable" value="false" checked>
-    </label><span th:text="불가능"></span>
-    재고<input type="number" name="productInventory" id="productInventory" placeholder="재고" th:default="0" th:value="${inventory == null ? 0 : inventory}">
-    <input type="hidden" name="productDescription" id="productDescription" placeholder="설명">
-    <input type="hidden" name="productDescriptionValue" id="productDescriptionValue" placeholder="설명" required>
-    <div th:if="${update}">
-        <input type="hidden" name="productId" th:value="${productId}">
-        <input type="hidden" name="_method" value="PUT"/>
-        <input type="radio" name="productState" value="0" th:checked="${state == 0}">판매
-        <input type="radio" name="productState" value="1" th:checked="${state == 1}">판매 중단(임시)
-        <input type="radio" name="productState" value="2" th:checked="${state == 2}">판매 중단(영구)
-    </div>
+        <label for="title"></label><input th:type="${a? text : hidden}" type="text" name="title" id="title" th:value="${title}" placeholder="제목" /><br>
+        <label for="author"></label><input type="text" id="author" name="author" th:value="${author}" placeholder="작가" /><br>
+        <label for="publisher"></label><input type="text" name="publisher" id="publisher" th:value="${publisher}" placeholder="출판사"/><br>
+        <label for="pubDate"></label><input type="date" name="pubDate" id="pubDate" th:value="${pubDate}" placeholder="출판일"/><br>
+        <input type="text" name="isbn" id="isbn" th:value="${isbn}" placeholder="isbn"/><br>
+        <input type="text" name="isbn13" id="isbn13" th:value="${isbn13}" placeholder="isbn13"/><br>
+        <label for="productName">상품명 : </label><input type="text" name="productName" id="productName" th:value="${productName}"/><br>
+        <label for="priceStandard"></label><input type="number" name="productPriceStandard" id="priceStandard" th:value="${priceStandard}" /><br>
+        <label for="priceSales">판매가 : </label><input type="number" th:value="${priceSales}" name="productPriceSales" id="priceSales" onchange="calculateDiscount()" required/><br>
+        할인율 </label><span id="discount"></span><br>
+        <label>
+            포장 가능 여부
+            <input type="radio" name="packable" value="true">
+        </label><span th:text="가능"></span>
+        <label>
+            <input type="radio" name="packable" value="false" checked>
+        </label><span th:text="불가능"></span>
+        재고<input type="number" name="productInventory" id="productInventory" placeholder="재고" th:default="0" th:value="${inventory == null ? 0 : inventory}">
+        <input type="hidden" name="productDescription" id="productDescription" placeholder="설명">
+        <input type="hidden" name="productDescriptionValue" id="productDescriptionValue" placeholder="설명" required>
+        <div th:if="${update}">
+            <input type="hidden" name="productId" th:value="${productId}">
+            <input type="hidden" name="_method" value="PUT"/>
+            <input type="radio" name="productState" value="0" checked>판매
+            <input type="radio" name="productState" value="1">판매 중단(임시)
+            <input type="radio" name="productState" value="2">판매 중단(영구)
+        </div>
+<div id="content">
 
-    <div id="content">
+</div>
+<script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+<script th:inline="javascript">
+    const initialValue = /*[[${initialValue}]]*/ '';
+    const init = initialValue == null ? '내용을 입력하세요.' : initialValue;
+    const editor = new toastui.Editor({
+        el: document.querySelector('#content'), // 에디터를 적용할 요소 (컨테이너)
+        width: '700px',
+        height: 'auto',                        // 에디터 영역의 높이 값 (OOOpx || auto)
+        initialEditType: 'wysiwyg',            // 최초로 보여줄 에디터 타입 (markdown || wysiwyg)
+        initialValue: init,     // 내용의 초기 값으로, 반드시 마크다운 문자열 형태여야 함
+        previewStyle: 'tab',                // 마크다운 프리뷰 스타일 (tab || vertical)
+        hideModeSwitch: true,  // 모드 전환 버튼 숨기기
+        toolbarItems: [
+            ['heading', 'bold', 'italic', 'strike'],
+            ['hr', 'quote'],
+            ['ul', 'ol', 'task', 'indent', 'outdent'],
+            ['table', 'image', 'link'],
+            ['code', 'codeblock']
+        ],
+        hooks: {
+            async addImageBlobHook(blob, callback) {
+                const formData = new FormData();
+                formData.append('image', blob);
 
-    </div>
-    <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
-    <script th:inline="javascript">
-        const initialValue = /*[[${initialValue}]]*/ '';
-        const init = initialValue == null ? '내용을 입력하세요.' : initialValue;
-        const editor = new toastui.Editor({
-            el: document.querySelector('#content'), // 에디터를 적용할 요소 (컨테이너)
-            width: '700px',
-            height: 'auto',                        // 에디터 영역의 높이 값 (OOOpx || auto)
-            initialEditType: 'wysiwyg',            // 최초로 보여줄 에디터 타입 (markdown || wysiwyg)
-            initialValue: init,     // 내용의 초기 값으로, 반드시 마크다운 문자열 형태여야 함
-            previewStyle: 'tab',                // 마크다운 프리뷰 스타일 (tab || vertical)
-            hideModeSwitch: true,  // 모드 전환 버튼 숨기기
-            toolbarItems: [
-                ['heading', 'bold', 'italic', 'strike'],
-                ['hr', 'quote'],
-                ['ul', 'ol', 'task', 'indent', 'outdent'],
-                ['table', 'image', 'link'],
-                ['code', 'codeblock']
-            ],
-            hooks: {
-                async addImageBlobHook(blob, callback) {
-                    const formData = new FormData();
-                    formData.append('image', blob);
+                try {
+                    const response = await fetch('/save/img', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    if (response.ok) {
+                        const imageUrl = await response.text();
 
-                    try {
-                        const response = await fetch('/save/img', {
-                            method: 'POST',
-                            body: formData
-                        });
-                        if (response.ok) {
-                            const imageUrl = await response.text();
-
-                            const width = 300;
-                            callback(imageUrl, 'alt text', {
-                                width: width
-                            });  // 이미지 URL을 에디터에 삽입
-                        } else {
-                            console.error('Image upload failed:', response.statusText);
-                        }
-                    } catch (error) {
-                        console.error('Image upload failed:', error);
+                        const width = 300;
+                        callback(imageUrl, 'alt text', {
+                            width: width
+                        });  // 이미지 URL을 에디터에 삽입
+                    } else {
+                        console.error('Image upload failed:', response.statusText);
                     }
+                } catch (error) {
+                    console.error('Image upload failed:', error);
                 }
             }
+        }
 
-        });
+    });
 
-        editor.on('change', () => {
-            const inputValue = document.getElementById('productDescription');
-            inputValue.value = editor.getHTML();
+    editor.on('change', () => {
+        const inputValue = document.getElementById('productDescription');
+        inputValue.value = editor.getHTML();
 
 
-            const inputValue2 = document.getElementById('productDescriptionValue');
-            inputValue2.value = editor.getMarkdown();
+        const inputValue2 = document.getElementById('productDescriptionValue');
+        inputValue2.value = editor.getMarkdown();
 
-        });
-    </script>
-    <button type="button" onclick="openCategorySearch()">카테고리 검색</button>
+    });
+</script>
+<button type="button" onclick="openCategorySearch()">카테고리 검색</button>
 
-    <p id="categoryResult"></p>
-    <div id="removeCategoryButtons"></div>
-    <input type="text" id="categories" name="categories" th:value="${categorySet}">
-    <div th:each="category : ${categorySet}">
-        <button th:category="${category}" type="button" th:text="${category} + ' x'" onclick="removeCategory(this.getAttribute('category')), this.remove()"> </button>
-    </div>
-    <button type="button" onclick="openTagSearch()">태그 검색</button>
-    <div th:each="tag : ${tagSet}">
-        <button th:if="${!tag.isEmpty()}" th:tag="${tag}" type="button" th:text="${tag} + ' x'" onclick="removeTag(this.getAttribute('tag')), this.remove()"> </button>
-    </div>
-    <p id="tagResult"></p>
-    <div id="removeTagButtons"></div>
-    <input type="text" id="tags" name="tags" th:value="${tagSet}">
+<p id="categoryResult"></p>
+<div id="removeCategoryButtons"></div>
+<input type="text" id="categories" name="categories" th:value="${categorySet}">
+<div th:each="category : ${categorySet}">
+    <button th:category="${category}" type="button" th:text="${category} + ' x'" onclick="removeCategory(this.getAttribute('category')), this.remove()"> </button>
+</div>
+<button type="button" onclick="openTagSearch()">태그 검색</button>
+<div th:each="tag : ${tagSet}">
+    <button th:tag="${tag}" type="button" th:text="${tag} + ' x'" onclick="removeTag(this.getAttribute('tag')), this.remove()"> </button>
+</div>
+<p id="tagResult"></p>
+<div id="removeTagButtons"></div>
+<input type="text" id="tags" name="tags" th:value="${tagSet}">
 
-    <button type="submit" onclick="handleFormSubmit()">등록</button>
-
-</form>
+<button type="submit" onclick="handleFormSubmit()">등록</button>
+    </form>
 </div>
 </body>
 </html>

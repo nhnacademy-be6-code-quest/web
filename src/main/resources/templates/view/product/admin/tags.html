@@ -44,6 +44,7 @@
         .pagination {
             display: flex;
             justify-content: center;
+            align-items: center;
             margin-top: 20px;
         }
 
@@ -66,6 +67,9 @@
         }
         .search-form {
             border:0;
+        }
+        .foot-info {
+            font-weight: lighter;
         }
     </style>
     <script>
@@ -100,7 +104,7 @@
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        alert('An error occurred while deleting the phone number..');
+                        alert('An error occurred while saving new tag');
                     });
             }
         }
@@ -137,7 +141,29 @@
                     })
                     .catch(error => {
                         console.error('Error:', error);
-                        alert('An error occurred while deleting the phone number..');
+                        alert('An error occurred while updating tag');
+                    });
+            }
+        }
+
+        function deleteTag(tagId) {
+            if (confirm('태그를 삭제하시겠습니까?')) {
+                fetch(`/admin/tags/delete/` + tagId , {
+                    method: 'DELETE'
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            alert('성공적으로 삭제 되었습니다.');
+                            location.reload();
+                        }else if(response.status === 409){
+                            alert('태그가 달린 상품이 존재하여 삭제할 수 없습니다.');
+                        } else {
+                            alert('태그 삭제에 실패하였습니다.\n잠시 후 다시 시도해주세요.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while deleting tag');
                     });
             }
         }
@@ -183,6 +209,10 @@
                     <label></label>
                     <textarea class="category-form-control" th:text="'#'+${tag.tagName}" style="resize: none; width: 600px" readonly></textarea>
                     <div class="admin-category-add-btn" th:tagName="${tag.tagName}" onclick="openUpdateTagModal(this.getAttribute('tagName'))" data-bs-toggle="modal" th:on data-bs-target="#updateTagModal"> 수정</div>
+                    <div th:if="${tag.productCount == 0}" class="admin-category-add-btn" th:tagId="${tag.tagId}" onclick="deleteTag(this.getAttribute('tagId'))"> 삭제</div><br>
+                    <div class="foot-info">
+                        <span th:text="'해당 태그가 달린 상품 수 : ' + ${tag.productCount}"></span>
+                    </div>
                 </div>
             </div>
         </div>
