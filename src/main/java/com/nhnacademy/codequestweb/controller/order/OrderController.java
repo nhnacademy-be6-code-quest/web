@@ -80,7 +80,8 @@ public class OrderController {
 
     // 비회원 단건 주문 내역 조회 view
     @GetMapping("/non-client/order/find")
-    public String orders(HttpServletRequest req){
+    public String orders(HttpServletRequest req, Model model){
+        model.addAttribute("view", "nonClientFindOrder");
         return "view/order/nonClientFindOrder";
     }
 

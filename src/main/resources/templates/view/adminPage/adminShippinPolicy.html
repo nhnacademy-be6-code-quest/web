@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="adminShippingPolicyFragment ('adminShippingPolicy')">
+<head>
+    <meta charset="UTF-8">
+    <title>관리자 페이지 - 배송 정책 페이지</title>
+    <style>
+        th{
+            text-align: center;
+        }
+        .btn{
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">관리자 배송정책 수정</h2>
+    </div>
+    <div>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>정책 타입</th>
+                <th>배송비</th>
+                <th>무료배송 최소 주문 금액</th>
+                <th>정책 설명</th>
+                <th>수정</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="shippingPolicy : ${shippingPolicyList}">
+                <td>
+                    <span id="shippingPolicyType" th:text="${shippingPolicy.shippingPolicyType}"></span>
+                </td>
+                <td>
+                    <input id="shippingFee" type="number" th:value="${shippingPolicy.shippingFee}">
+                </td>
+                <td>
+                    <input id="minPurchaseAmount" type="number" th:value="${shippingPolicy.minPurchaseAmount}">
+                </td>
+                <td>
+                    <textarea id="shippingPolicyDescription" th:text="${shippingPolicy.description}">
+                    </textarea>
+                </td>
+                <td>
+                    <form action="/admin/shipping-policy/update" method="post" onsubmit="updateHiddenFields()">
+                        <input hidden="hidden" id="descriptionField" name="description"/>
+                        <input hidden="hidden" id="shippingFeeField" name="shippingFee"/>
+                        <input hidden="hidden" id="minPurchaseAmountField" name="minPurchaseAmount"/>
+                        <input hidden="hidden" id="shippingPolicyTypeField" name="shippingPolicyType"/>
+                        <button type="submit" class="btn">수정하기</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+<script>
+    function updateHiddenFields() {
+
+        const shippingPolicyType = document.getElementById('shippingPolicyType').textContent;
+        const shippingFee = parseInt(document.getElementById('shippingFee').value);
+        const minPurchaseAmount = parseInt(document.getElementById('minPurchaseAmount').value);
+        const description = document.getElementById('shippingPolicyDescription').value;
+
+        document.getElementById('shippingPolicyTypeField').value = shippingPolicyType;
+        document.getElementById('shippingFeeField').value = shippingFee;
+        document.getElementById('minPurchaseAmountField').value = minPurchaseAmount;
+        document.getElementById('descriptionField').value = description;
+
+    }
+</script>
+</html>

@@ -51,7 +51,7 @@
     <div th:replace="~{view/mypage/mypage :: mypageFragment ('mypage', 'profile', 'delivaryaddress','clientPhoneNumber', 'coupons','pointUsed','pointReward', 'orders')}"></div>
 </div>
 <div th:if="${view != null} and ${#strings.equals(view, 'adminPage')}">
-    <div th:replace="~{view/adminPage/adminPage :: adminPageFragment ('couponPolicy', 'adminCoupons','pointUsed', 'pointReward','pointPolicy')}"></div>
+    <div th:replace="~{view/adminPage/adminPage :: adminPageFragment ('couponPolicy', 'adminCoupons','pointUsed', 'pointReward','pointPolicy', 'adminFindOrder', 'adminShippingPolicy')}"></div>
 </div>
 <div th:if="${view != null} and ${#strings.equals(view, 'bookProductRegisterForm')}">
     <section th:replace="~{view/product/bookProductRegisterForm.html :: bookProductRegisterFragment}"></section>
@@ -91,14 +91,9 @@
     <section th:replace="~{view/review/reviewDetail :: reviewDetail('review', 'product')}"></section>
 </div>
 
-<div th:if="${view != null} and ${#strings.equals(view, 'clientOrder')}">
-    <section th:replace="~{view/order/clientOrder :: clientOrderFragment}"></section>
-</div>
 <div th:if="${view != null} and ${#strings.equals(view, 'nonClientOrder')}">
     <section th:replace="~{view/order/nonClientOrder.html :: nonClientOrderFragment}"></section>
 </div>
-
-
 <div th:if="${view != null} and ${#strings.equals(view, 'clientOrder2')}">
     <section th:replace="~{view/order/clientOrder2.html :: clientOrder2Fragment}"></section>
 </div>
@@ -107,6 +102,9 @@
 </div>
 <div th:if="${view != null} and ${#strings.equals(view, 'clientOrderPayMethod')}">
     <section th:replace="~{view/order/clientOrderPayMethod.html :: clientOrderPayMethodFragment}"></section>
+</div>
+<div th:if="${view != null} and ${#strings.equals(view, 'nonClientFindOrder')}">
+    <section th:replace="~{view/order/nonClientFindOrder.html :: nonClientFindOrderFragment}"></section>
 </div>
 
 

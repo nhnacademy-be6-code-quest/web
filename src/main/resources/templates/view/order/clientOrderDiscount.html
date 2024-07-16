@@ -172,8 +172,14 @@
 
         // 쿠폰 사용해서 할인받는 총 금액
         const couponDiscountAmount = parseInt(couponDiscountInfoList[index].discountTotalAmount);
-        document.getElementById("couponDiscountAmount").value = couponDiscountAmount;
-        document.getElementById("selectedCouponDiscountAmount").textContent = couponDiscountAmount;
+        const diff = couponDiscountAmount - document.getElementById("payAmount").value;
+        if(diff < 0) {
+            document.getElementById("couponDiscountAmount").value = couponDiscountAmount + diff;
+            document.getElementById("selectedCouponDiscountAmount").textContent = couponDiscountAmount + diff;
+        }else{
+            document.getElementById("couponDiscountAmount").value = couponDiscountAmount;
+            document.getElementById("selectedCouponDiscountAmount").textContent = couponDiscountAmount;
+        }
 
         // 결제금액 업데이트
         const originProductTotalAmount = [[${clientOrderForm2}]].productTotalAmount;
