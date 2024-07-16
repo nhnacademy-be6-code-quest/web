@@ -69,7 +69,8 @@
                                      data-order-total-amount=${order.orderTotalAmount},
                                      data-shipping-fee=${order.shippingFee},
                                      data-delivery-address=${order.deliveryAddress},
-                                     data-designated-delivery-date=${order.designatedDeliveryDate}
+                                     data-designated-delivery-date=${order.designatedDeliveryDate},
+                                     data-order-status=${order.orderStatus}
                                      "
                             th:onclick="openOrderDetail(this, [[${order.orderListItemList}]])" class="btn">주문상세</button>
                 </td>
@@ -103,6 +104,12 @@
             <div id="orderListItemListModal"></div>
         </div>
         <div>결제금액:<span id="orderTotalAmountModal"></span>원</div>
+        <h3>주문 상태 관리</h3>
+        <div>현재 주문 상태: <span id="orderStatusModal"></span></div>
+        <div>주문 상태 변경:</div>
+        <form id="order-status-change-form" action="" method="">
+            <button id="order-status-change-btn" type="submit"></button>
+        </form>
     </div>
 </div>
 
@@ -119,6 +126,7 @@
         const deliveryAddress = button.getAttribute('data-delivery-address');
         const designatedDeliveryDate = button.getAttribute('data-designated-delivery-date');
         const orderTotalAmount = button.getAttribute('data-order-total-amount');
+        const orderStatus = button.getAttribute('data-order-status');
 
         document.getElementById('couponDiscountAmountModal').textContent = couponDiscount;
         document.getElementById('pointDiscountAmountModal').textContent = pointDiscount;
@@ -126,8 +134,7 @@
         document.getElementById('deliveryAddressModal').textContent = deliveryAddress;
         document.getElementById('designatedDeliveryDateModal').textContent = designatedDeliveryDate;
         document.getElementById('orderTotalAmountModal').textContent = orderTotalAmount;
-
-        console.log(orderListItemList);
+        document.getElementById('orderStatusModal').textContent = orderStatus;
 
         const orderListItemListModal = document.getElementById('orderListItemListModal');
         orderListItemListModal.innerHTML = '';
@@ -137,6 +144,14 @@
             itemDiv.innerText = item.productName + ' x ' + item.productQuantity;
             orderListItemListModal.append(itemDiv);
         });
+
+        // 주문 상태 변경 버튼 설정
+        orderStatusChangeBtn = document.getElementById("order-status-change-btn");
+        orderStatusChangeForm = document.getElementById("order-status-change-form");
+        const currentOrderStatus = button.getAttribute('');
+
+
+
 
         // 모달 닫기 기능
         const closeBtn = document.getElementsByClassName("close")[0];
