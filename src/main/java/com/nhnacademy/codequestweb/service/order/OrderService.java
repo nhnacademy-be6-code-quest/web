@@ -56,9 +56,6 @@ public class OrderService {
     private final ShippingPolicyService shippingPolicyService;
     private final OrderPointClient orderPointClient;
 
-
-    // ###
-
     public String viewClientOrder(HttpServletRequest req, Model model, List<String> orderItemDtoStringList) {
 
         HttpHeaders headers = getHeader(req);

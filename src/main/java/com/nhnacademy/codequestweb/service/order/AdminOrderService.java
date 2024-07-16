@@ -39,6 +39,11 @@ public class AdminOrderService {
         shippingPolicyClient.updateShippingPolicy(headers, adminShippingPolicyPutRequestDto);
     }
 
+    public void updateOrderStatus(HttpServletRequest req, long orderId, String korStatus){
+        HttpHeaders headers = getHeader(req);
+        orderClient.updateOrderStatus(headers, orderId, korStatus);
+    }
+
     private HttpHeaders getHeader(HttpServletRequest req){
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
