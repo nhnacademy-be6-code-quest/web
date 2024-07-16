@@ -77,7 +77,6 @@ public class PaymentService /*implements PaymentService*/ {
         Base64.Encoder encoder = Base64.getEncoder();
         byte[] encodedBytes = encoder.encode(secretKey.getBytes(StandardCharsets.UTF_8));
         String authorizations = "Basic " + new String(encodedBytes);
-        String contentType = "application/json";
 
         TossPaymentsRequestDto tossPaymentsRequestDto = TossPaymentsRequestDto.builder()
             .paymentKey(paymentKey)
@@ -87,7 +86,7 @@ public class PaymentService /*implements PaymentService*/ {
 
         // 승인 요청을 보내면서 + 응답을 받아 옴.
         String tossPaymentsApproveResponseString = tossPaymentsClient.approvePayment(
-            tossPaymentsRequestDto, authorizations, contentType);
+            tossPaymentsRequestDto, authorizations);
 
         // 다시 한 번 JSONObject 로 변환한다.
         JSONObject jsonObject = (JSONObject) new JSONParser().parse(

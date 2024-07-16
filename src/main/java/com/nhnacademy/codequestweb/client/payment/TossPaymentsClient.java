@@ -21,11 +21,10 @@ public interface TossPaymentsClient {
      *
      * @param tossPaymentsRequestDto 토스 페이먼츠 결제 승인 요청에 필요한 정보를 담고 있는 DTO 입니다.
      * @param authorization          토스 페이먼츠 API 인증을 위한 헤더 값입니다. 토스 페이먼츠에서 키를 인코딩 한 값입니다.
-     * @param contentType            요청 본문의 콘텐츠 타입을 지정하는 헤더 값입니다. "application/json" 입니다.
      * @return 결제 승인 요청 결과를 나타내는 문자열이 반환됩니다. 이후 서비스에서 파싱합니다.
      */
     @PostMapping
     String approvePayment(@RequestBody TossPaymentsRequestDto tossPaymentsRequestDto,
-        @RequestHeader String authorization,
-        @RequestHeader String contentType);
+        @RequestHeader(name = "Authorization") String authorization);
 }
+
