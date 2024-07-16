@@ -1,6 +1,9 @@
 package com.nhnacademy.codequestweb.response.order.client;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,17 +11,10 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-@AllArgsConstructor
-@Builder
-public class ClientOrderForm {
-
-    List<OrderDetailDtoItem> orderDetailDtoItemList; // 상품-옵션 리스트
-    Long couponId; // 적용한 쿠폰
+public class ClientOrderForm2 {
+    List<ClientOrderForm2.OrderDetailDtoItem> orderDetailDtoItemList; // 상품-옵션 리스트
     Integer shippingFee; // 배송비
-    Long productTotalAmount; // 상품 총 금액(포인트 및 쿠폰 할인 전)
-    Long payAmount; // 최종 결제 금액
-    Long couponDiscountAmount; // 쿠폰 할인 금액
-    Long usedPointDiscountAmount; // 포인트 사용 금액
+    Long productTotalAmount; // 상품 총 금액
     String orderedPersonName; // 주문자 이름
     String phoneNumber; // 주문자 핸드폰 번호
     String addressNickname; // 배송지 별칭
@@ -26,10 +22,18 @@ public class ClientOrderForm {
     String deliveryAddress; // 주소(주소,상세주소)
     Boolean useDesignatedDeliveryDate; // 배송날짜 지정 여부
     String designatedDeliveryDate; // 배송날짜 지정
-    Integer paymentMethod; // 결제 방식
-    Long accumulatePoint; // 예상 적립금
+    Long totalQuantity; // 총 수량
 
-    public void addOrderDetailDtoItem(OrderDetailDtoItem orderDetailDtoItem){
+    @Builder
+    public ClientOrderForm2(String orderedPersonName){
+        this.orderedPersonName = orderedPersonName;
+    }
+
+    public void updateTotalQuantity(Long totalQuantity){
+        this.totalQuantity = totalQuantity;
+    }
+
+    public void addOrderDetailDtoItem(ClientOrderForm2.OrderDetailDtoItem orderDetailDtoItem){
         if(this.orderDetailDtoItemList == null){
             this.orderDetailDtoItemList = new ArrayList<>();
         }
@@ -37,8 +41,6 @@ public class ClientOrderForm {
     }
 
     @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
     @Getter
     @Setter
     public static class OrderDetailDtoItem{
@@ -46,6 +48,7 @@ public class ClientOrderForm {
         String productName; // 상품 이름
         Long quantity; // 수량
         List<Long> categoryIdList; // 상품의 카테고리
+        Long bookId; // 상품의 책 아이디 TODO 추후 삭제될 예정
         Long productSinglePrice; // 상품 단품 가격
         Boolean packableProduct; // 포장 가능 상품 여부
 
@@ -55,6 +58,16 @@ public class ClientOrderForm {
         Long optionProductSinglePrice; // 옵션 상품 단품 가격
         Long optionQuantity = 1L;
 
+        @Builder
+        public OrderDetailDtoItem(Long productId, String productName, Long quantity, List<Long> categoryIdList, Boolean packableProduct, Long bookId, Long productSinglePrice){
+            this.productId = productId;
+            this.productName = productName;
+            this.quantity = quantity;
+            this.categoryIdList = categoryIdList;
+            this.packableProduct = packableProduct;
+            this.bookId = bookId;
+            this.productSinglePrice = productSinglePrice;
+        }
     }
 
 }

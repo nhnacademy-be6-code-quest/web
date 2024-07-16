@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="clientOrderPayMethodFragment()">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        h3 {
+            color: #ecb54f !important; /* !important를 사용하여 우선순위를 높입니다 */
+        }
+        .sub-container {
+            margin: 10% 5% 10% 5%;
+        }
+        .readonly-input {
+            width: 100%;
+            border: none;
+            background-color: transparent;
+            color: inherit;
+            font-size: inherit;
+            font-family: inherit;
+        }
+        input:focus {
+            outline: none;
+        }
+        textarea:focus {
+            outline: none;
+            resize: none;
+        }
+        .not-border-input {
+            width: 100%;
+            border: none;
+            background-color: transparent;
+            color: inherit;
+            font-size: inherit;
+            font-family: inherit;
+        }
+        label {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<form action="/client/order/process" th:object="${clientOrderPayMethodForm}" method="post">
+    <div class="sub-container">
+        <h3>예상 적립금</h3>
+        <div>
+            (결제 금액의 <span th:text="${pointAccumulationRate}"></span>%가 적립될 예정입니다)
+        </div>
+        <div>
+            <span> 적립 예정 포인트: </span>
+            <label>
+                <input class="readonly-input" th:field="*{expectedAccumulatingPoint}" readonly>
+            </label>
+        </div>
+    </div>
+    <div class="sub-container">
+        <h3>최종 결제금액</h3>
+        <div>
+            <span th:text="${clientOrderDiscountForm.payAmount}"></span> <span>원</span>
+        </div>
+    </div>
+    <div class="sub-container">
+        <h3>결제 수단 선택</h3>
+        <label>
+            <input type="radio" th:field="*{paymentMethod}" value="0"> 토스 페이먼츠
+        </label>
+        <label>
+            <input type="radio" th:field="*{paymentMethod}" value="1" disabled> 신용카드
+        </label>
+        <label>
+            <input type="radio" th:field="*{paymentMethod}" value="2" disabled> 페이코
+        </label>
+    </div>
+    <div class="sub-container">
+        <button type="submit" class="btn text-white" style="background-color:#ecb54f; width: 15%;" >다음단계</button>
+    </div>
+</form>
+</body>
+</html>
