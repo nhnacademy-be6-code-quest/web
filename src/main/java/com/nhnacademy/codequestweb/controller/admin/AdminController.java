@@ -1,12 +1,10 @@
 package com.nhnacademy.codequestweb.controller.admin;
 
-import com.nhnacademy.codequestweb.domain.PointPolicyType;
 import com.nhnacademy.codequestweb.response.mypage.ClientPrivacyResponseDto;
 import com.nhnacademy.codequestweb.response.order.common.OrderResponseDto;
 import com.nhnacademy.codequestweb.response.point.PointAccumulationAdminPageResponseDto;
 import com.nhnacademy.codequestweb.response.point.PointPolicyAdminListResponseDto;
 import com.nhnacademy.codequestweb.response.point.PointUsageAdminPageResponseDto;
-import com.nhnacademy.codequestweb.response.shipping.AdminShippingPolicyPutRequestDto;
 import com.nhnacademy.codequestweb.response.shipping.ShippingPolicyGetResponseDto;
 import com.nhnacademy.codequestweb.service.admin.AdminService;
 import com.nhnacademy.codequestweb.service.order.AdminOrderService;
@@ -143,7 +141,5 @@ public class AdminController {
         return "index";
 
     }
-
-
 
 }

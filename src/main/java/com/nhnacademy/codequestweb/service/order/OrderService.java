@@ -24,14 +24,13 @@ import com.nhnacademy.codequestweb.response.product.productCategory.ProductCateg
 import com.nhnacademy.codequestweb.response.shipping.ShippingPolicyGetResponseDto;
 import com.nhnacademy.codequestweb.service.mypage.MyPageService;
 import com.nhnacademy.codequestweb.service.product.BookProductService;
-import com.nhnacademy.codequestweb.service.shippingpolicy.ShippingPolicyService;
+import com.nhnacademy.codequestweb.service.shipping.ShippingPolicyService;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -72,7 +71,7 @@ public class OrderService {
         ShippingPolicyGetResponseDto shippingPolicy = shippingPolicyService.getShippingPolicy(headers, "회원배송비");
 
         // ** 바인딩할 객체 **
-        ClientOrderForm2 clientOrderForm2 = ClientOrderForm2.builder()
+        ClientOrderForm clientOrderForm = ClientOrderForm.builder()
                 .orderedPersonName(orderedPerson.getClientName())
                 .build();
 
@@ -88,8 +87,8 @@ public class OrderService {
             BookProductGetResponseDto book = bookProductService.getSingleBookInfo(headers, orderItemDto.getProductId()).getBody();
 
             // 폼에 추가
-            clientOrderForm2.addOrderDetailDtoItem(
-                    ClientOrderForm2.OrderDetailDtoItem.builder()
+            clientOrderForm.addOrderDetailDtoItem(
+                    ClientOrderForm.OrderDetailDtoItem.builder()
                             .productId(orderItemDto.getProductId())
                             .productName(book.title())
                             .quantity(orderItemDto.getQuantity())
@@ -100,14 +99,14 @@ public class OrderService {
             );
         }
 
-        clientOrderForm2.updateTotalQuantity(totalQuantity);
+        clientOrderForm.updateTotalQuantity(totalQuantity);
 
         // 포장지 정보
         List<PackageInfoResponseDto> packageList = getAllPackages();
 
         model.addAttribute("view", "clientOrder2");
 
-        model.addAttribute("clientOrderForm2", clientOrderForm2);
+        model.addAttribute("clientOrderForm", clientOrderForm);
         model.addAttribute("packageList", packageList);
         model.addAttribute("shippingPolicy", shippingPolicy);
         model.addAttribute("deliveryAddressList", deliveryAddressList);
@@ -124,11 +123,11 @@ public class OrderService {
         ClientPrivacyResponseDto orderedPerson = myPageService.getPrivacy(headers).getBody();
 
         // ** 바인딩할 객체 **
-        ClientOrderForm2 clientOrderForm2 = ClientOrderForm2.builder()
+        ClientOrderForm clientOrderForm = ClientOrderForm.builder()
                 .orderedPersonName(orderedPerson.getClientName())
                 .build();
 
-        clientOrderForm2.updateTotalQuantity(orderItemDto.getQuantity());
+        clientOrderForm.updateTotalQuantity(orderItemDto.getQuantity());
 
         // 주소목록
         List<ClientDeliveryAddressResponseDto> deliveryAddressList = myPageService.getDeliveryAddresses(headers).getBody();
@@ -144,8 +143,8 @@ public class OrderService {
         BookProductGetResponseDto book = bookProductService.getSingleBookInfo(headers, orderItemDto.getProductId()).getBody();
 
         // 폼에 추가
-        clientOrderForm2.addOrderDetailDtoItem(
-                ClientOrderForm2.OrderDetailDtoItem.builder()
+        clientOrderForm.addOrderDetailDtoItem(
+                ClientOrderForm.OrderDetailDtoItem.builder()
                         .productId(orderItemDto.getProductId())
                         .productName(book.title())
                         .quantity(orderItemDto.getQuantity())
@@ -160,7 +159,7 @@ public class OrderService {
 
         model.addAttribute("view", "clientOrder2");
 
-        model.addAttribute("clientOrderForm2", clientOrderForm2);
+        model.addAttribute("clientOrderForm", clientOrderForm);
         model.addAttribute("packageList", packageList);
         model.addAttribute("shippingPolicy", shippingPolicy);
         model.addAttribute("deliveryAddressList", deliveryAddressList);
@@ -174,9 +173,9 @@ public class OrderService {
 
         HttpHeaders headers = getHeader(req);
 
-        ClientOrderForm2 clientOrderForm2 = (ClientOrderForm2) req.getSession().getAttribute("clientOrderForm2");
+        ClientOrderForm clientOrderForm = (ClientOrderForm) req.getSession().getAttribute("clientOrderForm");
 
-        ClientOrderDiscountForm clientOrderDiscountForm = ClientOrderDiscountForm.builder().payAmount(clientOrderForm2.getProductTotalAmount() + clientOrderForm2.getShippingFee()).build();
+        ClientOrderDiscountForm clientOrderDiscountForm = ClientOrderDiscountForm.builder().payAmount(clientOrderForm.getProductTotalAmount() + clientOrderForm.getShippingFee()).build();
 
         // 가용 포인트
         Integer usablePoint = orderPointClient.findPoint(headers).getTotalPoint();
@@ -188,13 +187,13 @@ public class OrderService {
         List<OrderCouponDiscountInfo> couponDiscountInfoList = new ArrayList<>();
 
         for(CouponOrderResponseDto coupon : couponList) {
-            OrderCouponDiscountInfo orderCouponDiscountInfo = orderCouponDiscountInfo(coupon, clientOrderForm2);
+            OrderCouponDiscountInfo orderCouponDiscountInfo = orderCouponDiscountInfo(coupon, clientOrderForm);
             couponDiscountInfoList.add(orderCouponDiscountInfo);
         }
 
         model.addAttribute("view", "clientOrderDiscount");
 
-        model.addAttribute("clientOrderForm2", clientOrderForm2);
+        model.addAttribute("clientOrderForm", clientOrderForm);
         model.addAttribute("clientOrderDiscountForm", clientOrderDiscountForm); // 바인딩 객체
         model.addAttribute("usablePoint", usablePoint);
         model.addAttribute("couponList", couponList);
@@ -210,7 +209,7 @@ public class OrderService {
 
         HttpHeaders headers = getHeader(req);
 
-        ClientOrderForm2 clientOrderForm2 = (ClientOrderForm2) req.getSession().getAttribute("clientOrderForm2");
+        ClientOrderForm clientOrderForm = (ClientOrderForm) req.getSession().getAttribute("clientOrderForm");
         ClientOrderDiscountForm clientOrderDiscountForm = (ClientOrderDiscountForm) req.getSession().getAttribute("clientOrderDiscountForm");
 
         // 가용 포인트 및 포인트 적립률
@@ -223,7 +222,7 @@ public class OrderService {
 
         model.addAttribute("view", "clientOrderPayMethod");
 
-        model.addAttribute("clientOrderForm2", clientOrderForm2);
+        model.addAttribute("clientOrderForm", clientOrderForm);
         model.addAttribute("clientOrderDiscountForm", clientOrderDiscountForm);
         model.addAttribute("pointAccumulationRate", pointAccumulationRate);
         model.addAttribute("clientOrderPayMethodForm", clientOrderPayMethodForm);
@@ -234,34 +233,34 @@ public class OrderService {
     public Long createClientOrder(HttpServletRequest req) {
 
         HttpSession session = req.getSession();
-        ClientOrderForm2 clientOrderForm2 = (ClientOrderForm2) session.getAttribute("clientOrderForm2");
+        ClientOrderForm clientOrderForm = (ClientOrderForm) session.getAttribute("clientOrderForm");
         ClientOrderDiscountForm clientOrderDiscountForm = (ClientOrderDiscountForm) session.getAttribute("clientOrderDiscountForm");
         ClientOrderPayMethodForm clientOrderPayMethodForm = (ClientOrderPayMethodForm) session.getAttribute("clientOrderPayMethodForm");
 
 
         // 포인트 할인 적용하기
 
-        ClientOrderForm clientFinalOrderForm = ClientOrderForm.builder()
+        ClientOrderCreateForm clientFinalOrderForm = ClientOrderCreateForm.builder()
                 .couponId(clientOrderDiscountForm.getCouponId())
-                .shippingFee(clientOrderForm2.getShippingFee())
-                .productTotalAmount(clientOrderForm2.getProductTotalAmount())
+                .shippingFee(clientOrderForm.getShippingFee())
+                .productTotalAmount(clientOrderForm.getProductTotalAmount())
                 .payAmount(clientOrderDiscountForm.getPayAmount() == null ? 0 : clientOrderDiscountForm.getPayAmount())
                 .couponDiscountAmount(clientOrderDiscountForm.getCouponDiscountAmount() == null ? 0 : clientOrderDiscountForm.getCouponDiscountAmount())
                 .usedPointDiscountAmount(clientOrderDiscountForm.getUsedPointDiscountAmount() == null ? 0 : clientOrderDiscountForm.getUsedPointDiscountAmount())
-                .orderedPersonName(clientOrderForm2.getOrderedPersonName())
-                .phoneNumber(clientOrderForm2.getPhoneNumber())
-                .addressNickname(clientOrderForm2.getAddressNickname())
-                .addressZipCode(clientOrderForm2.getAddressZipCode())
-                .deliveryAddress(clientOrderForm2.getDeliveryAddress())
-                .useDesignatedDeliveryDate(clientOrderForm2.getUseDesignatedDeliveryDate() == null ? false : clientOrderForm2.getUseDesignatedDeliveryDate())
-                .designatedDeliveryDate(clientOrderForm2.getDesignatedDeliveryDate())
+                .orderedPersonName(clientOrderForm.getOrderedPersonName())
+                .phoneNumber(clientOrderForm.getPhoneNumber())
+                .addressNickname(clientOrderForm.getAddressNickname())
+                .addressZipCode(clientOrderForm.getAddressZipCode())
+                .deliveryAddress(clientOrderForm.getDeliveryAddress())
+                .useDesignatedDeliveryDate(clientOrderForm.getUseDesignatedDeliveryDate() != null && clientOrderForm.getUseDesignatedDeliveryDate())
+                .designatedDeliveryDate(clientOrderForm.getDesignatedDeliveryDate())
                 .paymentMethod(clientOrderPayMethodForm.getPaymentMethod())
                 .accumulatePoint(clientOrderPayMethodForm.getExpectedAccumulatingPoint())
                 .build();
 
-        for(ClientOrderForm2.OrderDetailDtoItem item : clientOrderForm2.getOrderDetailDtoItemList()){
+        for(ClientOrderForm.OrderDetailDtoItem item : clientOrderForm.getOrderDetailDtoItemList()){
             clientFinalOrderForm.addOrderDetailDtoItem(
-                    ClientOrderForm.OrderDetailDtoItem.builder()
+                    ClientOrderCreateForm.OrderDetailDtoItem.builder()
                             .productId(item.getProductId())
                             .productName(item.getProductName())
                             .quantity(item.getQuantity())
@@ -281,11 +280,6 @@ public class OrderService {
 
     }
 
-
-    // ###
-
-
-
     public String viewNonClientOrder(HttpServletRequest req, Model model, OrderItemDto orderItemDto) {
         HttpHeaders headers = getHeader(req);
 
@@ -299,6 +293,7 @@ public class OrderService {
         // 책 상세 정보
         BookProductGetResponseDto book = bookProductService.getSingleBookInfo(headers, orderItemDto.getProductId()).getBody();
         // 폼에 추가
+        assert book != null;
         nonClientOrderForm.addOrderDetailDtoItem(
                 NonClientOrderForm.OrderDetailDtoItem.builder()
                         .productId(orderItemDto.getProductId())
@@ -337,6 +332,7 @@ public class OrderService {
         orderItemDtoList.forEach((orderItemDto)->{
             // 책 상세 정보
             BookProductGetResponseDto book = bookProductService.getSingleBookInfo(headers, orderItemDto.getProductId()).getBody();
+            assert book != null;
             // 폼에 추가
             nonClientOrderForm.addOrderDetailDtoItem(
                     NonClientOrderForm.OrderDetailDtoItem.builder()
@@ -360,8 +356,8 @@ public class OrderService {
         return "index";
     }
 
-    public Long createClientOrder(HttpServletRequest req, ClientOrderForm clientOrderForm){
-        return orderClient.createClientOrder(getHeader(req), clientOrderForm).getBody();
+    public Long createClientOrder(HttpServletRequest req, ClientOrderCreateForm clientOrderCreateForm){
+        return orderClient.createClientOrder(getHeader(req), clientOrderCreateForm).getBody();
     }
 
     public Long createNonClientOrder(HttpServletRequest req, NonClientOrderForm nonClientOrderForm) {
@@ -430,14 +426,6 @@ public class OrderService {
         orderClient.paymentCompleteNonClientOrder(headers, orderId);
     }
 
-    public void cancelNonClientOrder(HttpHeaders headers, long orderId) {
-        orderClient.cancelNonClientOrder(headers, orderId);
-    }
-
-    public void refundNonClientOrder(HttpHeaders headers, long orderId) {
-        orderClient.refundNonClientOrder(headers, orderId);
-    }
-
     public NonClientOrderGetResponseDto findNonClientOrder(HttpHeaders headers, long orderId, String orderPassword) {
         return orderClient.findNonClientOrder(headers, orderId, orderPassword).getBody();
     }
@@ -452,9 +440,9 @@ public class OrderService {
         return headers;
     }
 
-    private OrderCouponDiscountInfo orderCouponDiscountInfo(CouponOrderResponseDto coupon, ClientOrderForm2 clientOrderForm2){
+    private OrderCouponDiscountInfo orderCouponDiscountInfo(CouponOrderResponseDto coupon, ClientOrderForm clientOrderForm){
 
-        List<ClientOrderForm2.OrderDetailDtoItem> orderDetailDtoItemList = clientOrderForm2.getOrderDetailDtoItemList();
+        List<ClientOrderForm.OrderDetailDtoItem> orderDetailDtoItemList = clientOrderForm.getOrderDetailDtoItemList();
 
         // 일반 금액 할인
         if(coupon.getProductCoupon() == null
@@ -462,7 +450,7 @@ public class OrderService {
                 && coupon.getCouponPolicyDto() != null
                 && coupon.getCouponPolicyDto().getDiscountType().equals("AMOUNTDISCOUNT")){
 
-            return getOrderCouponDiscountInfoUsingAmountDiscount(coupon, clientOrderForm2.getProductTotalAmount(), clientOrderForm2.getTotalQuantity(), orderDetailDtoItemList, "전체 상품 주문 금액이 최소 주문 금액에 못 미칩니다");
+            return getOrderCouponDiscountInfoUsingAmountDiscount(coupon, clientOrderForm.getProductTotalAmount(), clientOrderForm.getTotalQuantity(), orderDetailDtoItemList, "전체 상품 주문 금액이 최소 주문 금액에 못 미칩니다");
 
         }
 
@@ -472,7 +460,7 @@ public class OrderService {
                 && coupon.getCouponPolicyDto() != null
                 && coupon.getCouponPolicyDto().getDiscountType().equals("PERCENTAGEDISCOUNT")){
 
-            return getOrderCouponDiscountInfoUsingPercentageDiscount(coupon, clientOrderForm2.getProductTotalAmount(), clientOrderForm2.getTotalQuantity(), orderDetailDtoItemList, "전체 상품 주문 금액이 최소 주문 금액에 못 미칩니다");
+            return getOrderCouponDiscountInfoUsingPercentageDiscount(coupon, clientOrderForm.getProductTotalAmount(), clientOrderForm.getTotalQuantity(), orderDetailDtoItemList, "전체 상품 주문 금액이 최소 주문 금액에 못 미칩니다");
 
         }
 
@@ -483,7 +471,7 @@ public class OrderService {
             Long applicableProductId = coupon.getProductCoupon().getProductId();
 
             // 쿠폰 적용 가능한 상품이 있는지 확인.
-            for(ClientOrderForm2.OrderDetailDtoItem orderDetailDtoItem : orderDetailDtoItemList){
+            for(ClientOrderForm.OrderDetailDtoItem orderDetailDtoItem : orderDetailDtoItemList){
                 if(orderDetailDtoItem.getProductId() == applicableProductId){
                     // 금액 할인권
                     if(coupon.getCouponPolicyDto().getDiscountType().equals("AMOUNTDISCOUNT")){
@@ -517,12 +505,12 @@ public class OrderService {
 
             Long applicableCategoryId = coupon.getCategoryCoupon().getProductCategoryId();
 
-            List<ClientOrderForm2.OrderDetailDtoItem> applicableProduct = new ArrayList<>();
+            List<ClientOrderForm.OrderDetailDtoItem> applicableProduct = new ArrayList<>();
 
             long totalQuantity = 0;
             long totalPrice = 0;
 
-            for(ClientOrderForm2.OrderDetailDtoItem orderDetailDtoItem : orderDetailDtoItemList){
+            for(ClientOrderForm.OrderDetailDtoItem orderDetailDtoItem : orderDetailDtoItemList){
                 if(orderDetailDtoItem.getCategoryIdList() == null) break;
                 if(orderDetailDtoItem.getCategoryIdList().contains(applicableCategoryId)){
                     applicableProduct.add(orderDetailDtoItem);
@@ -563,7 +551,7 @@ public class OrderService {
     // productTotalAmount: 쿠폰의 '최소 주문 금액'을 체크하기 위한 총 액수. 상품 쿠폰 Or 카테고리 쿠폰의 경우, 적용할 상품들의 총 액수가 됨.
     // totalQuantity: 쿠폰을 적용시켜 할인 받을 상품의 총 개수. 상품 쿠폰 Or 카테고리 쿠폰의 경우, 적용할 상품들의 총 수량이 됨.
     // orderDetailDtoItemList: 쿠폰 적용 대상이 되는 상품들.
-    private OrderCouponDiscountInfo getOrderCouponDiscountInfoUsingAmountDiscount(CouponOrderResponseDto coupon, Long productTotalAmount, Long totalQuantity, List<ClientOrderForm2.OrderDetailDtoItem> orderDetailDtoItemList, String updateNotApplicableDescription){
+    private OrderCouponDiscountInfo getOrderCouponDiscountInfoUsingAmountDiscount(CouponOrderResponseDto coupon, Long productTotalAmount, Long totalQuantity, List<ClientOrderForm.OrderDetailDtoItem> orderDetailDtoItemList, String updateNotApplicableDescription){
 
         // 최소 금액 기준이 맞지 않음 => 쿠폰 사용 불가.
         if(productTotalAmount < coupon.getCouponPolicyDto().getMinPurchaseAmount()){
@@ -587,7 +575,7 @@ public class OrderService {
                 .discountTotalAmount(discountValue)
                 .build();
 
-        for(ClientOrderForm2.OrderDetailDtoItem orderDetailDtoItem : orderDetailDtoItemList){
+        for(ClientOrderForm.OrderDetailDtoItem orderDetailDtoItem : orderDetailDtoItemList){
             orderCouponDiscountInfo.addProductPriceInfo(orderDetailDtoItem.getProductId(), orderDetailDtoItem.getProductSinglePrice() - discountValuePerProduct);
         }
 
@@ -599,7 +587,7 @@ public class OrderService {
     // productTotalAmount: 쿠폰의 '최소 주문 금액'을 체크하기 위한 총 액수. 상품 쿠폰 Or 카테고리 쿠폰의 경우, 적용할 상품들의 총 액수가 됨.
     // totalQuantity: 쿠폰을 적용시켜 할인 받을 상품의 총 개수. 상품 쿠폰 Or 카테고리 쿠폰의 경우, 적용할 상품들의 총 수량이 됨.
     // orderDetailDtoItemList: 쿠폰 적용 대상이 되는 상품들.
-    private OrderCouponDiscountInfo getOrderCouponDiscountInfoUsingPercentageDiscount(CouponOrderResponseDto coupon, Long productTotalAmount, Long totalQuantity, List<ClientOrderForm2.OrderDetailDtoItem> orderDetailDtoItemList, String updateNotApplicableDescription){
+    private OrderCouponDiscountInfo getOrderCouponDiscountInfoUsingPercentageDiscount(CouponOrderResponseDto coupon, Long productTotalAmount, Long totalQuantity, List<ClientOrderForm.OrderDetailDtoItem> orderDetailDtoItemList, String updateNotApplicableDescription){
 
         // 최소 금액 기준이 맞지 않음 => 쿠폰 사용 불가.
         if(productTotalAmount < coupon.getCouponPolicyDto().getMinPurchaseAmount()){
@@ -627,7 +615,7 @@ public class OrderService {
                 .discountTotalAmount(discountValue)
                 .build();
 
-        for(ClientOrderForm2.OrderDetailDtoItem orderDetailDtoItem : orderDetailDtoItemList){
+        for(ClientOrderForm.OrderDetailDtoItem orderDetailDtoItem : orderDetailDtoItemList){
             orderCouponDiscountInfo.addProductPriceInfo(orderDetailDtoItem.getProductId(), orderDetailDtoItem.getProductSinglePrice() - discountValuePerProduct);
         }
 

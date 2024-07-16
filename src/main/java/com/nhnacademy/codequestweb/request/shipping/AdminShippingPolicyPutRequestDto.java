@@ -1,4 +1,4 @@
-package com.nhnacademy.codequestweb.response.shipping;
+package com.nhnacademy.codequestweb.request.shipping;
 
 import lombok.Builder;
 
