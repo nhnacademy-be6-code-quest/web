@@ -146,11 +146,25 @@
         });
 
         // 주문상태 변경 버튼 달기
-        // const orderStatusChangeForm = document.getElementById('order-status-change-form');
-        // const changeOrderStatusButton = document.createElement('button');
-        // changeOrderStatusButton.type = "submit";
-        //
-        // orderStatusChangeForm.append();
+        const orderStatusChangeForm = document.getElementById('order-status-change-form');
+        const changeOrderStatusButton = document.createElement('button');
+        changeOrderStatusButton.type = "submit";
+
+        if(orderStatus == '결제대기'){
+            changeOrderStatusButton.textContent = '결제완료 처리';
+        }
+        else if(orderStatus == '결제완료'){
+            changeOrderStatusButton.textContent = '배송 중 처리';
+        }
+        else if(orderStatus == '배송중'){
+            changeOrderStatusButton.textContent = '배송 완료';
+        }
+
+        changeOrderStatusButton.append(changeOrderStatusButton);
+
+        // 환불 처리 추가해야함.
+
+        orderStatusChangeForm.append();
 
         // 모달 닫기 기능
         const closeBtn = document.getElementsByClassName("close")[0];
