@@ -43,6 +43,9 @@ public class BookProductService {
         return bookProductClient.updateBook(headers, bookProductUpdateRequestDto);
     }
 
+    public ResponseEntity<Boolean> isbnCheck(String isbn) {
+        return bookProductClient.isbnCheck(isbn);
+    }
 
     public ResponseEntity<BookProductGetResponseDto> getSingleBookInfo(
             HttpHeaders headers,

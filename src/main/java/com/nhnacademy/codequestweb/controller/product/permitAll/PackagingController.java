@@ -20,8 +20,8 @@ public class PackagingController {
     @GetMapping("/all")
     public String all(
             Model model) {
-        ResponseEntity<List<PackagingGetResponseDto>> response = packagingService.getPackaging(0);
+        ResponseEntity<List<PackagingGetResponseDto>> response = packagingService.getPackagingList(0);
         model.addAttribute("pList", response.getBody());
-        return "view/product/packagingList";
+        return "packagingListPage";
     }
 }

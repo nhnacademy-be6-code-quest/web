@@ -3,13 +3,13 @@ package com.nhnacademy.codequestweb.client.product.packaging;
 
 import com.nhnacademy.codequestweb.request.product.packaging.PackagingRegisterRequestDto;
 import com.nhnacademy.codequestweb.request.product.packaging.PackagingUpdateRequestDto;
-import com.nhnacademy.codequestweb.response.coupon.ProductGetResponseDto;
 import com.nhnacademy.codequestweb.response.product.common.ProductRegisterResponseDto;
 import com.nhnacademy.codequestweb.response.product.common.ProductUpdateResponseDto;
 import com.nhnacademy.codequestweb.response.product.packaging.PackagingGetResponseDto;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,8 +34,14 @@ public interface PackagingClient {
             @RequestBody @Valid PackagingUpdateRequestDto requestDto);
 
     @GetMapping("/api/product/packaging/all")
-    ResponseEntity<List<PackagingGetResponseDto>> getPackaging(
+    ResponseEntity<List<PackagingGetResponseDto>> getPackagingList(
             @RequestParam(name = "productState", required = false) Integer productState
+    );
+
+    @GetMapping("/api/product/packaging/page")
+    ResponseEntity<Page<PackagingGetResponseDto>> getPackagingPage(
+            @RequestParam(name = "productState", required = false) Integer productState,
+            @RequestParam(name = "page") int page, @RequestParam(name = "size") int size
     );
 
     @GetMapping("/api/product/packaging/single/byProduct/{productId}")
