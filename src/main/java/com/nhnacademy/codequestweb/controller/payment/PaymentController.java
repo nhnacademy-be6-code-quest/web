@@ -43,9 +43,9 @@ public class PaymentController {
             headers, orderId);
         model.addAttribute("paymentOrderShowRequestDto", paymentOrderShowRequestDto);
         model.addAttribute("successUrl",
-            "https://localhost:8080/client/order/" + orderId + "/payment/success");
+            "https://book-store.shop/client/order/" + orderId + "/payment/success");
         model.addAttribute("failUrl",
-            "https://localhost:8080/client/order/" + orderId + "/payment/fail");
+            "https://book-store.shop/client/order/" + orderId + "/payment/fail");
         return "view/payment/tossPage";
     }
 
