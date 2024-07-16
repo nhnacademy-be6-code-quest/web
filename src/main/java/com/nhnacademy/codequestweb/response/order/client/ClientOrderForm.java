@@ -55,15 +55,6 @@ public class ClientOrderForm {
         Long optionProductSinglePrice; // 옵션 상품 단품 가격
         Long optionQuantity = 1L;
 
-//        @Builder
-//        public OrderDetailDtoItem(Long productId, String productName, Long quantity, List<Long> categoryIdList, Boolean packableProduct, Long productSinglePrice){
-//            this.productId = productId;
-//            this.productName = productName;
-//            this.quantity = quantity;
-//            this.categoryIdList = categoryIdList;
-//            this.packableProduct = packableProduct;
-//            this.productSinglePrice = productSinglePrice;
-//        }
     }
 
 }

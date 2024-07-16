@@ -82,7 +82,7 @@ public class OrderController {
     @GetMapping("/non-client/order/find")
     public String orders(HttpServletRequest req, Model model){
         model.addAttribute("view", "nonClientFindOrder");
-        return "view/order/nonClientFindOrder";
+        return "index";
     }
 
     @GetMapping("/non-client/order")
