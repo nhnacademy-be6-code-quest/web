@@ -55,7 +55,8 @@ public class PaymentController {
         @RequestParam(value = "orderId") String tossOrderId,
         @RequestParam long amount, @RequestParam String paymentKey) throws ParseException {
 
-        HttpHeaders headers = CookieUtils.setHeader(request);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("access", CookieUtils.getCookieValue(request, "access"));
 
 //        2. 결제 검증 및 승인 창에서 필요한 요소를 Order 에서 받아 오기 : @RequestHeader 로 해결함. // 303 ->
         PaymentOrderApproveRequestDto paymentOrderApproveRequestDto = paymentService.findPaymentOrderApproveRequestDtoByOrderId(
