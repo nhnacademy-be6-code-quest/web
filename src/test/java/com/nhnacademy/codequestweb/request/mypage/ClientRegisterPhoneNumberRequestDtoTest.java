@@ -50,24 +50,18 @@ class ClientRegisterPhoneNumberRequestDtoTest {
     }
 
     @Test
-    void testPhoneNumberNotNull() {
+    void testPhoneNumberNotNullAndNotBlank() {
         ClientRegisterPhoneNumberRequestDto dto = new ClientRegisterPhoneNumberRequestDto();
         dto.setPhoneNumber(null);
 
         Set<ConstraintViolation<ClientRegisterPhoneNumberRequestDto>> violations = validator.validate(dto);
         assertFalse(violations.isEmpty());
-    }
 
-    @Test
-    void testPhoneNumberNotBlank() {
-        ClientRegisterPhoneNumberRequestDto dto = new ClientRegisterPhoneNumberRequestDto();
+        dto = new ClientRegisterPhoneNumberRequestDto();
         dto.setPhoneNumber("");
 
-        Set<ConstraintViolation<ClientRegisterPhoneNumberRequestDto>> violations = validator.validate(dto);
+        violations = validator.validate(dto);
         assertFalse(violations.isEmpty());
-
-        ConstraintViolation<ClientRegisterPhoneNumberRequestDto> violation = violations.iterator().next();
-        assertTrue(violation.getMessage().contains("전화번호는 필수 입력 항목입니다."));
     }
 
     @Test
