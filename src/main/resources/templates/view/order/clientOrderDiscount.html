@@ -152,12 +152,17 @@
 
 
 <script th:inline="javascript">
-    <!-- 쿠폰 적용 -->
+    <!-- 쿠폰적용 -->
     function handleSelectCoupon(index){
+        // 상품 주문 금액(할인 적용 전)
+        const originProductTotalAmount = [[${clientOrderForm}]].productTotalAmount;
+        const originShippingFee = [[${clientOrderForm}]].shippingFee;
+
         // 포인트 적용 무효화
         document.getElementById("inputUsedPointAmount").value = 0;
         document.getElementById("inputUsedPointAmount").textContent = 0;
         document.getElementById("usedPointDiscountAmount").value = 0;
+        document.getElementById("payAmount").value = originProductTotalAmount + originShippingFee;
 
         // 쿠폰 적용
         let couponList = [[${couponList}]];
@@ -172,20 +177,17 @@
 
         // 쿠폰 사용해서 할인받는 총 금액
         const couponDiscountAmount = parseInt(couponDiscountInfoList[index].discountTotalAmount);
-        const diff = couponDiscountAmount - document.getElementById("payAmount").value;
+        const diff = parseInt(document.getElementById("payAmount").value) - couponDiscountAmount;
+
         if(diff < 0) {
-            document.getElementById("couponDiscountAmount").value = couponDiscountAmount + diff;
-            document.getElementById("selectedCouponDiscountAmount").textContent = couponDiscountAmount + diff;
+            document.getElementById("couponDiscountAmount").value = couponDiscountAmount - diff;
+            document.getElementById("selectedCouponDiscountAmount").textContent = couponDiscountAmount - diff;
         }else{
             document.getElementById("couponDiscountAmount").value = couponDiscountAmount;
             document.getElementById("selectedCouponDiscountAmount").textContent = couponDiscountAmount;
         }
 
         // 결제금액 업데이트
-        const originProductTotalAmount = [[${clientOrderForm}]].productTotalAmount;
-        const originShippingFee = [[${clientOrderForm}]].shippingFee;
-        console.log("originProductTotalAmount: ", originProductTotalAmount);
-        console.log("originShippingFee: ", originShippingFee);
         document.getElementById("payAmount").value = originProductTotalAmount + originShippingFee - couponDiscountAmount;
     }
 

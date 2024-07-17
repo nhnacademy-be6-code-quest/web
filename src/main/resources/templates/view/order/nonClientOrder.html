@@ -43,7 +43,7 @@
 </head>
 <body>
 
-<form th:action="@{/api/non-client/orders}" th:object="${nonClientOrderForm}" method="post">
+<form th:action="@{/non-client/order/process}" th:object="${nonClientOrderForm}" method="post">
 
     <div class="sub-container">
         <h3>주문 상품 목록</h3>
@@ -95,10 +95,10 @@
                                                  data-option-product-price = '0'">
                                 == 포장지 선택 ==
                             </option>
-                            <option th:each="packageDto : ${packageList}" th:value="${packageDto.productId}" th:text="${packageDto.packageName} + ' - ' + ${packageDto.productPriceSales} + '원'"
+                            <option th:each="packageDto : ${packageList}" th:value="${packageDto.productId}" th:text="${packageDto.packagingName} + ' - ' + ${packageDto.productPriceSales} + '원'"
                                     th:attr="data-option-product-id = ${packageDto.productId},
                                                  data-option-product-price=${packageDto.productPriceSales},
-                                                 data-option-product-name=${packageDto.packageName}"
+                                                 data-option-product-name=${packageDto.packagingName}"
                             >
                             </option>
                         </select>
