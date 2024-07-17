@@ -23,6 +23,21 @@ class ClientRegisterAddressRequestDtoTest {
     }
 
     @Test
+    void testBuilder() {
+        ClientRegisterAddressRequestDto dto = ClientRegisterAddressRequestDto.builder()
+                .clientDeliveryAddress("123 Main St")
+                .clientDeliveryAddressDetail("Apt 4B")
+                .clientDeliveryAddressNickname("Home")
+                .clientDeliveryZipCode(12345)
+                .build();
+
+        assertEquals("123 Main St", dto.getClientDeliveryAddress());
+        assertEquals("Apt 4B", dto.getClientDeliveryAddressDetail());
+        assertEquals("Home", dto.getClientDeliveryAddressNickname());
+        assertEquals(12345, dto.getClientDeliveryZipCode());
+    }
+
+    @Test
     void getClientDeliveryAddress() {
         ClientRegisterAddressRequestDto dto = new ClientRegisterAddressRequestDto();
         dto.setClientDeliveryAddress("123 Main St");

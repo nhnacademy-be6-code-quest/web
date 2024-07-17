@@ -9,6 +9,29 @@ import static org.junit.jupiter.api.Assertions.*;
 class ClientRegisterRequestDtoTest {
 
     @Test
+    void testNoArgsConstructor() {
+        ClientRegisterRequestDto dto = new ClientRegisterRequestDto();
+        assertNotNull(dto);
+    }
+
+    @Test
+    void testAllArgsConstructor() {
+        LocalDate birthDate = LocalDate.of(1990, 1, 1);
+        ClientRegisterRequestDto dto = new ClientRegisterRequestDto(
+                "test@example.com",
+                "Password123!",
+                "TestName",
+                birthDate,
+                "01012345678"
+        );
+        assertEquals("test@example.com", dto.getClientEmail());
+        assertEquals("Password123!", dto.getClientPassword());
+        assertEquals("TestName", dto.getClientName());
+        assertEquals(birthDate, dto.getClientBirth());
+        assertEquals("01012345678", dto.getClientPhoneNumber());
+    }
+
+    @Test
     void getClientEmail() {
         ClientRegisterRequestDto dto = new ClientRegisterRequestDto();
         dto.setClientEmail("test@example.com");
