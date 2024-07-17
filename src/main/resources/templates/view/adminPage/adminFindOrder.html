@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="adminFindOrderFragment ('adminFindOrder')">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자 페이지 - 주문 내역 조회 페이지</title>
+    <link rel="stylesheet" href="/css/adminPage/adminOrderStyle.css">
+    <style>
+        #orderDetailModal{
+            display: none; /* Hidden by default */
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 60%;
+        }
+        .close {
+            color: #aaaaaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1 class="title">주문 내역 조회</h1>
+    <div class="table-container">
+        <table class="orders-table">
+            <thead>
+            <tr>
+                <th>주문 아이디</th>
+                <th>주문 일시</th>
+                <th>회원 아이디</th>
+                <th>연락처</th>
+                <th>주문상태</th>
+                <th>주문상세</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="order, iter : ${orders}">
+                <td th:text="${order.orderId}"></td>
+                <td th:text="${order.orderDatetime}"></td>
+                <td th:if="${order.clientId} != null" th:text="${order.clientId}"></td>
+                <td th:if="${order.clientId} == null">비회원</td>
+                <td th:text="${order.phoneNumber}"></td>
+                <td th:text="${order.orderStatus}"></td>
+                <td>
+                    <button th:attr="data-point-discount=${order.discountAmountByPoint},
+                                     data-coupon-discount=${order.discountAmountByCoupon},
+                                     data-order-total-amount=${order.orderTotalAmount},
+                                     data-shipping-fee=${order.shippingFee},
+                                     data-delivery-address=${order.deliveryAddress},
+                                     data-designated-delivery-date=${order.designatedDeliveryDate},
+                                     data-order-status=${order.orderStatus},
+                                     data-order-id=${order.orderId}"
+                            th:onclick="openOrderDetail(this, [[${order.orderListItemList}]])" class="btn">주문상세</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="pagination">
+        <div class="pagination-content">
+            <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}" class="pagination-item">
+              <a th:href="|/admin/orders?pageNo=${i}&pageSize=${pageSize}|"
+                 th:classappend="${i == currentPage} ? 'pagination-link active' : 'pagination-link'">
+                [[${i + 1}]]
+              </a>
+            </span>
+        </div>
+    </div>
+</div>
+
+<!--주문상세 모달-->
+<div id="orderDetailModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>주문 조회 결과</h3>
+        <div>쿠폰할인금액: <span id="couponDiscountAmountModal"></span></div>
+        <div>포인트할인금액: <span id="pointDiscountAmountModal"></span></div>
+        <div>배송비:<span id="shippingFeeModal"></span></div>
+        <div>배송지:<span id="deliveryAddressModal"></span></div>
+        <div>지정배송날짜: <span id="designatedDeliveryDateModal"></span></div>
+        <div>주문 상품 리스트
+            <div id="orderListItemListModal"></div>
+        </div>
+        <div>결제금액:<span id="orderTotalAmountModal"></span>원</div>
+        <h3>주문 상태 관리</h3>
+        <div>현재 주문 상태: <span id="orderStatusModal"></span></div>
+        <div>주문 상태 변경: </div>
+        <form id="order-status-change-form">
+
+        </form>
+    </div>
+</div>
+
+<script>
+
+    function openOrderDetail(button, orderListItemList){
+
+        const modal = document.getElementById('orderDetailModal');
+        modal.style.display = "block";
+
+        const couponDiscount = button.getAttribute('data-coupon-discount');
+        const pointDiscount = button.getAttribute('data-point-discount');
+        const shippingFee = button.getAttribute('data-shipping-fee');
+        const deliveryAddress = button.getAttribute('data-delivery-address');
+        const designatedDeliveryDate = button.getAttribute('data-designated-delivery-date');
+        const orderTotalAmount = button.getAttribute('data-order-total-amount');
+        const orderStatus = button.getAttribute('data-order-status');
+
+        document.getElementById('couponDiscountAmountModal').textContent = couponDiscount;
+        document.getElementById('pointDiscountAmountModal').textContent = pointDiscount;
+        document.getElementById('shippingFeeModal').textContent = shippingFee;
+        document.getElementById('deliveryAddressModal').textContent = deliveryAddress;
+        document.getElementById('designatedDeliveryDateModal').textContent = designatedDeliveryDate;
+        document.getElementById('orderTotalAmountModal').textContent = orderTotalAmount;
+        document.getElementById('orderStatusModal').textContent = orderStatus;
+
+        const orderListItemListModal = document.getElementById('orderListItemListModal');
+        orderListItemListModal.innerHTML = '';
+
+        orderListItemList.forEach(item => {
+            const itemDiv = document.createElement('div');
+            itemDiv.innerText = item.productName + ' x ' + item.productQuantity;
+            orderListItemListModal.append(itemDiv);
+        });
+
+        // 주문상태 변경 버튼 달기
+        const orderStatusChangeForm = document.getElementById('order-status-change-form');
+        const changeOrderStatusButton = document.createElement('button');
+        orderStatusChangeForm.innerHTML = '';
+        changeOrderStatusButton.type = "submit";
+
+        if(orderStatus === '결제완료'){
+            changeOrderStatusButton.textContent = '배송중 처리';
+            orderStatusChangeForm.action = "/order/" + button.getAttribute('data-order-id') + "/update?status=배송중&orderNo=" + [[${currentPage}]];
+            orderStatusChangeForm.method = "post";
+        }
+        else if(orderStatus === '배송중'){
+            changeOrderStatusButton.textContent = '배송완료 처리';
+            orderStatusChangeForm.action = "/order/" + button.getAttribute('data-order-id') + "/update?status=배송완료&orderNo=" + [[${currentPage}]];
+            orderStatusChangeForm.method = "post";
+        }
+        else if(orderStatus === '반품요청'){
+            changeOrderStatusButton.textContent = '반품요청 수락';
+            orderStatusChangeForm.action = "/order/" + button.getAttribute('data-order-id') + "/update?status=반품&orderNo=" + [[${currentPage}]];
+            orderStatusChangeForm.method = "post";
+        }
+
+        orderStatusChangeForm.append(changeOrderStatusButton);
+
+        // 모달 닫기 기능
+        const closeBtn = document.getElementsByClassName("close")[0];
+        closeBtn.onclick = function() {
+            modal.style.display = "none";
+        }
+        window.onclick = function(event) {
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        }
+    }
+
+</script>
+
+</body>
+</html>

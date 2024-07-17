@@ -2,7 +2,7 @@ package com.nhnacademy.codequestweb.client.order;
 
 import com.nhnacademy.codequestweb.request.payment.PaymentOrderApproveRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentOrderShowRequestDto;
-import com.nhnacademy.codequestweb.response.order.client.ClientOrderForm;
+import com.nhnacademy.codequestweb.response.order.client.ClientOrderCreateForm;
 import com.nhnacademy.codequestweb.response.order.client.ClientOrderGetResponseDto;
 import com.nhnacademy.codequestweb.response.order.common.OrderResponseDto;
 import com.nhnacademy.codequestweb.response.order.common.ProductOrderDetailOptionResponseDto;
@@ -26,12 +26,11 @@ import java.util.List;
 public interface OrderClient {
 
 
-
     // @ 회원 주문 컨트롤러 @
 
     // 회원 주문 생성
     @PostMapping("/api/client/orders")
-    ResponseEntity<Long> createClientOrder(@RequestHeader HttpHeaders headers, @RequestBody ClientOrderForm clientOrderForm);
+    ResponseEntity<Long> createClientOrder(@RequestHeader HttpHeaders headers, @RequestBody ClientOrderCreateForm clientOrderCreateForm);
 
     // 회원 주문 내역 리스트 조회
     @GetMapping("/api/client/orders")
@@ -58,6 +57,10 @@ public interface OrderClient {
     @PutMapping("/api/client/orders/{orderId}/refund")
     ResponseEntity<String> refundClientOrder(@RequestHeader HttpHeaders headers, @PathVariable long orderId);
 
+    // 회원 주문 환불 요청 상태 변경
+    @PutMapping("/api/client/orders/{orderId}/refund-request")
+    ResponseEntity<String> refundRequestOrder(@RequestHeader HttpHeaders headers, @PathVariable long orderId);
+
     // 회원 주문 상품 상세 리스트 조회
     @GetMapping("/api/client/orders/{orderId}/detail")
     ResponseEntity<List<ProductOrderDetailResponseDto>> getClientProductOrderDetailList(@RequestHeader HttpHeaders headers, @PathVariable Long orderId);
@@ -74,7 +77,6 @@ public interface OrderClient {
 
 
 
-
     // @ 비회원 주문 컨트롤러 @
 
     // 비회원 주문 생성
@@ -84,14 +86,6 @@ public interface OrderClient {
     // 비회원 주문 결제 완료 상태 변경
     @PutMapping("/api/non-client/orders/{orderId}/payment-complete")
     ResponseEntity<String> paymentCompleteNonClientOrder(@RequestHeader HttpHeaders headers, @PathVariable long orderId);
-
-    // 비회원 주문 취소 상태 변경
-    @PutMapping("/api/non-client/orders/{orderId}/cancel")
-    ResponseEntity<String> cancelNonClientOrder(@RequestHeader HttpHeaders headers, @PathVariable long orderId);
-
-    // 비회원 주문 환불 상태 변경
-    @PutMapping("/api/non-client/orders/{orderId}/refund")
-    ResponseEntity<String> refundNonClientOrder(@RequestHeader HttpHeaders headers, @PathVariable long orderId);
 
     // 비회원 주문 단건 조회
     @GetMapping("/api/non-client/orders/{orderId}")
@@ -114,7 +108,7 @@ public interface OrderClient {
     @GetMapping("/api/order/{orderId}/approve-request")
     ResponseEntity<PaymentOrderApproveRequestDto> getPaymentOrderApproveRequestDto(@RequestHeader HttpHeaders headers, @PathVariable Long orderId);
 
-    // 모든 주문 가져오기 (관리자 사용)
+    // 모든 주문 가져오기
     @GetMapping("/api/order/all")
     ResponseEntity<Page<OrderResponseDto>> getOrder(@RequestParam(value = "pageSize", defaultValue = "5", required = false) int pageSize,
                                                            @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,

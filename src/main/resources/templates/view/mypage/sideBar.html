@@ -8,7 +8,7 @@
                     회원정보관리
                 </button>
             </h2>
-            <div id="collapseOne" class="accordion-collapse collapse" th:classappend="${activeSection == 'client' ? 'show' : ''}" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+            <div id="collapseOne" class="accordion-collapse collapse" th:classappend="${activeSection == 'client' || activeSection == 'review' ? 'show' : ''}" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                 <div class="accordion-body">
                     <nav class="nav flex-column">
                         <a class="nav-link" href="/mypage">개인정보 수정</a>

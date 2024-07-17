@@ -12,14 +12,9 @@ import java.util.List;
 @Getter
 @Setter
 public class ClientOrderForm {
-
-    List<OrderDetailDtoItem> orderDetailDtoItemList; // 상품-옵션 리스트
-    Long couponId; // 적용한 쿠폰
+    List<ClientOrderForm.OrderDetailDtoItem> orderDetailDtoItemList; // 상품-옵션 리스트
     Integer shippingFee; // 배송비
-    Long productTotalAmount; // 상품 총 금액(포인트 및 쿠폰 할인 전)
-    Long payAmount; // 최종 결제 금액
-    Long couponDiscountAmount; // 쿠폰 할인 금액
-    Long usedPointDiscountAmount; // 포인트 사용 금액
+    Long productTotalAmount; // 상품 총 금액
     String orderedPersonName; // 주문자 이름
     String phoneNumber; // 주문자 핸드폰 번호
     String addressNickname; // 배송지 별칭
@@ -27,17 +22,18 @@ public class ClientOrderForm {
     String deliveryAddress; // 주소(주소,상세주소)
     Boolean useDesignatedDeliveryDate; // 배송날짜 지정 여부
     String designatedDeliveryDate; // 배송날짜 지정
-    Integer paymentMethod; // 결제 방식
-    Long accumulatePoint; // 예상 적립금
+    Long totalQuantity; // 총 수량
 
     @Builder
     public ClientOrderForm(String orderedPersonName){
         this.orderedPersonName = orderedPersonName;
-        usedPointDiscountAmount = 0L;
-        couponDiscountAmount = 0L;
     }
 
-    public void addOrderDetailDtoItem(OrderDetailDtoItem orderDetailDtoItem){
+    public void updateTotalQuantity(Long totalQuantity){
+        this.totalQuantity = totalQuantity;
+    }
+
+    public void addOrderDetailDtoItem(ClientOrderForm.OrderDetailDtoItem orderDetailDtoItem){
         if(this.orderDetailDtoItemList == null){
             this.orderDetailDtoItemList = new ArrayList<>();
         }

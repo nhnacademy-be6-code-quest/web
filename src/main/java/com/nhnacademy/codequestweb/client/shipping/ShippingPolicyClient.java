@@ -1,6 +1,6 @@
 package com.nhnacademy.codequestweb.client.shipping;
 
-import com.nhnacademy.codequestweb.response.shipping.AdminShippingPolicyPutRequestDto;
+import com.nhnacademy.codequestweb.request.shipping.AdminShippingPolicyPutRequestDto;
 import com.nhnacademy.codequestweb.response.shipping.ShippingPolicyGetResponseDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpHeaders;
@@ -17,7 +17,7 @@ import java.util.List;
 @FeignClient(name = "shippingPolicy", url = "http://localhost:8001")
 public interface ShippingPolicyClient {
 
-    @PutMapping("/admin/shipping-policy")
+    @PutMapping("/api/shipping-policy")
     ResponseEntity<String> updateShippingPolicy(@RequestHeader HttpHeaders headers, @RequestBody AdminShippingPolicyPutRequestDto adminShippingPolicyPutRequestDto);
 
     @GetMapping("/api/shipping-policy")

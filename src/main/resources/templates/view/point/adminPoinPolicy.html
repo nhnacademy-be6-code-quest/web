@@ -20,12 +20,16 @@
     .text-danger { color: #dc3545; }
     .button { background-color: #007bff; color: #fff; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; display: inline-block; text-decoration: none; }
     .button:hover { background-color: #0056b3; }
+    .edit-button { background-color: #ffc107; color: #212529; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; }
+    .edit-button:hover { background-color: #e0a800; }
+    .activate-button { background-color: #28a745; color: #fff; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; }
+    .activate-button:hover { background-color: #218838; }
     .delete-button { background-color: #dc3545; color: #fff; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; }
     .delete-button:hover { background-color: #bd2130; }
 
     /* 모달 스타일 */
     .modal { display: none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgb(0,0,0); background-color: rgba(0,0,0,0.4); }
-    .modal-content { background-color: #fefefe; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 80%; }
+    .modal-content { background-color: #fefefe; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 500px; }
     .close { color: #aaa; float: right; font-size: 28px; font-weight: bold; }
     .close:hover, .close:focus { color: black; text-decoration: none; cursor: pointer; }
   </style>
@@ -37,7 +41,7 @@
     <div class="card-description">포인트 정책 목록을 확인하고 관리할 수 있습니다.</div>
   </div>
   <div class="card-content">
-    <button class="button" onclick="openModal()">정책 등록</button>
+    <button class="button" onclick="openModal('registerModal')">정책 등록</button>
     <div class="overflow-x-auto">
       <table>
         <thead class="bg-muted">
@@ -46,20 +50,27 @@
           <th class="text-muted-foreground">포인트 값</th>
           <th class="text-muted-foreground">정책 시작 시간</th>
           <th class="text-muted-foreground">상태</th>
-          <th class="text-muted-foreground">삭제</th>
+          <th class="text-muted-foreground">수정</th>
+          <th class="text-muted-foreground">활성화</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="point : ${points}">
-          <td th:text="${point.pointPolicyType}"></td>
+          <td th:text="${point.pointAccumulationType}"></td>
           <td th:text="${point.pointValue}" class="text-green-500"></td>
           <td th:text="${point.pointPolicyCreationDate}" class="text-muted-foreground"></td>
           <td th:text="${point.pointStatus}" class="text-primary"></td>
           <td>
-            <form th:action="@{/admin/point/policy/{pointPolicyId}(pointPolicyId=${point.pointPolicyId})}" method="post" class="delete-form">
-              <input type="hidden" name="_method" value="delete">
-              <button type="button" class="delete-button" onclick="confirmDelete(this.form)">삭제</button>
-            </form>       </td>
+            <button class="edit-button" th:attr="data-id=${point.pointPolicyId}, data-accumulation-type=${point.pointAccumulationType}, data-value=${point.pointValue}" onclick="openModifyModal(this)">수정</button>
+          </td>
+          <td>
+            <button class="activate-button"
+                    th:attr="data-id=${point.pointPolicyId}, data-accumulation-type=${point.pointAccumulationType}"
+                    th:if="${point.pointStatus == '비활성화'}"
+                    onclick="openActivateModal(this)">
+              활성화
+            </button>
+          </td>
         </tr>
         </tbody>
       </table>
@@ -67,14 +78,14 @@
   </div>
 </div>
 
-<!-- 모달 -->
-<div id="myModal" class="modal">
+<!-- 등록 모달 -->
+<div id="registerModal" class="modal">
   <div class="modal-content">
-    <span class="close" onclick="closeModal()">&times;</span>
-    <form id="policyForm" th:action="@{/admin/point/policy/register}" method="post">
+    <span class="close" onclick="closeModal('registerModal')">&times;</span>
+    <form id="policyRegisterForm" th:action="@{/admin/point/policy/register}" method="post">
       <div>
-        <label for="pointPolicyType">포인트 정책 타입:</label>
-        <select id="pointPolicyType" name="pointPolicyType">
+        <label for="pointAccumulationType">포인트 정책 타입:</label>
+        <select id="pointAccumulationType" name="pointAccumulationType">
           <option th:each="type : ${pointTypes}" th:value="${type}" th:text="${type}"></option>
         </select>
       </div>
@@ -87,27 +98,86 @@
   </div>
 </div>
 
+<!-- 수정 모달 -->
+<div id="modifyModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('modifyModal')">&times;</span>
+    <form id="policyModifyForm" th:action="@{/admin/point/policy/modify}" method="post">
+      <input type="hidden" id="modifyPointPolicyId"  name="pointPolicyId">
+      <input type="hidden" name="_method" value="put">
+      <div>
+        <label for="modifyPointAccumulationType">포인트 정책 타입:</label>
+        <span id="modifyPointAccumulationType" ></span>
+      </div>
+      <div>
+        <label for="modifyPointValue">포인트 값:</label>
+        <input type="number" id="modifyPointValue" name="pointValue">
+      </div>
+      <button type="submit">수정</button>
+    </form>
+  </div>
+</div>
+
+<!-- 활성화 모달 -->
+<div id="activateModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('activateModal')">&times;</span>
+    <form id="policyActivateForm" th:action="@{/admin/point/policy/active}" method="post">
+      <input type="hidden" name="_method" value="put">
+      <input type="hidden" id="activatePointPolicyId" name="pointPolicyId">
+      <input type="hidden" id="activatePointPolicyType" name="pointAccumulationType">
+      <div>
+        <p>정책 타입: <span id="activatePointAccumulationType"></span></p>
+        <p>이 타입 이름을 활성화하시겠습니까?</p>
+      </div>
+      <button type="submit">확인</button>
+    </form>
+  </div>
+</div>
+
 <script>
-  function openModal() {
-    document.getElementById("myModal").style.display = "block";
+  function openModifyModal(button) {
+    const modal = document.getElementById('modifyModal');
+    modal.style.display = "block";
+
+    // 버튼에서 data- 속성을 통해 Thymeleaf 변수 값을 가져오기
+    const pointPolicyId = button.getAttribute('data-id');
+    const pointAccumulationType = button.getAttribute('data-accumulation-type');
+    const pointValue = button.getAttribute('data-value');
+
+    // 모달 내의 필드에 Thymeleaf 변수 값을 설정하기
+    document.getElementById('modifyPointPolicyId').value = pointPolicyId;
+    document.getElementById('modifyPointAccumulationType').textContent = pointAccumulationType;
+    document.getElementById('modifyPointValue').value = pointValue;
   }
 
-  function closeModal() {
-    document.getElementById("myModal").style.display = "none";
+  function openModal(modalId) {
+    document.getElementById(modalId).style.display = "block";
   }
 
+  function closeModal(modalId) {
+    document.getElementById(modalId).style.display = "none";
+  }
+  function openActivateModal(button) {
+    const modal = document.getElementById('activateModal');
+    modal.style.display = "block";
+    const pointPolicyId = button.getAttribute('data-id');
+    const pointAccumulationType = button.getAttribute('data-accumulation-type');
+    // 활성화 모달 내의 필드에 Thymeleaf 변수 값을 설정하기
+    document.getElementById('activatePointPolicyId').value = pointPolicyId;
+    document.getElementById('activatePointPolicyType').value = pointAccumulationType;
+    document.getElementById('activatePointAccumulationType').textContent = pointAccumulationType;
+  }
   window.onclick = function(event) {
-    if (event.target == document.getElementById("myModal")) {
-      closeModal();
-    }
-  };
+    const modals = document.getElementsByClassName("modal");
+    for (let i = 0; i < modals.length; i++) {
+      if (event.target == modals[i]) {
+        closeModal(modals[i].id);
 
-  function confirmDelete(form) {
-    if (confirm("정책을 삭제하시겠습니까?")) {
-      form.submit();
+      }
     }
   }
-</script>
 
+</script>
 </body>
 </html>

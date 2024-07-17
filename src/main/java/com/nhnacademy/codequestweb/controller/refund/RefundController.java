@@ -1,13 +1,18 @@
 package com.nhnacademy.codequestweb.controller.refund;
 
+import com.nhnacademy.codequestweb.request.refund.RefundTossRequestDto;
+import com.nhnacademy.codequestweb.response.refund.PaymentRefundResponseDto;
+import com.nhnacademy.codequestweb.response.refund.TossPaymentRefundResponseDto;
 import com.nhnacademy.codequestweb.service.refund.RefundService;
+import com.nhnacademy.codequestweb.service.refund.TossRefundService;
+import java.text.ParseException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import java.util.List;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /*
         <상품 개수 별로>
@@ -32,31 +37,40 @@ import java.util.List;
 public class RefundController {
 
     private final RefundService refundService;
+    private final TossRefundService tossRefundService;
 
     // 1. 환불 및 취소 사유 선택 받기
-    @GetMapping("client/order/{orderId}/payment/{paymentId}/refund")
-    public String saveRefund(@PathVariable long orderId, @PathVariable long paymentId,
-        Model model) {
+    @GetMapping("client/order/{orderId}/refund")
+    public String saveRefund(@PathVariable long orderId,
+        Model model, RedirectAttributes redirectAttributes) throws ParseException {
 
-        // TODO 1) 주문의 상태를 가져 온다.
-//        String orderStatus = refundService.getOrderStatus(orderId);
-        String orderStatus = "결제대기";
+        PaymentRefundResponseDto paymentRefundResponseDto = refundService.findTossKey(
+            orderId);
+        if(paymentRefundResponseDto.getOrderStatus().equals("결제완료")){
+            RefundTossRequestDto dto = RefundTossRequestDto.builder()
+                .cancelReason("결제 취소")
+                .orderStatus(paymentRefundResponseDto.getOrderStatus())
+                .paymentId(paymentRefundResponseDto.getPaymentId())
+                .tossPaymentKey(paymentRefundResponseDto.getTossPaymentKey()).build();
+            TossPaymentRefundResponseDto test = tossRefundService.tossRefund(dto);
+           log.error("{}",test.getCancelReason());
+           redirectAttributes.addFlashAttribute("alterMessage", "결재 취소");
 
-        // TODO 2) 주문의 상태가 반품에 속하는지, 취소에 속하는지에 따라 정책을 가져 온다. (반품 및 취소 정책 타입에 들어 감.)
-        List<RefundPolicyRequestDto> refundPolicyRequestDtoList = refundService.findAllRefundPolicyRequestDtoList();
-        log.info("refundPolicyRequestDtoList: {}", refundPolicyRequestDtoList);
-        model.addAttribute("refundPolicyRequestDtoList", refundPolicyRequestDtoList);
+           refundService.saveRefund(orderId, dto);
+            return "redirect:/mypage/orders";
+
+        }else{
+            model.addAttribute("orderId", orderId);
+            model.addAttribute("dto", paymentRefundResponseDto);
+            return "view/refund/refund-reason";
+        }
 
 
-        // TODO [일단 나중에 하기]
-        // TODO 3) 상품과 관련해서 돌려 받을 수 있는 금액을 보여 준다.
-        // TODO 4) 후처리를 한다.
 
-        model.addAttribute("orderId", orderId);
-        model.addAttribute("paymentId", paymentId);
-        model.addAttribute("orderStatus", orderStatus);
-        return "view/refund/refund-reason";
+
     }
+
+
 
     // 2. 상품 관련해서 돌려 받을 환불 안내하기
 //    @GetMapping("client/order/{orderId}/payment/{paymentId}/refund")

@@ -56,10 +56,4 @@ public class CouponService {
         return couponPolicyClient.findCouponType(headers, couponPolicyId);
     }
 
-//    public void paymentUsedCoupon(PaymentCompletedCouponResponseDto paymentCompletedCouponResponseDto){
-//        couponClient.paymentUsedCoupon(paymentCompletedCouponResponseDto);
-//    }
-//    public void refundCoupon(RefundCouponResponseDto refundCouponResponseDto){
-//        couponClient.refundCoupon(refundCouponResponseDto);
-//    }
 }

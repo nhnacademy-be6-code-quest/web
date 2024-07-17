@@ -55,7 +55,8 @@ public class PaymentController {
         @RequestParam(value = "orderId") String tossOrderId,
         @RequestParam long amount, @RequestParam String paymentKey) throws ParseException {
 
-        HttpHeaders headers = CookieUtils.setHeader(request);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("access", CookieUtils.getCookieValue(request, "access"));
 
 //        2. 결제 검증 및 승인 창에서 필요한 요소를 Order 에서 받아 오기 : @RequestHeader 로 해결함. // 303 ->
         PaymentOrderApproveRequestDto paymentOrderApproveRequestDto = paymentService.findPaymentOrderApproveRequestDtoByOrderId(
@@ -246,32 +247,32 @@ public class PaymentController {
         paymentService.savePayment(headers, orderId, tossPaymentsResponseDto);
 
         // 8. 등급 바꾸기
-        try {
-            PaymentGradeResponseDto paymentGradeResponseDto = paymentService.getPaymentRecordOfClient(
-                paymentOrderApproveRequestDto.getClientId());
-            ResponseEntity<String> updateClientGradeResponseEntity = paymentService.updateClientGrade(
-                ClientUpdateGradeRequestDto.builder()
-                    .clientId(paymentOrderApproveRequestDto.getClientId())
-                    .payment(paymentGradeResponseDto.getPaymentGradeValue())
-                    .build());
-
-            HttpStatusCode updateClientGradeResponseStatusCode = updateClientGradeResponseEntity.getStatusCode();
-            boolean updateClientGradeStatusCodeIs200 = updateClientGradeResponseStatusCode.equals(
-                HttpStatusCode.valueOf(200));
-
-            if (!updateClientGradeStatusCodeIs200) {
-                log.error("결제 이후 회원의 등급을 바꾸는 과정에서 응답이 200이 아닙니다.");
-            }
-
-        } catch (FeignException fe) {
-            log.error(
-                "회원의 결제 내역을 조회하고 등급이 바뀌는지 확인하는 중 회원 서버에서 오류가 발생했습니다. 이 로그는 회원의 등급이 바뀌지 않아도 출력됩니다.\nclientId: {}",
-                paymentOrderApproveRequestDto.getClientId());
-        } catch (Exception e) {
-            log.error(
-                "회원의 결제 내역을 조회하고 등급을 바뀌는지 확인하는 중 알 수 없는 오류가 발생하였습니다. 이 로그는 회원의 등급이 바뀌지 않아도 출력됩니다.\nclientId: {}",
-                paymentOrderApproveRequestDto.getClientId());
-        }
+//        try {
+//            PaymentGradeResponseDto paymentGradeResponseDto = paymentService.getPaymentRecordOfClient(
+//                paymentOrderApproveRequestDto.getClientId());
+//            ResponseEntity<String> updateClientGradeResponseEntity = paymentService.updateClientGrade(
+//                ClientUpdateGradeRequestDto.builder()
+//                    .clientId(paymentOrderApproveRequestDto.getClientId())
+//                    .payment(paymentGradeResponseDto.getPaymentGradeValue())
+//                    .build());
+//
+//            HttpStatusCode updateClientGradeResponseStatusCode = updateClientGradeResponseEntity.getStatusCode();
+//            boolean updateClientGradeStatusCodeIs200 = updateClientGradeResponseStatusCode.equals(
+//                HttpStatusCode.valueOf(200));
+//
+//            if (!updateClientGradeStatusCodeIs200) {
+//                log.error("결제 이후 회원의 등급을 바꾸는 과정에서 응답이 200이 아닙니다.");
+//            }
+//
+//        } catch (FeignException fe) {
+//            log.error(
+//                "회원의 결제 내역을 조회하고 등급이 바뀌는지 확인하는 중 회원 서버에서 오류가 발생했습니다. 이 로그는 회원의 등급이 바뀌지 않아도 출력됩니다.\nclientId: {}",
+//                paymentOrderApproveRequestDto.getClientId());
+//        } catch (Exception e) {
+//            log.error(
+//                "회원의 결제 내역을 조회하고 등급을 바뀌는지 확인하는 중 알 수 없는 오류가 발생하였습니다. 이 로그는 회원의 등급이 바뀌지 않아도 출력됩니다.\nclientId: {}",
+//                paymentOrderApproveRequestDto.getClientId());
+//        }
 
         // 9. View 보여주기
         boolean isClient = paymentOrderApproveRequestDto.getClientId() != null;

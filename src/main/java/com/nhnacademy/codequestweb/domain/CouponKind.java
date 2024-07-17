@@ -18,21 +18,4 @@ public enum CouponKind {
         return value;
     }
 
-    public static CouponKind fromCode(int code) {
-        for (CouponKind type : CouponKind.values()) {
-            if (type.code == code) {
-                return type;
-            }
-        }
-        throw new IllegalArgumentException("Invalid DiscountType code: " + code);
-    }
-
-    public static CouponKind fromValue(String value) {
-        for (CouponKind type : CouponKind.values()) {
-            if (type.value.equals(value)) {
-                return type;
-            }
-        }
-        throw new IllegalArgumentException("Invalid DiscountType value: " + value);
-    }
 }
