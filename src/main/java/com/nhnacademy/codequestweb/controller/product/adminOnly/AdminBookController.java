@@ -80,7 +80,6 @@ public class AdminBookController {
     @GetMapping("/register/self")
     public String registerSelfForm(HttpServletRequest req){
         req.setAttribute("view", "adminPage");
-//        req.setAttribute("adminPage", "selfMadeBookRegisterForm");
         req.setAttribute("adminPage", "bookProductRegisterForm");
 
         req.setAttribute("register", true);
