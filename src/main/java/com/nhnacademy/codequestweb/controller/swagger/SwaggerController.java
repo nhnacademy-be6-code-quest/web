@@ -28,7 +28,6 @@ public class SwaggerController {
         return ResponseEntity.ok(response);
     }
 
-
     @GetMapping("/swagger/{path}")
     public String swaggerAuth(@PathVariable String path, Model model) {
         if (path.equals("auth")) {
