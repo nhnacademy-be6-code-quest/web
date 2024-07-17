@@ -397,7 +397,7 @@
     </div>
     <div id="errorMessage" style="color: red;"></div>
 
-    <form th:action="'/admin/product/book/' + ${action}" id="bookProductRegister" method="post" enctype="application/x-www-form-urlencoded" onsubmit="formValidation(event)">
+    <form th:action="'/admin/product/book/' + ${action}" id="bookProductRegister" method="post" enctype="multipart/form-data" onsubmit="formValidation(event)">
     <div class="book-container">
         <div th:if="${aladin != null}" class="book-image-container">
 
@@ -423,15 +423,15 @@
             <button type="button" onclick="isbnCheck()">중복 확인</button>
         </div>
     </div>
-    <input type="hidden" id="isbnExist" th:value="${action eq 'update'}">
+    <input type="hidden" id="isbnExist" th:value="${action eq 'update' || self != null }">
     <label for="title"></label><input th:type="${aladin != null ? 'hidden' : 'text'}" name="title" id="title" th:value="${title}" required placeholder="제목"/><br>
-    <label for="author"></label><input th:type="${aladin != null ? 'hidden' : 'text'}" id="author" name="author" th:value="${author}" /><br>
-    <label for="publisher"></label><input th:type="${aladin != null ? 'hidden' : 'text'}" name="publisher" id="publisher" th:value="${publisher}"/><br>
+    <label for="author"></label><input th:type="${aladin != null ? 'hidden' : 'text'}" id="author" name="author" th:value="${author}" placeholder="작가"/><br>
+    <label for="publisher"></label><input th:type="${aladin != null ? 'hidden' : 'text'}" name="publisher" id="publisher" th:value="${publisher}" placeholder="출판사"/><br>
     <input type="hidden" name="cover" id="coverURL" th:value="${cover}" readonly/><br>
     <label for="pubDate"></label><input th:type="${aladin != null ? 'hidden' : 'date'}" name="pubDate" id="pubDate" th:value="${pubDate}"/><br>
-    <input th:type="${aladin != null ? 'hidden' : 'text'}" name="isbn" id="isbn" th:value="${isbn}" /><br>
-    <input th:type="${aladin != null ? 'hidden' : 'text'}" name="isbn13" id="isbn13" th:value="${isbn13}" /><br>
-    <label for="productName">상품명 : </label><input type="text" name="productName" id="productName" th:value="${productName}"/><br>
+    <input th:type="${aladin != null ? 'hidden' : 'text'}" name="isbn" id="isbn" th:value="${isbn}"  placeholder="isbn"/><br>
+    <input th:type="${aladin != null ? 'hidden' : 'text'}" name="isbn13" id="isbn13" th:value="${isbn13}" placeholder="isbn13"/><br>
+    <label for="productName">상품명 : </label><input type="text" name="productName" id="productName" th:value="${productName}" placeholder="상품명"/><br>
     <label for="priceStandard">정가 : </label><input th:type="${aladin != null ? 'hidden' : 'number'}" name="productPriceStandard" id="priceStandard" th:value="${priceStandard}" required/><br>
     <label for="priceSales">판매가 : </label><input type="number" th:value="${priceSales}" name="productPriceSales" id="priceSales" onchange="calculateDiscount()" required/><br>
     <label for="discount"> 할인율 : </label><span id="discount"></span><br>
