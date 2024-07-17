@@ -1,11 +1,14 @@
 package com.nhnacademy.codequestweb.request.auth;
 
 import jakarta.validation.constraints.*;
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDate;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class ClientRegisterRequestDto {
     @NotNull
     @Email(message = "이메일 형식이 아닙니다.")

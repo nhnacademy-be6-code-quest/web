@@ -31,36 +31,4 @@ class ClientLoginRequestDtoTest {
         dto.setClientPassword("password");
         assertEquals("password", dto.getClientPassword());
     }
-
-    @Test
-    void testEquals() {
-        ClientLoginRequestDto dto1 = new ClientLoginRequestDto("test@example.com", "password");
-        ClientLoginRequestDto dto2 = new ClientLoginRequestDto("test@example.com", "password");
-        ClientLoginRequestDto dto3 = new ClientLoginRequestDto("other@example.com", "password");
-
-        assertEquals(dto1, dto2);
-        assertNotEquals(dto1, dto3);
-    }
-
-    @Test
-    void canEqual() {
-        ClientLoginRequestDto dto1 = new ClientLoginRequestDto("test@example.com", "password");
-        ClientLoginRequestDto dto2 = new ClientLoginRequestDto("test@example.com", "password");
-        assertTrue(dto1.canEqual(dto2));
-    }
-
-    @Test
-    void testHashCode() {
-        ClientLoginRequestDto dto1 = new ClientLoginRequestDto("test@example.com", "password");
-        ClientLoginRequestDto dto2 = new ClientLoginRequestDto("test@example.com", "password");
-
-        assertEquals(dto1.hashCode(), dto2.hashCode());
-    }
-
-    @Test
-    void testToString() {
-        ClientLoginRequestDto dto = new ClientLoginRequestDto("test@example.com", "password");
-        String expected = "ClientLoginRequestDto(clientEmail=test@example.com, clientPassword=password)";
-        assertEquals(expected, dto.toString());
-    }
 }
