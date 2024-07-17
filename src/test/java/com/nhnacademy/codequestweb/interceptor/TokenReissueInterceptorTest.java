@@ -2,8 +2,6 @@ package com.nhnacademy.codequestweb.interceptor;
 
 import com.nhnacademy.codequestweb.client.auth.AuthClient;
 import com.nhnacademy.codequestweb.response.auth.TokenResponseDto;
-import com.nhnacademy.codequestweb.utils.CookieUtils;
-import com.nhnacademy.codequestweb.utils.JwtUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

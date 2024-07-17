@@ -16,6 +16,8 @@ import org.springframework.web.servlet.HandlerInterceptor;
 @Slf4j
 @Component
 public class TokenReissueInterceptor implements HandlerInterceptor {
+    private static final String ACCESS = "access";
+    private static final String REFRESH = "refresh";
     private final AuthClient authClient;
 
     public TokenReissueInterceptor(AuthClient authClient) {
@@ -24,19 +26,19 @@ public class TokenReissueInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String access = CookieUtils.getCookieValue(request, "access");
+        String access = CookieUtils.getCookieValue(request, ACCESS);
         if (access != null && JwtUtil.isTokenExpired(access)) {
             log.info("is expired (pre)");
             HttpHeaders headers = new HttpHeaders();
-            headers.set("access", CookieUtils.getCookieValue(request, "access"));
-            headers.set("refresh", CookieUtils.getCookieValue(request, "refresh"));
+            headers.set(ACCESS, CookieUtils.getCookieValue(request, ACCESS));
+            headers.set(REFRESH, CookieUtils.getCookieValue(request, REFRESH));
             ResponseEntity<TokenResponseDto> reissueResponse = authClient.reissue(headers);
             if (reissueResponse.getStatusCode().is2xxSuccessful() && reissueResponse.getBody() != null) {
                 String newAccess = reissueResponse.getBody().getAccess();
                 String newRefresh = reissueResponse.getBody().getRefresh();
 
                 // 새 액세스 토큰으로 쿠키 업데이트
-                Cookie accessCookie = new Cookie("access", newAccess);
+                Cookie accessCookie = new Cookie(ACCESS, newAccess);
                 accessCookie.setHttpOnly(true);
                 accessCookie.setSecure(true);
                 accessCookie.setPath("/");
@@ -44,7 +46,7 @@ public class TokenReissueInterceptor implements HandlerInterceptor {
                 response.addCookie(accessCookie);
 
                 // 새 리프레시 토큰으로 쿠키 업데이트
-                Cookie refreshCookie = new Cookie("refresh", newRefresh);
+                Cookie refreshCookie = new Cookie(REFRESH, newRefresh);
                 refreshCookie.setHttpOnly(true);
                 refreshCookie.setSecure(true);
                 refreshCookie.setPath("/");
@@ -68,9 +70,9 @@ public class TokenReissueInterceptor implements HandlerInterceptor {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                if (cookie.getName().equals("access")) {
+                if (cookie.getName().equals(ACCESS)) {
                     cookie.setValue(newAccess);
-                } else if (cookie.getName().equals("refresh")) {
+                } else if (cookie.getName().equals(REFRESH)) {
                     cookie.setValue(newRefresh);
                 }
             }
@@ -78,8 +80,8 @@ public class TokenReissueInterceptor implements HandlerInterceptor {
     }
 
     private void removeCookie(HttpServletResponse response) {
-        Cookie access = new Cookie("access", null);
-        Cookie refresh = new Cookie("refresh", null);
+        Cookie access = new Cookie(ACCESS, null);
+        Cookie refresh = new Cookie(REFRESH, null);
         access.setMaxAge(0);
         refresh.setMaxAge(0);
         access.setPath("/");
