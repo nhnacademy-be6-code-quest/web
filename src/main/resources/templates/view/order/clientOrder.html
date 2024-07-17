@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="clientOrder2Fragment()">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" th:fragment="clientOrderFragment()">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -31,7 +31,7 @@
     </style>
 </head>
 <body>
-<form th:action="@{/client/order-discount}" th:object="${clientOrderForm}" method="post">
+<form th:action="@{/client/order-discount}" th:object="${clientOrderForm}" method="post" onsubmit="return checkValidate(this)">
     <h1></h1>
     <div class="sub-container">
         <h3>주문 상품 목록</h3>
@@ -86,10 +86,10 @@
                                                  data-option-product-price = '0'">
                                 == 포장지 선택 ==
                             </option>
-                            <option th:each="packageDto : ${packageList}" th:value="${packageDto.productId}" th:text="${packageDto.packageName} + ' - ' + ${packageDto.productPriceSales} + '원'"
+                            <option th:each="packageDto : ${packageList}" th:value="${packageDto.productId}" th:text="${packageDto.packagingName} + ' - ' + ${packageDto.productPriceSales} + '원'"
                                     th:attr="data-option-product-id = ${packageDto.productId},
                                                  data-option-product-price=${packageDto.productPriceSales},
-                                                 data-option-product-name=${packageDto.packageName}"
+                                                 data-option-product-name=${packageDto.packagingName}"
                             >
                             </option>
                         </select>
@@ -396,6 +396,33 @@
         const productTotalAmount = parseInt(document.getElementById("productTotalAmount").value);
         // 최종 결제 금액
         document.getElementById("payAmount").value = productTotalAmount + shippingFee;
+    }
+
+    function checkValidate(form){
+        let isValid = true;
+        let errorMessage = '';
+
+        if(isEmpty(document.getElementById("addressZipCode")) || isEmpty(document.getElementById("deliveryAddress"))) {
+            isValid = false;
+            errorMessage += '(필수)주소를 선택해주세요\n';
+        }
+
+        if(isEmpty(document.getElementById("phoneNumber"))){
+            isValid = false;
+            errorMessage += '(필수)핸드폰 번호를 선택해 주세요';
+        }
+
+        if (isValid) {
+            return true;
+        } else {
+            alert(errorMessage);
+            return false;
+        }
+    }
+
+    function isEmpty(obj){
+        console.log("isEmpty: ");
+        return obj.value === null || obj.value === "";
     }
 
 </script>

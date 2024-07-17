@@ -50,32 +50,28 @@ public class OrderController {
         return orderService.viewClientOrder(req, model, orderItemDtoStringList);
     }
 
+    // 회원 쿠폰 및 포인트 적용 페이지
     @PostMapping("/client/order-discount")
-    public String viewClientOrderDiscountForm(@ModelAttribute ClientOrderForm clientOrderForm, Model model, HttpServletRequest req, HttpSession session){
-        session.setAttribute("clientOrderForm", clientOrderForm);
+    public String viewClientOrderDiscountForm(@ModelAttribute ClientOrderForm clientOrderForm, Model model, HttpServletRequest req){
+        req.getSession().setAttribute("clientOrderForm", clientOrderForm);
         return orderService.viewClientOrderDiscount(req, model);
     }
 
+    // 회원 결제수단 선택 페이지
     @PostMapping("/client/order-pay-method")
-    public String viewClientOrderPayMethodForm(@ModelAttribute ClientOrderDiscountForm clientOrderDiscountForm, Model model, HttpServletRequest req, HttpSession session){
-        session.setAttribute("clientOrderDiscountForm", clientOrderDiscountForm);
+    public String viewClientOrderPayMethodForm(@ModelAttribute ClientOrderDiscountForm clientOrderDiscountForm, Model model, HttpServletRequest req){
+        req.getSession().setAttribute("clientOrderDiscountForm", clientOrderDiscountForm);
         return orderService.viewClientOrderPayMethod(req, model);
     }
 
     @PostMapping("/client/order/process")
-    public String processClientOrderPayMethodForm(@ModelAttribute ClientOrderPayMethodForm clientOrderPayMethodForm, HttpServletRequest request){
-        request.getSession().setAttribute("clientOrderPayMethodForm", clientOrderPayMethodForm);
-        return String.format("redirect:/client/order/%d/payment", orderService.createClientOrder(request));
-    }
-
-    // 회원 주문 생성 feign 호출
-    @PostMapping("/api/client/orders")
-    public String tryClientOrder(HttpServletRequest request, @ModelAttribute ClientOrderCreateForm clientOrderCreateForm){
-        return String.format("redirect:/client/order/%d/payment", orderService.createClientOrder(request, clientOrderCreateForm));
+    public String processClientOrderPayMethodForm(@ModelAttribute ClientOrderPayMethodForm clientOrderPayMethodForm, HttpServletRequest req){
+        req.getSession().setAttribute("clientOrderPayMethodForm", clientOrderPayMethodForm);
+        return String.format("redirect:/client/order/%d/payment", orderService.createClientOrder(req));
     }
 
     // 비회원 주문 생성 feign 호출
-    @PostMapping("/api/non-client/orders")
+    @PostMapping("/non-client/order/process")
     public String tryNonClientOrder(HttpServletRequest request, @ModelAttribute NonClientOrderForm nonClientOrderForm){
         return String.format("redirect:/client/order/%d/payment", orderService.createNonClientOrder(request, nonClientOrderForm));
     }
