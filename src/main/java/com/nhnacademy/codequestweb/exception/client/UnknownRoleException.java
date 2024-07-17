@@ -1,4 +1,4 @@
-package com.nhnacademy.codequestweb.response.auth;
+package com.nhnacademy.codequestweb.exception.client;
 
 public class UnknownRoleException extends RuntimeException {
     public UnknownRoleException(String message) {

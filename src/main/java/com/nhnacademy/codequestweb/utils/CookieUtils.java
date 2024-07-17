@@ -11,6 +11,8 @@ import java.util.List;
 import org.springframework.http.HttpHeaders;
 
 public class CookieUtils {
+    private static final String AUTHORIZATION = "access";
+
     private CookieUtils() {
         throw new IllegalStateException("Utility class");
     }
@@ -27,15 +29,14 @@ public class CookieUtils {
     }
 
     public static boolean isGuest(HttpServletRequest req) {
-        String accessToken = CookieUtils.getCookieValue(req, "access");
+        String accessToken = CookieUtils.getCookieValue(req, AUTHORIZATION);
         String refreshToken = CookieUtils.getCookieValue(req, "refresh");
         return accessToken == null && refreshToken == null;
     }
 
     public static HttpHeaders setHeader(HttpServletRequest req){
         HttpHeaders headers = new HttpHeaders();
-        headers.set("access", CookieUtils.getCookieValue(req, "access"));
-//        headers.set("refresh", CookieUtils.getCookieValue(req, "refresh"));
+        headers.set(AUTHORIZATION, CookieUtils.getCookieValue(req, AUTHORIZATION));
         return headers;
     }
 

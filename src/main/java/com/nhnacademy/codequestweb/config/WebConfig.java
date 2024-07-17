@@ -1,7 +1,6 @@
 package com.nhnacademy.codequestweb.config;
 
 import com.nhnacademy.codequestweb.client.auth.AuthClient;
-import com.nhnacademy.codequestweb.client.product.category.CategoryClient;
 import com.nhnacademy.codequestweb.interceptor.CategoryInterceptor;
 import com.nhnacademy.codequestweb.interceptor.LoginInfoInterceptor;
 import com.nhnacademy.codequestweb.interceptor.TokenReissueInterceptor;
