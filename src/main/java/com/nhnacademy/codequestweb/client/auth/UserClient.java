@@ -59,6 +59,7 @@ public interface UserClient {
 
     @PutMapping("/api/client/recovery-account")
     ResponseEntity<String> recoveryClient(@RequestBody ClientRecoveryRequestDto clientRecoveryRequestDto);
+
     @PutMapping("/api/client/recovery-oauth-account")
     ResponseEntity<String> recoveryOauthClient(@RequestBody String email);
 }
