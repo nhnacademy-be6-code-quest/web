@@ -155,19 +155,20 @@
             changeOrderStatusButton.textContent = '배송중 처리';
             orderStatusChangeForm.action = "/order/" + button.getAttribute('data-order-id') + "/update?status=배송중&orderNo=" + [[${currentPage}]];
             orderStatusChangeForm.method = "post";
+            orderStatusChangeForm.append(changeOrderStatusButton);
         }
         else if(orderStatus === '배송중'){
             changeOrderStatusButton.textContent = '배송완료 처리';
             orderStatusChangeForm.action = "/order/" + button.getAttribute('data-order-id') + "/update?status=배송완료&orderNo=" + [[${currentPage}]];
             orderStatusChangeForm.method = "post";
+            orderStatusChangeForm.append(changeOrderStatusButton);
         }
         else if(orderStatus === '반품요청'){
             changeOrderStatusButton.textContent = '반품요청 수락';
             orderStatusChangeForm.action = "/order/" + button.getAttribute('data-order-id') + "/update?status=반품&orderNo=" + [[${currentPage}]];
             orderStatusChangeForm.method = "post";
+            orderStatusChangeForm.append(changeOrderStatusButton);
         }
-
-        orderStatusChangeForm.append(changeOrderStatusButton);
 
         // 모달 닫기 기능
         const closeBtn = document.getElementsByClassName("close")[0];
