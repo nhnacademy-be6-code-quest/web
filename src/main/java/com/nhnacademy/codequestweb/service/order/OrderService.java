@@ -206,7 +206,7 @@ public class OrderService {
         model.addAttribute("view", "nonClientOrder");
 
         model.addAttribute("nonClientOrderForm", nonClientOrderForm);
-        model.addAttribute(PACKAGE_LIST, packagingService.getPackaging(0).getBody());
+        model.addAttribute(PACKAGE_LIST, packagingService.getPackagingList(0).getBody());
         model.addAttribute(SHIPPING_POLICY, shippingPolicy);
 
 
@@ -242,7 +242,7 @@ public class OrderService {
             );
         });
 
-        List<PackagingGetResponseDto> packageList = packagingService.getPackaging(0).getBody();
+        List<PackagingGetResponseDto> packageList = packagingService.getPackagingList(0).getBody();
 
         model.addAttribute("view", "nonClientOrder");
 
@@ -557,7 +557,7 @@ public class OrderService {
         model.addAttribute("view", "clientOrder");
 
         model.addAttribute(CLIENT_ORDER_FORM, clientOrderForm);
-        model.addAttribute(PACKAGE_LIST, packagingService.getPackaging(0).getBody());
+        model.addAttribute(PACKAGE_LIST, packagingService.getPackagingList(0).getBody());
         model.addAttribute(SHIPPING_POLICY, shippingPolicy);
         model.addAttribute("deliveryAddressList", deliveryAddressList);
         model.addAttribute("phoneNumberList", phoneNumberList);
