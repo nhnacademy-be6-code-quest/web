@@ -53,13 +53,12 @@ public class AdminPackagingController {
         model.addAttribute("totalPage", response.getBody().getTotalPages());
         model.addAttribute("view", "adminPage");
         model.addAttribute("adminPage", "packagingListPage");
-        model.addAttribute("url", productState);
+        model.addAttribute("url", "?");
         return "index";
     }
 
     @GetMapping("/registerForm")
     public String registerForm(HttpServletRequest req) {
-//        model.addAttribute("action", "register");
         req.setAttribute("action", "register");
         req.setAttribute("view", "adminPage");
         req.setAttribute("adminPage", "packagingRegisterForm");
