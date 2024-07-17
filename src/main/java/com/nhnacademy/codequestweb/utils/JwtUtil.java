@@ -9,6 +9,10 @@ import java.util.Date;
 
 @Slf4j
 public class JwtUtil {
+    private JwtUtil() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static boolean isTokenExpired(String token) {
         try {
 //            log.info("token: {}", token);
@@ -28,7 +32,7 @@ public class JwtUtil {
         }
     }
 
-    private static Date extractExpirationDate(String token) throws Exception {
+    private static Date extractExpirationDate(String token) {
         String[] parts = token.split("\\.");
         if (parts.length != 3) {
             throw new MalformedJwtException("JWT 문자열이 유효하지 않습니다.");
