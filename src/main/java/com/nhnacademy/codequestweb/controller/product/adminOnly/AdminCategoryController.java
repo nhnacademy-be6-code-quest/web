@@ -26,6 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -164,6 +165,20 @@ public class AdminCategoryController {
         categoryConfig.update(categoryNodeResponseDto);
         log.info("Category updated");
         return ResponseEntity.ok("Category updated");
+    }
+
+
+    @DeleteMapping("/admin/categories/delete/{categoryId}")
+    public ResponseEntity<Void> deleteCategory(@PathVariable("categoryId") Long categoryId, HttpServletRequest req) {
+        try {
+            return categoryService.deleteCategory(CookieUtils.setHeader(req), categoryId);
+        }catch (FeignException e){
+            log.warn(e.getMessage());
+            return switch (e.status()) {
+                case 409 -> ResponseEntity.status(409).body(null);
+                default -> ResponseEntity.status(500).body(null);
+            };
+        }
     }
 
 

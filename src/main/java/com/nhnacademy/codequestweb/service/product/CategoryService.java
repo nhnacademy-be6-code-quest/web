@@ -26,6 +26,10 @@ public class CategoryService {
         return categoryClient.updateCategory(headers, categoryUpdateRequestDto);
     }
 
+    public ResponseEntity<Void> deleteCategory(HttpHeaders headers, Long categoryId) {
+        return categoryClient.deleteCategory(headers, categoryId);
+    }
+
     public ResponseEntity<Page<CategoryGetResponseDto>> getCategories(Integer page, Boolean desc, String sort) {
         return categoryClient.getAllCategories(page, desc, sort);
     }

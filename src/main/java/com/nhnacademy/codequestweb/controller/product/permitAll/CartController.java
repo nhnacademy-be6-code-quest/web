@@ -118,10 +118,10 @@ public class CartController {
 
         for (CartRequestDto cartItem : cartListOfCookie) {
             if (cartItem.productId().equals(cartRequestDto.productId())) {
-                cartDto = CartRequestDto.builder()
-                        .productId(cartItem.productId())
-                        .quantity(cartItem.quantity() + cartRequestDto.quantity())
-                        .build();
+//                cartDto = CartRequestDto.builder()
+//                        .productId(cartItem.productId())
+//                        .quantity(cartItem.quantity() + cartRequestDto.quantity())
+//                        .build();
                 cartRequestDtoToDelete.add(cartItem);
             }
         }

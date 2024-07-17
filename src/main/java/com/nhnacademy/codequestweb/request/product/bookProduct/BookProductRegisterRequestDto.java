@@ -7,54 +7,106 @@ import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 
 @Builder
-public record BookProductRegisterRequestDto(
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class BookProductRegisterRequestDto
+//        (
+//        @NotBlank
+//        @NotNull
+//        String title,
+//
+//        @NotNull
+//        String publisher,
+//
+//        @NotNull
+//        String author,
+//
+//        @NotNull
+//        LocalDate pubDate,
+//
+//        @Length(min = 10, max =10) String isbn,
+//
+//        @Length(min = 13, max =13) String isbn13,
+//
+//        String cover,
+//
+//        @NotNull
+//        @NotBlank
+//        @Length(min = 2)
+//        String productName,
+//
+//        boolean packable,
+//
+//        @NotNull
+//        String productDescription,
+//
+//        @Min(0)
+//        long productPriceStandard,
+//
+//        @Min(0)
+//        long productPriceSales,
+//
+//        @Min(0)
+//        long productInventory,
+//
+//        @NotNull(message = "{must.have.category}")
+//        @Size(min = 1, message = "{must.have.category}")
+//        @Size(max =10, message = "{}")
+//        Set<String> categories,
+//        Set<String> tags
+//)
+{
         @NotBlank
         @NotNull
-        String title,
+        String title;
 
         @NotNull
-        String publisher,
+        String publisher;
 
         @NotNull
-        String author,
+        String author;
 
         @NotNull
-        LocalDate pubDate,
+        LocalDate pubDate;
 
-        @NotNull
-        @Length(min = 10, max =10) String isbn,
+        @Length(min = 10, max =10) String isbn;
 
-        @Length(min = 13, max =13) String isbn13,
+        @Length(min = 13, max =13) String isbn13;
 
-        @NotNull
-        String cover,
+        String cover;
 
         @NotNull
         @NotBlank
         @Length(min = 2)
-        String productName,
+        String productName;
 
-        boolean packable,
+        boolean packable;
 
         @NotNull
-        String productDescription,
+        String productDescription;
 
         @Min(0)
-        long productPriceStandard,
+        long productPriceStandard;
 
         @Min(0)
-        long productPriceSales,
+        long productPriceSales;
 
         @Min(0)
-        long productInventory,
+        long productInventory;
 
         @NotNull(message = "{must.have.category}")
         @Size(min = 1, message = "{must.have.category}")
         @Size(max =10, message = "{}")
-        Set<String> categories,
-        Set<String> tags
-) {}
+        Set<String> categories;
+        Set<String> tags;
+}

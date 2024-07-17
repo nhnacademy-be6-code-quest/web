@@ -13,6 +13,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,6 +32,8 @@ public interface CategoryClient {
     ResponseEntity<CategoryUpdateResponseDto> updateCategory(@RequestHeader HttpHeaders headers, @Valid @RequestBody
     CategoryUpdateRequestDto categoryUpdateRequestDto);
 
+    @DeleteMapping("/product/admin/category/delete/{categoryId}")
+    ResponseEntity<Void> deleteCategory(@RequestHeader HttpHeaders headers, @PathVariable("categoryId") Long categoryId);
 
     @GetMapping("/product/categories/all")
     ResponseEntity<Page<CategoryGetResponseDto>> getAllCategories(@RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "desc", required = false) Boolean desc, @RequestParam(name = "sort", required = false) String sort);
