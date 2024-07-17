@@ -1,6 +1,7 @@
 package com.nhnacademy.codequestweb.controller.product.adminOnly;
 
 
+import com.nhnacademy.codequestweb.request.product.ProductStateUpdateRequestDto;
 import com.nhnacademy.codequestweb.request.product.bookProduct.BookProductRegisterRequestDto;
 import com.nhnacademy.codequestweb.request.product.bookProduct.BookProductUpdateRequestDto;
 import com.nhnacademy.codequestweb.response.product.book.AladinBookResponseDto;
@@ -9,12 +10,18 @@ import com.nhnacademy.codequestweb.response.product.common.ProductRegisterRespon
 import com.nhnacademy.codequestweb.response.product.common.ProductUpdateResponseDto;
 import com.nhnacademy.codequestweb.response.product.productCategory.ProductCategory;
 import com.nhnacademy.codequestweb.response.product.tag.Tag;
+import com.nhnacademy.codequestweb.response.review.ReviewInfoResponseDto;
+import com.nhnacademy.codequestweb.service.image.ImageService;
 import com.nhnacademy.codequestweb.service.product.BookProductService;
+import com.nhnacademy.codequestweb.service.review.ReviewService;
 import com.nhnacademy.codequestweb.utils.BookPageUtils;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
+import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -37,6 +44,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Controller
@@ -44,6 +52,10 @@ import com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter;
 @RequestMapping("/admin/product/book")
 public class AdminBookController {
     private final BookProductService bookProductService;
+
+    private final ImageService imageService;
+
+    private final ReviewService reviewService;
 
     private final MessageSource messageSource;
 
@@ -54,15 +66,32 @@ public class AdminBookController {
         binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
     }
 
-    @GetMapping("/register")
-    public String registerForm(HttpServletRequest req){
+    @GetMapping("/register/aladin")
+    public String registerAladinForm(HttpServletRequest req){
         req.setAttribute("view", "adminPage");
         req.setAttribute("adminPage", "bookProductRegisterForm");
         req.setAttribute("register", true);
+        req.setAttribute("aladin", true);
         req.setAttribute("action", "register");
         req.setAttribute("activeSection", "product");
         return "index";
     }
+
+    @GetMapping("/register/self")
+    public String registerSelfForm(HttpServletRequest req){
+        req.setAttribute("view", "adminPage");
+//        req.setAttribute("adminPage", "selfMadeBookRegisterForm");
+        req.setAttribute("adminPage", "bookProductRegisterForm");
+
+        req.setAttribute("register", true);
+        req.setAttribute("self", true);
+
+        req.setAttribute("action", "register");
+        req.setAttribute("activeSection", "product");
+        return "index";
+    }
+
+
 
     @GetMapping("/update/{productId}")
     public String updateForm(HttpServletRequest req, @PathVariable("productId") Long productId, Model model){
@@ -73,15 +102,10 @@ public class AdminBookController {
         String markdown = flexmarkHtmlConverter.convert(description);
         log.info("markdown: {}", markdown);
         List<String> categoryNameSet = bookProductGetResponseDto.categorySet().stream().map(ProductCategory::categoryName).toList();
-        StringJoiner categoryJoiner = new StringJoiner(",");
-        for (String categoryName : categoryNameSet) {
-            categoryJoiner.add(categoryName);
-        }
-
         List<String> tagNameSet = bookProductGetResponseDto.tagSet().stream().map(Tag::tagName).toList();
-        StringJoiner tagJoiner = new StringJoiner(",");
-        for (String tagName : tagNameSet) {
-            tagJoiner.add(tagName);
+
+        if (bookProductGetResponseDto.isbn() != null && !bookProductGetResponseDto.isbn().isBlank()){
+            model.addAttribute("aladin", true);
         }
 
         model.addAttribute("update", true);
@@ -98,14 +122,25 @@ public class AdminBookController {
         model.addAttribute("priceSales", bookProductGetResponseDto.productPriceSales());
         model.addAttribute("productName", bookProductGetResponseDto.productName());
         model.addAttribute("inventory", bookProductGetResponseDto.productInventory());
-        model.addAttribute("categorySet", categoryJoiner.toString());
-        model.addAttribute("tagSet", tagJoiner.toString());
+        model.addAttribute("categorySet", categoryNameSet);
+        model.addAttribute("tagSet", tagNameSet);
         model.addAttribute("initialValue", markdown);
         model.addAttribute("view", "adminPage");
         model.addAttribute("adminPage", "bookProductRegisterForm");
+        model.addAttribute("state", bookProductGetResponseDto.productState());
         return "index";
     }
 
+    @GetMapping("/isbnCheck")
+    public ResponseEntity<Boolean> checkIsbnExists(@RequestParam("isbn") String isbn){
+        try {
+            ResponseEntity<Boolean> result = bookProductService.isbnCheck(isbn);
+            log.info("isbn: {} exist : {}", isbn, result.getBody());
+            return bookProductService.isbnCheck(isbn);
+        } catch (FeignException e) {
+            return null;
+        }
+    }
 
     //register form 외에서는 호출 불가함. 자바스크립트로 통제해놓음
     @GetMapping("/aladinList")
@@ -149,9 +184,13 @@ public class AdminBookController {
 
 
     @PostMapping("/register")
-    public String saveBook(@RequestParam("title")String title, @ModelAttribute @Valid BookProductRegisterRequestDto dto, HttpServletRequest req, Model model){
-        log.info("title: {}", title);
-        log.info("dto : {}", dto);
+    public String saveBook(@RequestParam(name = "coverImage", required = false) MultipartFile file, @ModelAttribute @Valid BookProductRegisterRequestDto dto, HttpServletRequest req, Model model){
+        if (file != null && !file.isEmpty()){
+            log.info("image exist!");
+            String imageUrl = imageService.uploadImage(file);
+            dto.setCover(imageUrl);
+        }
+        log.info("dto date: {}", dto.getPubDate());
         String encodedData = new String(dto.toString().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
         log.info("Encoded data: {}", encodedData);
         ResponseEntity<ProductRegisterResponseDto> responseEntity = bookProductService.saveBook(CookieUtils.setHeader(req), dto);
@@ -203,6 +242,8 @@ public class AdminBookController {
         BookPageUtils.setBookPage(response, page, sort, desc, model);
         model.addAttribute("mainText", "관리자 페이지 - 제목 : " + title);
         model.addAttribute("url", req.getRequestURI()+ "?title=" + title + "&");
+        model.addAttribute("view", "adminPage");
+        model.addAttribute("adminPage", "productListPage");
         model.addAttribute("admin", true);
         return "index";
     }
@@ -222,6 +263,8 @@ public class AdminBookController {
         BookPageUtils.setBookPage(response, page, sort, desc, model);
         model.addAttribute("mainText", "관리자 페이지 - 태그 : " + tagNameSet);
         model.addAttribute("url", req.getRequestURI() + "?");
+        model.addAttribute("view", "adminPage");
+        model.addAttribute("adminPage", "productListPage");
         model.addAttribute("admin", true);
         return "index";
     }
@@ -240,6 +283,8 @@ public class AdminBookController {
         BookPageUtils.setBookPage(response, page, sort, desc, model);
         model.addAttribute("mainText", "관리자 페이지 - 카테고리 필터");
         model.addAttribute("url", req.getRequestURI()+ "?");
+        model.addAttribute("view", "adminPage");
+        model.addAttribute("adminPage", "productListPage");
         model.addAttribute("admin", true);
         return "index";
     }
@@ -256,9 +301,47 @@ public class AdminBookController {
         BookPageUtils.setBookPage(response, page, sort, desc, model);
         model.addAttribute("mainText", "관리자 페이지 - 즐겨찾기");
         model.addAttribute("url", req.getRequestURI() + "?");
+        model.addAttribute("view", "adminPage");
+        model.addAttribute("adminPage", "productListPage");
         model.addAttribute("admin", true);
         return "index";
     }
 
+    @GetMapping("/{productId}")
+    public String book(
+            HttpServletRequest req,
+            @PathVariable("productId") long productId,
+            @RequestParam(defaultValue = "0") int page,
+            Model model) {
+        ResponseEntity<BookProductGetResponseDto> response = bookProductService.getSingleBookInfo(CookieUtils.setHeader(req), productId);
+        BookProductGetResponseDto bookProductGetResponseDto = response.getBody();
+        Set<ProductCategory> categorySet = bookProductGetResponseDto.categorySet();
+        List<List<ProductCategory>> allCategoryList = new ArrayList<>();
+        for (ProductCategory category : categorySet) {
+            List<ProductCategory> parentCategoryList = new ArrayList<>();
+            parentCategoryList.add(category);
+            ProductCategory parent = category.parentProductCategory();
+            while(parent != null) {
+                parentCategoryList.add(parent);
+                parent = parent.parentProductCategory();
+            }
+            parentCategoryList.sort(Comparator.comparing(ProductCategory::productCategoryId));
+            allCategoryList.add(parentCategoryList);
+        }
 
+        Double totalReviewScore = reviewService.getReviewScore(productId);
+        Page<ReviewInfoResponseDto> reviewPage = reviewService.getProductReviewPage(0, 10, productId);
+
+        model.addAttribute("admin", true);
+        model.addAttribute("book", bookProductGetResponseDto);
+        model.addAttribute("listOfCategoryList", allCategoryList);
+        model.addAttribute("view", "adminPage");
+        model.addAttribute("adminPage", "productBookDetail");
+        model.addAttribute("averageScore", totalReviewScore);
+        model.addAttribute("page", page);
+        model.addAttribute("totalPage", reviewPage.getTotalPages());
+        model.addAttribute("reviews", reviewPage.getContent());
+
+        return "index";
+    }
 }

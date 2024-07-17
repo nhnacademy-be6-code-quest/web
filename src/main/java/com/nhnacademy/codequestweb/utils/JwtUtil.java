@@ -15,12 +15,12 @@ public class JwtUtil {
 
     public static boolean isTokenExpired(String token) {
         try {
-            log.info("token: {}", token);
+//            log.info("token: {}", token);
             Date expirationDate = extractExpirationDate(token);
             Date now = new Date();
             long differenceInMillis = expirationDate.getTime() - now.getTime();
 
-            log.info("expiration date is {}, now {}", expirationDate, now);
+//            log.info("expiration date is {}, now {}", expirationDate, now);
             // 예를 들어, 5초의 여유를 두고 만료 여부를 판단
             return differenceInMillis < 5000;
         } catch (ExpiredJwtException e) {

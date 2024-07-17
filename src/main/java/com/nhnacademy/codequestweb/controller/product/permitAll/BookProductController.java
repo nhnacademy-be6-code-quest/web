@@ -41,13 +41,13 @@ public class BookProductController {
     private final ReviewService reviewService;
     private final BookProductService bookProductService;
 
-    @GetMapping("/product/books/{bookId}")
+    @GetMapping("/product/books/{productId}")
     public String book(
             HttpServletRequest req,
-            @PathVariable long bookId,
+            @PathVariable("productId") long productId,
             @RequestParam(defaultValue = "0") int page,
             Model model) {
-        ResponseEntity<BookProductGetResponseDto> response = bookProductService.getSingleBookInfo(CookieUtils.setHeader(req), bookId);
+        ResponseEntity<BookProductGetResponseDto> response = bookProductService.getSingleBookInfo(CookieUtils.setHeader(req), productId);
         BookProductGetResponseDto bookProductGetResponseDto = response.getBody();
         Set<ProductCategory> categorySet = bookProductGetResponseDto.categorySet();
         List<List<ProductCategory>> allCategoryList = new ArrayList<>();
@@ -63,9 +63,10 @@ public class BookProductController {
             allCategoryList.add(parentCategoryList);
         }
 
-        Double totalReviewScore = reviewService.getReviewScore(bookId);
-        Page<ReviewInfoResponseDto> reviewPage = reviewService.getProductReviewPage(0, 10, bookId);
+        Double totalReviewScore = reviewService.getReviewScore(productId);
+        Page<ReviewInfoResponseDto> reviewPage = reviewService.getProductReviewPage(0, 10, productId);
 
+        model.addAttribute("admin", false);
         model.addAttribute("view", "productBookDetail");
         model.addAttribute("book", bookProductGetResponseDto);
         model.addAttribute("listOfCategoryList", allCategoryList);
@@ -80,7 +81,6 @@ public class BookProductController {
         }else{
             model.addAttribute("orderURL", "/client/order");
         }
-        log.info("header of get : {}", CookieUtils.setHeader(req));
         return "index";
     }
 

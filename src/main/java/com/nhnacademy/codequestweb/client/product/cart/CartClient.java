@@ -1,5 +1,6 @@
 package com.nhnacademy.codequestweb.client.product.cart;
 
+import com.nhnacademy.codequestweb.request.product.cart.CartCheckoutRequestDto;
 import com.nhnacademy.codequestweb.request.product.cart.CartRequestDto;
 import com.nhnacademy.codequestweb.response.product.common.CartGetResponseDto;
 import com.nhnacademy.codequestweb.response.product.common.SaveCartResponseDto;
@@ -59,4 +60,9 @@ public interface CartClient {
     @DeleteMapping("/client/cart/all")
     ResponseEntity<Void> clearClientAllCart(
             @RequestHeader HttpHeaders headers);
+
+    @PutMapping("/client/cart/checkout")
+    ResponseEntity<Void> clearCartByCheckout(
+            @RequestHeader HttpHeaders headers,
+            @RequestBody @Valid CartCheckoutRequestDto requestDto);
 }

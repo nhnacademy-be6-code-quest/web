@@ -41,14 +41,14 @@ public class CartService {
 
     public ResponseEntity<SaveCartResponseDto> updateGuestCartItem(CartRequestDto cartRequestDto){
         return cartClient.updateGuestCartItem(cartRequestDto);
-    };
+    }
 
     public ResponseEntity<Void> deleteClientCartItem(HttpHeaders headers, Long productId){
         return cartClient.deleteClientCartItem(headers, productId);
-    };
+    }
 
     public ResponseEntity<Void> clearClientAllCart(HttpHeaders headers){
         return cartClient.clearClientAllCart(headers);
-    };
+    }
 
 }

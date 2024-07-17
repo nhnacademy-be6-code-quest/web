@@ -9,6 +9,7 @@ import com.nhnacademy.codequestweb.request.product.common.InventorySetRequestDto
 import com.nhnacademy.codequestweb.response.product.common.ProductUpdateResponseDto;
 import com.nhnacademy.codequestweb.service.product.ProductService;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
+import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -44,10 +45,14 @@ public class ProductController {
         return "view/product/refresh";
     }
 
-    @PutMapping("/state")
-    public String updateBookState(HttpServletRequest req, @ModelAttribute @Valid ProductStateUpdateRequestDto dto){
-        ResponseEntity<ProductUpdateResponseDto> responseEntity = productService.updateProductState(CookieUtils.setHeader(req), dto);
-        return "redirect:/";
+    @PutMapping("/admin/product/state")
+    public ResponseEntity<Void> updateBookState(HttpServletRequest req, @ModelAttribute @Valid ProductStateUpdateRequestDto dto){
+        try {
+            ResponseEntity<ProductUpdateResponseDto> responseEntity = productService.updateProductState(CookieUtils.setHeader(req), dto);
+            return ResponseEntity.ok().build();
+        }catch (FeignException e){
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @PutMapping("/inventory/increase")

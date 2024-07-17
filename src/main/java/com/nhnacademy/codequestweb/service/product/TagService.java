@@ -32,6 +32,10 @@ public class TagService {
         return tagClient.updateTag(headers, dto);
     }
 
+    public ResponseEntity<Void> deleteTag(HttpHeaders headers, Long tagId) {
+        return tagClient.deleteTag(headers, tagId);
+    }
+
     public ResponseEntity<Page<TagGetResponseDto>> getAllTags(Integer page, String sort, Boolean desc){
         return tagClient.getAllTags(page, sort, desc);
     }
