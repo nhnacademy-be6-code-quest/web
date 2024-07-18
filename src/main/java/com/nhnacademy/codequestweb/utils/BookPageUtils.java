@@ -7,7 +7,7 @@ import org.springframework.ui.Model;
 
 public class BookPageUtils {
 
-    public BookPageUtils() {
+    private BookPageUtils() {
         throw new IllegalStateException("Utility class");
     }
 
