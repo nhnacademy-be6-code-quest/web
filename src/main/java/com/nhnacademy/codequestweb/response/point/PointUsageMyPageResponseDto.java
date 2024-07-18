@@ -9,6 +9,6 @@ import lombok.Setter;
 @Setter
 public class PointUsageMyPageResponseDto {
     String pointUsageHistoryDate;
-    Integer pointUsageAmount;
+    Long pointUsageAmount;
     String pointUsageType;
 }

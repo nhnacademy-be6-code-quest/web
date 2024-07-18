@@ -83,7 +83,7 @@ public class OrderService {
         ClientOrderDiscountForm clientOrderDiscountForm = ClientOrderDiscountForm.builder().payAmount(clientOrderForm.getProductTotalAmount() + clientOrderForm.getShippingFee()).build();
 
         // 가용 포인트
-        Integer usablePoint = orderPointClient.findPoint(headers).getTotalPoint();
+        Long usablePoint = orderPointClient.findPoint(headers).getTotalPoint();
 
         // 쿠폰 리스트
         List<CouponOrderResponseDto> couponList = couponClient.findClientCoupon(headers);
@@ -172,7 +172,7 @@ public class OrderService {
         ClientOrderDiscountForm clientOrderDiscountForm = (ClientOrderDiscountForm) req.getSession().getAttribute(CLIENT_ORDER_DISCOUNT_FORM);
 
         // 가용 포인트 및 포인트 적립률
-        Integer pointAccumulationRate = orderPointClient.findPoint(headers).getPointAccumulationRate();
+        Long pointAccumulationRate = orderPointClient.findPoint(headers).getPointAccumulationRate();
 
         // ** 바인딩 객체 **
         Long expectedAccumulatingPoint = Math.round(clientOrderDiscountForm.getPayAmount() * pointAccumulationRate * 0.01);

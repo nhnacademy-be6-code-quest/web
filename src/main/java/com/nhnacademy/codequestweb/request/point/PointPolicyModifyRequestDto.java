@@ -8,5 +8,5 @@ import lombok.Getter;
 @AllArgsConstructor
 public class PointPolicyModifyRequestDto {
     long pointPolicyId;
-    Integer pointValue;
+    Long pointValue;
 }

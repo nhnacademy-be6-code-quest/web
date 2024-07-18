@@ -11,5 +11,5 @@ import lombok.Setter;
 public class PointPolicyRegisterRequestDto {
 
     private String pointAccumulationType;
-    private Integer pointValue;
+    private Long pointValue;
 }

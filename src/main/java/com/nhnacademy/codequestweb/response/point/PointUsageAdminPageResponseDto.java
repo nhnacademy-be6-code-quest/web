@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 public class PointUsageAdminPageResponseDto {
     String pointUsageHistoryDate;
-    Integer pointUsageAmount;
+    Long pointUsageAmount;
     long clientId;
     String pointUsageType;
 }
