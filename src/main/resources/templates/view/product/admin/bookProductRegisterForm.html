@@ -517,7 +517,7 @@
 
     <p id="categoryResult"></p>
     <div id="removeCategoryButtons"></div>
-    <input type="hidden" id="categories" name="categories">
+    <input type="text" id="categories" name="categories" readonly>
     <div th:each="category : ${categorySet}">
         <input type="text" name="categories" th:value="${category}">
         <button th:category="${category}" type="button" th:text="${category} + ' x'" onclick="removeCategory(this.getAttribute('category')), this.remove()"> </button>
@@ -529,7 +529,7 @@
     </div>
     <p id="tagResult"></p>
     <div id="removeTagButtons"></div>
-    <input type="hidden" id="tags" name="tags">
+    <input type="text" id="tags" name="tags" readonly>
 
     <button type="submit" onclick="handleFormSubmit()">등록</button>
 
