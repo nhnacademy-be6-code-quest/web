@@ -31,18 +31,20 @@
     </script>
 </head>
 <body>
-<label for="inputValue">태그 검색 :</label>
-<input type="text" id="inputValue" name="inputValue" required>
-<button onclick="openNewWindowWithParam()">검색</button>
+<div>
+    <label for="inputValue">태그 검색 :</label>
+    <input type="text" id="inputValue" name="inputValue" required>
+    <button onclick="openNewWindowWithParam()">검색</button>
 
     <div th:each="tag : ${tagPage}">
         <span th:text="'태그명 : ' + ${tag.tagName()}"></span>
         <button th:tag="${tag.tagName()}" onclick="sendMessageToParent(this.getAttribute('tag'))">등록</button>
-
-<!--        <div th:each="category : ${categoryNamePage}">-->
-<!--            <span th:text="${category.getValue()}"></span>-->
-<!--            <button th:category="${category.getKey().categoryName()}" onclick="sendMessageToParent(this.getAttribute('category'))">등록</button>-->
-<!--        </div>-->
     </div>
+    <div class="tag-page-container">
+        <div th:each="page : ${pageNumbers}">
+            <a class="tag-page" th:href="${url} + ${page}"><span th:text="${page}"></span></a>
+        </div>
+    </div>
+</div>
 </body>
 </html>

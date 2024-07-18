@@ -189,7 +189,7 @@ public class AdminCategoryController {
         Map<CategoryGetResponseDto, String> categoryNameMap = new LinkedHashMap<>();
         Set<Integer> pageNumbers = new LinkedHashSet<>();
         pageNumbers.add(1);
-        for (int i = 0; i < response.getBody().getTotalPages(); i++) {
+        for (int i = 1; i <= response.getBody().getTotalPages(); i++) {
             pageNumbers.add(i);
         }
         for (CategoryGetResponseDto category : categoryNamePage) {
@@ -202,6 +202,26 @@ public class AdminCategoryController {
         return "view/product/categoryPage";
     }
 
+    @GetMapping("/categories/containing")
+    public String getContainingCategoriesPage(@RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "desc", required = false) Boolean desc, @RequestParam(name = "sort", required = false) String sort, @RequestParam("categoryName") String categoryName,  Model model) {
+        ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getNameContainingCategories(page, desc, sort, categoryName);
+
+        List<CategoryGetResponseDto> categoryNamePage = response.getBody().getContent();
+        Map<CategoryGetResponseDto, String> categoryNameMap = new LinkedHashMap<>();
+        Set<Integer> pageNumbers = new LinkedHashSet<>();
+        pageNumbers.add(1);
+        for (int i = 1; i <= response.getBody().getTotalPages(); i++) {
+            pageNumbers.add(i);
+        }
+        for (CategoryGetResponseDto category : categoryNamePage) {
+            categoryNameMap.put(category, getAllCategoryPathName(category));
+        }
+        model.addAttribute("categoryNamePage", categoryNameMap);
+        model.addAttribute("register", false);
+        model.addAttribute("pageNumbers", pageNumbers);
+        model.addAttribute("url", "/categories/containing?categoryName="+categoryName +"&page=");
+        return "view/product/categoryPage";
+    }
 
     private String getAllCategoryPathName(CategoryGetResponseDto category) {
         StringBuilder stringBuilder = new StringBuilder();

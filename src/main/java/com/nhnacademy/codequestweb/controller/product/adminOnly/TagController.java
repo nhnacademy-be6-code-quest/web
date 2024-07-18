@@ -9,7 +9,9 @@ import com.nhnacademy.codequestweb.service.product.TagService;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
 import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -72,9 +74,33 @@ public class TagController {
 
     //도서 등록시 불러야 함 일단 냅두기.
     @GetMapping("/tags/all")
-    public String getRegisterForm(Model model) {
-        ResponseEntity<Page<TagGetResponseDto>> response = tagService.getAllTags(null, null, null);
+    public String getRegisterForm(@RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "desc", required = false) Boolean desc, @RequestParam(name = "sort", required = false) String sort, Model model) {
+        ResponseEntity<Page<TagGetResponseDto>> response = tagService.getAllTags(page, sort, desc);
         model.addAttribute("tagPage", response.getBody());
+        Set<Integer> pageNumbers = new LinkedHashSet<>();
+        pageNumbers.add(1);
+        log.info("total page : {}", response.getBody().getTotalPages());
+        for (int i = 1; i <= response.getBody().getTotalPages(); i++) {
+            pageNumbers.add(i);
+        }
+        model.addAttribute("pageNumbers", pageNumbers);
+        model.addAttribute("url", "/tags/all?page=");
+
+        return "view/product/tagPage";
+    }
+
+    @GetMapping("/tags/containing")
+    public String getContainingRegisterForm(@RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "desc", required = false) Boolean desc, @RequestParam(name = "sort", required = false) String sort,  @RequestParam("tagName") String tagName, Model model) {
+        ResponseEntity<Page<TagGetResponseDto>> response = tagService.getNameContainingTagPage(page, sort, desc, tagName);
+        model.addAttribute("tagPage", response.getBody());
+        Set<Integer> pageNumbers = new LinkedHashSet<>();
+        pageNumbers.add(1);
+        log.info("total page : {}", response.getBody().getTotalPages());
+        for (int i = 1; i <= response.getBody().getTotalPages(); i++) {
+            pageNumbers.add(i);
+        }
+        model.addAttribute("pageNumbers", pageNumbers);
+        model.addAttribute("url", "/tags/containing?tagName="+tagName +"&page=");
         return "view/product/tagPage";
     }
 
