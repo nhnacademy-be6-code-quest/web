@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import java.util.LinkedHashMap;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Slf4j
 @Controller
@@ -118,10 +119,12 @@ public class CartController {
 
         for (CartRequestDto cartItem : cartListOfCookie) {
             if (cartItem.productId().equals(cartRequestDto.productId())) {
-//                cartDto = CartRequestDto.builder()
-//                        .productId(cartItem.productId())
-//                        .quantity(cartItem.quantity() + cartRequestDto.quantity())
-//                        .build();
+                if(CookieUtils.isGuest(req)){
+                    cartDto = CartRequestDto.builder()
+                            .productId(cartItem.productId())
+                            .quantity(cartItem.quantity() + cartRequestDto.quantity())
+                            .build();
+                }
                 cartRequestDtoToDelete.add(cartItem);
             }
         }
@@ -161,7 +164,7 @@ public class CartController {
 
 
     @PutMapping("/cart/update")
-    public String updateCart(HttpServletRequest req, HttpServletResponse resp, @ModelAttribute @Valid CartRequestDto cartRequestDto, Model model) throws Exception {
+    public String updateCart(HttpServletRequest req, HttpServletResponse resp, @ModelAttribute @Valid CartRequestDto cartRequestDto, Model model, RedirectAttributes redirectAttributes) throws Exception {
         List<CartRequestDto> cartListOfCookie = emptyList;
 
         try {
@@ -190,17 +193,11 @@ public class CartController {
         if (response.getStatusCode().is2xxSuccessful()) {
             quantity = response.getBody().savedCartQuantity();
 
-            // 장바구니에 담으려 한 수량이 상품 재고보다 많은 경우.
-            if (!cartRequestDto.quantity().equals(quantity)){
-                model.addAttribute("warn", true);
-            }
+            redirectAttributes.addFlashAttribute("alterMessage", "물건을 장바구니에 담았습니다.");
         }
         cartListOfCookie.add(CartRequestDto.builder()
                 .productId(cartRequestDto.productId())
                 .quantity(quantity).build());
-
-        log.info("cartListOfCookie: {}", cartListOfCookie);
-
 
         CookieUtils.deleteCookieValue(resp, "cart");
         CookieUtils.setCartCookieValue(cartListOfCookie, objectMapper, resp);
@@ -208,7 +205,7 @@ public class CartController {
     }
 
     @DeleteMapping("/cart/{productId}")
-    public String deleteCart(HttpServletRequest req, HttpServletResponse resp,  Model model, @PathVariable("productId") Long productId) throws Exception {
+    public String deleteCart(HttpServletRequest req, HttpServletResponse resp,  Model model, @PathVariable("productId") Long productId, RedirectAttributes redirectAttributes) throws Exception {
         log.info("call delete one item");
         List<CartRequestDto> cartListOfCookie = emptyList;
 
@@ -226,10 +223,12 @@ public class CartController {
 
         if (CookieUtils.isGuest(req)) {
             cartListOfCookie.removeAll(cartRequestDtoToDelete);
+            redirectAttributes.addFlashAttribute("alterMessage", "장바구니에서 물건을 제거했습니다.");
         }else{
             ResponseEntity<Void> response = cartService.deleteClientCartItem(CookieUtils.setHeader(req), productId);
             if (response.getStatusCode().is2xxSuccessful()) {
                 cartListOfCookie.removeAll(cartRequestDtoToDelete);
+                redirectAttributes.addFlashAttribute("alterMessage", "장바구니에서 물건을 제거했습니다.");
             }
         }
 
@@ -240,7 +239,7 @@ public class CartController {
 
 
     @DeleteMapping("/cart/clear")
-    public String clearCart(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+    public String clearCart(HttpServletRequest req, HttpServletResponse resp, RedirectAttributes redirectAttributes) throws Exception {
         log.info("call clear cart");
 
         if (CookieUtils.isGuest(req)) {
@@ -249,6 +248,7 @@ public class CartController {
             ResponseEntity<Void> clearClientCart = cartService.clearClientAllCart(CookieUtils.setHeader(req));
             if (clearClientCart.getStatusCode().is2xxSuccessful()) {
                 CookieUtils.deleteCookieValue(resp, "cart");
+                redirectAttributes.addFlashAttribute("alterMessage", "장바구니를 비웠습니다.");
             }
         }
         return "redirect:/cart/all";
