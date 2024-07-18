@@ -196,7 +196,6 @@ public class AdminBookController {
         ResponseEntity<ProductRegisterResponseDto> responseEntity = bookProductService.saveBook(CookieUtils.setHeader(req), dto);
         if (responseEntity.getStatusCode().is2xxSuccessful()){
             redirectAttributes.addFlashAttribute("alterMessage", "성공적으로 등록되었습니다.");
-//            req.setAttribute("alterMessage", "성공적으로 등록되었습니다.");
         }
         return "redirect:/admin/product/book/all";
     }
