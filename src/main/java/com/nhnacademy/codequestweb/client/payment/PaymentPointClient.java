@@ -1,7 +1,7 @@
 package com.nhnacademy.codequestweb.client.payment;
 
-import com.nhnacademy.codequestweb.request.payment.PaymentAccumulatePointRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentUsePointRequestDto;
+import com.nhnacademy.codequestweb.request.point.PointRewardOrderRequestDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -19,5 +19,5 @@ public interface PaymentPointClient {
 
     @PostMapping("/api/point/order")
     ResponseEntity<String> rewardOrderPoint(@RequestHeader HttpHeaders headers,
-        @RequestBody PaymentAccumulatePointRequestDto paymentAccumulatePointRequestDto);
+        @RequestBody PointRewardOrderRequestDto pointRewardOrderRequestDto);
 }

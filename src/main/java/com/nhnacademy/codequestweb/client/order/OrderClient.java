@@ -3,6 +3,7 @@ package com.nhnacademy.codequestweb.client.order;
 import com.nhnacademy.codequestweb.request.payment.PaymentOrderApproveRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentOrderShowRequestDto;
 import com.nhnacademy.codequestweb.response.order.client.ClientOrderCreateForm;
+import com.nhnacademy.codequestweb.response.order.client.ClientOrderForm;
 import com.nhnacademy.codequestweb.response.order.client.ClientOrderGetResponseDto;
 import com.nhnacademy.codequestweb.response.order.common.OrderResponseDto;
 import com.nhnacademy.codequestweb.response.order.common.ProductOrderDetailOptionResponseDto;
@@ -31,6 +32,14 @@ public interface OrderClient {
     // 회원 주문 생성
     @PostMapping("/api/client/orders")
     ResponseEntity<Long> createClientOrder(@RequestHeader HttpHeaders headers, @RequestBody ClientOrderCreateForm clientOrderCreateForm);
+
+    // 회원 임시 주문 저장
+    @PostMapping("/api/client/orders/temporary")
+    ResponseEntity<String> saveClientTemporalOrder(@RequestHeader HttpHeaders headers, @RequestBody ClientOrderCreateForm clientOrderCreateForm);
+
+    // 회원 임시 주문 가져오기
+    @GetMapping("/api/client/orders/temporary")
+    ResponseEntity<ClientOrderCreateForm> getClientTemporalOrder(@RequestHeader HttpHeaders headers, String tossOrderId);
 
     // 회원 주문 내역 리스트 조회
     @GetMapping("/api/client/orders")
@@ -91,7 +100,13 @@ public interface OrderClient {
     @GetMapping("/api/non-client/orders/{orderId}")
     ResponseEntity<NonClientOrderGetResponseDto> findNonClientOrder(@RequestHeader HttpHeaders headers, @PathVariable long orderId, @RequestParam("pwd") String orderPassword);
 
+    // 비회원 임시 주문 저장
+    @PostMapping("/api/non-client/orders/temporary")
+    ResponseEntity<String> saveNonClientTemporalOrder(@RequestHeader HttpHeaders headers, @RequestBody NonClientOrderForm nonClientOrderForm);
 
+    // 비회원 임시 주문 가져오기
+    @GetMapping("/api/non-client/orders/temporary")
+    public ResponseEntity<NonClientOrderForm> getNonClientTemporalOrder(@RequestHeader HttpHeaders headers, String tossOrderId);
 
 
     // @ 그 외 컨트롤러 @
@@ -101,12 +116,12 @@ public interface OrderClient {
     ResponseEntity<String> updateOrderStatus(@RequestHeader HttpHeaders headers, @PathVariable(name = "orderId") Long orderId, @RequestParam(name = "status", required = true) String status);
 
     // 결제 서비스의 '결제 요청'에 필요한 주문 정보 제공
-    @GetMapping("/api/order/{orderId}/payment-request")
-    ResponseEntity<PaymentOrderShowRequestDto> getPaymentOrderShowRequestDto(@RequestHeader HttpHeaders headers, @PathVariable Long orderId);
+    @GetMapping("/api/order/{tossOrderId}/payment-request")
+    ResponseEntity<PaymentOrderShowRequestDto> getPaymentOrderShowRequestDto(@RequestHeader HttpHeaders headers, @PathVariable String tossOrderId);
 
     // 결제서비스에 '결제 승인'에 필요한 주문 정보 제공
-    @GetMapping("/api/order/{orderId}/approve-request")
-    ResponseEntity<PaymentOrderApproveRequestDto> getPaymentOrderApproveRequestDto(@RequestHeader HttpHeaders headers, @PathVariable Long orderId);
+    @GetMapping("/api/order/{tossOrderId}/approve-request")
+    ResponseEntity<PaymentOrderApproveRequestDto> getPaymentOrderApproveRequestDto(@RequestHeader HttpHeaders headers, @PathVariable String tossOrderId);
 
     // 모든 주문 가져오기
     @GetMapping("/api/order/all")

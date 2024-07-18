@@ -44,10 +44,11 @@
 </style>
 </head>
 <body>
+<p>success!</p>
 <th:block th:if="${#strings.equals(isSuccess, 'true')}">
   <div class="success">
     <h1>결제 성공</h1>
-    <p>주문 아이디: <span th:text="${orderId}"></span></p>
+    <p>주문 아이디: <span th:text="${tossOrderId}"></span></p>
     <p>주문명: <span th:text="${tossPaymentsResponseDto.getOrderName()}"></span></p>
     <p>총 결제금액: <span th:text="${tossPaymentsResponseDto.getTotalAmount()}"></span></p>
     <p>결제 방식: <span th:text="${tossPaymentsResponseDto.getMethod()}"></span></p>
@@ -56,6 +57,7 @@
       <p th:case="'가상계좌'">계좌번호: <span th:text="${tossPaymentsResponseDto.accountNumber}"></span></p>
       <p th:case="'계좌이체'">은행: <span th:text="${tossPaymentsResponseDto.bank}"></span></p>
       <p th:case="'휴대폰'">고객 휴대폰: <span th:text="${tossPaymentsResponseDto.customerMobilePhone}"></span></p>
+      <p th:case="'포인트'">포인트 사용으로 인한 0원 결제입니다</p>
     </th:block>
   </div>
 
@@ -84,11 +86,5 @@
     <a href="https://book-store.shop">홈으로 이동</a>
   </div>
 </th:block>
-<span th:text="${isCouponProcessedNormally == false ? '쿠폰이 정상적으로 소모되지 않았습니다. 이 메시지는 관리자에게 전송됩니다.' : ''}"></span>
-<span th:text="${isPointUsedNormally == false ? '포인트가 정상적으로 소모되지 않았습니다. 이 메시지는 관리자에게 전송됩니다.' : ''}"></span>
-<span th:text="${isPointAccumulatedNormally == false ? '포인트가 정상적으로 적립되지 않았습니다. 이 메시지는 관리자에게 전송됩니다.' : ''}"></span>
-<span th:text="${isProductInventoryReducedNormally == false ? '재고가 정상적으로 처리되지 않았습니다. 이 메시지는 관리자에게 전송됩니다.' : ''}"></span>
-<span th:text="${isOrderStatusChangedToCompletedPaymentNormally == false ? '결제 이후 주문이 결제 완료로 정상적으로 변경되지 않았습니다. 이 메시지는 관리자에게 전송됩니다.' : ''}"></span>
-<span th:text="${isRewardCouponGivenNormally == false ? '결제 이후 쿠폰 지급이 정상적으로 진행되지 않았습니다. 이 메시지는 관리자에게 전송됩니다.' : ''}"></span>
 </body>
 </html>

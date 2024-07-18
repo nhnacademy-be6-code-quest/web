@@ -1,6 +1,7 @@
 package com.nhnacademy.codequestweb.controller.order;
 
 import com.nhnacademy.codequestweb.request.order.field.OrderItemDto;
+import com.nhnacademy.codequestweb.request.payment.PaymentOrderShowRequestDto;
 import com.nhnacademy.codequestweb.response.order.client.*;
 import com.nhnacademy.codequestweb.response.order.nonclient.NonClientOrderForm;
 import com.nhnacademy.codequestweb.response.order.nonclient.NonClientOrderGetResponseDto;
@@ -8,7 +9,6 @@ import com.nhnacademy.codequestweb.service.order.AdminOrderService;
 import com.nhnacademy.codequestweb.service.order.OrderService;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -64,10 +64,11 @@ public class OrderController {
         return orderService.viewClientOrderPayMethod(req, model);
     }
 
+    // 주문진행
     @PostMapping("/client/order/process")
     public String processClientOrderPayMethodForm(@ModelAttribute ClientOrderPayMethodForm clientOrderPayMethodForm, HttpServletRequest req){
         req.getSession().setAttribute("clientOrderPayMethodForm", clientOrderPayMethodForm);
-        return String.format("redirect:/client/order/%d/payment", orderService.createClientOrder(req));
+        return String.format("redirect:/client/order/payment?tossOrderId=%s", orderService.saveClientTemporalOrder(req));
     }
 
     // 비회원 주문 생성 feign 호출

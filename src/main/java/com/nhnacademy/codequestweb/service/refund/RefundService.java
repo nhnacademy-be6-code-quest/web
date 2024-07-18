@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 public class RefundService {
 
     private final RefundClient refundClient;
-    private final TossRefundService tossRefundService;
 
     public PaymentRefundResponseDto findTossKey(long orderId) throws ParseException {
         PaymentRefundResponseDto dto = refundClient.findPaymentKey(orderId).getBody();

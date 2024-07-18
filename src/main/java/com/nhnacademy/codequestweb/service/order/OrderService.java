@@ -37,6 +37,7 @@ import org.springframework.ui.Model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -108,6 +109,61 @@ public class OrderService {
         return INDEX;
     }
 
+    public String  saveClientTemporalOrder(HttpServletRequest req){
+
+        HttpHeaders headers = getHeader(req);
+
+        ClientOrderForm clientOrderForm = (ClientOrderForm) req.getSession().getAttribute(CLIENT_ORDER_FORM);
+        ClientOrderDiscountForm clientOrderDiscountForm = (ClientOrderDiscountForm) req.getSession().getAttribute(CLIENT_ORDER_DISCOUNT_FORM);
+        ClientOrderPayMethodForm clientOrderPayMethodForm = (ClientOrderPayMethodForm) req.getSession().getAttribute(CLIENT_ORDER_PAYMENT_METHOD_FORM);
+
+        // 포인트 할인 적용하기
+        ClientOrderCreateForm clientOrderCreateForm = ClientOrderCreateForm.builder()
+                .couponId(clientOrderDiscountForm.getCouponId())
+                .shippingFee(clientOrderForm.getShippingFee())
+                .productTotalAmount(clientOrderForm.getProductTotalAmount())
+                .payAmount(clientOrderDiscountForm.getPayAmount() == null ? 0 : clientOrderDiscountForm.getPayAmount())
+                .couponDiscountAmount(clientOrderDiscountForm.getCouponDiscountAmount() == null ? 0 : clientOrderDiscountForm.getCouponDiscountAmount())
+                .usedPointDiscountAmount(clientOrderDiscountForm.getUsedPointDiscountAmount() == null ? 0 : clientOrderDiscountForm.getUsedPointDiscountAmount())
+                .orderedPersonName(clientOrderForm.getOrderedPersonName())
+                .phoneNumber(clientOrderForm.getPhoneNumber())
+                .addressNickname(clientOrderForm.getAddressNickname())
+                .addressZipCode(clientOrderForm.getAddressZipCode())
+                .deliveryAddress(clientOrderForm.getDeliveryAddress())
+                .useDesignatedDeliveryDate(clientOrderForm.getUseDesignatedDeliveryDate() != null && clientOrderForm.getUseDesignatedDeliveryDate())
+                .designatedDeliveryDate(clientOrderForm.getDesignatedDeliveryDate())
+                .paymentMethod(clientOrderPayMethodForm.getPaymentMethod())
+                .accumulatePoint(clientOrderPayMethodForm.getExpectedAccumulatingPoint())
+                .tossOrderId(UUID.randomUUID().toString())
+                .build();
+
+        for(ClientOrderForm.OrderDetailDtoItem item : clientOrderForm.getOrderDetailDtoItemList()){
+            clientOrderCreateForm.addOrderDetailDtoItem(
+                    ClientOrderCreateForm.OrderDetailDtoItem.builder()
+                            .productId(item.getProductId())
+                            .productName(item.getProductName())
+                            .quantity(item.getQuantity())
+                            .categoryIdList(item.getCategoryIdList())
+                            .productSinglePrice(item.getProductSinglePrice())
+                            .packableProduct(item.getPackableProduct())
+                            .usePackaging(item.getUsePackaging())
+                            .optionProductId(item.getOptionProductId())
+                            .optionProductName(item.getOptionProductName())
+                            .optionProductSinglePrice(item.getOptionProductSinglePrice())
+                            .optionQuantity(item.getOptionQuantity())
+                            .build()
+            );
+        }
+
+        orderClient.saveClientTemporalOrder(headers, clientOrderCreateForm);
+
+        return clientOrderCreateForm.getTossOrderId();
+    }
+
+    public ClientOrderCreateForm getClientTemporalOrder(HttpHeaders headers, String tossOrderId){
+        return orderClient.getClientTemporalOrder(headers, tossOrderId).getBody();
+    }
+
     public String viewClientOrderPayMethod(HttpServletRequest req, Model model) {
 
         HttpHeaders headers = getHeader(req);
@@ -134,6 +190,7 @@ public class OrderService {
     }
 
     public Long createClientOrder(HttpServletRequest req) {
+
         ClientOrderForm clientOrderForm = (ClientOrderForm) req.getSession().getAttribute(CLIENT_ORDER_FORM);
         ClientOrderDiscountForm clientOrderDiscountForm = (ClientOrderDiscountForm) req.getSession().getAttribute(CLIENT_ORDER_DISCOUNT_FORM);
         ClientOrderPayMethodForm clientOrderPayMethodForm = (ClientOrderPayMethodForm) req.getSession().getAttribute(CLIENT_ORDER_PAYMENT_METHOD_FORM);
@@ -155,6 +212,7 @@ public class OrderService {
                 .designatedDeliveryDate(clientOrderForm.getDesignatedDeliveryDate())
                 .paymentMethod(clientOrderPayMethodForm.getPaymentMethod())
                 .accumulatePoint(clientOrderPayMethodForm.getExpectedAccumulatingPoint())
+                .tossOrderId(UUID.randomUUID().toString())
                 .build();
 
         for(ClientOrderForm.OrderDetailDtoItem item : clientOrderForm.getOrderDetailDtoItemList()){
@@ -175,6 +233,7 @@ public class OrderService {
             );
         }
 
+
         return orderClient.createClientOrder(getHeader(req), clientFinalOrderForm).getBody();
     }
 
@@ -183,7 +242,7 @@ public class OrderService {
         HttpHeaders headers = getHeader(req);
 
         // ** 바인딩할 객체 **
-        NonClientOrderForm nonClientOrderForm = new NonClientOrderForm();
+        NonClientOrderForm nonClientOrderForm = NonClientOrderForm.builder().tossOrderId(UUID.randomUUID().toString()).build();
 
         // ** 화면에 뿌릴 정보 **
         // 배송비 정책
