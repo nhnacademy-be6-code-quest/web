@@ -1,23 +1,24 @@
 package com.nhnacademy.codequestweb.controller.payment;
 
-import com.nhnacademy.codequestweb.request.payment.*;
-import com.nhnacademy.codequestweb.response.payment.PaymentGradeResponseDto;
+import com.nhnacademy.codequestweb.request.payment.PaymentOrderApproveRequestDto;
+import com.nhnacademy.codequestweb.request.payment.PaymentOrderShowRequestDto;
+import com.nhnacademy.codequestweb.request.payment.PostProcessRequiredPaymentResponseDto;
 import com.nhnacademy.codequestweb.response.payment.TossPaymentsResponseDto;
 import com.nhnacademy.codequestweb.service.payment.PaymentService;
 import com.nhnacademy.codequestweb.service.product.CartService;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
-import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -37,24 +38,21 @@ public class PaymentController {
 
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
 
-//      1. 주문에서 받은 값을 토대로 사용자에게 보여 주기
+        // 결제 요청 정보
         PaymentOrderShowRequestDto paymentOrderShowRequestDto = paymentService.findPaymentOrderShowRequestDtoByOrderId(
             headers, tossOrderId);
         model.addAttribute("paymentOrderShowRequestDto", paymentOrderShowRequestDto);
 
-        long orderTotalAmount = paymentOrderShowRequestDto.getOrderTotalAmount();
-        long discountAmountByPoint = paymentOrderShowRequestDto.getDiscountAmountByPoint();
-        long discountAmountByCoupon = paymentOrderShowRequestDto.getDiscountAmountByCoupon();
-
+        // 쿠폰 및 포인트 할인 후 실 결제 금액이 0원일때?
 //        if (orderTotalAmount - discountAmountByPoint - discountAmountByCoupon == 0) {
 //            String.format("redirect:/client/order/%s/payment/success/post-process", tossOrderId);
 //        }
 
         // TODO localhost:8080 -> book-store.shop으로 변경
         model.addAttribute("successUrl",
-            "https://localhost:8080/client/order/" + tossOrderId + "/payment/success");
+            "https://book-store.shop/client/order/" + tossOrderId + "/payment/success");
         model.addAttribute("failUrl",
-            "https://localhost:8080/client/order/" + tossOrderId + "/payment/fail");
+            "https://book-store.shop/client/order/" + tossOrderId + "/payment/fail");
 
         return "view/payment/tossPage";
     }
@@ -67,81 +65,86 @@ public class PaymentController {
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(request, "access"));
 
-//        2. 결제 검증 및 승인 창에서 필요한 요소를 Order 에서 받아 오기 : @RequestHeader 로 해결함. // 303 ->
-        // TODO redis에서 받아오기. 주문서비스 컨트롤러 추가해야함.
+        // 결제 승인 요청 정보
         PaymentOrderApproveRequestDto paymentOrderApproveRequestDto = paymentService.findPaymentOrderApproveRequestDtoByOrderId(
             headers, tossOrderId);
 
-//        3. 조작 확인하기 : 주문 정보가 일치하지 않으면 실패 페이지로 이동하기.
+        // 조작 확인하기 : 주문 정보가 일치하지 않으면 실패 페이지로 이동하기.
         if (!paymentService.isValidTossPayment(paymentOrderApproveRequestDto, tossOrderId,
             amount)) {
             log.warn("주문 아이디 : {} 에서 결제 조작이 의심됩니다.", tossOrderId);
             model.addAttribute("alterMessage", "주문 아이디 : {} 에서 결제 조작이 의심됩니다.");
-            return "view/payment/failed";
+            model.addAttribute("view", "payment");
+            model.addAttribute("payment", "failed");
+            return "index";
         }
 
+        // 결제 승인하기
         TossPaymentsResponseDto tossPaymentsResponseDto = paymentService.approvePayment(headers,
             tossOrderId, amount, paymentKey);
 
-        // 7. DB에 저장하기
+        // 결제 승인 후 DB에 저장
         paymentService.savePayment(headers, tossPaymentsResponseDto);
-
-        // 9. View 보여주기
-        //boolean isClient = paymentOrderApproveRequestDto.getClientId() != null;
-        //model.addAttribute("isClient", isClient);
-        model.addAttribute("isSuccess", true);
-        model.addAttribute("tossOrderId", tossOrderId);
-        //model.addAttribute("tossPaymentsResponseDto", tossPaymentsResponseDto);\
 
         return String.format("redirect:/client/order/%s/payment/success/post-process", tossOrderId);
     }
 
     @GetMapping("/client/order/{tossOrderId}/payment/success/post-process")
     public String postProcessPayment(@PathVariable("tossOrderId") String tossOrderId,
+
         HttpServletRequest request, HttpServletResponse response, Model model,
         RedirectAttributes redirectAttributes) {
+
+        StringBuilder stringBuilder = new StringBuilder();
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(request, "access"));
 
+        model.addAttribute("tossOrderId", tossOrderId);
+        model.addAttribute("view", "payment");
+        model.addAttribute("payment", "success");
+
         PostProcessRequiredPaymentResponseDto postProcessRequiredPaymentResponseDto = paymentService.getPostProcessRequiredPaymentResponseDto(
             tossOrderId);
 
-        // 5-3) 포인트 적립하기
+        // 포인트 적립하기
         boolean successAccumulatePoint = accumulatePoint(headers,
             postProcessRequiredPaymentResponseDto);
 
         // 포인트 적립 실패
         if (!successAccumulatePoint) {
-            redirectAttributes.addFlashAttribute("alterMessage", "포인트 적립에 실패했습니다.");
-            return "index";
+            stringBuilder.append("포인트 적립에 실패했습니다");
         }
 
-        // TODO 장바구니 비우기.
+        // 장바구니 비우기
         boolean successClearCartCookie = clearCartCookie(response,
             postProcessRequiredPaymentResponseDto, model);
 
-        if(!successClearCartCookie){
-            redirectAttributes.addFlashAttribute("alterMessage", "장바구니 쿠기  적립에 실패했습니다.");
-            return "index";
+        if (!successClearCartCookie) {
+            stringBuilder.append("장바구니 쿠키 삭제에 실패했습니다");
         }
 
-        return "view/payment/success";
+        model.addAttribute("alterMessage", stringBuilder.toString());
+
+        return "index";
+
     }
 
-    @GetMapping("/client/order/{orderId}/payment/fail")
+    @GetMapping("/client/order/{tossOrderId}/payment/fail")
     public String paymentResult(
-        @PathVariable long orderId, Model model, @RequestParam(value = "message") String message,
+        @PathVariable String tossOrderId, Model model, @RequestParam(value = "message") String message,
         @RequestParam(value = "code") Integer code) {
+        // tossOrderId로 재결제 유도하면 좋을듯!!
         model.addAttribute("code", code);
         model.addAttribute("message", message);
-        return "view/payment/failed";
+        model.addAttribute("view", "payment");
+        model.addAttribute("payment", "failed");
+        return "index";
     }
 
     private boolean accumulatePoint(HttpHeaders headers,
         PostProcessRequiredPaymentResponseDto postProcessRequiredPaymentResponseDto) {
         try {
-            // 포인트 적립하기
             paymentService.accumulatePoint(headers,
                 postProcessRequiredPaymentResponseDto.getAmount());
             return true;
