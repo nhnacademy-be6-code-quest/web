@@ -95,7 +95,7 @@
             const priceSales = document.getElementById('priceSales').value;
             const inventory = document.getElementById('productInventory').value;
             const description = document.getElementById('productDescriptionValue').value;
-            const categories = document.getElementById('categories').value;
+            const categories = document.getElementsByName('categories').values();
             const isbnCheck = document.getElementById('isbnExist').value;
 
             if (!title) {
@@ -423,7 +423,7 @@
             <button type="button" onclick="isbnCheck()">중복 확인</button>
         </div>
     </div>
-    <input type="hidden" id="isbnExist" th:value="${action eq 'update' || self != null }">
+        <input type="hidden" id="isbnExist" value="true">
     <label for="title"></label><input th:type="${aladin != null ? 'hidden' : 'text'}" name="title" id="title" th:value="${title}" required placeholder="제목"/><br>
     <label for="author"></label><input th:type="${aladin != null ? 'hidden' : 'text'}" id="author" name="author" th:value="${author}" placeholder="작가"/><br>
     <label for="publisher"></label><input th:type="${aladin != null ? 'hidden' : 'text'}" name="publisher" id="publisher" th:value="${publisher}" placeholder="출판사"/><br>
@@ -517,17 +517,19 @@
 
     <p id="categoryResult"></p>
     <div id="removeCategoryButtons"></div>
-    <input type="hidden" id="categories" name="categories" th:value="${categorySet}">
+    <input type="hidden" id="categories" name="categories">
     <div th:each="category : ${categorySet}">
+        <input type="text" name="categories" th:value="${category}">
         <button th:category="${category}" type="button" th:text="${category} + ' x'" onclick="removeCategory(this.getAttribute('category')), this.remove()"> </button>
     </div>
     <button type="button" onclick="openTagSearch()">태그 검색</button>
     <div th:each="tag : ${tagSet}">
+        <input type="text" name="tags" th:value="${tag}">
         <button th:if="${!tag.isEmpty()}" th:tag="${tag}" type="button" th:text="${tag} + ' x'" onclick="removeTag(this.getAttribute('tag')), this.remove()"> </button>
     </div>
     <p id="tagResult"></p>
     <div id="removeTagButtons"></div>
-    <input type="hidden" id="tags" name="tags" th:value="${tagSet}">
+    <input type="hidden" id="tags" name="tags">
 
     <button type="submit" onclick="handleFormSubmit()">등록</button>
 

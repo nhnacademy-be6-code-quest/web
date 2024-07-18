@@ -45,6 +45,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Slf4j
 @Controller
@@ -183,7 +184,7 @@ public class AdminBookController {
 
 
     @PostMapping("/register")
-    public String saveBook(@RequestParam(name = "coverImage", required = false) MultipartFile file, @ModelAttribute @Valid BookProductRegisterRequestDto dto, HttpServletRequest req, Model model){
+    public String saveBook(@RequestParam(name = "coverImage", required = false) MultipartFile file, @ModelAttribute @Valid BookProductRegisterRequestDto dto, HttpServletRequest req, RedirectAttributes redirectAttributes){
         if (file != null && !file.isEmpty()){
             log.info("image exist!");
             String imageUrl = imageService.uploadImage(file);
@@ -193,15 +194,24 @@ public class AdminBookController {
         String encodedData = new String(dto.toString().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
         log.info("Encoded data: {}", encodedData);
         ResponseEntity<ProductRegisterResponseDto> responseEntity = bookProductService.saveBook(CookieUtils.setHeader(req), dto);
-        return "redirect:/";
+        if (responseEntity.getStatusCode().is2xxSuccessful()){
+            redirectAttributes.addFlashAttribute("alterMessage", "성공적으로 등록되었습니다.");
+//            req.setAttribute("alterMessage", "성공적으로 등록되었습니다.");
+        }
+        return "redirect:/admin/product/book/all";
     }
 
     @PutMapping("/update")
-    public String updateBook(HttpServletRequest req, @ModelAttribute @Valid BookProductUpdateRequestDto dto){
-        log.info("update book called save book");
+    public String updateBook(HttpServletRequest req, @ModelAttribute @Valid BookProductUpdateRequestDto dto, RedirectAttributes redirectAttributes){
+        log.info("update book called save book dto : {}", dto);
         ResponseEntity<ProductUpdateResponseDto> responseEntity = bookProductService.updateBook(CookieUtils.setHeader(req), dto);
         log.info("status code : {}",responseEntity.getStatusCode().value());
-        return "redirect:/";
+        if (responseEntity.getStatusCode().is2xxSuccessful()){
+            redirectAttributes.addFlashAttribute("alterMessage", "성공적으로 수정되었습니다.");
+
+            req.setAttribute("alterMessage", "성공적으로 수정되었습니다.");
+        }
+        return "redirect:/admin/product/book/all";
     }
 
 
