@@ -44,47 +44,10 @@
 </style>
 </head>
 <body>
-<p>success!</p>
-<th:block th:if="${#strings.equals(isSuccess, 'true')}">
   <div class="success">
     <h1>결제 성공</h1>
     <p>주문 아이디: <span th:text="${tossOrderId}"></span></p>
-    <p>주문명: <span th:text="${tossPaymentsResponseDto.getOrderName()}"></span></p>
-    <p>총 결제금액: <span th:text="${tossPaymentsResponseDto.getTotalAmount()}"></span></p>
-    <p>결제 방식: <span th:text="${tossPaymentsResponseDto.getMethod()}"></span></p>
-    <th:block th:switch="${tossPaymentsResponseDto.getMethod()}">
-      <p th:case="'카드'">카드번호: <span th:text="${tossPaymentsResponseDto.cardNumber}"></span></p>
-      <p th:case="'가상계좌'">계좌번호: <span th:text="${tossPaymentsResponseDto.accountNumber}"></span></p>
-      <p th:case="'계좌이체'">은행: <span th:text="${tossPaymentsResponseDto.bank}"></span></p>
-      <p th:case="'휴대폰'">고객 휴대폰: <span th:text="${tossPaymentsResponseDto.customerMobilePhone}"></span></p>
-      <p th:case="'포인트'">포인트 사용으로 인한 0원 결제입니다</p>
-    </th:block>
+    <p>주문 성공했습니다!</p>
   </div>
-
-  <th:block th:if="${#strings.equals(isClient, 'true')}">
-    <div class="buttons">
-      <a href="https://book-store.shop">홈으로 이동</a>
-      <a href="https://book-store.shop/mypage/orders">주문 상세로 이동</a>
-    </div>
-  </th:block>
-
-  <th:block th:if="${#strings.equals(isClient, 'false')}">
-    <div class="buttons">
-      <a href="https://book-store.shop">홈으로 이동</a>
-      <a href="https://book-store.shop/mypage/orders">주문 상세로 이동</a>
-    </div>
-  </th:block>
-</th:block>
-
-<th:block th:if="${#strings.equals(isSuccess, 'false')}">
-  <div class="failure">
-    <h1>결제 실패</h1>
-    <p>에러 메시지: <span th:text="${message}"></span></p>
-    <p>에러 코드: <span th:text="${code}"></span></p>
-  </div>
-  <div class="buttons">
-    <a href="https://book-store.shop">홈으로 이동</a>
-  </div>
-</th:block>
 </body>
 </html>
