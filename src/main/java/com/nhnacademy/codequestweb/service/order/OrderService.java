@@ -37,6 +37,7 @@ import org.springframework.ui.Model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -82,7 +83,7 @@ public class OrderService {
         ClientOrderDiscountForm clientOrderDiscountForm = ClientOrderDiscountForm.builder().payAmount(clientOrderForm.getProductTotalAmount() + clientOrderForm.getShippingFee()).build();
 
         // 가용 포인트
-        Integer usablePoint = orderPointClient.findPoint(headers).getTotalPoint();
+        Long usablePoint = orderPointClient.findPoint(headers).getTotalPoint();
 
         // 쿠폰 리스트
         List<CouponOrderResponseDto> couponList = couponClient.findClientCoupon(headers);
@@ -108,6 +109,61 @@ public class OrderService {
         return INDEX;
     }
 
+    public String  saveClientTemporalOrder(HttpServletRequest req){
+
+        HttpHeaders headers = getHeader(req);
+
+        ClientOrderForm clientOrderForm = (ClientOrderForm) req.getSession().getAttribute(CLIENT_ORDER_FORM);
+        ClientOrderDiscountForm clientOrderDiscountForm = (ClientOrderDiscountForm) req.getSession().getAttribute(CLIENT_ORDER_DISCOUNT_FORM);
+        ClientOrderPayMethodForm clientOrderPayMethodForm = (ClientOrderPayMethodForm) req.getSession().getAttribute(CLIENT_ORDER_PAYMENT_METHOD_FORM);
+
+        // 포인트 할인 적용하기
+        ClientOrderCreateForm clientOrderCreateForm = ClientOrderCreateForm.builder()
+                .couponId(clientOrderDiscountForm.getCouponId())
+                .shippingFee(clientOrderForm.getShippingFee())
+                .productTotalAmount(clientOrderForm.getProductTotalAmount())
+                .payAmount(clientOrderDiscountForm.getPayAmount() == null ? 0 : clientOrderDiscountForm.getPayAmount())
+                .couponDiscountAmount(clientOrderDiscountForm.getCouponDiscountAmount() == null ? 0 : clientOrderDiscountForm.getCouponDiscountAmount())
+                .usedPointDiscountAmount(clientOrderDiscountForm.getUsedPointDiscountAmount() == null ? 0 : clientOrderDiscountForm.getUsedPointDiscountAmount())
+                .orderedPersonName(clientOrderForm.getOrderedPersonName())
+                .phoneNumber(clientOrderForm.getPhoneNumber())
+                .addressNickname(clientOrderForm.getAddressNickname())
+                .addressZipCode(clientOrderForm.getAddressZipCode())
+                .deliveryAddress(clientOrderForm.getDeliveryAddress())
+                .useDesignatedDeliveryDate(clientOrderForm.getUseDesignatedDeliveryDate() != null && clientOrderForm.getUseDesignatedDeliveryDate())
+                .designatedDeliveryDate(clientOrderForm.getDesignatedDeliveryDate())
+                .paymentMethod(clientOrderPayMethodForm.getPaymentMethod())
+                .accumulatePoint(clientOrderPayMethodForm.getExpectedAccumulatingPoint())
+                .tossOrderId(UUID.randomUUID().toString())
+                .build();
+
+        for(ClientOrderForm.OrderDetailDtoItem item : clientOrderForm.getOrderDetailDtoItemList()){
+            clientOrderCreateForm.addOrderDetailDtoItem(
+                    ClientOrderCreateForm.OrderDetailDtoItem.builder()
+                            .productId(item.getProductId())
+                            .productName(item.getProductName())
+                            .quantity(item.getQuantity())
+                            .categoryIdList(item.getCategoryIdList())
+                            .productSinglePrice(item.getProductSinglePrice())
+                            .packableProduct(item.getPackableProduct())
+                            .usePackaging(item.getUsePackaging())
+                            .optionProductId(item.getOptionProductId())
+                            .optionProductName(item.getOptionProductName())
+                            .optionProductSinglePrice(item.getOptionProductSinglePrice())
+                            .optionQuantity(item.getOptionQuantity())
+                            .build()
+            );
+        }
+
+        orderClient.saveClientTemporalOrder(headers, clientOrderCreateForm);
+
+        return clientOrderCreateForm.getTossOrderId();
+    }
+
+    public ClientOrderCreateForm getClientTemporalOrder(HttpHeaders headers, String tossOrderId){
+        return orderClient.getClientTemporalOrder(headers, tossOrderId).getBody();
+    }
+
     public String viewClientOrderPayMethod(HttpServletRequest req, Model model) {
 
         HttpHeaders headers = getHeader(req);
@@ -116,7 +172,7 @@ public class OrderService {
         ClientOrderDiscountForm clientOrderDiscountForm = (ClientOrderDiscountForm) req.getSession().getAttribute(CLIENT_ORDER_DISCOUNT_FORM);
 
         // 가용 포인트 및 포인트 적립률
-        Integer pointAccumulationRate = orderPointClient.findPoint(headers).getPointAccumulationRate();
+        Long pointAccumulationRate = orderPointClient.findPoint(headers).getPointAccumulationRate();
 
         // ** 바인딩 객체 **
         Long expectedAccumulatingPoint = Math.round(clientOrderDiscountForm.getPayAmount() * pointAccumulationRate * 0.01);
@@ -134,6 +190,7 @@ public class OrderService {
     }
 
     public Long createClientOrder(HttpServletRequest req) {
+
         ClientOrderForm clientOrderForm = (ClientOrderForm) req.getSession().getAttribute(CLIENT_ORDER_FORM);
         ClientOrderDiscountForm clientOrderDiscountForm = (ClientOrderDiscountForm) req.getSession().getAttribute(CLIENT_ORDER_DISCOUNT_FORM);
         ClientOrderPayMethodForm clientOrderPayMethodForm = (ClientOrderPayMethodForm) req.getSession().getAttribute(CLIENT_ORDER_PAYMENT_METHOD_FORM);
@@ -155,6 +212,7 @@ public class OrderService {
                 .designatedDeliveryDate(clientOrderForm.getDesignatedDeliveryDate())
                 .paymentMethod(clientOrderPayMethodForm.getPaymentMethod())
                 .accumulatePoint(clientOrderPayMethodForm.getExpectedAccumulatingPoint())
+                .tossOrderId(UUID.randomUUID().toString())
                 .build();
 
         for(ClientOrderForm.OrderDetailDtoItem item : clientOrderForm.getOrderDetailDtoItemList()){
@@ -175,6 +233,7 @@ public class OrderService {
             );
         }
 
+
         return orderClient.createClientOrder(getHeader(req), clientFinalOrderForm).getBody();
     }
 
@@ -183,7 +242,7 @@ public class OrderService {
         HttpHeaders headers = getHeader(req);
 
         // ** 바인딩할 객체 **
-        NonClientOrderForm nonClientOrderForm = new NonClientOrderForm();
+        NonClientOrderForm nonClientOrderForm = NonClientOrderForm.builder().tossOrderId(UUID.randomUUID().toString()).build();
 
         // ** 화면에 뿌릴 정보 **
         // 배송비 정책
@@ -226,7 +285,7 @@ public class OrderService {
         ShippingPolicyGetResponseDto shippingPolicy = shippingPolicyService.getShippingPolicy(headers, "비회원배송비");
 
         // 바인딩 객체에 주문 상품 가격 정보 추가.
-        orderItemDtoList.forEach((orderItemDto)->{
+        orderItemDtoList.forEach(orderItemDto->{
             // 책 상세 정보
             BookProductGetResponseDto book = bookProductService.getSingleBookInfo(headers, orderItemDto.getProductId()).getBody();
             assert book != null;
@@ -324,111 +383,107 @@ public class OrderService {
         return headers;
     }
 
-    private OrderCouponDiscountInfo orderCouponDiscountInfo(CouponOrderResponseDto coupon, ClientOrderForm clientOrderForm){
-
+    private OrderCouponDiscountInfo orderCouponDiscountInfo(CouponOrderResponseDto coupon, ClientOrderForm clientOrderForm) {
         List<ClientOrderForm.OrderDetailDtoItem> orderDetailDtoItemList = clientOrderForm.getOrderDetailDtoItemList();
 
-        // 일반 금액 할인
-        if(coupon.getProductCoupon() == null
-                && coupon.getCategoryCoupon() == null
-                && coupon.getCouponPolicyDto() != null
-                && coupon.getCouponPolicyDto().getDiscountType().equals(AMOUNTDISCOUNT)){
-
-            return getOrderCouponDiscountInfoUsingAmountDiscount(coupon, clientOrderForm.getProductTotalAmount(), clientOrderForm.getTotalQuantity(), orderDetailDtoItemList, "전체 상품 주문 금액이 최소 주문 금액에 못 미칩니다");
-
+        if (isAmountDiscount(coupon)) {
+            return getOrderCouponDiscountInfoUsingAmountDiscount(
+                coupon, clientOrderForm.getProductTotalAmount(),
+                clientOrderForm.getTotalQuantity(), orderDetailDtoItemList,
+                "전체 상품 주문 금액이 최소 주문 금액에 못 미칩니다"
+            );
         }
 
-        // 일반 백분율 할인
-        else if(coupon.getProductCoupon() == null
-                && coupon.getCategoryCoupon() == null
-                && coupon.getCouponPolicyDto() != null
-                && coupon.getCouponPolicyDto().getDiscountType().equals(PERCENTAGEDISCOUNT)){
-
-            return getOrderCouponDiscountInfoUsingPercentageDiscount(coupon, clientOrderForm.getProductTotalAmount(), clientOrderForm.getTotalQuantity(), orderDetailDtoItemList, "전체 상품 주문 금액이 최소 주문 금액에 못 미칩니다");
-
+        if (isPercentageDiscount(coupon)) {
+            return getOrderCouponDiscountInfoUsingPercentageDiscount(
+                coupon, clientOrderForm.getProductTotalAmount(),
+                clientOrderForm.getTotalQuantity(), orderDetailDtoItemList,
+                "전체 상품 주문 금액이 최소 주문 금액에 못 미칩니다"
+            );
         }
 
-        // 상품 할인
-        else if(coupon.getProductCoupon() != null){
+        if (coupon.getProductCoupon() != null) {
+            return processProductCoupon(coupon, orderDetailDtoItemList);
+        }
 
-            // 쿠폰을 적용할 수 있는 상품 아이디
-            Long applicableProductId = coupon.getProductCoupon().getProductId();
+        if (coupon.getCategoryCoupon() != null) {
+            return processCategoryCoupon(coupon, orderDetailDtoItemList);
+        }
 
-            // 쿠폰 적용 가능한 상품이 있는지 확인.
-            for(ClientOrderForm.OrderDetailDtoItem orderDetailDtoItem : orderDetailDtoItemList){
-                if(orderDetailDtoItem.getProductId().equals(applicableProductId)){
-                    // 금액 할인권
-                    if(coupon.getCouponPolicyDto().getDiscountType().equals(AMOUNTDISCOUNT)){
-                        return getOrderCouponDiscountInfoUsingAmountDiscount(coupon,
-                                orderDetailDtoItem.getProductSinglePrice() * orderDetailDtoItem.getQuantity(),
-                                orderDetailDtoItem.getQuantity(), new ArrayList<>(List.of(orderDetailDtoItem)), "쿠폰 적용가능한 상품의 총 주문 금액이 최소 주문 금액에 못 미칩니다");
-                    }
-                    // 백분율 할인권
-                    if(coupon.getCouponPolicyDto().getDiscountType().equals(PERCENTAGEDISCOUNT)){
-                        return getOrderCouponDiscountInfoUsingPercentageDiscount(coupon,
-                                orderDetailDtoItem.getProductSinglePrice() * orderDetailDtoItem.getQuantity(),
-                                orderDetailDtoItem.getQuantity(), new ArrayList<>(List.of(orderDetailDtoItem)), "쿠폰 적용가능한 상품의 총 주문 금액이 최소 주문 금액에 못 미칩니다");
-                    }
+        return createNotApplicableOrderCouponDiscountInfo(coupon, "쿠폰을 적용할 수 없습니다");
+    }
+
+    private boolean isAmountDiscount(CouponOrderResponseDto coupon) {
+        return coupon.getProductCoupon() == null && coupon.getCategoryCoupon() == null &&
+            coupon.getCouponPolicyDto() != null &&
+            coupon.getCouponPolicyDto().getDiscountType().equals(AMOUNTDISCOUNT);
+    }
+
+    private boolean isPercentageDiscount(CouponOrderResponseDto coupon) {
+        return coupon.getProductCoupon() == null && coupon.getCategoryCoupon() == null &&
+            coupon.getCouponPolicyDto() != null &&
+            coupon.getCouponPolicyDto().getDiscountType().equals(PERCENTAGEDISCOUNT);
+    }
+
+    private OrderCouponDiscountInfo processProductCoupon(CouponOrderResponseDto coupon, List<ClientOrderForm.OrderDetailDtoItem> orderDetailDtoItemList) {
+        Long applicableProductId = coupon.getProductCoupon().getProductId();
+
+        for (ClientOrderForm.OrderDetailDtoItem orderDetailDtoItem : orderDetailDtoItemList) {
+            if (orderDetailDtoItem.getProductId().equals(applicableProductId)) {
+                if (coupon.getCouponPolicyDto().getDiscountType().equals(AMOUNTDISCOUNT)) {
+                    return getOrderCouponDiscountInfoUsingAmountDiscount(coupon,
+                        orderDetailDtoItem.getProductSinglePrice() * orderDetailDtoItem.getQuantity(),
+                        orderDetailDtoItem.getQuantity(), List.of(orderDetailDtoItem),
+                        "쿠폰 적용가능한 상품의 총 주문 금액이 최소 주문 금액에 못 미칩니다");
+                }
+                if (coupon.getCouponPolicyDto().getDiscountType().equals(PERCENTAGEDISCOUNT)) {
+                    return getOrderCouponDiscountInfoUsingPercentageDiscount(coupon,
+                        orderDetailDtoItem.getProductSinglePrice() * orderDetailDtoItem.getQuantity(),
+                        orderDetailDtoItem.getQuantity(), List.of(orderDetailDtoItem),
+                        "쿠폰 적용가능한 상품의 총 주문 금액이 최소 주문 금액에 못 미칩니다");
                 }
             }
-
-            // 적용할 상품이 없을 때
-            OrderCouponDiscountInfo orderCouponDiscountInfo = OrderCouponDiscountInfo.builder()
-                    .couponId(coupon.getCouponId())
-                    .isApplicable(false)
-                    .build();
-
-            orderCouponDiscountInfo.updateNotApplicableDescription("쿠폰을 적용할 수 있는 상품을 주문하지 않았습니다");
-
-            return orderCouponDiscountInfo;
-
         }
 
-        // 카테고리 할인
-        else if(coupon.getCategoryCoupon() != null){
+        return createNotApplicableOrderCouponDiscountInfo(coupon, "쿠폰을 적용할 수 있는 상품을 주문하지 않았습니다");
+    }
 
-            Long applicableCategoryId = coupon.getCategoryCoupon().getProductCategoryId();
+    private OrderCouponDiscountInfo processCategoryCoupon(CouponOrderResponseDto coupon, List<ClientOrderForm.OrderDetailDtoItem> orderDetailDtoItemList) {
+        Long applicableCategoryId = coupon.getCategoryCoupon().getProductCategoryId();
+        List<ClientOrderForm.OrderDetailDtoItem> applicableProduct = new ArrayList<>();
+        long totalQuantity = 0;
+        long totalPrice = 0;
 
-            List<ClientOrderForm.OrderDetailDtoItem> applicableProduct = new ArrayList<>();
-
-            long totalQuantity = 0;
-            long totalPrice = 0;
-
-            for(ClientOrderForm.OrderDetailDtoItem orderDetailDtoItem : orderDetailDtoItemList){
-                if(orderDetailDtoItem.getCategoryIdList() == null) break;
-                if(orderDetailDtoItem.getCategoryIdList().contains(applicableCategoryId)){
-                    applicableProduct.add(orderDetailDtoItem);
-                    totalQuantity += orderDetailDtoItem.getQuantity();
-                    totalPrice += orderDetailDtoItem.getProductSinglePrice() * orderDetailDtoItem.getQuantity();
-                }
+        for (ClientOrderForm.OrderDetailDtoItem orderDetailDtoItem : orderDetailDtoItemList) {
+            if (orderDetailDtoItem.getCategoryIdList() == null) break;
+            if (orderDetailDtoItem.getCategoryIdList().contains(applicableCategoryId)) {
+                applicableProduct.add(orderDetailDtoItem);
+                totalQuantity += orderDetailDtoItem.getQuantity();
+                totalPrice += orderDetailDtoItem.getProductSinglePrice() * orderDetailDtoItem.getQuantity();
             }
+        }
 
-            if(!applicableProduct.isEmpty() && coupon.getCouponPolicyDto().getDiscountType().equals(AMOUNTDISCOUNT)){
+        if (!applicableProduct.isEmpty()) {
+            if (coupon.getCouponPolicyDto().getDiscountType().equals(AMOUNTDISCOUNT)) {
                 return getOrderCouponDiscountInfoUsingAmountDiscount(coupon, totalPrice, totalQuantity, applicableProduct, "쿠폰 적용가능한 카테고리 상품의 총 주문 금액이 최소 주문 금액에 못 미칩니다");
             }
-            else if(!applicableProduct.isEmpty() && coupon.getCouponPolicyDto().getDiscountType().equals(PERCENTAGEDISCOUNT)){
+            if (coupon.getCouponPolicyDto().getDiscountType().equals(PERCENTAGEDISCOUNT)) {
                 return getOrderCouponDiscountInfoUsingPercentageDiscount(coupon, totalPrice, totalQuantity, applicableProduct, "쿠폰 적용가능한 카테고리 상품의 총 주문 금액이 최소 주문 금액에 못 미칩니다");
             }
-
-            // 적용할 상품이 없을 때
-            OrderCouponDiscountInfo orderCouponDiscountInfo = OrderCouponDiscountInfo.builder()
-                    .couponId(coupon.getCouponId())
-                    .isApplicable(false)
-                    .build();
-            orderCouponDiscountInfo.updateNotApplicableDescription("쿠폰을 적용할 수 있는 카테고리 상품을 구매하지 않았습니다");
-            return orderCouponDiscountInfo;
-
         }
 
+        return createNotApplicableOrderCouponDiscountInfo(coupon, "쿠폰을 적용할 수 있는 카테고리 상품을 구매하지 않았습니다");
+    }
+
+    private OrderCouponDiscountInfo createNotApplicableOrderCouponDiscountInfo(CouponOrderResponseDto coupon, String description) {
         OrderCouponDiscountInfo orderCouponDiscountInfo = OrderCouponDiscountInfo.builder()
-                .couponId(coupon.getCouponId())
-                .isApplicable(false)
-                .build();
-
-        orderCouponDiscountInfo.updateNotApplicableDescription("쿠폰을 적용할 수 없습니다");
-
+            .couponId(coupon.getCouponId())
+            .isApplicable(false)
+            .build();
+        orderCouponDiscountInfo.updateNotApplicableDescription(description);
         return orderCouponDiscountInfo;
     }
+
 
 
     // coupon: 적용할 쿠폰

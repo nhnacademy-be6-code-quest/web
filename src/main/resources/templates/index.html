@@ -112,6 +112,10 @@
     <section th:replace="~{view/order/nonClientFindOrder.html :: nonClientFindOrderFragment}"></section>
 </div>
 
+<div th:if="${view != null} and ${#strings.equals(view, 'payment')}">
+    <section th:replace="~{view/payment/payment.html :: paymentFragment('success', 'failed', 'tossPage')}"></section>
+</div>
+
 
 <div th:replace="~{layout/footer.html :: footerFragment}"></div>
 

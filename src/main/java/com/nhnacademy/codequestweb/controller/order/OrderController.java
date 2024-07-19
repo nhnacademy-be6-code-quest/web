@@ -1,22 +1,23 @@
 package com.nhnacademy.codequestweb.controller.order;
 
 import com.nhnacademy.codequestweb.request.order.field.OrderItemDto;
-import com.nhnacademy.codequestweb.response.order.client.*;
+import com.nhnacademy.codequestweb.response.order.client.ClientOrderDiscountForm;
+import com.nhnacademy.codequestweb.response.order.client.ClientOrderForm;
+import com.nhnacademy.codequestweb.response.order.client.ClientOrderPayMethodForm;
 import com.nhnacademy.codequestweb.response.order.nonclient.NonClientOrderForm;
-import com.nhnacademy.codequestweb.response.order.nonclient.NonClientOrderGetResponseDto;
 import com.nhnacademy.codequestweb.service.order.AdminOrderService;
 import com.nhnacademy.codequestweb.service.order.OrderService;
-import com.nhnacademy.codequestweb.utils.CookieUtils;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequiredArgsConstructor
@@ -64,10 +65,11 @@ public class OrderController {
         return orderService.viewClientOrderPayMethod(req, model);
     }
 
+    // 주문진행
     @PostMapping("/client/order/process")
     public String processClientOrderPayMethodForm(@ModelAttribute ClientOrderPayMethodForm clientOrderPayMethodForm, HttpServletRequest req){
         req.getSession().setAttribute("clientOrderPayMethodForm", clientOrderPayMethodForm);
-        return String.format("redirect:/client/order/%d/payment", orderService.createClientOrder(req));
+        return String.format("redirect:/client/order/payment?tossOrderId=%s", orderService.saveClientTemporalOrder(req));
     }
 
     // 비회원 주문 생성 feign 호출
@@ -81,29 +83,6 @@ public class OrderController {
     public String orders(HttpServletRequest req, Model model){
         model.addAttribute("view", "nonClientFindOrder");
         return "index";
-    }
-
-    @GetMapping("/non-client/order")
-    @ResponseBody
-    public NonClientOrderGetResponseDto nonClientFindOrder(HttpServletRequest req, @RequestParam("orderId") String orderIdStr, @RequestParam("orderPassword") String orderPassword){
-
-        boolean tryToFindOrderSuccess = true;
-        Long orderId = null;
-        NonClientOrderGetResponseDto nonClientOrderGetResponseDto = null;
-        try {
-            Long.parseLong(orderIdStr);
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("access", CookieUtils.getCookieValue(req, "access"));
-            orderId = Long.parseLong(orderIdStr);
-            nonClientOrderGetResponseDto = orderService.findNonClientOrder(headers, orderId, orderPassword);
-        } catch (NumberFormatException e) {
-            tryToFindOrderSuccess = false;
-        } catch(RuntimeException e){
-            tryToFindOrderSuccess = false;
-        }
-
-        return nonClientOrderGetResponseDto;
-
     }
 
     @PostMapping("/order/{orderId}/update")

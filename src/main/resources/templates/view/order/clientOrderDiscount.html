@@ -179,6 +179,8 @@
         const couponDiscountAmount = parseInt(couponDiscountInfoList[index].discountTotalAmount);
         const diff = parseInt(document.getElementById("payAmount").value) - couponDiscountAmount;
 
+        console.log("예정 쿠폰 할인적용 금액: ", couponDiscountAmount);
+
         if(diff < 0) {
             document.getElementById("couponDiscountAmount").value = couponDiscountAmount - diff;
             document.getElementById("selectedCouponDiscountAmount").textContent = couponDiscountAmount - diff;
@@ -186,6 +188,8 @@
             document.getElementById("couponDiscountAmount").value = couponDiscountAmount;
             document.getElementById("selectedCouponDiscountAmount").textContent = couponDiscountAmount;
         }
+
+        console.log("실제 쿠폰 할인적용 금액: ", document.getElementById("couponDiscountAmount").value);
 
         // 결제금액 업데이트
         document.getElementById("payAmount").value = originProductTotalAmount + originShippingFee - couponDiscountAmount;

@@ -9,5 +9,5 @@ import lombok.Setter;
 @Getter
 public class PointPolicyDetailResponseDto {
     String pointAccumulationType;
-    Integer pointValue;
+    Long pointValue;
 }

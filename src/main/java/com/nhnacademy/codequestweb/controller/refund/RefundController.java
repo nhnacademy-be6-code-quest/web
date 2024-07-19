@@ -4,7 +4,6 @@ import com.nhnacademy.codequestweb.request.refund.RefundTossRequestDto;
 import com.nhnacademy.codequestweb.response.refund.PaymentRefundResponseDto;
 import com.nhnacademy.codequestweb.response.refund.TossPaymentRefundResponseDto;
 import com.nhnacademy.codequestweb.service.refund.RefundService;
-import com.nhnacademy.codequestweb.service.refund.TossRefundService;
 import java.text.ParseException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +36,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class RefundController {
 
     private final RefundService refundService;
-    private final TossRefundService tossRefundService;
 
     // 1. 환불 및 취소 사유 선택 받기
     @GetMapping("client/order/{orderId}/refund")
@@ -52,8 +50,6 @@ public class RefundController {
                 .orderStatus(paymentRefundResponseDto.getOrderStatus())
                 .paymentId(paymentRefundResponseDto.getPaymentId())
                 .tossPaymentKey(paymentRefundResponseDto.getTossPaymentKey()).build();
-            TossPaymentRefundResponseDto test = tossRefundService.tossRefund(dto);
-           log.error("{}",test.getCancelReason());
            redirectAttributes.addFlashAttribute("alterMessage", "결재 취소");
 
            refundService.saveRefund(orderId, dto);

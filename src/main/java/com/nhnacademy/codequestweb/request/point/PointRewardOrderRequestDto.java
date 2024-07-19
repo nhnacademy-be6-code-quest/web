@@ -8,5 +8,5 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 public class PointRewardOrderRequestDto {
-    Integer accumulatedPoint;
+    Long accumulatedPoint;
 }

@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class PointPolicyAdminListResponseDto {
     String pointAccumulationType;
-    Integer pointValue;
+    Long pointValue;
     String pointPolicyCreationDate;
     String pointStatus;
     long pointPolicyId;

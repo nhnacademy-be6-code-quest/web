@@ -2,7 +2,6 @@ package com.nhnacademy.codequestweb.controller.refund;
 
 import com.nhnacademy.codequestweb.request.refund.RefundTossRequestDto;
 import com.nhnacademy.codequestweb.service.refund.RefundService;
-import com.nhnacademy.codequestweb.service.refund.TossRefundService;
 import java.text.ParseException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 @Controller
 @RequiredArgsConstructor
 public class RefundTossController {
-    private final TossRefundService tossRefundService;
     private final RefundService refundService;
     @PostMapping("/client/order/{orderId}/refund")
     public String tossRefund(@PathVariable long orderId, @RequestBody RefundTossRequestDto refundTossRequestDto)

@@ -15,10 +15,11 @@ public interface PaymentCouponClient {
 
     @PutMapping("/api/coupon/payment")
     ResponseEntity<String> paymentUsedCoupon(
-        @RequestHeader HttpHeaders headers,
-        PaymentCompletedCouponRequestDto paymentCompletedCouponRequestDto);
+            @RequestHeader HttpHeaders headers,
+            PaymentCompletedCouponRequestDto paymentCompletedCouponRequestDto);
 
     @PostMapping("/api/coupon/payment/reward")
     ResponseEntity<String> getUserPaymentValue(
-        @RequestBody CouponPaymentRewardRequestDto couponPaymentRewardRequestDto);
+            @RequestHeader HttpHeaders headers,
+            @RequestBody CouponPaymentRewardRequestDto couponPaymentRewardRequestDto);
 }

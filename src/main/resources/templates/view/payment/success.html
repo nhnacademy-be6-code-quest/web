@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" th:fragment="successFragment ('success')">
 <head>
   <title>결제 상태</title>
   <meta charset="UTF-8">
@@ -44,51 +44,10 @@
 </style>
 </head>
 <body>
-<th:block th:if="${#strings.equals(isSuccess, 'true')}">
   <div class="success">
     <h1>결제 성공</h1>
-    <p>주문 아이디: <span th:text="${orderId}"></span></p>
-    <p>주문명: <span th:text="${tossPaymentsResponseDto.getOrderName()}"></span></p>
-    <p>총 결제금액: <span th:text="${tossPaymentsResponseDto.getTotalAmount()}"></span></p>
-    <p>결제 방식: <span th:text="${tossPaymentsResponseDto.getMethod()}"></span></p>
-    <th:block th:switch="${tossPaymentsResponseDto.getMethod()}">
-      <p th:case="'카드'">카드번호: <span th:text="${tossPaymentsResponseDto.cardNumber}"></span></p>
-      <p th:case="'가상계좌'">계좌번호: <span th:text="${tossPaymentsResponseDto.accountNumber}"></span></p>
-      <p th:case="'계좌이체'">은행: <span th:text="${tossPaymentsResponseDto.bank}"></span></p>
-      <p th:case="'휴대폰'">고객 휴대폰: <span th:text="${tossPaymentsResponseDto.customerMobilePhone}"></span></p>
-    </th:block>
+    <p>주문 아이디: <span th:text="${tossOrderId}"></span></p>
+    <p>주문 성공했습니다!</p>
   </div>
-
-  <th:block th:if="${#strings.equals(isClient, 'true')}">
-    <div class="buttons">
-      <a href="https://book-store.shop">홈으로 이동</a>
-      <a href="https://book-store.shop/mypage/orders">주문 상세로 이동</a>
-    </div>
-  </th:block>
-
-  <th:block th:if="${#strings.equals(isClient, 'false')}">
-    <div class="buttons">
-      <a href="https://book-store.shop">홈으로 이동</a>
-      <a href="https://book-store.shop/mypage/orders">주문 상세로 이동</a>
-    </div>
-  </th:block>
-</th:block>
-
-<th:block th:if="${#strings.equals(isSuccess, 'false')}">
-  <div class="failure">
-    <h1>결제 실패</h1>
-    <p>에러 메시지: <span th:text="${message}"></span></p>
-    <p>에러 코드: <span th:text="${code}"></span></p>
-  </div>
-  <div class="buttons">
-    <a href="https://book-store.shop">홈으로 이동</a>
-  </div>
-</th:block>
-<span th:text="${isCouponProcessedNormally == false ? '쿠폰이 정상적으로 소모되지 않았습니다. 이 메시지는 관리자에게 전송됩니다.' : ''}"></span>
-<span th:text="${isPointUsedNormally == false ? '포인트가 정상적으로 소모되지 않았습니다. 이 메시지는 관리자에게 전송됩니다.' : ''}"></span>
-<span th:text="${isPointAccumulatedNormally == false ? '포인트가 정상적으로 적립되지 않았습니다. 이 메시지는 관리자에게 전송됩니다.' : ''}"></span>
-<span th:text="${isProductInventoryReducedNormally == false ? '재고가 정상적으로 처리되지 않았습니다. 이 메시지는 관리자에게 전송됩니다.' : ''}"></span>
-<span th:text="${isOrderStatusChangedToCompletedPaymentNormally == false ? '결제 이후 주문이 결제 완료로 정상적으로 변경되지 않았습니다. 이 메시지는 관리자에게 전송됩니다.' : ''}"></span>
-<span th:text="${isRewardCouponGivenNormally == false ? '결제 이후 쿠폰 지급이 정상적으로 진행되지 않았습니다. 이 메시지는 관리자에게 전송됩니다.' : ''}"></span>
 </body>
 </html>
