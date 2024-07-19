@@ -60,9 +60,4 @@ public interface CartClient {
     @DeleteMapping("/client/cart/all")
     ResponseEntity<Void> clearClientAllCart(
             @RequestHeader HttpHeaders headers);
-
-    @PutMapping("/client/cart/checkout")
-    ResponseEntity<Void> clearCartByCheckout(
-            @RequestHeader HttpHeaders headers,
-            @RequestBody @Valid CartCheckoutRequestDto requestDto);
 }

@@ -39,12 +39,7 @@
             /*margin:0 auto;*/
         }
 
-        .pagination-container {
-            text-align: center; /* 컨테이너를 가운데 정렬 */
-        }
-        .pagination-form {
-            display: inline-block; /* 폼을 인라인 블록으로 배치 */
-            margin: 5px; /* 각 폼 간의 간격 */
+        .book-image-container {
         }
         .body{
             margin-left:15%;
@@ -95,7 +90,7 @@
             const priceSales = document.getElementById('priceSales').value;
             const inventory = document.getElementById('productInventory').value;
             const description = document.getElementById('productDescriptionValue').value;
-            const categories = document.getElementsByName('categories').values();
+            const categories = document.querySelectorAll('input[name="categories"]');
             const isbnCheck = document.getElementById('isbnExist').value;
 
             if (!title) {
@@ -110,16 +105,20 @@
                 alert('판매가는 음수일 수 없습니다.');
                 return; // 유효하지 않으면 제출하지 않음
             }
-            if (!productName) {
-                alert('상품명을 입력하세요.');
+            if (productName.length < 2) {
+                alert('상품명은 최소 두 글자여야 합니다.');
                 return; // 유효하지 않으면 제출하지 않음
             }
             if (!description) {
                 alert('설명을 입력하세요.');
                 return; // 유효하지 않으면 제출하지 않음
             }
-            if (!categories) {
-                alert('카테고리는 필수입니다.');
+            if (categories.length === 0 || Array.from(categories).every(input => input.value.trim() === "")) {
+                alert('카테고리를 최소 하나 등록해주세요.');
+                return; // 유효하지 않으면 제출하지 않음
+            }
+            if (categories.length > 10) {
+                alert('카테고리는 최대 열 개까지만 등록 가능합니다.');
                 return; // 유효하지 않으면 제출하지 않음
             }
             if (isbnCheck === 'false') {
@@ -264,80 +263,60 @@
 
         window.addEventListener("storage", function (event) {
             if (event.key === "category") {
-
-                var result2Element = document.getElementById("categories");
-                var newValue = event.newValue;
+                const categoryElement = document.getElementById('categoriesContainer');
+                const newValue = event.newValue;
                 localStorage.removeItem("category");
                 if (newValue) {
-                    document.getElementById("categoryResult").innerText = document.getElementById("categoryResult").innerText == "" ? newValue : document.getElementById("categoryResult").innerText + ", " + newValue;
 
-                    result2Element.value = result2Element.value === "" ? newValue : result2Element.value + "," + newValue;
+                    const newInputElement = document.createElement("input");
+                    newInputElement.type = "text";
+                    newInputElement.name = "categories";
+                    newInputElement.value = newValue;
 
-                    createCategoryRemoveButton(newValue);
+                    const removeButton = document.createElement("button");
+                    removeButton.type = "button";
+                    removeButton.innerText = "x";
+                    removeButton.onclick = function() {
+                        categoryElement.removeChild(newInputElement);
+                        categoryElement.removeChild(removeButton);
+                    };
+
+                    categoryElement.appendChild(newInputElement);
+                    categoryElement.appendChild(removeButton);
                 }
             }
 
             if (event.key === "tag") {
-
-
-                var tagElement = document.getElementById("tags");
-
-                document.getElementById("tagResult").innerText = document.getElementById("tagResult").innerText == "" ? event.newValue : document.getElementById("tagResult").innerText + ", " + event.newValue;
-
-                tagElement.value = tagElement.value === "" ? event.newValue : tagElement.value + "," + event.newValue;
+                const tagElement = document.getElementById("tagsContainer");
+                const newValue = event.newValue;
 
                 // 필요 시 `localStorage` 값 제거
                 localStorage.removeItem("tag");
+                if (newValue){
+                    const newInputElement = document.createElement("input");
+                    newInputElement.type = "text";
+                    newInputElement.name = "tags";
+                    newInputElement.value = newValue;
 
-                createTagRemoveButton(event.newValue);
+                    const removeButton = document.createElement("button");
+                    removeButton.type = "button";
+                    removeButton.innerText = "x";
+                    removeButton.onclick = function() {
+                        tagElement.removeChild(newInputElement);
+                        tagElement.removeChild(removeButton);
+                    };
+
+                    tagElement.appendChild(newInputElement);
+                    tagElement.appendChild(removeButton);
+                }
             }
 
 
         });
 
-        function createCategoryRemoveButton(category) {
-            var button = document.createElement("button");
-            button.textContent = "삭제: " + category;
-            button.onclick = function () {
-                removeCategory(category);
-                this.remove(); // 삭제 버튼 자신도 함께 삭제
-            };
-
-            document.getElementById("removeCategoryButtons").appendChild(button);
-        }
-
-        function createTagRemoveButton(tag) {
-            var button = document.createElement("button");
-            button.textContent = "삭제: " + tag;
-            button.onclick = function () {
-                removeTag(tag);
-                this.remove(); // 삭제 버튼 자신도 함께 삭제
-            };
-
-            document.getElementById("removeTagButtons").appendChild(button);
-        }
-
-        function removeTag(tag) {
-            var tags = document.getElementById("tags").value.split(',');
-            var index = tags.indexOf(tag);
-
-            if (index !== -1) {
-                tags.splice(index, 1); // 해당 카테고리 삭제
-                document.getElementById("tags").value = tags.join(',');
-                document.getElementById("tagResult").innerText = tags.join(','); // 화면에도 반영
-            }
-        }
-
-        // 카테고리 삭제 함수
-        function removeCategory(category) {
-            var categories = document.getElementById("categories").value.split(',');
-            var index = categories.indexOf(category);
-
-            if (index !== -1) {
-                categories.splice(index, 1); // 해당 카테고리 삭제
-                document.getElementById("categories").value = categories.join(',');
-                document.getElementById("categoryResult").innerText = categories.join(','); // 화면에도 반영
-            }
+        function remove(button) {
+            const parentDiv = button.parentNode; // 버튼의 부모 요소(div)를 찾음
+            parentDiv.parentNode.removeChild(parentDiv); // 부모 요소를 삭제
         }
 
         function isbnCheck() {
@@ -400,16 +379,14 @@
     <form th:action="'/admin/product/book/' + ${action}" id="bookProductRegister" method="post" enctype="multipart/form-data" onsubmit="formValidation(event)">
     <div class="book-container">
         <div th:if="${aladin != null}" class="book-image-container">
-
             <input type="image" id="cover" th:value="${cover}" th:src="${cover == null ? 'https://i.postimg.cc/ydkCbCbC/image-2935360-1280.png' : cover} " style="cursor: default; width: 100%; height: 100%" readonly/><br>
         </div>
 
-        <div th:if="${aladin == null}" class="book-container">
-            <input type="file" name="coverImage" onchange="readURL(this)" accept="image/jpeg,image/png,image/jpg" th:required="${action == 'register'}" >
-
+        <div th:if="${aladin == null}" class="book-file-container">
             <div>
                 <img alt="책 표지" id="preview"  width="30vh" th:src="${cover == null ? 'https://i.postimg.cc/ydkCbCbC/image-2935360-1280.png' : cover}"/>
             </div>
+            <input type="file" name="coverImage" onchange="readURL(this)" accept="image/jpeg,image/png,image/jpg" th:required="${action == 'register'}" >
         </div>
 
         <div th:if="${aladin != null}" class="book-info">
@@ -422,27 +399,25 @@
             <span id="priceStandardText" th:text="'정가' + ${priceStandard == null ? '' : priceStandard}"></span>
             <button type="button" onclick="isbnCheck()">중복 확인</button>
         </div>
+        <div class="book-info">
+            <input type="hidden" name="cover" id="coverURL" th:value="${cover}" readonly/><br>
+            <label for="title"></label><input th:type="${aladin != null ? 'hidden' : 'text'}" name="title" id="title" th:value="${title}" required placeholder="제목"/><br>
+            <label for="author"></label><input th:type="${aladin != null ? 'hidden' : 'text'}" id="author" name="author" th:value="${author}" placeholder="작가"/><br>
+            <label for="publisher"></label><input th:type="${aladin != null ? 'hidden' : 'text'}" name="publisher" id="publisher" th:value="${publisher}" placeholder="출판사"/><br>
+            <label for="pubDate"></label><input th:type="${aladin != null ? 'hidden' : 'date'}" name="pubDate" id="pubDate" th:value="${pubDate}"/><br>
+            <label for="isbn"></label><input th:type="${aladin != null ? 'hidden' : 'text'}" name="isbn" id="isbn" th:value="${isbn}"  placeholder="isbn"/><br>
+            <label for="isbn13"></label><input th:type="${aladin != null ? 'hidden' : 'text'}" name="isbn13" id="isbn13" th:value="${isbn13}" placeholder="isbn13"/><br>
+            <label for="priceStandard"></label><input th:type="${aladin != null ? 'hidden' : 'number'}" name="productPriceStandard" id="priceStandard" th:value="${priceStandard}" required placeholder="정가"/><br>
+        </div>
     </div>
         <input type="hidden" id="isbnExist" value="true">
-    <label for="title"></label><input th:type="${aladin != null ? 'hidden' : 'text'}" name="title" id="title" th:value="${title}" required placeholder="제목"/><br>
-    <label for="author"></label><input th:type="${aladin != null ? 'hidden' : 'text'}" id="author" name="author" th:value="${author}" placeholder="작가"/><br>
-    <label for="publisher"></label><input th:type="${aladin != null ? 'hidden' : 'text'}" name="publisher" id="publisher" th:value="${publisher}" placeholder="출판사"/><br>
-    <input type="hidden" name="cover" id="coverURL" th:value="${cover}" readonly/><br>
-    <label for="pubDate"></label><input th:type="${aladin != null ? 'hidden' : 'date'}" name="pubDate" id="pubDate" th:value="${pubDate}"/><br>
-    <input th:type="${aladin != null ? 'hidden' : 'text'}" name="isbn" id="isbn" th:value="${isbn}"  placeholder="isbn"/><br>
-    <input th:type="${aladin != null ? 'hidden' : 'text'}" name="isbn13" id="isbn13" th:value="${isbn13}" placeholder="isbn13"/><br>
     <label for="productName">상품명 : </label><input type="text" name="productName" id="productName" th:value="${productName}" placeholder="상품명"/><br>
-    <label for="priceStandard">정가 : </label><input th:type="${aladin != null ? 'hidden' : 'number'}" name="productPriceStandard" id="priceStandard" th:value="${priceStandard}" required/><br>
     <label for="priceSales">판매가 : </label><input type="number" th:value="${priceSales}" name="productPriceSales" id="priceSales" onchange="calculateDiscount()" required/><br>
     <label for="discount"> 할인율 : </label><span id="discount"></span><br>
-    <label>
-        포장 가능 여부
-        <input type="radio" name="packable" value="true">
-    </label><span th:text="가능"></span>
-    <label>
-        <input type="radio" name="packable" value="false" checked>
-    </label><span th:text="불가능"></span>
-    재고<input type="number" name="productInventory" id="productInventory" placeholder="재고" th:default="0" th:value="${inventory == null ? 0 : inventory}">
+    <label for="productInventory">재고 : </label><input type="number" name="productInventory" id="productInventory" placeholder="재고" th:default="0" th:value="${inventory == null ? 0 : inventory}"><br>
+    <label for="packable">포장 가능 여부</label><input type="radio" id="packable" name="packable" value="true"><span th:text="가능"></span>
+    <label for="notPackable"></label><input type="radio" id="notPackable" name="packable" value="false" checked><span th:text="불가능"></span>
+
     <input type="hidden" name="productDescription" id="productDescription" placeholder="설명">
     <input type="hidden" name="productDescriptionValue" id="productDescriptionValue" placeholder="설명" required>
     <div th:if="${update}">
@@ -513,26 +488,23 @@
 
         });
     </script>
+
     <button type="button" onclick="openCategorySearch()">카테고리 검색</button>
-
-    <p id="categoryResult"></p>
-    <div id="removeCategoryButtons"></div>
-    <input type="text" id="categories" name="categories" readonly>
-    <div th:each="category : ${categorySet}">
-        <input type="text" name="categories" th:value="${category}">
-        <button th:category="${category}" type="button" th:text="${category} + ' x'" onclick="removeCategory(this.getAttribute('category')), this.remove()"> </button>
+    <div id="categoriesContainer">
+        <div th:each="category : ${categorySet}">
+            <input type="text" name="categories" th:value="${category}">
+            <button th:category="${category}" type="button" class="remove-button" onclick="remove(this)">x</button>
+        </div>
     </div>
+
     <button type="button" onclick="openTagSearch()">태그 검색</button>
-    <div th:each="tag : ${tagSet}">
-        <input type="text" name="tags" th:value="${tag}">
-        <button th:if="${!tag.isEmpty()}" th:tag="${tag}" type="button" th:text="${tag} + ' x'" onclick="removeTag(this.getAttribute('tag')), this.remove()"> </button>
+    <div id="tagsContainer">
+        <div th:each="tag : ${tagSet}">
+            <input type="text" name="tags" th:value="${tag}">
+            <button th:if="${!tag.isEmpty()}" type="button" class="remove-button" onclick="remove(this)">x</button>
+        </div>
     </div>
-    <p id="tagResult"></p>
-    <div id="removeTagButtons"></div>
-    <input type="text" id="tags" name="tags" readonly>
-
     <button type="submit" onclick="handleFormSubmit()">등록</button>
-
 </form>
 </div>
 </body>

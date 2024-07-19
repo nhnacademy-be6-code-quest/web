@@ -35,14 +35,34 @@
 
         /*]]>*/
     </script>
+    <style>
+        .container {
+            text-align: center;
+            margin: auto;
+            width: 80%;
+        }
+        .category-container {
+            height: 600px;
+
+        }
+        .category-page-container {
+            display: flex;
+            width: 300px;
+            height: 20px;
+            background: rgb(0, 122, 252);
+        }
+        .category-page {
+            color: ghostwhite;
+            background: rgb(0, 122, 252);
+        }
+    </style>
 </head>
 <body>
-<label for="inputValue">카테고리명 검색 :</label>
-<input type="text" id="inputValue" name="inputValue" required>
-<button onclick="openNewWindowWithParam()">검색</button>
-
-</form>
-    <div th:unless="${register}">
+<div class="container">
+    <label for="inputValue">카테고리명 검색 :</label>
+    <input type="text" id="inputValue" name="inputValue" required>
+    <button onclick="openNewWindowWithParam()">검색</button>
+    <div class="category-container" th:unless="${register}">
         <div th:each="category : ${categoryNamePage}">
             <a th:href="'/categories/' + ${category.getKey().productCategoryId()} + '/sub'" target="_self">
                 <span th:text="${category.getValue()}"></span>
@@ -51,12 +71,19 @@
     </div>
     <div th:if="${register}">
         <div th:each="category : ${categoryNamePage}">
-                <span th:text="${category.getValue()}"></span>
+            <span th:text="${category.getValue()}"></span>
             <button th:category="${category.getKey().categoryName()}" onclick="sendMessageToParent(this.getAttribute('category'))">선택</button>
         </div>
+    </div>
+
+    <span>page</span>
+    <div class="category-page-container">
         <div th:each="page : ${pageNumbers}">
-            <a th:href="${url} + ${page}"></a>
+            <a class="category-page" th:href="${url} + ${page}"><span th:text="${page}"></span></a>
         </div>
     </div>
+</div>
+
+
 </body>
 </html>
