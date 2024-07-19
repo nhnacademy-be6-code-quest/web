@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.ToString;
 
 /**
  * 토스 페이먼츠에 결제와 관련된 정보를 넘기기 위한 정보들입니다. 사용자가 주문에서 '결제하기' 버튼을 눌렀을 때 결제로 넘어 오는 값입니다. 1) 쿠폰, 포인트 같은 할인
@@ -16,6 +17,7 @@ import lombok.Getter;
  */
 @Builder
 @Getter
+@ToString
 public class PaymentOrderShowRequestDto {
 
     // payAmount 를 계산하기 위해 필요한 값들 : 결제 DB에 들어가야 하는 민감한 정보는 primitive type 으로 선언했습니다.
