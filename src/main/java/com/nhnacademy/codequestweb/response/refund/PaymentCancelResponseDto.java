@@ -7,8 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class PaymentRefundResponseDto {
-    Long paymentId;
+public class PaymentCancelResponseDto {
     String tossPaymentKey;
     String orderStatus;
 
