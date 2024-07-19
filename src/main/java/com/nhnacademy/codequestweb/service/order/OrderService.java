@@ -168,6 +168,8 @@ public class OrderService {
 
         HttpHeaders headers = getHeader(req);
 
+        log.info("적립 포인트 계산 및 결제수단 뷰");
+
         ClientOrderForm clientOrderForm = (ClientOrderForm) req.getSession().getAttribute(CLIENT_ORDER_FORM);
         ClientOrderDiscountForm clientOrderDiscountForm = (ClientOrderDiscountForm) req.getSession().getAttribute(CLIENT_ORDER_DISCOUNT_FORM);
 
