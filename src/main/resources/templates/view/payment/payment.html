@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" th:fragment="paymentFragment ('success', 'failed')">
+<head>
+  <meta charset="UTF-8">
+  <title>Payment</title>
+</head>
+<body>
+
+<div th:if="${payment != null} and ${#strings.equals(payment, 'success')}">
+  <div th:replace="~{view/payment/success :: successFragment ('success')}"></div>
+</div>
+
+<div th:if="${payment != null} and ${#strings.equals(payment, 'failed')}">
+  <div th:replace="~{view/payment/failed :: failedFragment ('failed')}"></div>
+</div>
+
+</body>
+</html>
