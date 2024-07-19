@@ -65,16 +65,21 @@ public class OrderService {
     private final PackagingService packagingService;
 
     public String viewClientOrder(HttpServletRequest req, Model model, List<String> orderItemDtoStringList) {
+        log.info("회원 장바구니 주문 시도");
         // 바인딩 객체에 주문 상품 가격 정보 추가.
         List<OrderItemDto> orderItemDtoList = convertToOrderItemDtoList(orderItemDtoStringList);
+        log.info("장바구니에 담은 구매할 상품: {}", orderItemDtoList);
         return processCreatingClientOrder(req, model, orderItemDtoList);
     }
 
     public String viewClientOrder(HttpServletRequest req, Model model, OrderItemDto orderItemDto) {
+        log.info("회원 바로구매 주문 시도");
         return processCreatingClientOrder(req, model, new ArrayList<>(List.of(orderItemDto)));
     }
 
     public String viewClientOrderDiscount(HttpServletRequest req, Model model) {
+
+        log.info("쿠폰 당 할인 정보 계산, 포인트 및 쿠폰 할인정보 뷰");
 
         HttpHeaders headers = getHeader(req);
 
@@ -173,7 +178,7 @@ public class OrderService {
         ClientOrderForm clientOrderForm = (ClientOrderForm) req.getSession().getAttribute(CLIENT_ORDER_FORM);
         ClientOrderDiscountForm clientOrderDiscountForm = (ClientOrderDiscountForm) req.getSession().getAttribute(CLIENT_ORDER_DISCOUNT_FORM);
 
-        // 가용 포인트 및 포인트 적립률
+        // 및 포인트 적립률
         Long pointAccumulationRate = orderPointClient.findPoint(headers).getPointAccumulationRate();
 
         // ** 바인딩 객체 **
@@ -192,6 +197,8 @@ public class OrderService {
     }
 
     public Long createClientOrder(HttpServletRequest req) {
+
+        log.info("주문 서비스 레디스에 저장할 회원 주문 데이터 dto 생성");
 
         ClientOrderForm clientOrderForm = (ClientOrderForm) req.getSession().getAttribute(CLIENT_ORDER_FORM);
         ClientOrderDiscountForm clientOrderDiscountForm = (ClientOrderDiscountForm) req.getSession().getAttribute(CLIENT_ORDER_DISCOUNT_FORM);
@@ -235,11 +242,12 @@ public class OrderService {
             );
         }
 
-
         return orderClient.createClientOrder(getHeader(req), clientFinalOrderForm).getBody();
     }
 
     public String viewNonClientOrder(HttpServletRequest req, Model model, OrderItemDto orderItemDto) {
+
+        log.info("비회원 단건 주문 페이지 로딩");
 
         HttpHeaders headers = getHeader(req);
 
@@ -275,6 +283,9 @@ public class OrderService {
     }
 
     public String viewNonClientOrder(HttpServletRequest req, Model model, List<String> orderItemDtoStringList) {
+
+        log.info("비회원 주문 시도!");
+
         HttpHeaders headers = getHeader(req);
 
         List<OrderItemDto> orderItemDtoList = convertToOrderItemDtoList(orderItemDtoStringList);
@@ -386,6 +397,9 @@ public class OrderService {
     }
 
     private OrderCouponDiscountInfo orderCouponDiscountInfo(CouponOrderResponseDto coupon, ClientOrderForm clientOrderForm) {
+
+        log.info("쿠폰 할인 정보 계산");
+
         List<ClientOrderForm.OrderDetailDtoItem> orderDetailDtoItemList = clientOrderForm.getOrderDetailDtoItemList();
 
         if (isAmountDiscount(coupon)) {
@@ -567,6 +581,8 @@ public class OrderService {
 
     private String processCreatingClientOrder(HttpServletRequest request, Model model, List<OrderItemDto> orderItemDtoList){
 
+        log.info("회원 주문 정보 입력 화면 진입");
+
         HttpHeaders headers = getHeader(request);
 
         ClientPrivacyResponseDto orderedPerson = myPageService.getPrivacy(headers).getBody();
@@ -585,7 +601,6 @@ public class OrderService {
         ClientOrderForm clientOrderForm = ClientOrderForm.builder()
                 .orderedPersonName(orderedPerson.getClientName())
                 .build();
-
 
         long totalQuantity = 0;
         for (OrderItemDto orderItemDto : orderItemDtoList) {
