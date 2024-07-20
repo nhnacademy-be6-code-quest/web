@@ -122,12 +122,16 @@
               <span th:text="${item.productName} + ' x ' + ${item.productQuantity}"></span>
               <div class="text-muted" th:text="${item.productSinglePrice} + '원 x ' + ${item.productQuantity}"></div>
               <div th:if="${item.optionProductId} != null">
-                <span th:text="${item.optionProductName} + ' x ' + ${item.optionProductQuantity}"></span>
-                <div class="text-muted" th:text="${item.optionProductSinglePrice} + '원 x ' + ${item.optionProductQuantity}"></div>
+                <span th:text="${item.optionProductName}"></span>
+                <div class="text-muted" th:text="${item.optionProductSinglePrice} + '원'"></div>
               </div>
               <div th:if="${item.optionProductId} == null">
                 포장지 구매 안함
               </div>
+<!--              <div class="text-muted" th:text="'(상품 총 금액)' + ${item.productTotalAmount}"></div>-->
+<!--              <div class="text-muted" th:text="'(배송비)' + ${item.shippingFee}"></div>-->
+<!--              <div th:if="${item.discountAmountByPoint} != null" class="text=muted" th:text="'(포인트 할인)' + ${item.discountAmountByPoint}"></div>-->
+<!--              <div th:if="${item.discountAmountByCoupon} != null" class="text=muted" th:text="'(쿠폰할인)' + ${item.discountAmountByCoupon}"></div>-->
               <a class="yellow-btn" th:href="@{/write/review(orderDetailId=${item.productOrderDetailId}, orderId=${order.orderId})}">
                 리뷰 쓰러 가기
               </a>

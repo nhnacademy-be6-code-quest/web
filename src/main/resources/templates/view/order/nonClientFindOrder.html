@@ -67,6 +67,32 @@
         .button:hover {
             background-color: #e6af4a;
         }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000; /* Ensure it appears above other content */
+        }
+
+        .modal-content {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40%;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
     </style>
 </head>
 <body>
@@ -91,10 +117,10 @@
     </div>
 </div>
 
-<div id="nonClientFindOrder" class="modal">
+<div id="findOrderModal" class="modal" hidden="hidden">
     <div class="modal-content">
         <span class="close">&times;</span>
-        <h3>주문 상세 페이지</h3>
+        <h3>주문 조회</h3>
         <div id="findOrderModalContent">
 
         </div>
@@ -114,17 +140,17 @@
         const modalContent = document.getElementById('findOrderModalContent');
 
         fetch(`/non-client/order?orderId=${inputOrderIdStr}&orderPassword=${orderPassword}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('API 호출 오류가 발생했습니다.');
-                }
-                return response.json();
-            })
-            .then(data => {
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('API 호출 오류가 발생했습니다.');
+            }
+            return response.json();
+        })
+        .then(data => {
 
-                // Build HTML for order details
-                let orderDetails = `
-                    <table>
+            // Build HTML for order details
+            let orderDetails = `
+                    <table style="width: 100%">
                         <thead>
                             <tr>
                                 <th>Order Date</th>
@@ -141,31 +167,31 @@
                                 <td>
                 `;
 
-                data.nonClientProductOrderDetailList.forEach(item => {
-                    orderDetails += `
+            data.nonClientProductOrderDetailList.forEach(item => {
+                orderDetails += `
                         <hr/>
                         <div>
                             <span>${item.productName} x ${item.productQuantity}</span>
-                            <div class="text-muted">${item.productSinglePrice}원 x ${item.productQuantity}</div>
+                            <div>${item.productSinglePrice}원 x ${item.productQuantity}</div>
                     `;
 
-                    if (item.optionProductId !== null && item.optionProductQuantity > 0) {
-                        orderDetails += `
+                if (item.optionProductId !== null) {
+                    orderDetails += `
                             <div>
-                                <span>${item.optionProductName} x ${item.optionProductQuantity}</span>
-                                <div class="text-muted">${item.optionProductSinglePrice}원 x ${item.optionProductQuantity}</div>
+                                <span>${item.optionProductName}</span>
+                                <div>${item.optionProductSinglePrice}원</div>
                             </div>
                         `;
-                    } else {
-                        orderDetails += `
+                } else {
+                    orderDetails += `
                             <div>
                                 포장지 구매 안함
                             </div>
                         `;
-                    }
-                });
+                }
+            });
 
-                orderDetails += `
+            orderDetails += `
                                 </div>
                             </td>
                         </tr>
@@ -173,18 +199,20 @@
                 </table>
                 `;
 
-                modalContent.innerHTML = orderDetails;
-                modal.style.display = 'block'; // Open modal
-            })
-            .catch(error => {
-                modalContent.innerHTML = `<p>${error.message}</p><p>비회원 주문 조회에 실패했습니다. 다시 시도하세요</p>`;
-                modal.style.display = 'block'; // Open modal
-            });
+            modalContent.innerHTML = orderDetails;
+            modal.style.display = 'block'; // Open modal'
+            modal.hidden = false;
+        })
+        .catch(error => {
+            modalContent.innerHTML = `<p>${error.message}</p><p>비회원 주문 조회에 실패했습니다. 다시 시도하세요</p>`;
+            modal.style.display = 'block'; // Open modal
+        });
     }
 
     document.getElementsByClassName('close')[0].onclick = function() {
         const modal = document.getElementById('findOrderModal');
         modal.style.display = 'none'; // Close modal
+        modal.hidden = true;
     };
 
     window.onclick = function(event) {

@@ -17,6 +17,7 @@ public class ClientOrderCreateForm {
     Integer shippingFee; // 배송비
     Long productTotalAmount; // 상품 총 금액(포인트 및 쿠폰 할인 전)
     Long payAmount; // 최종 결제 금액
+    Long orderTotalAmount;
     Long couponDiscountAmount; // 쿠폰 할인 금액
     Long usedPointDiscountAmount; // 포인트 사용 금액
     String orderedPersonName; // 주문자 이름
