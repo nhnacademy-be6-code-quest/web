@@ -55,9 +55,9 @@ public class PaymentController {
 
         // TODO localhost:8080 -> book-store.shop으로 변경
         model.addAttribute("successUrl",
-            "https://localhost:8080/client/order/" + tossOrderId + "/payment/success");
+            "https://book-store.shop:8080/client/order/" + tossOrderId + "/payment/success");
         model.addAttribute("failUrl",
-            "https://localhost:8080/client/order/" + tossOrderId + "/payment/fail");
+            "https://book-store.shop:8080/client/order/" + tossOrderId + "/payment/fail");
 
         return "view/payment/tossPage";
     }
