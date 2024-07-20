@@ -113,7 +113,7 @@
 </div>
 
 <div th:if="${view != null} and ${#strings.equals(view, 'payment')}">
-    <section th:replace="~{view/payment/payment.html :: paymentFragment('success', 'failed', 'tossPage')}"></section>
+    <section th:replace="~{view/payment/payment.html :: paymentFragment('success', 'failed')}"></section>
 </div>
 
 

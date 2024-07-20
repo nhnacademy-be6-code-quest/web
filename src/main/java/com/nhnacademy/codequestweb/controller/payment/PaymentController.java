@@ -9,6 +9,7 @@ import com.nhnacademy.codequestweb.service.product.CartService;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.parser.ParseException;
@@ -38,10 +39,14 @@ public class PaymentController {
 
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
 
+        log.info("결제 요청");
+
         // 결제 요청 정보
         PaymentOrderShowRequestDto paymentOrderShowRequestDto = paymentService.findPaymentOrderShowRequestDtoByOrderId(
             headers, tossOrderId);
         model.addAttribute("paymentOrderShowRequestDto", paymentOrderShowRequestDto);
+
+        log.info("결제 요청 정보: {}", paymentOrderShowRequestDto);
 
         // 쿠폰 및 포인트 할인 후 실 결제 금액이 0원일때?
 //        if (orderTotalAmount - discountAmountByPoint - discountAmountByCoupon == 0) {
@@ -50,9 +55,9 @@ public class PaymentController {
 
         // TODO localhost:8080 -> book-store.shop으로 변경
         model.addAttribute("successUrl",
-            "https://book-store.shop/client/order/" + tossOrderId + "/payment/success");
+            "https://localhost:8080/client/order/" + tossOrderId + "/payment/success");
         model.addAttribute("failUrl",
-            "https://book-store.shop/client/order/" + tossOrderId + "/payment/fail");
+            "https://localhost:8080/client/order/" + tossOrderId + "/payment/fail");
 
         return "view/payment/tossPage";
     }
@@ -61,6 +66,8 @@ public class PaymentController {
     public String paymentResult(HttpServletRequest request, Model model,
         @PathVariable(value = "tossOrderId") String tossOrderId,
         @RequestParam long amount, @RequestParam String paymentKey) throws ParseException {
+
+        log.info("결제 요청 성공!");
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(request, "access"));
@@ -83,8 +90,12 @@ public class PaymentController {
         TossPaymentsResponseDto tossPaymentsResponseDto = paymentService.approvePayment(headers,
             tossOrderId, amount, paymentKey);
 
+        log.info("결제 승인 성공");
+
         // 결제 승인 후 DB에 저장
         paymentService.savePayment(headers, tossPaymentsResponseDto);
+
+        log.info("결제 승인 성공");
 
         return String.format("redirect:/client/order/%s/payment/success/post-process", tossOrderId);
     }
@@ -95,7 +106,9 @@ public class PaymentController {
         HttpServletRequest request, HttpServletResponse response, Model model,
         RedirectAttributes redirectAttributes) {
 
-        StringBuilder stringBuilder = new StringBuilder();
+        log.info(" 성공");
+
+        StringBuilder alterMessage = new StringBuilder();
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(request, "access"));
@@ -108,12 +121,16 @@ public class PaymentController {
             tossOrderId);
 
         // 포인트 적립하기
-        boolean successAccumulatePoint = accumulatePoint(headers,
-            postProcessRequiredPaymentResponseDto);
+        if(Objects.nonNull(postProcessRequiredPaymentResponseDto.getClientId())){
 
-        // 포인트 적립 실패
-        if (!successAccumulatePoint) {
-            stringBuilder.append("포인트 적립에 실패했습니다");
+            boolean successAccumulatePoint = accumulatePoint(headers,
+                postProcessRequiredPaymentResponseDto);
+
+            // 포인트 적립 실패
+            if (!successAccumulatePoint) {
+                alterMessage.append("포인트 적립에 실패했습니다");
+            }
+
         }
 
         // 장바구니 비우기
@@ -121,10 +138,12 @@ public class PaymentController {
             postProcessRequiredPaymentResponseDto, model);
 
         if (!successClearCartCookie) {
-            stringBuilder.append("장바구니 쿠키 삭제에 실패했습니다");
+            alterMessage.append("장바구니 쿠키 삭제에 실패했습니다");
         }
 
-        model.addAttribute("alterMessage", stringBuilder.toString());
+        if(!alterMessage.isEmpty()) {
+            model.addAttribute("alterMessage", alterMessage.toString());
+        }
 
         return "index";
 

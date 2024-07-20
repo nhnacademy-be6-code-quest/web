@@ -33,6 +33,7 @@ public class PaymentService /*implements PaymentService*/ {
     private final PaymentClientClient paymentClientClient;
 
     public void savePayment(HttpHeaders headers, TossPaymentsResponseDto tossPaymentsResponseDto) {
+        log.info("결제 및 주문 생성 시도");
         paymentClient.savePayment(headers, tossPaymentsResponseDto);
     }
 
@@ -47,12 +48,11 @@ public class PaymentService /*implements PaymentService*/ {
 
     public TossPaymentsResponseDto approvePayment(HttpHeaders headers, String tossOrderId, long amount,
         String paymentKey) {
-
         TossApprovePaymentRequest tossApprovePaymentRequest = new TossApprovePaymentRequest();
         tossApprovePaymentRequest.setPaymentKey(paymentKey);
         tossApprovePaymentRequest.setAmount(amount);
         tossApprovePaymentRequest.setOrderId(tossOrderId);
-
+        log.info("결제 승인 시도");
         return paymentClient.approvePayment(headers, tossApprovePaymentRequest).getBody();
     }
 

@@ -98,7 +98,7 @@ public interface OrderClient {
 
     // 비회원 주문 단건 조회
     @GetMapping("/api/non-client/orders/{orderId}")
-    ResponseEntity<NonClientOrderGetResponseDto> findNonClientOrder(@RequestHeader HttpHeaders headers, @PathVariable long orderId, @RequestParam("pwd") String orderPassword);
+    ResponseEntity<NonClientOrderGetResponseDto> findNonClientOrder(@RequestHeader HttpHeaders headers, @PathVariable String orderId, @RequestParam("pwd") String orderPassword);
 
     // 비회원 임시 주문 저장
     @PostMapping("/api/non-client/orders/temporary")

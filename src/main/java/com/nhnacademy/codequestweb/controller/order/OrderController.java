@@ -65,17 +65,18 @@ public class OrderController {
         return orderService.viewClientOrderPayMethod(req, model);
     }
 
-    // 주문진행
+    // 회원 주문 진행
     @PostMapping("/client/order/process")
     public String processClientOrderPayMethodForm(@ModelAttribute ClientOrderPayMethodForm clientOrderPayMethodForm, HttpServletRequest req){
         req.getSession().setAttribute("clientOrderPayMethodForm", clientOrderPayMethodForm);
         return String.format("redirect:/client/order/payment?tossOrderId=%s", orderService.saveClientTemporalOrder(req));
     }
 
-    // 비회원 주문 생성 feign 호출
+    // 비회원 주문 진행
     @PostMapping("/non-client/order/process")
     public String tryNonClientOrder(HttpServletRequest request, @ModelAttribute NonClientOrderForm nonClientOrderForm){
-        return String.format("redirect:/client/order/%d/payment", orderService.createNonClientOrder(request, nonClientOrderForm));
+        orderService.saveNonClientTemporalOrder(request, nonClientOrderForm);
+        return String.format("redirect:/client/order/payment?tossOrderId=%s", nonClientOrderForm.getTossOrderId());
     }
 
     // 비회원 단건 주문 내역 조회 view
