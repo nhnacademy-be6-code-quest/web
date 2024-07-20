@@ -170,37 +170,21 @@
 
         if(orderStatus === '결제완료'){
             changeOrderStatusButton.textContent = '배송중 처리';
-            orderStatusChangeForm.action = "/order/" + button.getAttribute('data-order-id') + "/update?status=배송중&orderNo=" + [[${currentPage}]];
+            orderStatusChangeForm.action = "/order/" + button.getAttribute('data-order-id') + "/update?status=배송중&pageNo=" + [[${currentPage}]];
             orderStatusChangeForm.method = "post";
             orderStatusChangeForm.append(changeOrderStatusButton);
         }
         else if(orderStatus === '배송중'){
             changeOrderStatusButton.textContent = '배송완료 처리';
-            orderStatusChangeForm.action = "/order/" + button.getAttribute('data-order-id') + "/update?status=배송완료&orderNo=" + [[${currentPage}]];
+            orderStatusChangeForm.action = "/order/" + button.getAttribute('data-order-id') + "/update?status=배송완료&pageNo=" + [[${currentPage}]];
             orderStatusChangeForm.method = "post";
             orderStatusChangeForm.append(changeOrderStatusButton);
         }
         else if(orderStatus === '반품요청'){
-            // 버튼의 data-order-id 속성에서 주문 ID 가져오기
-            const orderId = button.getAttribute('data-order-id');
-
-// 폼의 액션 URL 설정
-            orderStatusChangeForm.action = "/client/refund/sure";
-
-// 폼의 메서드 설정
+            changeOrderStatusButton.textContent = '반품처리';
+            orderStatusChangeForm.action = "/client/refund/sure?orderId=" + button.getAttribute('data-order-id');
             orderStatusChangeForm.method = "post";
-
-// 주문 ID를 위한 숨겨진 입력 필드 생성
-            const orderIdInput = document.createElement('input');
-            orderIdInput.type = 'hidden'; // 입력 타입을 숨김으로 설정
-            orderIdInput.name = 'orderId'; // 서버에서 기대하는 파라미터 이름과 일치
-            orderIdInput.value = orderId; // 주문 ID 값 설정
-
-// 숨겨진 입력 필드를 폼에 추가
-            orderStatusChangeForm.appendChild(orderIdInput);
-
-// 폼 제출
-            orderStatusChangeForm.submit();
+            orderStatusChangeForm.appendChild(changeOrderStatusButton);
         }
 
         // 모달 닫기 기능
