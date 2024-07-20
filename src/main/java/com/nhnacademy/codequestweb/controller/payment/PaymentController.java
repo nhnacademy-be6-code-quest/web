@@ -9,6 +9,7 @@ import com.nhnacademy.codequestweb.service.product.CartService;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.parser.ParseException;
@@ -120,12 +121,16 @@ public class PaymentController {
             tossOrderId);
 
         // 포인트 적립하기
-        boolean successAccumulatePoint = accumulatePoint(headers,
-            postProcessRequiredPaymentResponseDto);
+        if(Objects.nonNull(postProcessRequiredPaymentResponseDto.getClientId())){
 
-        // 포인트 적립 실패
-        if (!successAccumulatePoint) {
-            alterMessage.append("포인트 적립에 실패했습니다");
+            boolean successAccumulatePoint = accumulatePoint(headers,
+                postProcessRequiredPaymentResponseDto);
+
+            // 포인트 적립 실패
+            if (!successAccumulatePoint) {
+                alterMessage.append("포인트 적립에 실패했습니다");
+            }
+
         }
 
         // 장바구니 비우기
