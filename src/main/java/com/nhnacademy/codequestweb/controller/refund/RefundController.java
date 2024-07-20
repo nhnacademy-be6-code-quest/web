@@ -1,16 +1,23 @@
 package com.nhnacademy.codequestweb.controller.refund;
 
-import com.nhnacademy.codequestweb.request.refund.RefundTossRequestDto;
-import com.nhnacademy.codequestweb.response.refund.PaymentRefundResponseDto;
-import com.nhnacademy.codequestweb.response.refund.TossPaymentRefundResponseDto;
+import com.nhnacademy.codequestweb.request.refund.PaymentCancelRequestDto;
+import com.nhnacademy.codequestweb.request.refund.RefundAfterRequestDto;
+import com.nhnacademy.codequestweb.request.refund.RefundRequestDto;
+import com.nhnacademy.codequestweb.response.refund.RefundAdminResponseDto;
+import com.nhnacademy.codequestweb.response.refund.RefundPolicyResponseDto;
+import com.nhnacademy.codequestweb.response.refund.RefundSuccessResponseDto;
 import com.nhnacademy.codequestweb.service.refund.RefundService;
-import java.text.ParseException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /*
@@ -37,46 +44,42 @@ public class RefundController {
 
     private final RefundService refundService;
 
-    // 1. 환불 및 취소 사유 선택 받기
-    @GetMapping("client/order/{orderId}/refund")
-    public String saveRefund(@PathVariable long orderId,
-        Model model, RedirectAttributes redirectAttributes) throws ParseException {
+    @PostMapping("/client/payment/cancel")
+    public String paymentCancel(@ModelAttribute PaymentCancelRequestDto paymentCancelRequestDto,
+        RedirectAttributes redirectAttributes) {
 
-        PaymentRefundResponseDto paymentRefundResponseDto = refundService.findTossKey(
-            orderId);
-        if(paymentRefundResponseDto.getOrderStatus().equals("결제완료")){
-            RefundTossRequestDto dto = RefundTossRequestDto.builder()
-                .cancelReason("결제 취소")
-                .orderStatus(paymentRefundResponseDto.getOrderStatus())
-                .paymentId(paymentRefundResponseDto.getPaymentId())
-                .tossPaymentKey(paymentRefundResponseDto.getTossPaymentKey()).build();
-           redirectAttributes.addFlashAttribute("alterMessage", "결재 취소");
-
-           refundService.saveRefund(orderId, dto);
-            return "redirect:/mypage/orders";
-
-        }else{
-            model.addAttribute("orderId", orderId);
-            model.addAttribute("dto", paymentRefundResponseDto);
-            return "view/refund/refund-reason";
-        }
-
-
-
-
+        refundService.cancelRequest(paymentCancelRequestDto);
+        redirectAttributes.addFlashAttribute("alterMessage", "취소가 완료되었습니다.");
+        return "redirect:/mypage/orders";
     }
 
+    @GetMapping("/order/refund")
+    public ResponseEntity<List<RefundPolicyResponseDto>> viewRefundInfo(
+        @RequestParam long orderId) {
+        try {
+            List<RefundPolicyResponseDto> result = refundService.findRefundPay(orderId);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(null);
+        }
+    }
+    @PostMapping("/order/refund/request")
+    public String requestRefund(@ModelAttribute RefundRequestDto requestDto, RedirectAttributes redirectAttributes){
+        RefundSuccessResponseDto dto = refundService.requestRefund(requestDto);
+        redirectAttributes.addFlashAttribute("alterMessage", "환불금액이" + dto.getRefundAmount() + "원 적립될 예정입니다.");
+        return "redirect:/mypage/orders";
+     }
 
-
-    // 2. 상품 관련해서 돌려 받을 환불 안내하기
-//    @GetMapping("client/order/{orderId}/payment/{paymentId}/refund")
-//    public String ddong(@PathVariable long orderId, @PathVariable long paymentId,
-//        Model model) {
-//        RefundOrderRequestDto refundOrderRequestDto = refundService.findRefundOrderRequestDtoByOrderId(
-//            orderId);
-//        model.addAttribute("refundOrderRequestDto", refundOrderRequestDto);
-//        return "/view/refund/refund";
-//    }
-
-    // 3. 후처리하기
+     @GetMapping("/client/refund/view")
+    public ResponseEntity<RefundAdminResponseDto> refundUser(@RequestParam long orderId){
+        return ResponseEntity.ok(refundService.userRefund(orderId));
+     }
+     @PostMapping("/client/refund/sure")
+    public String refundSure(@ModelAttribute RefundAfterRequestDto refundAfterRequestDto, RedirectAttributes redirectAttributes){
+        refundService.refundSure(refundAfterRequestDto);
+         redirectAttributes.addFlashAttribute("alterMessage", "환불 완료");
+         return "redirect:/admin/orders";
+     }
 }

@@ -108,10 +108,11 @@
         <div>현재 주문 상태: <span id="orderStatusModal"></span></div>
         <div>주문 상태 변경: </div>
         <form id="order-status-change-form">
-
         </form>
     </div>
 </div>
+
+
 
 <script>
 
@@ -127,6 +128,7 @@
         const designatedDeliveryDate = button.getAttribute('data-designated-delivery-date');
         const orderTotalAmount = button.getAttribute('data-order-total-amount');
         const orderStatus = button.getAttribute('data-order-status');
+        const orderId = button.getAttribute('data-order-id');
 
         document.getElementById('couponDiscountAmountModal').textContent = couponDiscount;
         document.getElementById('pointDiscountAmountModal').textContent = pointDiscount;
@@ -143,6 +145,21 @@
             const itemDiv = document.createElement('div');
             itemDiv.innerText = item.productName + ' x ' + item.productQuantity;
             orderListItemListModal.append(itemDiv);
+
+            fetch(`/api/refund/admin/refund?orderId=${orderId}`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('refundPolicyTypeModal').innerText = data.refundPolicyType;
+                document.getElementById('refundShippingFeeModal').innerText = data.refundShippingFee;
+                document.getElementById('payAmountModal').innerText = data.payAmount;
+                document.getElementById('ShippingFeeOfOrderDateModal').innerText = data.ShippingFeeOfOrderDate;
+                document.getElementById('optionProductPriceModal').innerText = data.optionProductPrice;
+                document.getElementById('refundDateTimeModal').innerText = data.refundDateTime;
+                document.getElementById('refundDetailReasonModal').innerText = data.refundDetailReason;
+                document.getElementById('paymentKeyModal').innerText = data.paymentKey;
+                openModal();
+            })
+            .catch(error => console.error('Error:', error));
         });
 
         // 주문상태 변경 버튼 달기
@@ -164,10 +181,26 @@
             orderStatusChangeForm.append(changeOrderStatusButton);
         }
         else if(orderStatus === '반품요청'){
-            changeOrderStatusButton.textContent = '반품요청 수락';
-            orderStatusChangeForm.action = "/order/" + button.getAttribute('data-order-id') + "/update?status=반품&orderNo=" + [[${currentPage}]];
+            // 버튼의 data-order-id 속성에서 주문 ID 가져오기
+            const orderId = button.getAttribute('data-order-id');
+
+// 폼의 액션 URL 설정
+            orderStatusChangeForm.action = "/client/refund/sure";
+
+// 폼의 메서드 설정
             orderStatusChangeForm.method = "post";
-            orderStatusChangeForm.append(changeOrderStatusButton);
+
+// 주문 ID를 위한 숨겨진 입력 필드 생성
+            const orderIdInput = document.createElement('input');
+            orderIdInput.type = 'hidden'; // 입력 타입을 숨김으로 설정
+            orderIdInput.name = 'orderId'; // 서버에서 기대하는 파라미터 이름과 일치
+            orderIdInput.value = orderId; // 주문 ID 값 설정
+
+// 숨겨진 입력 필드를 폼에 추가
+            orderStatusChangeForm.appendChild(orderIdInput);
+
+// 폼 제출
+            orderStatusChangeForm.submit();
         }
 
         // 모달 닫기 기능

@@ -92,6 +92,11 @@
       color: #fff;
       border-color: #d9bf8a;
     }
+    /* 모달 스타일 */
+    .modal { display: none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgb(0,0,0); background-color: rgba(0,0,0,0.4); }
+    .modal-content { background-color: #fefefe; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 500px; }
+    .close { color: #aaa; float: right; font-size: 28px; font-weight: bold; }
+    .close:hover, .close:focus { color: black; text-decoration: none; cursor: pointer; }
 
   </style>
 </head>
@@ -135,18 +140,78 @@
               <a class="yellow-btn" th:href="@{/write/review(orderDetailId=${item.productOrderDetailId}, orderId=${order.orderId})}">
                 리뷰 쓰러 가기
               </a>
-              <a class="yellow-btn" th:href="@{/write/review(orderDetailId=${item.productOrderDetailId}, orderId=${order.orderId})}">
-                리뷰 쓰러 가기
-              </a>
-
               <hr/>
             </div>
+            <button th:attr="data-point-discount=${order.discountAmountByPoint},
+                                     data-coupon-discount=${order.discountAmountByCoupon},
+                                     data-order-total-amount=${order.orderTotalAmount},
+                                     data-order-id=${order.orderId},
+                                     data-order-status=${order.orderStatus}"
+                    th:if="${order.orderStatus=='결제완료'}"
+                    onclick="openCancelModal(this)" class="btn">주문취소</button>
+
+            <button th:attr="data-point-discount=${order.discountAmountByPoint},
+                                     data-coupon-discount=${order.discountAmountByCoupon},
+                                     data-order-total-amount=${order.orderTotalAmount},
+                                     data-order-id=${order.orderId},
+data-order-date=${order.designatedDeliveryDate}"
+             th:if="${order.orderStatus == '배송중' || order.orderStatus == '배송완료'}"
+                    onclick="openRefundModal(this)" class="btn">환불요청</button>
           </td>
         </tr>
         </tbody>
       </table>
     </div>
   </div>
+<!--  취소모달-->
+  <div id="cancelModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('cancelModal')">&times;</span>
+      <form id="paymentCancelForm" th:action="@{/client/payment/cancel}" method="post">
+        <input type="hidden" id="orderId"  name="orderId">
+        <input type="hidden" id="status" name="orderStatus">
+        <div>
+          <label for="cancelAmount">환불 금액:</label>
+          <p type="text" id="cancelAmount"></p>
+        </div>
+        <div>
+          <label for ="cancelReason">취소 이유:
+            <input id="cancelReason" type="text" name="cancelReason">
+          </label>
+        </div>
+        <button type="submit">취소 요청</button>
+      </form>
+    </div>
+  </div>
+  <!--  반품모달-->
+  <div id="refundModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal('refundModal')">&times;</span>
+      <form id="paymentRefundForm" th:action="@{/order/refund/request}" method="post">
+        <input type="hidden" id="orderIds"  name="orderId">
+        <div>
+          <label for="totalAmount">환불 금액:</label>
+          <p type="text" id="totalAmount"></p>
+        </div>
+        <div>
+          <label for="refundPolicySelect">환불 정책:</label>
+          <select id="refundPolicySelect" name="refundPolicyId">
+            <!-- 옵션은 JavaScript로 동적으로 추가됨 -->
+          </select>
+        </div>
+        <div>
+          <label for ="cancelReason">반품 상세 사유:
+            <input id="refundDetailReason" type="text" name="refundDetailReason">
+          </label>
+        </div>
+        <button type="submit">반품 요청</button>
+      </form>
+    </div>
+  </div>
+
+
+
+
   <div class="pagination">
     <div class="pagination-content">
     <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}" class="pagination-item">
@@ -159,5 +224,95 @@
   </div>
 
 </div>
+<script>
+  function openCancelModal(button){
+    const modal = document.getElementById('cancelModal');
+    modal.style.display = "block";
+    const orderId = button.getAttribute('data-order-id');
+    const couponDiscount = button.getAttribute('data-coupon-discount');
+    const orderStatus = button.getAttribute('data-order-status');
+    const pointDiscount = button.getAttribute('data-point-discount');
+    const orderTotalAmount = button.getAttribute('data-order-total-amount');
+    const finalAmount = orderTotalAmount - pointDiscount - couponDiscount;
+    const orderDate = button.getAttribute('data-order-date');
+    document.getElementById('cancelAmount').textContent = finalAmount;
+    document.getElementById('orderId').value = orderId;
+    document.getElementById('status').value = orderStatus;
+    document.getElementById('orderDate').value = orderDate;
+
+  }
+
+
+  function openRefundModal(button) {
+    const couponDiscount = button.getAttribute('data-coupon-discount');
+    const pointDiscount = button.getAttribute('data-point-discount');
+    const orderTotalAmount = button.getAttribute('data-order-total-amount');
+    const orderIds = button.getAttribute('data-order-id');
+    const totalAmount = orderTotalAmount - pointDiscount - couponDiscount;
+    fetchRefundPolicies(orderIds);
+    document.getElementById('totalAmount').textContent = totalAmount;
+    document.getElementById('orderIds').value = orderIds;
+
+
+      // 모달을 열기
+      document.getElementById('refundModal').style.display = 'block';
+    function fetchRefundPolicies(orderIds) {
+      fetch(`/order/refund?orderId=${orderIds}`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log('Refund policies data:', data); // 데이터 확인
+
+        populateRefundPolicySelect(data);
+      })
+      .catch(error => {
+        console.error('Error fetching refund policies:', error);
+      });
+    }
+
+// select 요소에 옵션을 추가하는 함수
+    function populateRefundPolicySelect(refundPolicies) {
+      const refundPolicySelect = document.getElementById('refundPolicySelect');
+      refundPolicySelect.innerHTML = '<option value="">선택하세요</option>'; // 초기화
+
+      refundPolicies.forEach(refund => {
+        const option = document.createElement('option');
+        // 설정할 데이터
+        const refundPolicyId = refund.refundPolicyId; // ID
+        const refundPolicyType = refund.refundPolicyType; // TYPE
+        const refundShippingFee = refund.refundShippingFee; // SHIPPING FEE
+
+        // 옵션의 value 설정
+        option.value = refundPolicyId;
+
+        // 옵션의 텍스트 콘텐츠 설정
+        option.textContent = ` TYPE: ${refundPolicyType}, 배송비: ${refundShippingFee}`;
+
+        // 옵션을 select 요소에 추가
+        refundPolicySelect.appendChild(option);
+      });
+      }
+
+   }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).style.display = "none";
+    }
+
+    window.onclick = function (event) {
+      const modals = document.getElementsByClassName("modal");
+      for (let i = 0; i < modals.length; i++) {
+        if (event.target == modals[i]) {
+          closeModal(modals[i].id);
+
+        }
+      }
+    }
+
+</script>
 </body>
 </html>
