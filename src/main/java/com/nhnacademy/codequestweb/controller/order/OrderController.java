@@ -87,9 +87,9 @@ public class OrderController {
     }
 
     @PostMapping("/order/{orderId}/update")
-    public String updateOrderStatus(HttpServletRequest request, @PathVariable long orderId, @RequestParam("status") String orderStatus, @RequestParam(value = "orderNo", defaultValue = "0") int orderNo){
+    public String updateOrderStatus(HttpServletRequest request, @PathVariable long orderId, @RequestParam("status") String orderStatus, @RequestParam(value = "pageNo", defaultValue = "0") int pageNo){
         adminOrderService.updateOrderStatus(request, orderId, orderStatus);
-        return String.format("redirect:/admin/orders?pageNo=%d&pageSize=20", orderNo);
+        return String.format("redirect:/admin/orders?pageNo=%d&pageSize=20", pageNo);
     }
 
 }

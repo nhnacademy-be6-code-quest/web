@@ -250,7 +250,7 @@ public class MyPageController {
 
     @GetMapping("/mypage/orders")
     public String mypageOrders(HttpServletRequest req,
-                               @RequestParam(value = "pageSize", defaultValue = "5", required = false) int pageSize,
+                               @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize,
                                @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo){
 
         HttpHeaders headers = new HttpHeaders();
