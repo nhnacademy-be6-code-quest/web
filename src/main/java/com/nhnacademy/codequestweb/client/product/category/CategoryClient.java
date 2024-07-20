@@ -46,8 +46,6 @@ public interface CategoryClient {
     ResponseEntity<Page<CategoryGetResponseDto>> getSubCategories(@RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "desc", required = false) Boolean desc, @RequestParam(name = "sort", required = false) String sort,
                                                                   @PathVariable("categoryId") Long categoryId);
 
-    @GetMapping("/product/categories/{categoryId}/sub/all")
-    ResponseEntity<List<CategoryGetResponseDto>> getAllSubCategories(@PathVariable("categoryId") Long categoryId);
 
     @GetMapping("/product/categories/tree")
     ResponseEntity<CategoryNodeResponseDto> getCategoriesTree();

@@ -41,8 +41,4 @@ public class CategoryService {
     public ResponseEntity<Page<CategoryGetResponseDto>> getSubCategories(Integer page, Boolean desc, String sort, Long categoryId){
         return categoryClient.getSubCategories(page, desc, sort, categoryId);
     }
-
-    public ResponseEntity<List<CategoryGetResponseDto>> getAllSubCategories(Long categoryId){
-        return categoryClient.getAllSubCategories(categoryId);
-    }
 }
