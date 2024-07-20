@@ -95,7 +95,7 @@ public class PaymentController {
         // 결제 승인 후 DB에 저장
         paymentService.savePayment(headers, tossPaymentsResponseDto);
 
-        log.info("결제 승인 성공");
+        log.info("결제 및 주문 데이터 저장 성공");
 
         return String.format("redirect:/client/order/%s/payment/success/post-process", tossOrderId);
     }
@@ -106,19 +106,17 @@ public class PaymentController {
         HttpServletRequest request, HttpServletResponse response, Model model,
         RedirectAttributes redirectAttributes) {
 
-        log.info(" 성공");
-
         StringBuilder alterMessage = new StringBuilder();
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(request, "access"));
 
-        model.addAttribute("tossOrderId", tossOrderId);
-        model.addAttribute("view", "payment");
-        model.addAttribute("payment", "success");
-
         PostProcessRequiredPaymentResponseDto postProcessRequiredPaymentResponseDto = paymentService.getPostProcessRequiredPaymentResponseDto(
             tossOrderId);
+
+        model.addAttribute("orderId", postProcessRequiredPaymentResponseDto.getOrderId());
+        model.addAttribute("view", "payment");
+        model.addAttribute("payment", "success");
 
         // 포인트 적립하기
         if(Objects.nonNull(postProcessRequiredPaymentResponseDto.getClientId())){

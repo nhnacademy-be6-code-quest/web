@@ -129,6 +129,7 @@ public class OrderService {
                 .couponId(clientOrderDiscountForm.getCouponId())
                 .shippingFee(clientOrderForm.getShippingFee())
                 .productTotalAmount(clientOrderForm.getProductTotalAmount())
+                .orderTotalAmount(clientOrderForm.getShippingFee() + clientOrderForm.getProductTotalAmount())
                 .payAmount(clientOrderDiscountForm.getPayAmount() == null ? 0 : clientOrderDiscountForm.getPayAmount())
                 .couponDiscountAmount(clientOrderDiscountForm.getCouponDiscountAmount() == null ? 0 : clientOrderDiscountForm.getCouponDiscountAmount())
                 .usedPointDiscountAmount(clientOrderDiscountForm.getUsedPointDiscountAmount() == null ? 0 : clientOrderDiscountForm.getUsedPointDiscountAmount())
@@ -340,8 +341,8 @@ public class OrderService {
         orderClient.paymentCompleteNonClientOrder(headers, orderId);
     }
 
-    public NonClientOrderGetResponseDto findNonClientOrder(HttpHeaders headers, String tossOrderId, String orderPassword) {
-        return orderClient.findNonClientOrder(headers, tossOrderId, orderPassword).getBody();
+    public NonClientOrderGetResponseDto findNonClientOrder(HttpHeaders headers, long orderId, String orderPassword) {
+        return orderClient.findNonClientOrder(headers, orderId, orderPassword).getBody();
     }
 
     public void updateOrderStatus(HttpHeaders headers, long orderId, String status) {

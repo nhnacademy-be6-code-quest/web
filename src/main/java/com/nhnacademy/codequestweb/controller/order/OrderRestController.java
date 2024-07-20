@@ -19,13 +19,18 @@ public class OrderRestController {
     private final OrderService orderService;
 
     @GetMapping("/non-client/order")
-    public NonClientOrderGetResponseDto nonClientFindOrder(HttpServletRequest req, @RequestParam("orderId") String orderId, @RequestParam("orderPassword") String orderPassword){
+    public NonClientOrderGetResponseDto nonClientFindOrder(HttpServletRequest req, @RequestParam("orderId") String orderIdStr, @RequestParam("orderPassword") String orderPassword){
 
+        Long orderId = null;
         NonClientOrderGetResponseDto nonClientOrderGetResponseDto = null;
         try {
+            Long.parseLong(orderIdStr);
             HttpHeaders headers = new HttpHeaders();
             headers.set("access", CookieUtils.getCookieValue(req, "access"));
+            orderId = Long.parseLong(orderIdStr);
             nonClientOrderGetResponseDto = orderService.findNonClientOrder(headers, orderId, orderPassword);
+        } catch (NumberFormatException e) {
+            log.info("입력한 주문 아이디를 정수형으로 파싱하는데 실패했습니다.");
         } catch(RuntimeException e){
             log.info("주문 조회 실패");
         }
