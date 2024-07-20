@@ -2,6 +2,7 @@ package com.nhnacademy.codequestweb.client.payment;
 
 import com.nhnacademy.codequestweb.request.payment.PostProcessRequiredPaymentResponseDto;
 import com.nhnacademy.codequestweb.request.payment.TossApprovePaymentRequest;
+import com.nhnacademy.codequestweb.request.payment.UserUpdateGradeRequestDto;
 import com.nhnacademy.codequestweb.response.payment.PaymentGradeResponseDto;
 import com.nhnacademy.codequestweb.response.payment.TossPaymentsResponseDto;
 import org.json.simple.parser.ParseException;
@@ -37,4 +38,6 @@ public interface PaymentClient {
     @GetMapping("/api/order/payment/post-process")
     ResponseEntity<PostProcessRequiredPaymentResponseDto> getPostProcessRequiredPaymentResponseDto(@RequestParam("tossOrderId") String tossOrderId);
 
+    @PostMapping("/api/order/update/user")
+    void updateUser(@RequestBody UserUpdateGradeRequestDto userUpdateGradeRequestDto);
 }

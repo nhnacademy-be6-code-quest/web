@@ -131,6 +131,7 @@ public class PaymentController {
 
         }
 
+        paymentService.updateGrade(postProcessRequiredPaymentResponseDto.getClientId());
         // 장바구니 비우기
         boolean successClearCartCookie = clearCartCookie(response,
             postProcessRequiredPaymentResponseDto, model);
