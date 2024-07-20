@@ -5,12 +5,14 @@ import com.nhnacademy.codequestweb.response.order.common.OrderResponseDto;
 import com.nhnacademy.codequestweb.response.point.PointAccumulationAdminPageResponseDto;
 import com.nhnacademy.codequestweb.response.point.PointPolicyAdminListResponseDto;
 import com.nhnacademy.codequestweb.response.point.PointUsageAdminPageResponseDto;
+import com.nhnacademy.codequestweb.response.refund.RefundAdminResponseDto;
 import com.nhnacademy.codequestweb.response.shipping.ShippingPolicyGetResponseDto;
 import com.nhnacademy.codequestweb.service.admin.AdminService;
 import com.nhnacademy.codequestweb.service.order.AdminOrderService;
 import com.nhnacademy.codequestweb.service.point.PointAccumulationService;
 import com.nhnacademy.codequestweb.service.point.PointPolicyService;
 import com.nhnacademy.codequestweb.service.point.PointUsageService;
+import com.nhnacademy.codequestweb.service.refund.RefundService;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
 import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequiredArgsConstructor
@@ -33,6 +36,7 @@ public class AdminController {
     private final PointUsageService pointUsageService;
     private final PointPolicyService pointPolicyService;
     private final AdminOrderService adminOrderService;
+    private final RefundService refundService;
 
     @GetMapping("/admin")
     public String admin(HttpServletRequest request) {
@@ -119,12 +123,16 @@ public class AdminController {
 
         req.setAttribute("orders", orderResponseDtoPage.getContent());
         req.setAttribute("totalPages", orderResponseDtoPage.getTotalPages());
-        req.setAttribute("currentPage", orderResponseDtoPage.getNumber());
+        req.setAttribute("currentPage", orderResponseDtoPage.   getNumber());
         req.setAttribute("pageSize", orderResponseDtoPage.getSize());
 
         return "index";
     }
-
+    @GetMapping("/api/refund/admin/refund")
+    @ResponseBody
+    public RefundAdminResponseDto refundAccessView(@RequestParam long orderId) {
+        return refundService.findUserRefund(orderId);
+    }
     @GetMapping("/admin/shipping/policy")
     public String adminShippingPolicy(HttpServletRequest req, Model model){
 

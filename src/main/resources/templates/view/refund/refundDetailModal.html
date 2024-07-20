@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>주문 상세</title>
+  <link rel="stylesheet" href="/css/modal.css">
+</head>
+<body>
+<form action="" method="post">
+<div class="modal-content">
+  <span class="close" onclick="window.close()">&times;</span>
+  <div>환불 정보</div>
+  <div>환불 정책 타입: <span th:text="${refund.refundPolicyType}"></span></div>
+  <div>환불 배송비: <span th:text="${refund.refundShippingFee}"></span></div>
+  <div>결제 금액: <span th:text="${refund.payAmount}"></span></div>
+  <div>주문 날짜 배송비: <span th:text="${refund.ShippingFeeOfOrderDate}"></span></div>
+  <div>옵션 상품 가격: <span th:text="${refund.optionProductPrice}"></span></div>
+  <div>환불 날짜 시간: <span th:text="${refund.refundDateTime}"></span></div>
+  <div>환불 상세 이유: <span th:text="${refund.refundDetailReason}"></span></div>
+  <div>결제 키: <span th:text="${refund.paymentKey}"></span></div>
+</div>
+</form>
+</body>
+</html>
