@@ -39,7 +39,7 @@ public interface BookProductClient {
                 @RequestBody @Valid BookProductUpdateRequestDto bookProductUpdateRequestDto);
 
         @GetMapping("/api/product/book/isbnCheck")
-        ResponseEntity<Boolean> isbnCheck(
+        ResponseEntity<Void> isbnCheck(
                 @RequestParam("isbn") String isbn
         );
 

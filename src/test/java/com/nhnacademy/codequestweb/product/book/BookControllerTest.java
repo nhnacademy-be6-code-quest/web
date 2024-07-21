@@ -239,49 +239,25 @@ class BookControllerTest {
     @Test
     void checkIsbnExistTest1() throws Exception {
         String isbn = "test isbn";
-        when(bookProductService.isbnCheck(isbn)).thenReturn(ResponseEntity.ok(true));
+        when(bookProductService.isbnCheck(isbn)).thenReturn(ResponseEntity.status(409).body(null));
 
-        MvcResult mvcResult = mockMvc.perform(get("/admin/product/book/isbnCheck")
+        mockMvc.perform(get("/admin/product/book/isbnCheck")
                         .param("isbn", isbn)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        String responseBody = mvcResult.getResponse().getContentAsString();
-        Boolean response = objectMapper.readValue(responseBody, Boolean.class);
-        Assertions.assertTrue(response); // C
+                .andExpect(status().isConflict());
     }
 
     @Test
     void checkIsbnExistTest2() throws Exception {
         String isbn = "test isbn";
-        when(bookProductService.isbnCheck(isbn)).thenReturn(ResponseEntity.ok(false));
+        when(bookProductService.isbnCheck(isbn)).thenReturn(ResponseEntity.ok(null));
 
 
-        MvcResult mvcResult = mockMvc.perform(get("/admin/product/book/isbnCheck")
+        mockMvc.perform(get("/admin/product/book/isbnCheck")
                         .param("isbn", isbn)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andReturn();
+                .andExpect(status().isOk());
 
-        String responseBody = mvcResult.getResponse().getContentAsString();
-        Boolean response = objectMapper.readValue(responseBody, Boolean.class);
-        Assertions.assertFalse(response); // C
-    }
-
-    @Test
-    void checkIsbnExistTest3() throws Exception {
-        String isbn = "test isbn";
-
-        doThrow(FeignException.class).when(bookProductService).isbnCheck(isbn);
-
-        MvcResult mvcResult = mockMvc.perform(get("/admin/product/book/isbnCheck")
-                        .param("isbn", isbn))
-                .andExpect(status().isInternalServerError())
-                .andReturn();
-
-        String responseBody = mvcResult.getResponse().getContentAsString();
-        Assertions.assertTrue(responseBody.isBlank());
     }
 
     @Test
