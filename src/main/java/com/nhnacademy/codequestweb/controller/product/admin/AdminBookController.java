@@ -1,7 +1,6 @@
-package com.nhnacademy.codequestweb.controller.product.adminOnly;
+package com.nhnacademy.codequestweb.controller.product.admin;
 
 
-import com.nhnacademy.codequestweb.request.product.ProductStateUpdateRequestDto;
 import com.nhnacademy.codequestweb.request.product.bookProduct.BookProductRegisterRequestDto;
 import com.nhnacademy.codequestweb.request.product.bookProduct.BookProductUpdateRequestDto;
 import com.nhnacademy.codequestweb.response.product.book.AladinBookResponseDto;
@@ -25,7 +24,6 @@ import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.StringJoiner;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
@@ -58,9 +56,10 @@ public class AdminBookController {
 
     private final ReviewService reviewService;
 
-    private final MessageSource messageSource;
-
     private final FlexmarkHtmlConverter flexmarkHtmlConverter = FlexmarkHtmlConverter.builder().build();
+
+
+    private static final String ALTER_MESSAGE = "alterMessage";
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {
@@ -195,7 +194,7 @@ public class AdminBookController {
         log.info("Encoded data: {}", encodedData);
         ResponseEntity<ProductRegisterResponseDto> responseEntity = bookProductService.saveBook(CookieUtils.setHeader(req), dto);
         if (responseEntity.getStatusCode().is2xxSuccessful()){
-            redirectAttributes.addFlashAttribute("alterMessage", "성공적으로 등록되었습니다.");
+            redirectAttributes.addFlashAttribute(ALTER_MESSAGE, "성공적으로 등록되었습니다.");
         }
         return "redirect:/admin/product/book/all";
     }
@@ -206,9 +205,7 @@ public class AdminBookController {
         ResponseEntity<ProductUpdateResponseDto> responseEntity = bookProductService.updateBook(CookieUtils.setHeader(req), dto);
         log.info("status code : {}",responseEntity.getStatusCode().value());
         if (responseEntity.getStatusCode().is2xxSuccessful()){
-            redirectAttributes.addFlashAttribute("alterMessage", "성공적으로 수정되었습니다.");
-
-            req.setAttribute("alterMessage", "성공적으로 수정되었습니다.");
+            redirectAttributes.addFlashAttribute(ALTER_MESSAGE, "성공적으로 수정되었습니다.");
         }
         return "redirect:/admin/product/book/all";
     }

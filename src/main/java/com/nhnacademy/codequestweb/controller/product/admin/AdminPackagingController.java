@@ -1,4 +1,4 @@
-package com.nhnacademy.codequestweb.controller.product.adminOnly;
+package com.nhnacademy.codequestweb.controller.product.admin;
 
 import com.nhnacademy.codequestweb.request.product.packaging.PackagingRegisterRequestDto;
 import com.nhnacademy.codequestweb.request.product.packaging.PackagingUpdateRequestDto;

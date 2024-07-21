@@ -1,4 +1,4 @@
-package com.nhnacademy.codequestweb.controller.product.clientOnly;
+package com.nhnacademy.codequestweb.controller.product.client;
 
 import com.nhnacademy.codequestweb.request.product.ProductLikeRequestDto;
 import com.nhnacademy.codequestweb.request.product.ProductStateUpdateRequestDto;

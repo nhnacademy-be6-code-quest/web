@@ -1,4 +1,4 @@
-package com.nhnacademy.codequestweb.controller.product.permitAll;
+package com.nhnacademy.codequestweb.controller.product.everyone;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
