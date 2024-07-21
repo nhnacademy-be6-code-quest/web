@@ -327,6 +327,7 @@
                     method: 'GET'
                 })
                     .then(response => {
+                        console.log(response);
                         if (response.ok) {
                             return response.json(); // 응답 본문을 JSON으로 파싱
                         } else {
