@@ -130,8 +130,9 @@ public class PaymentController {
 
         }
 
-        paymentService.updateGrade(postProcessRequiredPaymentResponseDto.getClientId());
-        // 장바구니 비우기
+        if(Objects.nonNull(postProcessRequiredPaymentResponseDto.getClientId())) {
+            paymentService.updateGrade(postProcessRequiredPaymentResponseDto.getClientId());
+        }        // 장바구니 비우기
         boolean successClearCartCookie = clearCartCookie(response,
             postProcessRequiredPaymentResponseDto, model);
 

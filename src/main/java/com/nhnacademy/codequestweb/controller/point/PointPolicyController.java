@@ -40,14 +40,14 @@ public class PointPolicyController {
     public String pointPolicyRegister(HttpServletRequest req,
         @ModelAttribute PointPolicyModifyRequestDto pointPolicyModifyRequestDto) {
         headers.set(NAME, CookieUtils.getCookieValue(req, NAME));
-        pointPolicyService.modifyPolicy(pointPolicyModifyRequestDto);
+        pointPolicyService.modifyPolicy(headers, pointPolicyModifyRequestDto);
         return "redirect:/admin/point/policy";
     }
     @PutMapping("/admin/point/policy/active")
     public String pointPolicyActive(HttpServletRequest req, @ModelAttribute
         PointPolicyActiveRequestDto pointPolicyActiveRequestDto) {
         headers.set(NAME, CookieUtils.getCookieValue(req, NAME));
-        pointPolicyService.pointActive(pointPolicyActiveRequestDto);
+        pointPolicyService.pointActive(headers, pointPolicyActiveRequestDto);
         return "redirect:/admin/point/policy";
     }
 }

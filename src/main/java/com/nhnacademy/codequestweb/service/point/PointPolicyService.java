@@ -24,11 +24,11 @@ public class PointPolicyService {
         return pointPolicyClient.findAllPointPolicy(headers, page, size).getBody();
     }
 
-    public void modifyPolicy(PointPolicyModifyRequestDto pointPolicyModifyRequestDto){
-        pointPolicyClient.modifyPointPolicy(pointPolicyModifyRequestDto);
+    public void modifyPolicy(HttpHeaders headers, PointPolicyModifyRequestDto pointPolicyModifyRequestDto){
+        pointPolicyClient.modifyPointPolicy(headers, pointPolicyModifyRequestDto);
     }
-    public void pointActive(PointPolicyActiveRequestDto pointPolicyActiveRequestDto){
-        pointPolicyClient.pointPolicyActive(pointPolicyActiveRequestDto);
+    public void pointActive(HttpHeaders headers, PointPolicyActiveRequestDto pointPolicyActiveRequestDto){
+        pointPolicyClient.pointPolicyActive(headers, pointPolicyActiveRequestDto);
     }
 
 
