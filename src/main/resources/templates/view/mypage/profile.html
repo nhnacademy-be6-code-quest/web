@@ -3,6 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <title>Client Privacy</title>
+    <style>
+        .info-icon {
+            cursor: pointer;
+            vertical-align: middle;
+            margin-left: 0.5rem;
+        }
+
+        .popover-body {
+            white-space: pre-line;
+        }
+    </style>
+
     <script th:inline="javascript">
         /*<![CDATA[*/
         function enableEditing() {
@@ -30,11 +42,19 @@
             return `${year}-${month}-${day}`;
         }
 
-        window.onload = function() {
+        window.onload = function () {
             const clientBirthInput = document.getElementById('clientBirth');
             /*[[${profile.clientBirth}]]*/
             const clientBirthValue = /*[[${profile.clientBirth}]]*/ '1970-01-01T00:00:00';  // 초기값 설정
             clientBirthInput.value = formatDateToInput(clientBirthValue);
+
+            // Initialize all popovers
+            const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+            popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl, {
+                    trigger: 'hover focus'
+                });
+            });
         }
         /*]]>*/
     </script>
@@ -52,25 +72,43 @@
                     <div class="mb-4">
                         <div class="mb-3">
                             <label for="clientGrade">회원 등급</label>
-                            <input id="clientGrade" th:value="${profile.clientGrade}" class="form-control" readonly />
+                            <div class="input-group">
+                                <input id="clientGrade" th:value="${profile.clientGrade}" class="form-control" readonly />
+                                <button type="button" class="btn btn-outline-secondary info-icon"
+                                        data-bs-toggle="popover"
+                                        data-bs-title="등급별 적립률"
+                                        data-bs-content="common: 1%
+royal: 2%
+gold: 3%
+platinum: 4%">
+                                    ❓
+                                </button>
+                            </div>
                         </div>
                         <div class="mb-3">
                             <label for="clientEmail">이메일</label>
-                            <input id="clientEmail" th:value="${profile.clientEmail}" class="form-control" readonly />
+                            <input id="clientEmail" th:value="${profile.clientEmail}" class="form-control" readonly/>
                         </div>
                         <div class="mb-3">
                             <label for="clientName">닉네임</label>
-                            <input id="clientName" name="clientName" th:value="${profile.clientName}" class="form-control" readonly />
+                            <input id="clientName" name="clientName" th:value="${profile.clientName}"
+                                   class="form-control" readonly/>
                         </div>
                         <div class="mb-3">
                             <label for="clientBirth">생일</label>
-                            <input id="clientBirth" name="clientBirth" type="date" class="form-control" data-value="${profile.clientBirth}" readonly />
+                            <input id="clientBirth" name="clientBirth" type="date" class="form-control"
+                                   data-value="${profile.clientBirth}" readonly/>
                         </div>
                     </div>
                     <div class="d-flex justify-content-end gap-2">
-                        <button id="editButton" type="button" class="btn btn-primary" onclick="enableEditing()">Edit</button>
-                        <button id="cancelButton" type="button" class="btn btn-outline-secondary" onclick="cancelEditing()" style="display: none;">Cancel</button>
-                        <button id="saveButton" type="submit" class="btn btn-primary" style="display: none;">Save Changes</button>
+                        <button id="editButton" type="button" class="btn btn-primary" onclick="enableEditing()">Edit
+                        </button>
+                        <button id="cancelButton" type="button" class="btn btn-outline-secondary"
+                                onclick="cancelEditing()" style="display: none;">Cancel
+                        </button>
+                        <button id="saveButton" type="submit" class="btn btn-primary" style="display: none;">Save
+                            Changes
+                        </button>
                     </div>
                 </form>
             </div>

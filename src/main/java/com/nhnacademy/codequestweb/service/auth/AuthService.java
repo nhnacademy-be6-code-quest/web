@@ -5,7 +5,6 @@ import com.nhnacademy.codequestweb.client.auth.UserClient;
 import com.nhnacademy.codequestweb.request.auth.ClientLoginRequestDto;
 import com.nhnacademy.codequestweb.request.auth.ClientRegisterRequestDto;
 import com.nhnacademy.codequestweb.request.auth.OAuthRegisterRequestDto;
-import com.nhnacademy.codequestweb.request.client.ClientRecoveryRequestDto;
 import com.nhnacademy.codequestweb.response.auth.ClientRegisterResponseDto;
 import com.nhnacademy.codequestweb.response.auth.TokenResponseDto;
 import lombok.RequiredArgsConstructor;
