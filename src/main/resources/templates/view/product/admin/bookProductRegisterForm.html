@@ -158,7 +158,7 @@
 
 
             window.addEventListener('message', function (event) {
-                document.getElementById("isbnExist").value = false;
+                // document.getElementById("isbnExist").value = false;
                 // 자식 창이 보낸 메시지 처리
                 switch (event.data.type) {
                     case 'title':
@@ -327,7 +327,10 @@
                     method: 'GET'
                 })
                     .then(response => {
+                        console.log('response:');
+                        console.log(response);
                         if (response.ok) {
+                            console.log('ok');
                             return response.json(); // 응답 본문을 JSON으로 파싱
                         } else {
                             throw new Error('ISBN 조회에 실패했습니다.');
