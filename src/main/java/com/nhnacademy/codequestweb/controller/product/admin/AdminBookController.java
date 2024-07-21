@@ -148,6 +148,8 @@ public class AdminBookController {
     @GetMapping("/isbnCheck")
     public ResponseEntity<Boolean> checkIsbnExists(@RequestParam("isbn") String isbn){
         try {
+            ResponseEntity<Boolean> response = bookProductService.isbnCheck(isbn);
+            log.info("isbn: {}, response : {}, exist : {}", isbn, response, response.getBody());
             return bookProductService.isbnCheck(isbn);
         } catch (FeignException e) {
             log.warn("error occurred while checking isbn exist : {}, caused : {}", e.status(), e.contentUTF8());
