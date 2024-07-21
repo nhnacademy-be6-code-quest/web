@@ -1,4 +1,4 @@
-package com.nhnacademy.codequestweb.request.product.productCategory;
+package com.nhnacademy.codequestweb.request.product.product_category;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

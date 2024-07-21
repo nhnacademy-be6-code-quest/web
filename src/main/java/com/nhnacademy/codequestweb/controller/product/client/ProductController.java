@@ -1,10 +1,7 @@
-package com.nhnacademy.codequestweb.controller.product.clientOnly;
-
+package com.nhnacademy.codequestweb.controller.product.client;
 
 import com.nhnacademy.codequestweb.request.product.ProductLikeRequestDto;
 import com.nhnacademy.codequestweb.request.product.ProductStateUpdateRequestDto;
-import com.nhnacademy.codequestweb.request.product.common.InventoryDecreaseRequestDto;
-import com.nhnacademy.codequestweb.request.product.common.InventoryIncreaseRequestDto;
 import com.nhnacademy.codequestweb.request.product.common.InventorySetRequestDto;
 import com.nhnacademy.codequestweb.response.product.common.ProductUpdateResponseDto;
 import com.nhnacademy.codequestweb.service.product.ProductService;
@@ -12,7 +9,6 @@ import com.nhnacademy.codequestweb.utils.CookieUtils;
 import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -55,19 +51,6 @@ public class ProductController {
         }
     }
 
-    @PutMapping("/inventory/increase")
-    public String increaseBookInventory(HttpServletRequest req, @ModelAttribute @Valid
-    List<InventoryIncreaseRequestDto> dtoList){
-        ResponseEntity<Void> responseEntity = productService.increaseProductInventory(dtoList);
-        return "redirect:/";
-    }
-
-    @PutMapping("/inventory/decrease")
-    public String decreaseBookInventory(HttpServletRequest req, @ModelAttribute @Valid
-    List<InventoryDecreaseRequestDto> dtoList){
-        ResponseEntity<Void> responseEntity = productService.decreaseProductInventory(dtoList);
-        return "redirect:/";
-    }
 
     @PutMapping("/inventory/set")
     public String setBookInventory(HttpServletRequest req, @ModelAttribute @Valid InventorySetRequestDto dto){

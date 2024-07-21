@@ -1,4 +1,4 @@
-package com.nhnacademy.codequestweb.controller.product.adminOnly;
+package com.nhnacademy.codequestweb.controller.product.admin;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -1,4 +1,4 @@
-package com.nhnacademy.codequestweb.controller.product.adminOnly;
+package com.nhnacademy.codequestweb.controller.product.admin;
 
 import com.nhnacademy.codequestweb.request.product.tag.TagRegisterRequestDto;
 import com.nhnacademy.codequestweb.request.product.tag.TagUpdateRequestDto;
@@ -10,7 +10,6 @@ import com.nhnacademy.codequestweb.utils.CookieUtils;
 import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,8 +1,8 @@
-package com.nhnacademy.codequestweb.controller.product.adminOnly;
+package com.nhnacademy.codequestweb.controller.product.admin;
 
 import com.nhnacademy.codequestweb.config.CategoryConfig;
-import com.nhnacademy.codequestweb.request.product.productCategory.CategoryRegisterRequestDto;
-import com.nhnacademy.codequestweb.request.product.productCategory.CategoryUpdateRequestDto;
+import com.nhnacademy.codequestweb.request.product.product_category.CategoryRegisterRequestDto;
+import com.nhnacademy.codequestweb.request.product.product_category.CategoryUpdateRequestDto;
 import com.nhnacademy.codequestweb.response.product.productCategory.CategoryGetResponseDto;
 import com.nhnacademy.codequestweb.response.product.productCategory.CategoryNodeResponseDto;
 import com.nhnacademy.codequestweb.response.product.productCategory.CategoryRegisterResponseDto;
@@ -35,7 +35,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Slf4j
 @Controller
@@ -145,8 +144,10 @@ public class AdminCategoryController {
     public ResponseEntity<Void> updateCategory(
             @ModelAttribute CategoryUpdateRequestDto dto,
             HttpServletRequest req){
+
         try {
             ResponseEntity<CategoryUpdateResponseDto> response = categoryService.updateCategory(CookieUtils.setHeader(req), dto);
+
             return ResponseEntity.ok(null);
         }catch (FeignException e){
             log.warn(e.getMessage());
@@ -159,6 +160,7 @@ public class AdminCategoryController {
             };
         }
     }
+
 
     @PostMapping("/category/update")
     public ResponseEntity<String> updateCategory(@RequestBody CategoryNodeResponseDto categoryNodeResponseDto) {

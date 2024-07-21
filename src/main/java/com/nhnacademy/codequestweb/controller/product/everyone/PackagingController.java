@@ -1,4 +1,4 @@
-package com.nhnacademy.codequestweb.controller.product.permitAll;
+package com.nhnacademy.codequestweb.controller.product.everyone;
 
 import com.nhnacademy.codequestweb.response.product.packaging.PackagingGetResponseDto;
 import com.nhnacademy.codequestweb.service.product.PackagingService;

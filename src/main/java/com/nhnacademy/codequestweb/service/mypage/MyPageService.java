@@ -1,7 +1,7 @@
 package com.nhnacademy.codequestweb.service.mypage;
 
 import com.nhnacademy.codequestweb.client.auth.UserClient;
-import com.nhnacademy.codequestweb.client.product.bookProduct.BookProductClient;
+import com.nhnacademy.codequestweb.client.product.book.BookProductClient;
 import com.nhnacademy.codequestweb.client.review.ReviewClient;
 import com.nhnacademy.codequestweb.request.auth.ClientRegisterRequestDto;
 import com.nhnacademy.codequestweb.request.mypage.ClientRegisterAddressRequestDto;
@@ -18,7 +18,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.List;
 

@@ -1,6 +1,5 @@
 package com.nhnacademy.codequestweb.client.product.cart;
 
-import com.nhnacademy.codequestweb.request.product.cart.CartCheckoutRequestDto;
 import com.nhnacademy.codequestweb.request.product.cart.CartRequestDto;
 import com.nhnacademy.codequestweb.response.product.common.CartGetResponseDto;
 import com.nhnacademy.codequestweb.response.product.common.SaveCartResponseDto;

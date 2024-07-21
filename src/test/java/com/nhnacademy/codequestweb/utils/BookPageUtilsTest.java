@@ -39,7 +39,7 @@ class BookPageUtilsTest {
         ResponseEntity<Page<BookProductGetResponseDto>> response = ResponseEntity.ok(page);
 
         // Act
-        BookPageUtils.setBookPage(response, pageNum, sort, desc, model);
+        BookUtils.setBookPage(response, pageNum, sort, desc, model);
 
         // Assert
         verify(model).addAttribute("sort", sort);
@@ -68,7 +68,7 @@ class BookPageUtilsTest {
         ResponseEntity<Page<BookProductGetResponseDto>> response = ResponseEntity.ok(page);
 
         // Act
-        BookPageUtils.setBookPage(response, pageNum, sort, desc, model);
+        BookUtils.setBookPage(response, pageNum, sort, desc, model);
 
         // Assert
         verify(model).addAttribute("sort", sort);

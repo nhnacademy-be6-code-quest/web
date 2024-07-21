@@ -70,7 +70,6 @@ public class CartControllerAdvice {
                 model.addAttribute("cart", emptyList);
                 log.error("error while making new cart cookie");
             }
-            //만약 여기서 예외 발생해서 쿠키 새로 생성 못하면 페이지 이동할때마다 예외 터지겠네. 이건 어떻게 처리하지.
         }
     }
 }

@@ -1,12 +1,12 @@
 package com.nhnacademy.codequestweb.service.product;
 
 import com.nhnacademy.codequestweb.client.product.category.CategoryClient;
-import com.nhnacademy.codequestweb.request.product.productCategory.CategoryRegisterRequestDto;
-import com.nhnacademy.codequestweb.request.product.productCategory.CategoryUpdateRequestDto;
+import com.nhnacademy.codequestweb.config.CategoryConfig;
+import com.nhnacademy.codequestweb.request.product.product_category.CategoryRegisterRequestDto;
+import com.nhnacademy.codequestweb.request.product.product_category.CategoryUpdateRequestDto;
 import com.nhnacademy.codequestweb.response.product.productCategory.CategoryGetResponseDto;
 import com.nhnacademy.codequestweb.response.product.productCategory.CategoryRegisterResponseDto;
 import com.nhnacademy.codequestweb.response.product.productCategory.CategoryUpdateResponseDto;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
@@ -17,17 +17,24 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CategoryService {
     private final CategoryClient categoryClient;
+    private final CategoryConfig categoryConfig;
 
     public ResponseEntity<CategoryRegisterResponseDto> saveCategory(HttpHeaders headers, CategoryRegisterRequestDto categoryRegisterRequestDto) {
-        return categoryClient.saveCategory(headers, categoryRegisterRequestDto);
+        ResponseEntity<CategoryRegisterResponseDto> response = categoryClient.saveCategory(headers, categoryRegisterRequestDto);
+        categoryConfig.update(categoryClient.getCategoriesTree().getBody());
+        return response;
     }
 
     public ResponseEntity<CategoryUpdateResponseDto> updateCategory(HttpHeaders headers, CategoryUpdateRequestDto categoryUpdateRequestDto) {
-        return categoryClient.updateCategory(headers, categoryUpdateRequestDto);
+        ResponseEntity<CategoryUpdateResponseDto> response = categoryClient.updateCategory(headers, categoryUpdateRequestDto);
+        categoryConfig.update(categoryClient.getCategoriesTree().getBody());
+        return response;
     }
 
     public ResponseEntity<Void> deleteCategory(HttpHeaders headers, Long categoryId) {
-        return categoryClient.deleteCategory(headers, categoryId);
+        ResponseEntity<Void> response = categoryClient.deleteCategory(headers, categoryId);
+        categoryConfig.update(categoryClient.getCategoriesTree().getBody());
+        return response;
     }
 
     public ResponseEntity<Page<CategoryGetResponseDto>> getCategories(Integer page, Boolean desc, String sort) {
@@ -40,9 +47,5 @@ public class CategoryService {
 
     public ResponseEntity<Page<CategoryGetResponseDto>> getSubCategories(Integer page, Boolean desc, String sort, Long categoryId){
         return categoryClient.getSubCategories(page, desc, sort, categoryId);
-    }
-
-    public ResponseEntity<List<CategoryGetResponseDto>> getAllSubCategories(Long categoryId){
-        return categoryClient.getAllSubCategories(categoryId);
     }
 }
