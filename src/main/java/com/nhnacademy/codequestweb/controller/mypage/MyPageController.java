@@ -3,7 +3,6 @@ package com.nhnacademy.codequestweb.controller.mypage;
 import com.nhnacademy.codequestweb.request.mypage.ClientRegisterAddressRequestDto;
 import com.nhnacademy.codequestweb.request.mypage.ClientRegisterPhoneNumberRequestDto;
 import com.nhnacademy.codequestweb.request.mypage.ClientUpdatePrivacyRequestDto;
-import com.nhnacademy.codequestweb.response.coupon.CouponMyPageCouponResponseDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientDeliveryAddressResponseDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientPhoneNumberResponseDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientPrivacyResponseDto;
@@ -11,7 +10,6 @@ import com.nhnacademy.codequestweb.response.order.client.ClientOrderGetResponseD
 import com.nhnacademy.codequestweb.response.point.PointAccumulationMyPageResponseDto;
 import com.nhnacademy.codequestweb.response.point.PointUsageMyPageResponseDto;
 import com.nhnacademy.codequestweb.response.review.ReviewInfoResponseDto;
-import com.nhnacademy.codequestweb.service.coupon.CouponService;
 import com.nhnacademy.codequestweb.service.mypage.MyPageService;
 import com.nhnacademy.codequestweb.service.order.OrderService;
 import com.nhnacademy.codequestweb.service.point.PointAccumulationService;
@@ -41,54 +39,59 @@ import java.util.List;
 @Controller
 @RequiredArgsConstructor
 public class MyPageController {
+    private static final String INDEX = "index";
+    private static final String ACCESS = "access";
+    private static final String MYPAGE = "mypage";
+    private static final String CLIENT = "client";
+    private static final String ACTIVE_SECTION = "activeSection";
+    private static final String ALTER_MESSAGE = "alterMessage";
+    private static final String REDIRECT_AUTH = "redirect:/auth";
 
-    private static final int DEFAULT_PAGE_SIZE = 3;
     private final MyPageService myPageService;
     private final PointUsageService pointUsageService;
     private final PointAccumulationService pointAccumulationService;
-    private final CouponService couponService;
     private final OrderService orderService;
 
     @GetMapping("/mypage")
     public String mypageMain(HttpServletRequest req, HttpServletResponse res) {
         HttpHeaders headers = new HttpHeaders();
-        headers.set("access", CookieUtils.getCookieValue(req, "access"));
+        headers.set(ACCESS, CookieUtils.getCookieValue(req, ACCESS));
 
         ResponseEntity<ClientPrivacyResponseDto> response = myPageService.getPrivacy(headers);
 
-        log.info("response: {}", response.getBody());
+        log.info("My page response: {}", response.getBody());
 
-        req.setAttribute("view", "mypage");
-        req.setAttribute("mypage", "profile");
-        req.setAttribute("activeSection", "client");
+        req.setAttribute("view", MYPAGE);
+        req.setAttribute(MYPAGE, "profile");
+        req.setAttribute(ACTIVE_SECTION, CLIENT);
         req.setAttribute("profile", response.getBody());
-        return "index";
+        return INDEX;
     }
 
     @GetMapping("/mypage/delivary")
     public String mypageDelivery(HttpServletRequest req) {
-        if (CookieUtils.getCookieValue(req, "access") == null) {
-            return "redirect:/auth";
-        } else if (req.getParameter("alterMessage") != null) {
+        if (CookieUtils.getCookieValue(req, ACCESS) == null) {
+            return REDIRECT_AUTH;
+        } else if (req.getParameter(ALTER_MESSAGE) != null) {
             String decoding;
             try{
-                decoding = URLDecoder.decode(req.getParameter("alterMessage"), StandardCharsets.UTF_8.toString());
+                decoding = URLDecoder.decode(req.getParameter(ALTER_MESSAGE), StandardCharsets.UTF_8.toString());
             } catch (UnsupportedEncodingException e) {
                 decoding = null;
             }
-            req.setAttribute("alterMessage", decoding);
+            req.setAttribute(ALTER_MESSAGE, decoding);
         }
         HttpHeaders headers = new HttpHeaders();
-        headers.set("access", CookieUtils.getCookieValue(req, "access"));
+        headers.set(ACCESS, CookieUtils.getCookieValue(req, ACCESS));
 
         ResponseEntity<List<ClientDeliveryAddressResponseDto>> response = myPageService.getDeliveryAddresses(headers);
-        log.info("response: {}", response.getBody());
+        log.info("My page delivary response: {}", response.getBody());
 
-        req.setAttribute("view", "mypage");
-        req.setAttribute("mypage", "delivaryaddress");
-        req.setAttribute("activeSection", "client");
+        req.setAttribute("view", MYPAGE);
+        req.setAttribute(MYPAGE, "delivaryaddress");
+        req.setAttribute(ACTIVE_SECTION, CLIENT);
         req.setAttribute("clientDeliveryAddresses", response.getBody());
-        return "index";
+        return INDEX;
     }
 
     @PostMapping("/mypage/delivary")
@@ -96,7 +99,7 @@ public class MyPageController {
         @ModelAttribute ClientRegisterAddressRequestDto clientRegisterAddressRequestDto,
         HttpServletRequest req) {
         HttpHeaders headers = new HttpHeaders();
-        headers.set("access", CookieUtils.getCookieValue(req, "access"));
+        headers.set(ACCESS, CookieUtils.getCookieValue(req, ACCESS));
 
         try {
             ResponseEntity<String> response = myPageService.registerAddress(headers,
@@ -119,7 +122,7 @@ public class MyPageController {
     public ResponseEntity<String> deleteDeliveryAddress(@PathVariable Long deliveryAddressId,
         HttpServletRequest req) {
         HttpHeaders headers = new HttpHeaders();
-        headers.set("access", CookieUtils.getCookieValue(req, "access"));
+        headers.set(ACCESS, CookieUtils.getCookieValue(req, ACCESS));
 
         ResponseEntity<String> response = myPageService.deleteDeliveryAddress(headers,
             deliveryAddressId);
@@ -130,20 +133,20 @@ public class MyPageController {
 
     @GetMapping("/mypage/withdrawal")
     public String withdrawal(HttpServletRequest req) {
-        if (CookieUtils.getCookieValue(req, "access") == null) {
-            return "redirect:/auth";
+        if (CookieUtils.getCookieValue(req, ACCESS) == null) {
+            return REDIRECT_AUTH;
         }
-        req.setAttribute("view", "mypage");
-        req.setAttribute("mypage", "withdrawal");
-        req.setAttribute("activeSection", "client");
-        return "index";
+        req.setAttribute("view", MYPAGE);
+        req.setAttribute(MYPAGE, "withdrawal");
+        req.setAttribute(ACTIVE_SECTION, CLIENT);
+        return INDEX;
     }
 
     @DeleteMapping("/mypage/withdrawal")
     public ResponseEntity<String> withdrawal(@RequestParam("pw") String pw,
         HttpServletRequest req) {
         HttpHeaders headers = new HttpHeaders();
-        headers.set("access", CookieUtils.getCookieValue(req, "access"));
+        headers.set(ACCESS, CookieUtils.getCookieValue(req, ACCESS));
         headers.set("password", pw);
         try {
             return myPageService.deleteClient(headers);
@@ -154,41 +157,41 @@ public class MyPageController {
 
     @GetMapping("/mypage/phone")
     public String phone(HttpServletRequest req) {
-        if (CookieUtils.getCookieValue(req, "access") == null) {
-            return "redirect:/auth";
-        } else if (req.getParameter("alterMessage") != null) {
-            req.setAttribute("alterMessage", req.getParameter("alterMessage"));
+        if (CookieUtils.getCookieValue(req, ACCESS) == null) {
+            return REDIRECT_AUTH;
+        } else if (req.getParameter(ALTER_MESSAGE) != null) {
+            req.setAttribute(ALTER_MESSAGE, req.getParameter(ALTER_MESSAGE));
         }
         HttpHeaders headers = new HttpHeaders();
-        headers.set("access", CookieUtils.getCookieValue(req, "access"));
+        headers.set(ACCESS, CookieUtils.getCookieValue(req, ACCESS));
 
         ResponseEntity<List<ClientPhoneNumberResponseDto>> response = myPageService.getPhoneNumbers(headers);
         log.info("response: {}", response.getBody());
 
-        req.setAttribute("view", "mypage");
-        req.setAttribute("mypage", "phoneNumber");
-        req.setAttribute("activeSection", "client");
+        req.setAttribute("view", MYPAGE);
+        req.setAttribute(MYPAGE, "phoneNumber");
+        req.setAttribute(ACTIVE_SECTION, CLIENT);
         req.setAttribute("clientPhoneNumber", response.getBody());
-        return "index";
+        return INDEX;
     }
 
     @PostMapping("/mypage/phone")
     public String addPhone(HttpServletRequest req, @Valid @ModelAttribute ClientRegisterPhoneNumberRequestDto clientRegisterPhoneNumberRequestDto) {
-        if (CookieUtils.getCookieValue(req, "access") == null) {
-            return "redirect:/auth";
+        if (CookieUtils.getCookieValue(req, ACCESS) == null) {
+            return REDIRECT_AUTH;
         }
         HttpHeaders headers = new HttpHeaders();
-        headers.set("access", CookieUtils.getCookieValue(req, "access"));
+        headers.set(ACCESS, CookieUtils.getCookieValue(req, ACCESS));
 
         ResponseEntity<String> response = myPageService.registerPhoneNumbers(headers, clientRegisterPhoneNumberRequestDto);
-        log.info("response: {}", response.getBody());
+        log.info("My page Phone response: {}", response.getBody());
         return "redirect:/mypage/phone";
     }
 
     @DeleteMapping("/mypage/phone/{phoneId}")
     public ResponseEntity<String> deletePhone(@PathVariable Long phoneId, HttpServletRequest req) {
         HttpHeaders headers = new HttpHeaders();
-        headers.set("access", CookieUtils.getCookieValue(req, "access"));
+        headers.set(ACCESS, CookieUtils.getCookieValue(req, ACCESS));
 
         ResponseEntity<String> response = myPageService.deletePhoneNumber(headers, phoneId);
         log.info("/mypage/phone post response: {}", response.getBody());
@@ -198,7 +201,7 @@ public class MyPageController {
     @PutMapping("/mypage")
     public String updateProfile(@ModelAttribute ClientUpdatePrivacyRequestDto clientUpdatePrivacyRequestDto, HttpServletRequest req) {
         HttpHeaders headers = new HttpHeaders();
-        headers.set("access", CookieUtils.getCookieValue(req, "access"));
+        headers.set(ACCESS, CookieUtils.getCookieValue(req, ACCESS));
 
         ResponseEntity<String> response = myPageService.updateClient(headers, clientUpdatePrivacyRequestDto);
         log.info("response: {}", response.getBody());
@@ -207,7 +210,7 @@ public class MyPageController {
 
     @ExceptionHandler(FeignException.NotFound.class)
     public String notFound(HttpServletRequest req, Exception e) {
-        return "redirect:/auth";
+        return REDIRECT_AUTH;
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -225,27 +228,27 @@ public class MyPageController {
     @GetMapping("/mypage/point/reward")
     public String myPageRewardPoint (HttpServletRequest req, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "100") int size){
         HttpHeaders headers = new HttpHeaders();
-        headers.set("access", CookieUtils.getCookieValue(req, "access"));
+        headers.set(ACCESS, CookieUtils.getCookieValue(req, ACCESS));
 
-        req.setAttribute("view", "mypage");
-        req.setAttribute("mypage", "pointReward");
-        req.setAttribute("activeSection", "coupon");
+        req.setAttribute("view", MYPAGE);
+        req.setAttribute(MYPAGE, "pointReward");
+        req.setAttribute(ACTIVE_SECTION, "coupon");
         Page<PointAccumulationMyPageResponseDto> dto = pointAccumulationService.clientPoint(headers, page, size);
         req.setAttribute("points", dto);
-        return "index";
+        return INDEX;
     }
 
     @GetMapping("/mypage/point/use")
     public String myPageUsedPoint (HttpServletRequest req, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size){
         HttpHeaders headers = new HttpHeaders();
-        headers.set("access", CookieUtils.getCookieValue(req, "access"));
+        headers.set(ACCESS, CookieUtils.getCookieValue(req, ACCESS));
 
-        req.setAttribute("view", "mypage");
-        req.setAttribute("mypage", "pointUsed");
-        req.setAttribute("activeSection", "point");
+        req.setAttribute("view", MYPAGE);
+        req.setAttribute(MYPAGE, "pointUsed");
+        req.setAttribute(ACTIVE_SECTION, "point");
         Page<PointUsageMyPageResponseDto> dto = pointUsageService.clientUsePoint(headers, page, size);
         req.setAttribute("points", dto);
-        return "index";
+        return INDEX;
     }
 
     @GetMapping("/mypage/orders")
@@ -254,11 +257,11 @@ public class MyPageController {
                                @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo){
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set("access", CookieUtils.getCookieValue(req, "access"));
+        headers.set(ACCESS, CookieUtils.getCookieValue(req, ACCESS));
 
-        req.setAttribute("view", "mypage");
-        req.setAttribute("mypage", "orders");
-        req.setAttribute("activeSection", "order");
+        req.setAttribute("view", MYPAGE);
+        req.setAttribute(MYPAGE, "orders");
+        req.setAttribute(ACTIVE_SECTION, "order");
 
         Page<ClientOrderGetResponseDto> orderResponseDtoList = orderService.getClientOrders(headers, pageSize, pageNo, "orderDatetime", "desc");
 
@@ -267,19 +270,19 @@ public class MyPageController {
         req.setAttribute("currentPage", orderResponseDtoList.getNumber());
         req.setAttribute("pageSize", orderResponseDtoList.getSize());
 
-        return "index";
+        return INDEX;
     }
 
     @GetMapping("/mypage/my-review")
     public String mypageReview(HttpServletRequest req,
                                @RequestParam(name = "page") int page) {
-        Page<ReviewInfoResponseDto> reivewInfoPage = myPageService.getMyReviewInfo(CookieUtils.getCookieValue(req, "access"), page, 5);
-        req.setAttribute("view", "mypage");
-        req.setAttribute("mypage", "review");
+        Page<ReviewInfoResponseDto> reivewInfoPage = myPageService.getMyReviewInfo(CookieUtils.getCookieValue(req, ACCESS), page, 5);
+        req.setAttribute("view", MYPAGE);
+        req.setAttribute(MYPAGE, "review");
         req.setAttribute("reviews", reivewInfoPage.getContent());
         req.setAttribute("totalPage", reivewInfoPage.getTotalPages());
         req.setAttribute("page", page);
-        req.setAttribute("activeSection", "review");
-        return "index";
+        req.setAttribute(ACTIVE_SECTION, "review");
+        return INDEX;
     }
 }

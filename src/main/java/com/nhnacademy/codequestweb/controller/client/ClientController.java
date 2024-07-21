@@ -8,11 +8,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Base64;
@@ -47,13 +45,13 @@ public class ClientController {
 
     @GetMapping("/send-reset-password-email")
     public String sendResetPasswordEmail(@RequestParam("email") String email) {
-        String message = clientService.sendChangePassword(email);
+        clientService.sendChangePassword(email);
         return "redirect:/auth";
     }
 
     @GetMapping("/send-recovery-account")
     public String sedRecoveryAccount(@RequestParam("email") String email) {
-        String message = clientService.sendRecoveryAccount(email);
+        clientService.sendRecoveryAccount(email);
         return "redirect:/auth";
     }
 

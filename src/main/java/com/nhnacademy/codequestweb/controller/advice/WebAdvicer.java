@@ -1,9 +1,8 @@
-package com.nhnacademy.codequestweb.controllerAdvice;
+package com.nhnacademy.codequestweb.controller.advice;
 
 
 import feign.FeignException;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
