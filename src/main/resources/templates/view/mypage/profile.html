@@ -53,6 +53,7 @@
                         <div class="mb-3">
                             <label for="clientGrade">회원 등급</label>
                             <input id="clientGrade" th:value="${profile.clientGrade}" class="form-control" readonly />
+                            <span class="info-icon" id="gradeInfo">❓</span>
                         </div>
                         <div class="mb-3">
                             <label for="clientEmail">이메일</label>
@@ -76,6 +77,52 @@
             </div>
         </div>
     </div>
+
+    <div class="tooltip" id="gradeTooltip">
+        <table>
+            <tr>
+                <th>등급</th>
+                <th>적립률</th>
+            </tr>
+            <tr>
+                <td>common</td>
+                <td>1</td>
+            </tr>
+            <tr>
+                <td>royal</td>
+                <td>2</td>
+            </tr>
+            <tr>
+                <td>gold</td>
+                <td>3</td>
+            </tr>
+            <tr>
+                <td>platinum</td>
+                <td>4</td>
+            </tr>
+        </table>
+    </div>
 </main>
+
+<script>
+    const gradeInfo = document.getElementById('gradeInfo');
+    const tooltip = document.getElementById('gradeTooltip');
+
+    const popperInstance = Popper.createPopper(gradeInfo, tooltip, {
+        placement: 'bottom-start',
+    });
+
+    function show() {
+        tooltip.style.display = 'block';
+        popperInstance.update();
+    }
+
+    function hide() {
+        tooltip.style.display = 'none';
+    }
+
+    gradeInfo.addEventListener('mouseenter', show);
+    gradeInfo.addEventListener('mouseleave', hide);
+</script>
 </body>
 </html>

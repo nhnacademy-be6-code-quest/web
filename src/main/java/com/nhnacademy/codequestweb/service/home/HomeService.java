@@ -2,12 +2,12 @@ package com.nhnacademy.codequestweb.service.home;
 
 import com.nhnacademy.codequestweb.response.product.book.BookProductGetResponseDto;
 import com.nhnacademy.codequestweb.service.product.BookProductService;
-import com.nhnacademy.codequestweb.utils.CookieUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -21,7 +21,7 @@ public class HomeService {
             return bookProductService.getAllBookPage(headers, 1, 20, "product.productViewCount", true, 0)
                     .getBody().getContent();
         } catch (Exception e) {
-            return null;
+            return Collections.emptyList();
         }
     }
 
@@ -30,7 +30,7 @@ public class HomeService {
             return bookProductService.getAllBookPage(headers, 1, 20, "pubDate", true, 0)
                     .getBody().getContent();
         } catch (Exception e) {
-            return null;
+            return Collections.emptyList();
         }
     }
 
@@ -39,7 +39,7 @@ public class HomeService {
             return bookProductService.getAllBookPage(headers, 1, 20, "product.productInventory", false, 0)
                     .getBody().getContent();
         } catch (Exception e) {
-            return null;
+            return Collections.emptyList();
         }
     }
 }
