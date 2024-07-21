@@ -7,7 +7,9 @@ import com.nhnacademy.codequestweb.response.refund.RefundAdminResponseDto;
 import com.nhnacademy.codequestweb.response.refund.RefundPolicyResponseDto;
 import com.nhnacademy.codequestweb.response.refund.RefundSuccessResponseDto;
 import com.nhnacademy.codequestweb.service.refund.RefundService;
+
 import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -46,7 +48,7 @@ public class RefundController {
 
     @PostMapping("/client/payment/cancel")
     public String paymentCancel(@ModelAttribute PaymentCancelRequestDto paymentCancelRequestDto,
-        RedirectAttributes redirectAttributes) {
+                                RedirectAttributes redirectAttributes) {
 
         refundService.cancelRequest(paymentCancelRequestDto);
         redirectAttributes.addFlashAttribute("alterMessage", "취소가 완료되었습니다.");
@@ -55,31 +57,33 @@ public class RefundController {
 
     @GetMapping("/order/refund")
     public ResponseEntity<List<RefundPolicyResponseDto>> viewRefundInfo(
-        @RequestParam long orderId) {
+            @RequestParam long orderId) {
         try {
             List<RefundPolicyResponseDto> result = refundService.findRefundPay(orderId);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(null);
+                    .body(null);
         }
     }
+
     @PostMapping("/order/refund/request")
-    public String requestRefund(@ModelAttribute RefundRequestDto requestDto, RedirectAttributes redirectAttributes){
+    public String requestRefund(@ModelAttribute RefundRequestDto requestDto, RedirectAttributes redirectAttributes) {
         RefundSuccessResponseDto dto = refundService.requestRefund(requestDto);
         redirectAttributes.addFlashAttribute("alterMessage", "환불금액이" + dto.getRefundAmount() + "원 적립될 예정입니다.");
         return "redirect:/mypage/orders";
-     }
+    }
 
-     @GetMapping("/client/refund/view")
-    public ResponseEntity<RefundAdminResponseDto> refundUser(@RequestParam long orderId){
+    @GetMapping("/client/refund/view")
+    public ResponseEntity<RefundAdminResponseDto> refundUser(@RequestParam long orderId) {
         return ResponseEntity.ok(refundService.userRefund(orderId));
-     }
-     @PostMapping("/client/refund/sure")
-    public String refundSure(@ModelAttribute RefundAfterRequestDto refundAfterRequestDto, RedirectAttributes redirectAttributes){
+    }
+
+    @PostMapping("/client/refund/sure")
+    public String refundSure(@ModelAttribute RefundAfterRequestDto refundAfterRequestDto, RedirectAttributes redirectAttributes) {
         refundService.refundSure(refundAfterRequestDto);
-         redirectAttributes.addFlashAttribute("alterMessage", "환불 완료");
-         return "redirect:/admin/orders";
-     }
+        redirectAttributes.addFlashAttribute("alterMessage", "환불 완료");
+        return "redirect:/admin/orders";
+    }
 }
