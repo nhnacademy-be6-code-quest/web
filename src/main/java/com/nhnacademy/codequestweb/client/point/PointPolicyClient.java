@@ -31,10 +31,10 @@ public interface PointPolicyClient {
     HttpHeaders headers, @RequestParam int page, @RequestParam int size);
 
     @PutMapping("/api/point/policy/modify")
-    ResponseEntity<String> modifyPointPolicy(
+    ResponseEntity<String> modifyPointPolicy(@RequestHeader HttpHeaders headers,
         @RequestBody PointPolicyModifyRequestDto pointPolicyModifyRequestDto);
 
     @PutMapping("/api/point/policy/active")
-    ResponseEntity<String> pointPolicyActive(
+    ResponseEntity<String> pointPolicyActive(@RequestHeader HttpHeaders headers,
         @RequestBody PointPolicyActiveRequestDto pointPolicyActiveRequestDto);
 }
