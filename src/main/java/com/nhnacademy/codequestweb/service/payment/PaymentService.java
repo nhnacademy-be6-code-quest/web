@@ -11,10 +11,10 @@ import com.nhnacademy.codequestweb.response.payment.PaymentGradeResponseDto;
 import com.nhnacademy.codequestweb.response.payment.TossPaymentsResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.User;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,6 +80,10 @@ public class PaymentService /*implements PaymentService*/ {
         pointRewardOrderRequestDto.setAccumulatedPoint(amount);
         return paymentPointClient.rewardOrderPoint(httpHeaders, pointRewardOrderRequestDto);
     }
+    public void updateGrade(long clientId){
+        UserUpdateGradeRequestDto userUpdateGradeRequestDto = new UserUpdateGradeRequestDto(clientId);
+        paymentClient.updateUser(userUpdateGradeRequestDto);
+    }
 
     public void decreaseProductInventory(
         List<ProductOrderDetailRequestDto> productOrderDetailRequestDtoList) {
@@ -112,8 +116,8 @@ public class PaymentService /*implements PaymentService*/ {
     }
 
     public ResponseEntity<String> updateClientGrade(
-        ClientUpdateGradeRequestDto clientUpdateGradeRequestDto) {
-        return paymentClientClient.updateClientGrade(clientUpdateGradeRequestDto);
+        UserUpdateGradeRequestDto userUpdateGradeRequestDto) {
+        return paymentClientClient.updateClientGrade(userUpdateGradeRequestDto);
     }
 
     public ResponseEntity<String> giveRewardCoupon(HttpHeaders headers, long amount) {

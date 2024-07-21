@@ -1,6 +1,6 @@
 package com.nhnacademy.codequestweb.client.payment;
 
-import com.nhnacademy.codequestweb.request.payment.ClientUpdateGradeRequestDto;
+import com.nhnacademy.codequestweb.request.payment.UserUpdateGradeRequestDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -10,5 +10,5 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface PaymentClientClient {
 
     @PutMapping("/api/client/grade")
-    ResponseEntity<String> updateClientGrade(@RequestBody ClientUpdateGradeRequestDto clientUpdateGradeRequestDto);
+    ResponseEntity<String> updateClientGrade(@RequestBody UserUpdateGradeRequestDto userUpdateGradeRequestDto);
 }
