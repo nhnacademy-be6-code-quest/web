@@ -97,11 +97,10 @@ class BookServiceTest {
     @Test
     void isbnCheckTest(){
         String isbn = "isbn";
-        when(bookProductClient.isbnCheck(isbn)).thenReturn(new ResponseEntity<>(true, headers, HttpStatus.OK));
-        ResponseEntity<Boolean> responseEntity = bookService.isbnCheck(isbn);
+        when(bookProductClient.isbnCheck(isbn)).thenReturn(new ResponseEntity<>(null, headers, HttpStatus.OK));
+        ResponseEntity<Void> responseEntity = bookService.isbnCheck(isbn);
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals(true, responseEntity.getBody());
         verify(bookProductClient, times(1)).isbnCheck(isbn);
     }
 

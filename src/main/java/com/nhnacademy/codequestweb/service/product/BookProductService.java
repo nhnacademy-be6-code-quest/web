@@ -37,7 +37,7 @@ public class BookProductService {
         return bookProductClient.updateBook(headers, bookProductUpdateRequestDto);
     }
 
-    public ResponseEntity<Boolean> isbnCheck(String isbn) {
+    public ResponseEntity<Void> isbnCheck(String isbn) {
         return bookProductClient.isbnCheck(isbn);
     }
 
