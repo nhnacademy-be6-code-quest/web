@@ -53,11 +53,10 @@ public class PaymentController {
 //            String.format("redirect:/client/order/%s/payment/success/post-process", tossOrderId);
 //        }
 
-        // TODO localhost:8080 -> book-store.shop으로 변경
         model.addAttribute("successUrl",
-            "https://localhost:8080/client/order/" + tossOrderId + "/payment/success");
+            "https://book-store.shop/client/order/" + tossOrderId + "/payment/success");
         model.addAttribute("failUrl",
-            "https://localhost:8080/client/order/" + tossOrderId + "/payment/fail");
+            "https://book-store.shop/client/order/" + tossOrderId + "/payment/fail");
 
         return "view/payment/tossPage";
     }
@@ -131,11 +130,7 @@ public class PaymentController {
 
         }
 
-        // 등급 조정
-        if(Objects.nonNull(postProcessRequiredPaymentResponseDto.getClientId())){
-            paymentService.updateGrade(postProcessRequiredPaymentResponseDto.getClientId());
-        }
-
+        paymentService.updateGrade(postProcessRequiredPaymentResponseDto.getClientId());
         // 장바구니 비우기
         boolean successClearCartCookie = clearCartCookie(response,
             postProcessRequiredPaymentResponseDto, model);

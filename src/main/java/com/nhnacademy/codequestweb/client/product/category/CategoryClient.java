@@ -1,7 +1,7 @@
 package com.nhnacademy.codequestweb.client.product.category;
 
-import com.nhnacademy.codequestweb.request.product.productCategory.CategoryRegisterRequestDto;
-import com.nhnacademy.codequestweb.request.product.productCategory.CategoryUpdateRequestDto;
+import com.nhnacademy.codequestweb.request.product.product_category.CategoryRegisterRequestDto;
+import com.nhnacademy.codequestweb.request.product.product_category.CategoryUpdateRequestDto;
 import com.nhnacademy.codequestweb.response.product.productCategory.CategoryGetResponseDto;
 import com.nhnacademy.codequestweb.response.product.productCategory.CategoryNodeResponseDto;
 import com.nhnacademy.codequestweb.response.product.productCategory.CategoryRegisterResponseDto;

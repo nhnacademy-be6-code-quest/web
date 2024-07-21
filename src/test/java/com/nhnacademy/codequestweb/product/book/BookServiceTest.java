@@ -1,8 +1,8 @@
 package com.nhnacademy.codequestweb.product.book;
 
 import com.nhnacademy.codequestweb.client.product.book.BookProductClient;
-import com.nhnacademy.codequestweb.request.product.bookProduct.BookProductRegisterRequestDto;
-import com.nhnacademy.codequestweb.request.product.bookProduct.BookProductUpdateRequestDto;
+import com.nhnacademy.codequestweb.request.product.book_product.BookProductRegisterRequestDto;
+import com.nhnacademy.codequestweb.request.product.book_product.BookProductUpdateRequestDto;
 import com.nhnacademy.codequestweb.response.product.book.AladinBookResponseDto;
 import com.nhnacademy.codequestweb.response.product.book.BookProductGetResponseDto;
 import com.nhnacademy.codequestweb.response.product.common.ProductRegisterResponseDto;
@@ -11,6 +11,7 @@ import com.nhnacademy.codequestweb.service.product.BookProductService;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,13 +26,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -82,7 +77,7 @@ class BookServiceTest {
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(responseDtoPage, responseEntity.getBody());
-        assertEquals(3, Objects.requireNonNull(responseEntity.getBody()).getTotalElements());
+        assertEquals(2, Objects.requireNonNull(responseEntity.getBody()).getTotalElements());
         verify(bookProductClient, times(1)).getBookList(1, "test");
     }
 
@@ -151,5 +146,71 @@ class BookServiceTest {
 
         when(bookProductClient.getNameContainingBookPageByProductState(headers, 1, 10, "sort", true, "title", 0)).thenReturn(new ResponseEntity<>(responseDtoPage, headers, HttpStatus.OK));
         ResponseEntity<Page<BookProductGetResponseDto>> response = bookService.getNameContainingBookPage(headers, 1, 10, "sort", true, "title", 0);
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(responseDtoPage, response.getBody());
+        assertEquals(4, Objects.requireNonNull(response.getBody()).getTotalElements());
+        verify(bookProductClient, times(1)).getNameContainingBookPageByProductState(headers, 1, 10, "sort", true, "title", 0);
+    }
+
+    @Test
+    void getBookPageFilterByTagTest(){
+        Page<BookProductGetResponseDto> responseDtoPage = new PageImpl<>(Arrays.asList(
+                BookProductGetResponseDto.builder().build(),
+                BookProductGetResponseDto.builder().build(),
+                BookProductGetResponseDto.builder().build(),
+                BookProductGetResponseDto.builder().build(),
+                BookProductGetResponseDto.builder().build()
+        ));
+        Set<String> tagSet = Set.of("tag1", "tag2");
+
+        when(bookProductClient.getBookPageFilterByTagAndProductState(headers, 1, 10, "sort", true, tagSet, true, 0)).thenReturn(new ResponseEntity<>(responseDtoPage, headers, HttpStatus.OK));
+        ResponseEntity<Page<BookProductGetResponseDto>> response = bookService.getBookPageFilterByTag(headers, 1, 10, "sort", true, tagSet, true, 0);
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(responseDtoPage, response.getBody());
+        assertEquals(5, Objects.requireNonNull(response.getBody()).getTotalElements());
+        verify(bookProductClient, times(1)).getBookPageFilterByTagAndProductState(headers, 1, 10, "sort", true, tagSet, true, 0);
+    }
+
+    @Test
+    void getBookPageFilterByCategoryTest(){
+        Page<BookProductGetResponseDto> responseDtoPage = new PageImpl<>(Arrays.asList(
+                BookProductGetResponseDto.builder().build(),
+                BookProductGetResponseDto.builder().build(),
+                BookProductGetResponseDto.builder().build(),
+                BookProductGetResponseDto.builder().build(),
+                BookProductGetResponseDto.builder().build(),
+                BookProductGetResponseDto.builder().build()
+        ));
+
+        when(bookProductClient.getBookPageFilterByCategory(headers,1,10,"sort",true,1L, 0)).thenReturn(new ResponseEntity<>(responseDtoPage, headers, HttpStatus.OK));
+        ResponseEntity<Page<BookProductGetResponseDto>> response = bookService.getBookPageFilterByCategory(headers, 1, 10, "sort", true, 1L, 0);
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(responseDtoPage, response.getBody());
+        assertEquals(6, Objects.requireNonNull(response.getBody()).getTotalElements());
+        verify(bookProductClient, times(1)).getBookPageFilterByCategory(headers, 1, 10, "sort", true, 1L, 0);
+    }
+
+    @Test
+    void getLikeBookPageTest(){
+        Page<BookProductGetResponseDto> responseDtoPage = new PageImpl<>(Arrays.asList(
+                BookProductGetResponseDto.builder().build(),
+                BookProductGetResponseDto.builder().build(),
+                BookProductGetResponseDto.builder().build(),
+                BookProductGetResponseDto.builder().build(),
+                BookProductGetResponseDto.builder().build(),
+                BookProductGetResponseDto.builder().build(),
+                BookProductGetResponseDto.builder().build()
+        ));
+
+        when(bookProductClient.getLikeBookPage(headers, 1, 10, "sort", true)).thenReturn(new ResponseEntity<>(responseDtoPage, headers, HttpStatus.OK));
+        ResponseEntity<Page<BookProductGetResponseDto>> response = bookService.getLikeBookPage(headers, 1, 10, "sort", true);
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(responseDtoPage, response.getBody());
+        assertEquals(7, Objects.requireNonNull(response.getBody()).getTotalElements());
+        verify(bookProductClient, times(1)).getLikeBookPage(headers,1,10,"sort",true);
     }
 }

@@ -1,7 +1,7 @@
 package com.nhnacademy.codequestweb.client.product.book;
 
-import com.nhnacademy.codequestweb.request.product.bookProduct.BookProductRegisterRequestDto;
-import com.nhnacademy.codequestweb.request.product.bookProduct.BookProductUpdateRequestDto;
+import com.nhnacademy.codequestweb.request.product.book_product.BookProductRegisterRequestDto;
+import com.nhnacademy.codequestweb.request.product.book_product.BookProductUpdateRequestDto;
 import com.nhnacademy.codequestweb.response.product.book.AladinBookResponseDto;
 import com.nhnacademy.codequestweb.response.product.book.BookProductGetResponseDto;
 import com.nhnacademy.codequestweb.response.product.common.ProductRegisterResponseDto;

@@ -1,7 +1,7 @@
 package com.nhnacademy.codequestweb.service.review;
 
 import com.nhnacademy.codequestweb.client.order.OrderClient;
-import com.nhnacademy.codequestweb.client.product.bookProduct.BookProductClient;
+import com.nhnacademy.codequestweb.client.product.book.BookProductClient;
 import com.nhnacademy.codequestweb.client.review.ReviewClient;
 import com.nhnacademy.codequestweb.exception.product.ProductLoadFailException;
 import com.nhnacademy.codequestweb.request.review.ReviewUpdateRequestDto;
