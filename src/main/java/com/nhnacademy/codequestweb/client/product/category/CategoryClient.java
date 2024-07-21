@@ -1,6 +1,5 @@
 package com.nhnacademy.codequestweb.client.product.category;
 
-import com.nhnacademy.codequestweb.request.product.PageRequestDto;
 import com.nhnacademy.codequestweb.request.product.productCategory.CategoryRegisterRequestDto;
 import com.nhnacademy.codequestweb.request.product.productCategory.CategoryUpdateRequestDto;
 import com.nhnacademy.codequestweb.response.product.productCategory.CategoryGetResponseDto;
@@ -8,7 +7,6 @@ import com.nhnacademy.codequestweb.response.product.productCategory.CategoryNode
 import com.nhnacademy.codequestweb.response.product.productCategory.CategoryRegisterResponseDto;
 import com.nhnacademy.codequestweb.response.product.productCategory.CategoryUpdateResponseDto;
 import jakarta.validation.Valid;
-import java.util.List;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;

@@ -2,12 +2,9 @@ package com.nhnacademy.codequestweb.client.product.product;
 
 import com.nhnacademy.codequestweb.request.product.ProductLikeRequestDto;
 import com.nhnacademy.codequestweb.request.product.ProductStateUpdateRequestDto;
-import com.nhnacademy.codequestweb.request.product.common.InventoryDecreaseRequestDto;
-import com.nhnacademy.codequestweb.request.product.common.InventoryIncreaseRequestDto;
 import com.nhnacademy.codequestweb.request.product.common.InventorySetRequestDto;
 import com.nhnacademy.codequestweb.response.product.common.ProductUpdateResponseDto;
 import jakarta.validation.Valid;
-import java.util.List;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -35,14 +32,6 @@ public interface ProductClient {
             @RequestHeader HttpHeaders httpHeaders,
             @RequestParam("productId") Long productId);
 
-    @PutMapping("/api/product/inventory/decrease")
-    ResponseEntity<Void> decreaseProductInventory(
-            @RequestBody @Valid List<InventoryDecreaseRequestDto> inventoryDecreaseRequestDtoList);
-
-
-    @PutMapping("/api/product/inventory/increase")
-    ResponseEntity<Void> increaseProductInventory(
-            @RequestBody @Valid List<InventoryIncreaseRequestDto> inventoryIncreaseRequestDtoList);
 
     @PutMapping("/api/product/admin/inventory/set")
     ResponseEntity<Void> setProductInventory(

@@ -1,25 +1,17 @@
-package com.nhnacademy.codequestweb.client.product.bookProduct;
+package com.nhnacademy.codequestweb.client.product.book;
 
-import com.nhnacademy.codequestweb.request.product.PageRequestDto;
-import com.nhnacademy.codequestweb.request.product.ProductLikeRequestDto;
-import com.nhnacademy.codequestweb.request.product.ProductStateUpdateRequestDto;
 import com.nhnacademy.codequestweb.request.product.bookProduct.BookProductRegisterRequestDto;
 import com.nhnacademy.codequestweb.request.product.bookProduct.BookProductUpdateRequestDto;
-import com.nhnacademy.codequestweb.request.product.common.InventoryDecreaseRequestDto;
-import com.nhnacademy.codequestweb.request.product.common.InventoryIncreaseRequestDto;
-import com.nhnacademy.codequestweb.request.product.common.InventorySetRequestDto;
 import com.nhnacademy.codequestweb.response.product.book.AladinBookResponseDto;
 import com.nhnacademy.codequestweb.response.product.book.BookProductGetResponseDto;
 import com.nhnacademy.codequestweb.response.product.common.ProductRegisterResponseDto;
 import com.nhnacademy.codequestweb.response.product.common.ProductUpdateResponseDto;
 import jakarta.validation.Valid;
-import java.util.List;
 import java.util.Set;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;

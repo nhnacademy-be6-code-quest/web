@@ -32,14 +32,6 @@ public class ProductService {
         return productClient.deleteBookProductLike(headers, productId);
     }
 
-    public ResponseEntity<Void> decreaseProductInventory(List<InventoryDecreaseRequestDto> requestDtoList) {
-        return productClient.decreaseProductInventory(requestDtoList);
-    }
-
-    public ResponseEntity<Void> increaseProductInventory(
-            List<InventoryIncreaseRequestDto> requestDtoList) {
-        return productClient.increaseProductInventory(requestDtoList);
-    }
 
     public ResponseEntity<Void> setProductInventory(
             HttpHeaders headers,
