@@ -214,12 +214,27 @@
                 </div>
                 <div class="fpw-d-flex fpw-justify-content-end fpw-gap-2">
                     <button id="sendButton" type="submit" class="fpw-btn" onclick="showSpinner()">이메일 전송</button>
+                    <button id="dooraySendButton" type="button" class="fpw-btn" onclick="sendRecoveryAccountDooray()">복구 요청</button>
                     <button id="additionalButton" type="button" class="fpw-btn" th:onclick="|location.href='@{/payco/recovery}'|">Payco 계정 복구</button>
                     <div id="spinner" class="spinner"></div>
                 </div>
             </form>
         </div>
     </div>
+
+    <script>
+        function sendRecoveryAccountDooray() {
+            var email = document.getElementById('email').value;
+            if (validateEmail()) {
+                showSpinner();
+                fetch('/send-recovery-account/dooray?email=' + encodeURIComponent(email), {
+                    method: 'GET'
+                }).finally(() => {
+                    window.location.href = '/auth'; // 무조건 /auth로 리다이렉트
+                });
+            }
+        }
+    </script>
 
     <script>
         var password = document.getElementById("password")

@@ -30,4 +30,11 @@ public interface ClientService {
      * @return
      */
     String recoverAccount(ClientRecoveryRequestDto clientRecoveryRequestDto);
+
+    /**
+     *
+     * @param clientRecoveryRequestDto
+     * @return
+     */
+    String sendRecoverAccountDooray(String email);
 }
