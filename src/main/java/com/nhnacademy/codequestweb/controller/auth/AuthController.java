@@ -182,6 +182,7 @@ public class AuthController {
             cookie.setSecure(true);
             cookie.setPath("/");
             cookie.setMaxAge(60 * 60 * 24 * 14);
+            cookie.setAttribute("SameSite", "Lax");
             res.addCookie(cookie);
 
             cookie = new Cookie("refresh", response.getRefresh());
@@ -189,6 +190,7 @@ public class AuthController {
             cookie.setSecure(true);
             cookie.setPath("/");
             cookie.setMaxAge(60 * 60 * 24 * 14);
+            cookie.setAttribute("SameSite", "Lax");
             res.addCookie(cookie);
         }
         return "redirect:/";
