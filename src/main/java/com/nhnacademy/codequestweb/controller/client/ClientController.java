@@ -55,6 +55,12 @@ public class ClientController {
         return "redirect:/auth";
     }
 
+    @GetMapping("/send-recovery-account/dooray")
+    public String sedRecoveryAccountDooray(@RequestParam("email") String email) {
+        clientService.sendRecoverAccountDooray(email);
+        return "redirect:/auth";
+    }
+
     @GetMapping("/recover-account")
     public ResponseEntity<String> recoverAccount(
             @RequestParam("email") String email,

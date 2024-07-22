@@ -11,4 +11,6 @@ public interface MessageClient {
     ResponseEntity<String> sendChangePassword(@RequestParam("email") String email);
     @GetMapping("/send/recover-account")
     ResponseEntity<String> sendRecoverAccount(@RequestParam("email") String email);
+    @GetMapping("/send/recover-account/dooray")
+    ResponseEntity<String> sendRecoverAccountDooray(@RequestParam("email") String email);
 }

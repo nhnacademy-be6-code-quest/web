@@ -31,4 +31,9 @@ public class ClientServiceImp implements ClientService {
     public String recoverAccount(ClientRecoveryRequestDto clientRecoveryRequestDto) {
         return client.recoveryClient(clientRecoveryRequestDto).getBody();
     }
+
+    @Override
+    public String sendRecoverAccountDooray(String email) {
+        return messageClient.sendRecoverAccountDooray(email).getBody();
+    }
 }
