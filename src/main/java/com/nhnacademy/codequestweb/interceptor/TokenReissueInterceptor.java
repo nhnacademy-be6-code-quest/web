@@ -43,6 +43,7 @@ public class TokenReissueInterceptor implements HandlerInterceptor {
                 accessCookie.setSecure(true);
                 accessCookie.setPath("/");
                 accessCookie.setMaxAge(60 * 60 * 24 * 14);
+                accessCookie.setAttribute("SameSite", "Lax");
                 response.addCookie(accessCookie);
 
                 // 새 리프레시 토큰으로 쿠키 업데이트
@@ -51,6 +52,7 @@ public class TokenReissueInterceptor implements HandlerInterceptor {
                 refreshCookie.setSecure(true);
                 refreshCookie.setPath("/");
                 refreshCookie.setMaxAge(60 * 60 * 24 * 14);
+                refreshCookie.setAttribute("SameSite", "Lax");
                 response.addCookie(refreshCookie);
 
                 log.info("Token reissued success(pre)");
