@@ -19,17 +19,21 @@ public class BookUtils {
     }
 
     public static void setBookPage (ResponseEntity<Page<BookProductGetResponseDto>> response, Integer page, String sort, Boolean desc, Model model) {
-        Page<BookProductGetResponseDto> responseDtoPage = response.getBody();
-        if (responseDtoPage != null) {
-            model.addAttribute("sort", sort);
-            model.addAttribute("desc", desc);
-            model.addAttribute("view", "productList");
-            model.addAttribute("productList", responseDtoPage.getContent());
-            page = page == null ? 1 : page;
-            model.addAttribute("page", page);
-            model.addAttribute("totalPage", responseDtoPage.getTotalPages());
+        if (response != null) {
+            Page<BookProductGetResponseDto> responseDtoPage = response.getBody();
+            if (responseDtoPage != null) {
+                model.addAttribute("sort", sort);
+                model.addAttribute("desc", desc);
+                model.addAttribute("view", "productList");
+                model.addAttribute("productList", responseDtoPage.getContent());
+                page = page == null ? 1 : page;
+                model.addAttribute("page", page);
+                model.addAttribute("totalPage", responseDtoPage.getTotalPages());
+            }else {
+                log.warn("response body is null");
+            }
         }else {
-            log.warn("book page response is null");
+            log.warn("response is null");
         }
     }
 

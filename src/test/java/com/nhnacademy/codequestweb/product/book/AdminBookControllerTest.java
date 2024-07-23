@@ -1,6 +1,5 @@
 package com.nhnacademy.codequestweb.product.book;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhnacademy.codequestweb.controller.product.admin.AdminBookController;
 import com.nhnacademy.codequestweb.request.product.book_product.BookProductRegisterRequestDto;
 import com.nhnacademy.codequestweb.request.product.book_product.BookProductUpdateRequestDto;
@@ -12,8 +11,6 @@ import com.nhnacademy.codequestweb.response.product.productCategory.ProductCateg
 import com.nhnacademy.codequestweb.response.product.tag.Tag;
 import com.nhnacademy.codequestweb.service.image.ImageService;
 import com.nhnacademy.codequestweb.service.product.BookProductService;
-import com.nhnacademy.codequestweb.service.review.ReviewService;
-import com.nhnacademy.codequestweb.utils.BookUtils;
 import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
@@ -21,7 +18,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -41,29 +37,19 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.multipart.MultipartFile;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
-class BookControllerTest {
+class AdminBookControllerTest {
 
     @InjectMocks
     private AdminBookController adminBookController;
@@ -73,12 +59,6 @@ class BookControllerTest {
 
     @Mock
     private ImageService imageService;
-
-    @Mock
-    private ReviewService reviewService;
-
-    @Mock
-    private BookUtils bookUtils;
 
     private MockMvc mockMvc;
 
@@ -108,7 +88,6 @@ class BookControllerTest {
 
     private HttpHeaders headers;
 
-    private ObjectMapper objectMapper;
 
     private BookProductRegisterRequestDto registerRequestDto;
 
@@ -120,7 +99,6 @@ class BookControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(adminBookController).build();
         headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        objectMapper = new ObjectMapper();
         registerRequestDto = BookProductRegisterRequestDto.builder()
                 .title("test title")
                 .publisher("test publisher")
@@ -210,11 +188,9 @@ class BookControllerTest {
                 .headers(headers))
                 .andExpect(status().isOk())
                 .andExpect(view().name(INDEX))
-//                .andExpect(model().attribute("categorySet", List.of("category1", "category2")))
                 .andExpect(model().attribute("initialValue","test description"))
                 .andExpect(model().attribute("aladin", true))
                 .andExpect(model().attribute("state", 15));
-//                .andExpect(model().attribute("tagSet", List.of("tag1", "tag2")));
     }
 
     @Test
@@ -497,30 +473,109 @@ class BookControllerTest {
                 .andExpect(flash().attribute(ALTER_MESSAGE, "상품 정보를 수정하는 데 실패했습니다.\n자세한 정보는 로그를 확인하세요."));
     }
 
-//    @Test
-//    void getAllBookPageTest() throws Exception {
-//        List<BookProductGetResponseDto> responseDtoList = new ArrayList<>();
-//        for (int i = 0 ; i < 20; i ++){
-//            responseDtoList.add(BookProductGetResponseDto.builder().build());
-//        }
-//
-//        Pageable pageable = PageRequest.of(0, 4);
-//        Page<BookProductGetResponseDto> responseDtoPage = new PageImpl<>(responseDtoList, pageable, responseDtoList.size());
-//        when(bookProductService.getAllBookPage(headers, 1, 10, "sort", true, 0)).thenReturn(ResponseEntity.ok(responseDtoPage));
-//
-//        mockMvc.perform(get("/admin/product/book/all")
-//                        .headers(headers)
-//                        .param("page", String.valueOf(1))
-//                        .param("size", String.valueOf(10))
-//                        .param("sort", "sort")
-//                        .param("desc", String.valueOf(true))
-//                        .param("productState", String.valueOf(0)))
-//                .andExpect(status().isOk())
-//                .andExpect(model().attribute(MAIN_TEXT, "관리자 페이지"))
-//                .andExpect(model().attribute(ADMIN_PAGE, PRODUCT_LIST_PAGE))
-//                .andExpect(model().attribute(ACTIVE_SECTION, PRODUCT));
-//
-//        verify(bookUtils, times(1)).setBookPage(any(), any(), any(), any(), any());
-//    }
+    @Test
+    void getAllBookPageTest() throws Exception {
+        List<BookProductGetResponseDto> responseDtoList = new ArrayList<>();
+        for (int i = 0 ; i < 10; i ++){
+            responseDtoList.add(BookProductGetResponseDto.builder().build());
+        }
+
+        Pageable pageable = PageRequest.of(0, 4);
+        Page<BookProductGetResponseDto> responseDtoPage = new PageImpl<>(responseDtoList, pageable, responseDtoList.size());
+        when(bookProductService.getAllBookPage(headers, 1, 10, "sort", true, 0)).thenReturn(ResponseEntity.ok(responseDtoPage));
+
+        mockMvc.perform(get("/admin/product/book/all")
+                        .headers(headers)
+                        .param("page", String.valueOf(1))
+                        .param("size", String.valueOf(10))
+                        .param("sort", "sort")
+                        .param("desc", String.valueOf(true))
+                        .param("productState", String.valueOf(0)))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute(MAIN_TEXT, "관리자 페이지"))
+                .andExpect(model().attribute(ADMIN_PAGE, PRODUCT_LIST_PAGE))
+                .andExpect(model().attribute(ACTIVE_SECTION, PRODUCT));
+
+    }
+
+    @Test
+    void getNameContainingBookPageTest() throws Exception {
+        List<BookProductGetResponseDto> responseDtoList = new ArrayList<>();
+        for (int i = 0 ; i < 10; i ++){
+            responseDtoList.add(BookProductGetResponseDto.builder().build());
+        }
+
+        Pageable pageable = PageRequest.of(0, 4);
+        Page<BookProductGetResponseDto> responseDtoPage = new PageImpl<>(responseDtoList, pageable, responseDtoList.size());
+        when(bookProductService.getNameContainingBookPage(headers, 1, 10, "sort", true, "test", 0)).thenReturn(ResponseEntity.ok(responseDtoPage));
+
+        mockMvc.perform(get("/admin/product/book/containing")
+                        .headers(headers)
+                        .param("title", "test")
+                        .param("page", String.valueOf(1))
+                        .param("size", String.valueOf(10))
+                        .param("sort", "sort")
+                        .param("desc", String.valueOf(true))
+                        .param("productState", String.valueOf(0)))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute(MAIN_TEXT, "관리자 페이지 - 제목 : test"))
+                .andExpect(model().attribute(ADMIN_PAGE, PRODUCT_LIST_PAGE))
+                .andExpect(model().attribute(ACTIVE_SECTION, PRODUCT));
+
+    }
+
+    @Test
+    void getBookPageFilterByTagTest() throws Exception {
+        List<BookProductGetResponseDto> responseDtoList = new ArrayList<>();
+        for (int i = 0 ; i < 10; i ++){
+            responseDtoList.add(BookProductGetResponseDto.builder().build());
+        }
+
+        Pageable pageable = PageRequest.of(0, 4);
+        Page<BookProductGetResponseDto> responseDtoPage = new PageImpl<>(responseDtoList, pageable, responseDtoList.size());
+        Set<String> tags = Set.of("tag1","tag2");
+
+        when(bookProductService.getBookPageFilterByTag(headers, 1, 10, "sort", true, tags, true, 0)).thenReturn(ResponseEntity.ok(responseDtoPage));
+
+        mockMvc.perform(get("/admin/product/book/tagFilter")
+                        .headers(headers)
+                        .param("tagName", "tag1,tag2")
+                        .param("page", String.valueOf(1))
+                        .param("size", String.valueOf(10))
+                        .param("sort", "sort")
+                        .param("desc", String.valueOf(true))
+                        .param("productState", String.valueOf(0)))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute(MAIN_TEXT, "관리자 페이지 - 태그 : [tag1, tag2]"))
+                .andExpect(model().attribute(ADMIN_PAGE, PRODUCT_LIST_PAGE))
+                .andExpect(model().attribute(ACTIVE_SECTION, PRODUCT));
+
+    }
+
+    @Test
+    void getBookPageFilterByCategoryTest() throws Exception {
+        List<BookProductGetResponseDto> responseDtoList = new ArrayList<>();
+        for (int i = 0 ; i < 10; i ++){
+            responseDtoList.add(BookProductGetResponseDto.builder().build());
+        }
+
+        Pageable pageable = PageRequest.of(0, 4);
+        Page<BookProductGetResponseDto> responseDtoPage = new PageImpl<>(responseDtoList, pageable, responseDtoList.size());
+
+        when(bookProductService.getBookPageFilterByCategory(headers, 1, 10, "sort", true, 1L, 0)).thenReturn(ResponseEntity.ok(responseDtoPage));
+
+        mockMvc.perform(get("/admin/product/book/category/1")
+                        .headers(headers)
+                        .param("page", String.valueOf(1))
+                        .param("size", String.valueOf(10))
+                        .param("sort", "sort")
+                        .param("desc", String.valueOf(true))
+                        .param("productState", String.valueOf(0)))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute(MAIN_TEXT, "관리자 페이지 - 카테고리 필터"))
+                .andExpect(model().attribute(ADMIN_PAGE, PRODUCT_LIST_PAGE))
+                .andExpect(model().attribute(ACTIVE_SECTION, PRODUCT));
+
+    }
 }
 

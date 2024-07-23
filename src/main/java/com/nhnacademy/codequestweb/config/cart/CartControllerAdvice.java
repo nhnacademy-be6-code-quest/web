@@ -38,7 +38,6 @@ public class CartControllerAdvice {
     @ModelAttribute
     public void addAttributes(HttpServletRequest req, HttpServletResponse resp, Model model) throws Exception {
         String encryptedCart = CookieUtils.getCookieValue(req, "cart");
-
         if (encryptedCart != null) {
             try {
                 String cartJson = SecretKeyUtils.decrypt(encryptedCart, SecretKeyUtils.getSecretKey());
@@ -53,6 +52,7 @@ public class CartControllerAdvice {
                     model.addAttribute("cart", emptyList);
                 }
             } catch (Exception e) {
+                CookieUtils.deleteCookieValue(resp, "cart");
                 model.addAttribute("cart", emptyList);
                 log.error("error while decrypting cart", e);
             }

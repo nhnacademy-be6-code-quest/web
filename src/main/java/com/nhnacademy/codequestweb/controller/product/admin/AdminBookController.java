@@ -26,7 +26,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -110,6 +109,7 @@ public class AdminBookController {
 
     @GetMapping("/update/{productId}")
     public String updateForm(HttpServletRequest req, @PathVariable("productId") Long productId, Model model){
+
         ResponseEntity<BookProductGetResponseDto> response = bookProductService.getSingleBookInfo(CookieUtils.setHeader(req), productId);
         BookProductGetResponseDto bookProductGetResponseDto = response.getBody();
         String description = Objects.requireNonNull(bookProductGetResponseDto).productDescription();
@@ -155,7 +155,9 @@ public class AdminBookController {
     }
 
     @GetMapping("/aladinList")
-    public String getAladinBookList(@RequestParam(name = "page", required = false)Integer page, @RequestParam("title")String title, Model model) {
+    public String getAladinBookList(@RequestParam(name = "page", required = false)Integer page,
+                                    @RequestParam("title")String title,
+                                    Model model) {
 
         ResponseEntity<Page<AladinBookResponseDto>> aladinBookPageResponse = bookProductService.getBookList(page, title);
 
@@ -187,7 +189,9 @@ public class AdminBookController {
 
 
     @PostMapping("/register")
-    public String saveBook(@RequestParam(name = "coverImage", required = false) MultipartFile file, @ModelAttribute @Valid BookProductRegisterRequestDto dto, HttpServletRequest req, RedirectAttributes redirectAttributes){
+    public String saveBook(@RequestParam(name = "coverImage", required = false) MultipartFile file,
+                           @ModelAttribute @Valid BookProductRegisterRequestDto dto, HttpServletRequest req,
+                           RedirectAttributes redirectAttributes){
         boolean imageSaved = true;
         if (file != null && !file.isEmpty()){
             imageSaved = false;
@@ -269,6 +273,7 @@ public class AdminBookController {
         model.addAttribute(VIEW, ADMIN_PAGE);
         model.addAttribute(ADMIN_PAGE, PRODUCT_LIST_PAGE);
         model.addAttribute(ADMIN, true);
+        model.addAttribute(ACTIVE_SECTION, PRODUCT);
         return INDEX;
     }
 
@@ -290,6 +295,7 @@ public class AdminBookController {
         model.addAttribute(VIEW, ADMIN_PAGE);
         model.addAttribute(ADMIN_PAGE, PRODUCT_LIST_PAGE);
         model.addAttribute(ADMIN, true);
+        model.addAttribute(ACTIVE_SECTION, PRODUCT);
         return INDEX;
     }
 
@@ -310,6 +316,7 @@ public class AdminBookController {
         model.addAttribute(VIEW, ADMIN_PAGE);
         model.addAttribute(ADMIN_PAGE, PRODUCT_LIST_PAGE);
         model.addAttribute(ADMIN, true);
+        model.addAttribute(ACTIVE_SECTION, PRODUCT);
         return INDEX;
     }
 
