@@ -13,7 +13,7 @@ import java.util.List;
 
 import static org.mockito.Mockito.*;
 
-class BookPageUtilsTest {
+class BookUtilsTest {
 
     @Mock
     private Model model;

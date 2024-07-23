@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Slf4j
 @Controller
@@ -44,185 +45,23 @@ public class AdminCategoryController {
 
     private final CategoryConfig categoryConfig;
 
+    private static final String INDEX = "index";
+
+    private static final String ADMIN_PAGE = "adminPage";
+
+    private static final String CATEGORIES = "categories";
+
+    private static final String REDIRECT_ADMIN_MAIN = "redirect:/admin/client/0";
+
+    private static final String WINDOW_CLOSE = "view/product/window.close";
+
+    private static final String ALTER_MESSAGE = "alterMessage";
+
+    private static final String ATTRIBUTE_VALUE = "failed to get categories.";
+
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
-    }
-
-    @GetMapping("/admin/categories")
-    public String getCategories(@RequestParam(name = "page", required = false)Integer page, @RequestParam(name = "sort", required = false) String sort, @RequestParam(name = "desc", required = false)Boolean desc, Model model) {
-        ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getCategories(page, desc, sort);
-        List<CategoryGetResponseDto> categoryNameList = response.getBody().getContent();
-        Map<CategoryGetResponseDto, String> categoryNameMap = new LinkedHashMap<>();
-        for (CategoryGetResponseDto category : categoryNameList) {
-            categoryNameMap.put(category, getAllCategoryPathName(category));
-        }
-        model.addAttribute("categoryNamePage", categoryNameMap);
-        long totalElements = response.getBody().getTotalElements();
-        model.addAttribute("totalCount", totalElements);
-        if (totalElements == 0) {
-            model.addAttribute("empty", true);
-        }
-        model.addAttribute("totalPage", response.getBody().getTotalPages());
-        model.addAttribute("page", page == null ? 1 : page);
-        model.addAttribute("sort", sort);
-        model.addAttribute("desc", desc);
-        model.addAttribute("view", "adminPage");
-        model.addAttribute("adminPage", "categories");
-        model.addAttribute("url", "/admin/categories?");
-        model.addAttribute("activeSection","book");
-        return "index";
-    }
-
-    @GetMapping("/admin/categories/containing")
-    public String getCategoryContainingPage(@RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "desc", required = false) Boolean desc, @RequestParam(name = "sort", required = false) String sort, @RequestParam("categoryName") String categoryName, Model model) {
-        ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getNameContainingCategories(page, desc, sort, categoryName);
-        Page<CategoryGetResponseDto> categoryNamePage = response.getBody();
-
-        List<CategoryGetResponseDto> categoryNameList = categoryNamePage.getContent();
-        Map<CategoryGetResponseDto, String> categoryNameMap = new LinkedHashMap<>();
-        Set<Integer> pageNumbers = new LinkedHashSet<>();
-        pageNumbers.add(1);
-        for (int i = 0; i < response.getBody().getTotalPages(); i++) {
-            pageNumbers.add(i);
-        }
-        for (CategoryGetResponseDto category : categoryNameList) {
-            categoryNameMap.put(category, getAllCategoryPathName(category));
-        }
-
-        long totalElements = response.getBody().getTotalElements();
-        model.addAttribute("totalCount", totalElements);
-        if (totalElements == 0) {
-            model.addAttribute("empty", true);
-        }
-        model.addAttribute("totalPage", response.getBody().getTotalPages());
-        model.addAttribute("page", page == null ? 1 : page);
-        model.addAttribute("sort", sort);
-        model.addAttribute("desc", desc);
-        model.addAttribute("categoryPage", response.getBody());
-        model.addAttribute("view", "adminPage");
-        model.addAttribute("adminPage", "categories");
-        model.addAttribute("url", "/admin/categories/containing?title=" + categoryName + "&");
-        return "index";
-    }
-
-
-    @GetMapping("/admin/categories/registerForm")
-    public String getCategoryRegisterForm(Model model) {
-        model.addAttribute("action", "register");
-        return "view/product/categoryForm";
-    }
-
-    @GetMapping("/admin/categories/updateForm")
-    public String getCategoryUpdateForm(Model model) {
-        model.addAttribute("action", "update");
-        return "view/product/categoryForm";
-    }
-
-    @PostMapping("/admin/categories/register")
-    public ResponseEntity<Void> saveCategory(
-            @ModelAttribute CategoryRegisterRequestDto dto,
-            HttpServletRequest req
-            ) {
-        log.info("trying register new category - parent : {} , new : {}", dto.parentCategoryName(), dto.categoryName());
-        try {
-            ResponseEntity<CategoryRegisterResponseDto> response = categoryService.saveCategory(CookieUtils.setHeader(req), dto);
-            return ResponseEntity.ok(null);
-        }catch (FeignException e){
-            log.warn(e.getMessage());
-            return switch (e.status()) {
-                case 303 -> ResponseEntity.status(303).body(null);
-                case 401, 403 -> ResponseEntity.status(401).body(null);
-                case 405 -> ResponseEntity.status(405).body(null);
-                case 409 -> ResponseEntity.status(409).body(null);
-                default -> ResponseEntity.status(500).body(null);
-            };
-        }
-    }
-
-    @PutMapping("/admin/categories/update")
-    public ResponseEntity<Void> updateCategory(
-            @ModelAttribute CategoryUpdateRequestDto dto,
-            HttpServletRequest req){
-
-        try {
-            ResponseEntity<CategoryUpdateResponseDto> response = categoryService.updateCategory(CookieUtils.setHeader(req), dto);
-
-            return ResponseEntity.ok(null);
-        }catch (FeignException e){
-            log.warn(e.getMessage());
-            return switch (e.status()) {
-                case 303 -> ResponseEntity.status(303).body(null);
-                case 401, 403 -> ResponseEntity.status(401).body(null);
-                case 405 -> ResponseEntity.status(405).body(null);
-                case 409 -> ResponseEntity.status(409).body(null);
-                default -> ResponseEntity.status(500).body(null);
-            };
-        }
-    }
-
-
-    @PostMapping("/category/update")
-    public ResponseEntity<String> updateCategory(@RequestBody CategoryNodeResponseDto categoryNodeResponseDto) {
-        categoryConfig.update(categoryNodeResponseDto);
-        log.info("Category updated");
-        return ResponseEntity.ok("Category updated");
-    }
-
-
-    @DeleteMapping("/admin/categories/delete/{categoryId}")
-    public ResponseEntity<Void> deleteCategory(@PathVariable("categoryId") Long categoryId, HttpServletRequest req) {
-        try {
-            return categoryService.deleteCategory(CookieUtils.setHeader(req), categoryId);
-        }catch (FeignException e){
-            log.warn(e.getMessage());
-            return switch (e.status()) {
-                case 409 -> ResponseEntity.status(409).body(null);
-                default -> ResponseEntity.status(500).body(null);
-            };
-        }
-    }
-
-
-    @GetMapping("/categories/all")
-    public String getAllCategoriesPage(@RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "desc", required = false) Boolean desc, @RequestParam(name = "sort", required = false) String sort, Model model) {
-        ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getCategories(page, desc, sort);
-        List<CategoryGetResponseDto> categoryNamePage = response.getBody().getContent();
-        Map<CategoryGetResponseDto, String> categoryNameMap = new LinkedHashMap<>();
-        Set<Integer> pageNumbers = new LinkedHashSet<>();
-        pageNumbers.add(1);
-        for (int i = 1; i <= response.getBody().getTotalPages(); i++) {
-            pageNumbers.add(i);
-        }
-        for (CategoryGetResponseDto category : categoryNamePage) {
-            categoryNameMap.put(category, getAllCategoryPathName(category));
-        }
-        model.addAttribute("categoryNamePage", categoryNameMap);
-        model.addAttribute("register", false);
-        model.addAttribute("pageNumbers", pageNumbers);
-        model.addAttribute("url", "/categories/all?page=");
-        return "view/product/categoryPage";
-    }
-
-    @GetMapping("/categories/containing")
-    public String getContainingCategoriesPage(@RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "desc", required = false) Boolean desc, @RequestParam(name = "sort", required = false) String sort, @RequestParam("categoryName") String categoryName,  Model model) {
-        ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getNameContainingCategories(page, desc, sort, categoryName);
-
-        List<CategoryGetResponseDto> categoryNamePage = response.getBody().getContent();
-        Map<CategoryGetResponseDto, String> categoryNameMap = new LinkedHashMap<>();
-        Set<Integer> pageNumbers = new LinkedHashSet<>();
-        pageNumbers.add(1);
-        for (int i = 1; i <= response.getBody().getTotalPages(); i++) {
-            pageNumbers.add(i);
-        }
-        for (CategoryGetResponseDto category : categoryNamePage) {
-            categoryNameMap.put(category, getAllCategoryPathName(category));
-        }
-        model.addAttribute("categoryNamePage", categoryNameMap);
-        model.addAttribute("register", false);
-        model.addAttribute("pageNumbers", pageNumbers);
-        model.addAttribute("url", "/categories/containing?categoryName="+categoryName +"&page=");
-        return "view/product/categoryPage";
     }
 
     private String getAllCategoryPathName(CategoryGetResponseDto category) {
@@ -241,53 +80,210 @@ public class AdminCategoryController {
         return stringBuilder.toString();
     }
 
+    private String makeView(Page<CategoryGetResponseDto> responsePage,
+                            RedirectAttributes redirectAttributes,
+                            Model model, Integer page, String sort, Boolean desc, String url) {
+        if (responsePage == null){
+            redirectAttributes.addFlashAttribute(ALTER_MESSAGE, ATTRIBUTE_VALUE);
+            return "redirect:/";
+        }else {
+            List<CategoryGetResponseDto> categoryNameList = responsePage.getContent();
+            Map<CategoryGetResponseDto, String> categoryNameMap = new LinkedHashMap<>();
+            for (CategoryGetResponseDto category : categoryNameList) {
+                categoryNameMap.put(category, getAllCategoryPathName(category));
+            }
+            model.addAttribute("categoryNamePage", categoryNameMap);
+            long totalElements = responsePage.getTotalElements();
+            model.addAttribute("totalCount", totalElements);
+            if (totalElements == 0) {
+                model.addAttribute("empty", true);
+            }
+            model.addAttribute("totalPage", responsePage.getTotalPages());
+            model.addAttribute("page", page == null ? 1 : page);
+            model.addAttribute("sort", sort);
+            model.addAttribute("desc", desc);
+            model.addAttribute("view", ADMIN_PAGE);
+            model.addAttribute(ADMIN_PAGE, CATEGORIES);
+            model.addAttribute("url", url);
+            model.addAttribute("activeSection","book");
+            model.addAttribute("categoryPage", responsePage);
+            return INDEX;
+        }
+    }
 
+    @GetMapping("/admin/categories")
+    public String getCategories(
+            @RequestParam(name = "page", required = false)Integer page,
+            @RequestParam(name = "sort", required = false) String sort,
+            @RequestParam(name = "desc", required = false)Boolean desc,
+            RedirectAttributes redirectAttributes,
+            Model model) {
+        try {
+            ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getCategories(page, desc, sort);
 
+            Page<CategoryGetResponseDto> responsePage = response.getBody();
+
+            return makeView(responsePage, redirectAttributes, model, page, sort, desc, "/admin/categories?");
+        }catch (FeignException e) {
+            log.warn("error occurred while get all category, message : {}", e.getMessage());
+            redirectAttributes.addFlashAttribute(ALTER_MESSAGE, ATTRIBUTE_VALUE);
+            return REDIRECT_ADMIN_MAIN;
+        }
+    }
+
+    @GetMapping("/admin/categories/containing")
+    public String getCategoryContainingPage(
+            @RequestParam(name = "page", required = false) Integer page,
+            @RequestParam(name = "sort", required = false) String sort,
+            @RequestParam(name = "desc", required = false) Boolean desc,
+            RedirectAttributes redirectAttributes,
+            @RequestParam("categoryName") String categoryName,
+            Model model) {
+        try {
+            ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getNameContainingCategories(page, desc, sort, categoryName);
+
+            Page<CategoryGetResponseDto> responsePage = response.getBody();
+
+            return makeView(responsePage, redirectAttributes ,model, page, sort, desc, "/admin/categories/containing?title=" + categoryName + "&");
+        }catch (FeignException e) {
+            log.warn("error occurred while get name containing category with name {}, message : {}", categoryName, e.getMessage());
+            redirectAttributes.addFlashAttribute(ALTER_MESSAGE, ATTRIBUTE_VALUE);
+            return REDIRECT_ADMIN_MAIN;
+        }
+    }
 
     @GetMapping("/admin/categories/{categoryId}/sub")
     public String getCategorySubPage(@RequestParam(name = "page", required = false) Integer page,
-                                     @RequestParam(name = "desc", required = false) Boolean desc,
                                      @RequestParam(name = "sort", required = false) String sort,
+                                     @RequestParam(name = "desc", required = false) Boolean desc,
+                                     RedirectAttributes redirectAttributes,
                                      @PathVariable("categoryId") Long categoryId,
                                      Model model) {
-        ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getSubCategories(page, desc, sort, categoryId);
-        List<CategoryGetResponseDto> categoryNameList = response.getBody().getContent();
-        Map<CategoryGetResponseDto, String> categoryNameMap = new LinkedHashMap<>();
-        for (CategoryGetResponseDto category : categoryNameList) {
-            categoryNameMap.put(category, getAllCategoryPathName(category));
+
+        try {
+            ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getSubCategories(page, desc, sort, categoryId);
+            Page<CategoryGetResponseDto> responsePage = response.getBody();
+            return makeView(responsePage, redirectAttributes, model, page, sort, desc, "/admin/categories/" + categoryId + "/sub?");
+        }catch (FeignException e) {
+            log.warn("error occurred while get sub category with id {}, message : {}", categoryId, e.getMessage());
+            redirectAttributes.addFlashAttribute(ALTER_MESSAGE, ATTRIBUTE_VALUE);
+            return REDIRECT_ADMIN_MAIN;
         }
-        model.addAttribute("categoryNamePage", categoryNameMap);
-        long totalElements = response.getBody().getTotalElements();
-        model.addAttribute("totalCount", totalElements);
-        if (totalElements == 0) {
-            model.addAttribute("empty", true);
-        }
-        model.addAttribute("totalPage", response.getBody().getTotalPages());
-        model.addAttribute("page", page == null ? 1 : page);
-        model.addAttribute("sort", sort);
-        model.addAttribute("desc", desc);
-        model.addAttribute("categoryPage", response.getBody());
-        model.addAttribute("view", "adminPage");
-        model.addAttribute("adminPage", "categories");
-        model.addAttribute("url", "/admin/categories/" + categoryId + "/sub?");
-        return "index";
     }
+
+
+    @PostMapping("/admin/categories/register")
+    public ResponseEntity<Void> saveCategory(
+            @ModelAttribute CategoryRegisterRequestDto dto,
+            HttpServletRequest req
+            ) {
+        try {
+            ResponseEntity<CategoryRegisterResponseDto> response = categoryService.saveCategory(CookieUtils.setHeader(req), dto);
+            return ResponseEntity.status(response.getStatusCode().value()).body(null);
+        }catch (FeignException e){
+            log.warn("error occurred while save new category with request {}, message : {}", dto, e.getMessage());
+            return ResponseEntity.status(e.status() != 0 ? e.status() : 500).build();
+        }
+    }
+
+    @PutMapping("/admin/categories/update")
+    public ResponseEntity<Void> updateCategory(
+            @ModelAttribute CategoryUpdateRequestDto dto,
+            HttpServletRequest req){
+        try {
+            ResponseEntity<CategoryUpdateResponseDto> response = categoryService.updateCategory(CookieUtils.setHeader(req), dto);
+            return ResponseEntity.status(response.getStatusCode().value()).body(null);
+        }catch (FeignException e){
+            log.warn("error occurred while update category with request {}, message : {}", dto, e.getMessage());
+            return ResponseEntity.status(e.status() != 0 ? e.status() : 500).build();
+        }
+    }
+
+    @DeleteMapping("/admin/categories/delete/{categoryId}")
+    public ResponseEntity<Void> deleteCategory(@PathVariable("categoryId") Long categoryId, HttpServletRequest req) {
+        try {
+            return categoryService.deleteCategory(CookieUtils.setHeader(req), categoryId);
+        }catch (FeignException e){
+            log.warn("error occurred while delete category with id {} (but it may be just it has relation with product), message : {}", categoryId, e.getMessage());
+            return ResponseEntity.status(e.status() != 0 ? e.status() : 500).build();
+        }
+    }
+
+    @PostMapping("/category/update")
+    public ResponseEntity<String> updateCategory(@RequestBody CategoryNodeResponseDto categoryNodeResponseDto) {
+        categoryConfig.update(categoryNodeResponseDto);
+        log.info("Category updated");
+        return ResponseEntity.ok("Category updated");
+    }
+
+
+    private String makeModalView(Page<CategoryGetResponseDto> responsePage, Model model, boolean register, String url) {
+        if (responsePage == null) {
+            log.warn("error occurred while get categories. the response itself is null");
+            return WINDOW_CLOSE;
+        }else {
+            List<CategoryGetResponseDto> categoryNamePage = responsePage.getContent();
+            Map<CategoryGetResponseDto, String> categoryNameMap = new LinkedHashMap<>();
+            Set<Integer> pageNumbers = new LinkedHashSet<>();
+            pageNumbers.add(1);
+            for (int i = 1; i <= responsePage.getTotalPages(); i++) {
+                pageNumbers.add(i);
+            }
+            for (CategoryGetResponseDto category : categoryNamePage) {
+                categoryNameMap.put(category, getAllCategoryPathName(category));
+            }
+            model.addAttribute("categoryNamePage", categoryNameMap);
+            model.addAttribute("register", register);
+            model.addAttribute("pageNumbers", pageNumbers);
+            model.addAttribute("url", url);
+            return "view/product/categoryPage";
+        }
+    }
+
+    @GetMapping("/categories/all")
+    public String getAllCategoriesPage(
+            @RequestParam(name = "page", required = false) Integer page,
+            @RequestParam(name = "desc", required = false) Boolean desc,
+            @RequestParam(name = "sort", required = false) String sort,
+            Model model) {
+        try {
+            ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getCategories(page, desc, sort);
+            Page<CategoryGetResponseDto> responsePage = response.getBody();
+            return makeModalView(responsePage, model,  false, "/categories/all?page=");
+        }catch (FeignException e){
+            log.warn("error occurred while get all categories. message : {}", e.getMessage());
+            return WINDOW_CLOSE;
+        }
+    }
+
+    @GetMapping("/categories/containing")
+    public String getContainingCategoriesPage(@RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "desc", required = false) Boolean desc, @RequestParam(name = "sort", required = false) String sort, @RequestParam("categoryName") String categoryName,  Model model) {
+        try {
+            ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getNameContainingCategories(page, desc, sort, categoryName);
+            Page<CategoryGetResponseDto> responsePage = response.getBody();
+            return makeModalView(responsePage, model,  false, "/categories/containing?categoryName="+categoryName +"&page=");
+        }catch (FeignException e){
+            log.warn("error occurred while get name containing (name : {}) categories. message : {}", categoryName, e.getMessage());
+            return WINDOW_CLOSE;
+        }
+    }
+
 
     @GetMapping("/categories/{categoryId}/sub")
-    public String getCategorySubAllPage(@PathVariable("categoryId") Long categoryId, Model model){
-        ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getSubCategories(null, null, null, categoryId);
-        List<CategoryGetResponseDto> categoryNameList = response.getBody().getContent();
-        Map<CategoryGetResponseDto, String> categoryNameMap = new LinkedHashMap<>();
-        for (CategoryGetResponseDto category : categoryNameList) {
-            categoryNameMap.put(category, getAllCategoryPathName(category));
-        }
-        model.addAttribute("categoryNamePage", categoryNameMap);
-        model.addAttribute("register", true);
-        return "view/product/categoryPage";
-    }
+    public String getCategorySubAllPage(
+            @RequestParam(name = "page", required = false) Integer page,
+            @RequestParam(name = "desc", required = false) Boolean desc,
+            @RequestParam(name = "sort", required = false) String sort,
+            @PathVariable("categoryId") Long categoryId, Model model){
+        try {
+            ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getSubCategories(page, desc, sort, categoryId);
 
-    @GetMapping("/categories/search")
-    public String test() {
-        return "view/product/categorySearch";
+            Page<CategoryGetResponseDto> responsePage = response.getBody();
+
+            return makeModalView(responsePage, model,true, "/categories/"+ categoryId + "/sub?page=");
+        }catch (FeignException e){
+            log.warn("error occurred while get sub (categoryId : {}) categories. message : {}", categoryId, e.getMessage());
+            return WINDOW_CLOSE;
+        }
     }
 }

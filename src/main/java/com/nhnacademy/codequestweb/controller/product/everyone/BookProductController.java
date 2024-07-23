@@ -2,16 +2,12 @@ package com.nhnacademy.codequestweb.controller.product.everyone;
 
 
 import com.nhnacademy.codequestweb.response.product.book.BookProductGetResponseDto;
-import com.nhnacademy.codequestweb.response.product.productCategory.ProductCategory;
 import com.nhnacademy.codequestweb.response.review.ReviewInfoResponseDto;
 import com.nhnacademy.codequestweb.service.product.BookProductService;
 import com.nhnacademy.codequestweb.service.review.ReviewService;
 import com.nhnacademy.codequestweb.utils.BookUtils;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
 import java.util.Set;
 import java.util.StringJoiner;
 
@@ -32,6 +28,10 @@ public class BookProductController {
 
     private final ReviewService reviewService;
     private final BookProductService bookProductService;
+
+    private static final String INDEX = "index";
+
+    private static final String MAIN_TEXT = "mainText";
 
     @GetMapping("/product/books/{productId}")
     public String book(
@@ -60,7 +60,7 @@ public class BookProductController {
         }else{
             model.addAttribute("orderURL", "/client/order");
         }
-        return "index";
+        return INDEX;
     }
 
 
@@ -75,19 +75,19 @@ public class BookProductController {
 
         if(sort != null){
             switch (sort) {
-                case "product.productViewCount": model.addAttribute("mainText", "조회순 검색");
+                case "product.productViewCount": model.addAttribute(MAIN_TEXT, "조회순 검색");
                     break;
-                case "pubDate": model.addAttribute("mainText", "출시순 검색");
+                case "pubDate": model.addAttribute(MAIN_TEXT, "출시순 검색");
                     break;
-                default: model.addAttribute("mainText", "전체 검색");
+                default: model.addAttribute(MAIN_TEXT, "전체 검색");
             }
         }else {
-            model.addAttribute("mainText", "전체 검색");
+            model.addAttribute(MAIN_TEXT, "전체 검색");
         }
 
         BookUtils.setBookPage(response, page, sort, desc, model);
         model.addAttribute("url", req.getRequestURI() + "?");
-        return "index";
+        return INDEX;
     }
 
     @GetMapping("/product/books/containing")
@@ -100,9 +100,9 @@ public class BookProductController {
             Model model) {
         ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getNameContainingBookPage(CookieUtils.setHeader(req), page, 10, sort, desc, title, 0);
         BookUtils.setBookPage(response, page, sort, desc, model);
-        model.addAttribute("mainText", "제목 검색");
+        model.addAttribute(MAIN_TEXT, "제목 검색");
         model.addAttribute("url", req.getRequestURI() + "?title=" + title + "&");
-        return "index";
+        return INDEX;
     }
 
     @GetMapping("/product/books/tagFilter")
@@ -116,13 +116,13 @@ public class BookProductController {
             Model model) {
         ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getBookPageFilterByTag(CookieUtils.setHeader(req), page, 10, sort, desc, tagNameSet, isAnd, 0);
         BookUtils.setBookPage(response, page, sort, desc, model);
-        model.addAttribute("mainText", "태그 검색 - " + tagNameSet);
+        model.addAttribute(MAIN_TEXT, "태그 검색 - " + tagNameSet);
         StringJoiner stringJoiner = new StringJoiner(",");
         for (String tagName : tagNameSet) {
             stringJoiner.add(tagName);
         }
         model.addAttribute("url", req.getRequestURI()+ "?tagName=" + stringJoiner.toString() + "&");
-        return "index";
+        return INDEX;
     }
 
     @GetMapping("/product/books/category/{categoryId}")
@@ -135,9 +135,9 @@ public class BookProductController {
             Model model) {
         ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getBookPageFilterByCategory(CookieUtils.setHeader(req), page, 10, sort, desc, categoryId, 0);
         BookUtils.setBookPage(response, page, sort, desc, model);
-        model.addAttribute("mainText", "카테고리 검색");
+        model.addAttribute(MAIN_TEXT, "카테고리 검색");
         model.addAttribute("url", req.getRequestURI() + "?");
-        return "index";
+        return INDEX;
     }
 
     @GetMapping("/product/books/like")
@@ -149,8 +149,8 @@ public class BookProductController {
             Model model) {
         ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getLikeBookPage(CookieUtils.setHeader(req), page, 10, sort, desc);
         BookUtils.setBookPage(response, page, sort, desc, model);
-        model.addAttribute("mainText", "좋아요 목록");
+        model.addAttribute(MAIN_TEXT, "좋아요 목록");
         model.addAttribute("url", req.getRequestURI() + "?");
-        return "index";
+        return INDEX;
     }
 }

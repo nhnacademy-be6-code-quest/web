@@ -133,8 +133,8 @@ public class PaymentController {
         if(Objects.nonNull(postProcessRequiredPaymentResponseDto.getClientId())) {
             paymentService.updateGrade(postProcessRequiredPaymentResponseDto.getClientId());
         }        // 장바구니 비우기
-        boolean successClearCartCookie = clearCartCookie(response,
-            postProcessRequiredPaymentResponseDto, model);
+        boolean successClearCartCookie = clearCartCookie(request, response,
+            postProcessRequiredPaymentResponseDto);
 
         if (!successClearCartCookie) {
             alterMessage.append("장바구니 쿠키 삭제에 실패했습니다");
@@ -172,11 +172,11 @@ public class PaymentController {
         }
     }
 
-    private boolean clearCartCookie(HttpServletResponse response,
-        PostProcessRequiredPaymentResponseDto postProcessRequiredPaymentResponseDto, Model model) {
+    private boolean clearCartCookie(HttpServletRequest request, HttpServletResponse response,
+        PostProcessRequiredPaymentResponseDto postProcessRequiredPaymentResponseDto) {
         try {
-            cartService.clearCartByCheckout(response,
-                postProcessRequiredPaymentResponseDto.getProductIdList(), model);
+            cartService.clearCartByCheckout(request, response,
+                postProcessRequiredPaymentResponseDto.getProductIdList());
             return true;
         } catch (Exception e) {
             log.error("장바구니 쿠키에서 구매한 상품들을 삭제하는 중에 에러가 발생했습니다.");
