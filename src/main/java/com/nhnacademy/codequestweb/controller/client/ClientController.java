@@ -18,6 +18,8 @@ import java.util.Base64;
 @Controller
 @RequiredArgsConstructor
 public class ClientController {
+    private static final String REDIRECT_AUTH = "redirect:/auth";
+
     private final ClientService clientService;
 
     @GetMapping("/change-password")
@@ -46,19 +48,19 @@ public class ClientController {
     @GetMapping("/send-reset-password-email")
     public String sendResetPasswordEmail(@RequestParam("email") String email) {
         clientService.sendChangePassword(email);
-        return "redirect:/auth";
+        return REDIRECT_AUTH;
     }
 
     @GetMapping("/send-recovery-account")
     public String sedRecoveryAccount(@RequestParam("email") String email) {
         clientService.sendRecoveryAccount(email);
-        return "redirect:/auth";
+        return REDIRECT_AUTH;
     }
 
     @GetMapping("/send-recovery-account/dooray")
     public String sedRecoveryAccountDooray(@RequestParam("email") String email) {
         clientService.sendRecoverAccountDooray(email);
-        return "redirect:/auth";
+        return REDIRECT_AUTH;
     }
 
     @GetMapping("/recover-account")
