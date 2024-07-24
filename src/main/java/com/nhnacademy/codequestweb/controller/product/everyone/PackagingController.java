@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class PackagingController {
     private final PackagingService packagingService;
 
-
+    // 사용자의 포장지 조회를 위해 남겨두고 추후 수정해야..
     @GetMapping("/all")
     public String all(
             Model model) {

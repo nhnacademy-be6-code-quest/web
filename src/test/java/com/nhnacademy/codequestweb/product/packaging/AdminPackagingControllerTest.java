@@ -89,7 +89,7 @@ class AdminPackagingControllerTest {
                         .param("page", "1"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/admin/client/0"))
-                .andExpect(flash().attribute("alterMessage","응답 본문이 비어있습니다."));;
+                .andExpect(flash().attribute("alterMessage","응답 본문이 비어있습니다."));
     }
 
     @Test
@@ -101,7 +101,7 @@ class AdminPackagingControllerTest {
                         .param("page", "1"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/admin/client/0"))
-                .andExpect(flash().attribute("alterMessage","포장지 조회에 실패했습니다."));;
+                .andExpect(flash().attribute("alterMessage","포장지 조회에 실패했습니다."));
     }
 
     @Test
@@ -130,7 +130,7 @@ class AdminPackagingControllerTest {
         mockMvc.perform(get("/admin/product/packaging/updateForm/1"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/admin/client/0"))
-                .andExpect(flash().attribute("alterMessage","응답 본문이 비어있습니다."));;
+                .andExpect(flash().attribute("alterMessage","응답 본문이 비어있습니다."));
     }
 
     @Test
@@ -141,7 +141,7 @@ class AdminPackagingControllerTest {
         mockMvc.perform(get("/admin/product/packaging/updateForm/1"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/admin/client/0"))
-                .andExpect(flash().attribute("alterMessage","포장지 조회에 실패했습니다."));;
+                .andExpect(flash().attribute("alterMessage","포장지 조회에 실패했습니다."));
     }
 
     @Test

@@ -79,6 +79,12 @@ public class AdminBookController {
 
     private static final String MAIN_TEXT ="mainText";
 
+    private static final String REDIRECT_ADMIN_MAIN = "redirect:/admin/client/0";
+
+    private static final String REDIRECT_PRODUCT_MAIN = "redirect:/admin/product/book/all";
+
+    private static final String ATTRIBUTE_VALUE = "도서 정보 조회에 실패했습니다.";
+
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
@@ -106,43 +112,52 @@ public class AdminBookController {
         return INDEX;
     }
 
-
     @GetMapping("/update/{productId}")
-    public String updateForm(HttpServletRequest req, @PathVariable("productId") Long productId, Model model){
+    public String updateForm(HttpServletRequest req, @PathVariable("productId") Long productId,
+                             RedirectAttributes redirectAttributes, Model model){
+        try {
+            ResponseEntity<BookProductGetResponseDto> response = bookProductService.getSingleBookInfo(CookieUtils.setHeader(req), productId);
+            BookProductGetResponseDto bookProductGetResponseDto = response.getBody();
+            if (bookProductGetResponseDto == null) {
+                redirectAttributes.addFlashAttribute(ALTER_MESSAGE, "응답 본문이 비어있습니다.");
+                return REDIRECT_ADMIN_MAIN;
+            }else {
+                String description = Objects.requireNonNull(bookProductGetResponseDto).productDescription();
+                log.info("description: {}", description);
+                String markdown = flexmarkHtmlConverter.convert(description);
+                List<String> categoryNameSet = bookProductGetResponseDto.categorySet().stream().map(ProductCategory::categoryName).toList();
+                List<String> tagNameSet = bookProductGetResponseDto.tagSet().stream().map(Tag::tagName).toList();
 
-        ResponseEntity<BookProductGetResponseDto> response = bookProductService.getSingleBookInfo(CookieUtils.setHeader(req), productId);
-        BookProductGetResponseDto bookProductGetResponseDto = response.getBody();
-        String description = Objects.requireNonNull(bookProductGetResponseDto).productDescription();
-        log.info("description: {}", description);
-        String markdown = flexmarkHtmlConverter.convert(description);
-        List<String> categoryNameSet = bookProductGetResponseDto.categorySet().stream().map(ProductCategory::categoryName).toList();
-        List<String> tagNameSet = bookProductGetResponseDto.tagSet().stream().map(Tag::tagName).toList();
+                if (bookProductGetResponseDto.isbn() != null && !bookProductGetResponseDto.isbn().isBlank()){
+                    model.addAttribute("aladin", true);
+                }
 
-        if (bookProductGetResponseDto.isbn() != null && !bookProductGetResponseDto.isbn().isBlank()){
-            model.addAttribute("aladin", true);
+                model.addAttribute("update", true);
+                model.addAttribute("productId", productId);
+                model.addAttribute(ACTION, "update");
+                model.addAttribute("cover", bookProductGetResponseDto.cover());
+                model.addAttribute("title", bookProductGetResponseDto.title());
+                model.addAttribute("publisher", bookProductGetResponseDto.publisher());
+                model.addAttribute("author", bookProductGetResponseDto.author());
+                model.addAttribute("pubDate", bookProductGetResponseDto.pubDate());
+                model.addAttribute("isbn", bookProductGetResponseDto.isbn());
+                model.addAttribute("isbn13", bookProductGetResponseDto.isbn13());
+                model.addAttribute("priceStandard", bookProductGetResponseDto.productPriceStandard());
+                model.addAttribute("priceSales", bookProductGetResponseDto.productPriceSales());
+                model.addAttribute("productName", bookProductGetResponseDto.productName());
+                model.addAttribute("inventory", bookProductGetResponseDto.productInventory());
+                model.addAttribute("categorySet", categoryNameSet);
+                model.addAttribute("tagSet", tagNameSet);
+                model.addAttribute("initialValue", markdown);
+                model.addAttribute(VIEW, ADMIN_PAGE);
+                model.addAttribute(ADMIN_PAGE,  BOOK_REGISTER_FORM);
+                model.addAttribute("state", bookProductGetResponseDto.productState());
+                return INDEX;
+            }
+        }catch (Exception e){
+            redirectAttributes.addFlashAttribute(ALTER_MESSAGE, ATTRIBUTE_VALUE);
+            return REDIRECT_ADMIN_MAIN;
         }
-
-        model.addAttribute("update", true);
-        model.addAttribute("productId", productId);
-        model.addAttribute(ACTION, "update");
-        model.addAttribute("cover", bookProductGetResponseDto.cover());
-        model.addAttribute("title", bookProductGetResponseDto.title());
-        model.addAttribute("publisher", bookProductGetResponseDto.publisher());
-        model.addAttribute("author", bookProductGetResponseDto.author());
-        model.addAttribute("pubDate", bookProductGetResponseDto.pubDate());
-        model.addAttribute("isbn", bookProductGetResponseDto.isbn());
-        model.addAttribute("isbn13", bookProductGetResponseDto.isbn13());
-        model.addAttribute("priceStandard", bookProductGetResponseDto.productPriceStandard());
-        model.addAttribute("priceSales", bookProductGetResponseDto.productPriceSales());
-        model.addAttribute("productName", bookProductGetResponseDto.productName());
-        model.addAttribute("inventory", bookProductGetResponseDto.productInventory());
-        model.addAttribute("categorySet", categoryNameSet);
-        model.addAttribute("tagSet", tagNameSet);
-        model.addAttribute("initialValue", markdown);
-        model.addAttribute(VIEW, ADMIN_PAGE);
-        model.addAttribute(ADMIN_PAGE,  BOOK_REGISTER_FORM);
-        model.addAttribute("state", bookProductGetResponseDto.productState());
-        return INDEX;
     }
 
     @GetMapping("/isbnCheck")
@@ -158,33 +173,37 @@ public class AdminBookController {
     public String getAladinBookList(@RequestParam(name = "page", required = false)Integer page,
                                     @RequestParam("title")String title,
                                     Model model) {
+        try {
+            ResponseEntity<Page<AladinBookResponseDto>> aladinBookPageResponse = bookProductService.getBookList(page, title);
 
-        ResponseEntity<Page<AladinBookResponseDto>> aladinBookPageResponse = bookProductService.getBookList(page, title);
+            page = page == null ? 1 : page;
+            log.info("page : {}", page);
+            Page<AladinBookResponseDto> aladinBooks = aladinBookPageResponse.getBody();
+            if(aladinBooks != null){
+                long totalElements = aladinBooks.getTotalElements();
+                int totalPages = aladinBooks.getTotalPages();
 
-        page = page == null ? 1 : page;
-        log.info("page : {}", page);
-        Page<AladinBookResponseDto> aladinBooks = aladinBookPageResponse.getBody();
-        if(aladinBooks != null){
-            long totalElements = aladinBooks.getTotalElements();
-            int totalPages = aladinBooks.getTotalPages();
+                List<AladinBookResponseDto> aladinBookList = aladinBooks.getContent();
+                model.addAttribute("bookList", aladinBookList);
+                Set<Integer> pageNumSet = new LinkedHashSet<>();
 
-            List<AladinBookResponseDto> aladinBookList = aladinBooks.getContent();
-            model.addAttribute("bookList", aladinBookList);
-            Set<Integer> pageNumSet = new LinkedHashSet<>();
-
-            for (int i = 1; i <= totalPages; i++){
-                if (i == 1 || (page - 2 <= i && i <= page + 2) || i == totalPages){
-                    pageNumSet.add(i);
+                for (int i = 1; i <= totalPages; i++){
+                    if (i == 1 || (page - 2 <= i && i <= page + 2) || i == totalPages){
+                        pageNumSet.add(i);
+                    }
+                }
+                model.addAttribute("pageNumSet", pageNumSet);
+                if (totalElements == 100){
+                    model.addAttribute("warning", true);
                 }
             }
-            model.addAttribute("pageNumSet", pageNumSet);
-            if (totalElements == 100){
-                model.addAttribute("warning", true);
-            }
-        }
 
-        model.addAttribute("title",title);
-        return "view/product/aladinBookList";
+            model.addAttribute("title",title);
+            return "view/product/aladinBookList";
+        }catch (FeignException e){
+            log.warn("error occurred while getting aladin book list, error message: {}", e.getMessage());
+            return "view/product/window.close";
+        }
     }
 
 
@@ -216,7 +235,7 @@ public class AdminBookController {
             redirectAttributes.addFlashAttribute(ALTER_MESSAGE, "도서를 등록하는 데 실패했습니다.\n자세한 정보는 로그를 확인하세요.");
             log.warn("error occurred while registering book product : {}", e.getMessage());
         }
-        return "redirect:/admin/product/book/all";
+        return REDIRECT_PRODUCT_MAIN;
     }
 
     @PutMapping("/update")
@@ -230,10 +249,36 @@ public class AdminBookController {
             redirectAttributes.addFlashAttribute(ALTER_MESSAGE, "상품 정보를 수정하는 데 실패했습니다.\n자세한 정보는 로그를 확인하세요.");
             log.warn("error occurred while updating book product : {}", e.getMessage());
         }
-        return "redirect:/admin/product/book/all";
+        return REDIRECT_PRODUCT_MAIN;
     }
 
 
+    private String handlingResponseBody(
+            ResponseEntity<Page<BookProductGetResponseDto>> response, RedirectAttributes redirectAttributes, Model model,
+    Integer page, String sort, Boolean desc, String mainText, String url
+    ){
+        if (response == null){
+            log.warn("the response itself is null");
+            redirectAttributes.addFlashAttribute(ALTER_MESSAGE, "응답 자체가 비어있습니다.");
+            return REDIRECT_ADMIN_MAIN;
+        }else {
+            Page<BookProductGetResponseDto> responseBody = response.getBody();
+            if (responseBody == null){
+                log.warn("the response body is null with response: {}", response);
+                redirectAttributes.addFlashAttribute(ALTER_MESSAGE, "응답 본문이 비어있습니다.");
+                return REDIRECT_ADMIN_MAIN;
+            }else {
+                BookUtils.setBookPage(response, page, sort, desc, model);
+                model.addAttribute(MAIN_TEXT, mainText);
+                model.addAttribute("url", url);
+                model.addAttribute(VIEW, ADMIN_PAGE);
+                model.addAttribute(ADMIN_PAGE, PRODUCT_LIST_PAGE);
+                model.addAttribute(ADMIN, true);
+                model.addAttribute(ACTIVE_SECTION, PRODUCT);
+                return INDEX;
+            }
+        }
+    }
 
     @GetMapping("/all")
     public String getAllBookPage(
@@ -243,16 +288,16 @@ public class AdminBookController {
             @RequestParam(name = "sort", required = false)String sort,
             @RequestParam(name = "desc", required = false)Boolean desc,
             @RequestParam(name = "productState", required = false) Integer productState,
+            RedirectAttributes redirectAttributes,
             Model model) {
-        ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getAllBookPage(CookieUtils.setHeader(req), page, size, sort, desc, productState);
-        BookUtils.setBookPage(response, page, sort, desc, model);
-        model.addAttribute(MAIN_TEXT, "관리자 페이지");
-        model.addAttribute("url", req.getRequestURI() + "?");
-        model.addAttribute(VIEW, ADMIN_PAGE);
-        model.addAttribute(ADMIN_PAGE, PRODUCT_LIST_PAGE);
-        model.addAttribute(ADMIN, true);
-        model.addAttribute(ACTIVE_SECTION, PRODUCT);
-        return INDEX;
+        try {
+            ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getAllBookPage(CookieUtils.setHeader(req), page, size, sort, desc, productState);
+            return handlingResponseBody(response, redirectAttributes, model, page, sort, desc, "관리자 페이지", req.getRequestURI() + "?");
+        }catch (FeignException e){
+            log.warn("error occurred while getting all book page, message : {}", e.getMessage());
+            redirectAttributes.addFlashAttribute(ALTER_MESSAGE, ATTRIBUTE_VALUE);
+            return REDIRECT_ADMIN_MAIN;
+        }
     }
 
     @GetMapping("/containing")
@@ -264,17 +309,17 @@ public class AdminBookController {
             @RequestParam(name = "desc", required = false)Boolean desc,
             @RequestParam(name = "productState", required = false) Integer productState,
             @RequestParam("title")String title,
+            RedirectAttributes redirectAttributes,
             Model model) {
-        ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getNameContainingBookPage(CookieUtils.setHeader(req), page, size, sort, desc, title, productState);
 
-        BookUtils.setBookPage(response, page, sort, desc, model);
-        model.addAttribute(MAIN_TEXT, "관리자 페이지 - 제목 : " + title);
-        model.addAttribute("url", req.getRequestURI()+ "?title=" + title + "&");
-        model.addAttribute(VIEW, ADMIN_PAGE);
-        model.addAttribute(ADMIN_PAGE, PRODUCT_LIST_PAGE);
-        model.addAttribute(ADMIN, true);
-        model.addAttribute(ACTIVE_SECTION, PRODUCT);
-        return INDEX;
+        try {
+            ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getNameContainingBookPage(CookieUtils.setHeader(req), page, size, sort, desc, title, productState);
+            return handlingResponseBody(response, redirectAttributes, model, page, sort, desc, "관리자 페이지 - 제목 : " + title, req.getRequestURI()+ "?title=" + title + "&");
+        }catch (FeignException e){
+            log.warn("error occurred while getting name containing book page, message : {}", e.getMessage());
+            redirectAttributes.addFlashAttribute(ALTER_MESSAGE, ATTRIBUTE_VALUE);
+            return REDIRECT_ADMIN_MAIN;
+        }
     }
 
     @GetMapping("/tagFilter")
@@ -287,16 +332,16 @@ public class AdminBookController {
             @RequestParam(name = "tagName") Set<String> tagNameSet,
             @RequestParam(name = "isAnd", required = false)Boolean isAnd,
             @RequestParam(name = "productState", required = false) Integer productState,
+            RedirectAttributes redirectAttributes,
             Model model) {
-        ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getBookPageFilterByTag(CookieUtils.setHeader(req), page, size, sort, desc, tagNameSet, isAnd, productState);
-        BookUtils.setBookPage(response, page, sort, desc, model);
-        model.addAttribute(MAIN_TEXT, "관리자 페이지 - 태그 : " + tagNameSet);
-        model.addAttribute("url", req.getRequestURI() + "?");
-        model.addAttribute(VIEW, ADMIN_PAGE);
-        model.addAttribute(ADMIN_PAGE, PRODUCT_LIST_PAGE);
-        model.addAttribute(ADMIN, true);
-        model.addAttribute(ACTIVE_SECTION, PRODUCT);
-        return INDEX;
+        try {
+            ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getBookPageFilterByTag(CookieUtils.setHeader(req), page, size, sort, desc, tagNameSet, isAnd, productState);
+            return handlingResponseBody(response, redirectAttributes, model, page, sort, desc, "관리자 페이지 - 태그 : " + tagNameSet, req.getRequestURI() + "?");
+        }catch (FeignException e){
+            log.warn("error occurred while getting tag filter book page, message : {}", e.getMessage());
+            redirectAttributes.addFlashAttribute(ALTER_MESSAGE, ATTRIBUTE_VALUE);
+            return REDIRECT_ADMIN_MAIN;
+        }
     }
 
     @GetMapping("/category/{categoryId}")
@@ -308,16 +353,16 @@ public class AdminBookController {
             @RequestParam(name = "desc", required = false)Boolean desc,
             @RequestParam(name = "productState", required = false) Integer productState,
             @PathVariable("categoryId") Long categoryId,
+            RedirectAttributes redirectAttributes,
             Model model) {
-        ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getBookPageFilterByCategory(CookieUtils.setHeader(req), page, size, sort, desc, categoryId, productState);
-        BookUtils.setBookPage(response, page, sort, desc, model);
-        model.addAttribute(MAIN_TEXT, "관리자 페이지 - 카테고리 필터");
-        model.addAttribute("url", req.getRequestURI()+ "?");
-        model.addAttribute(VIEW, ADMIN_PAGE);
-        model.addAttribute(ADMIN_PAGE, PRODUCT_LIST_PAGE);
-        model.addAttribute(ADMIN, true);
-        model.addAttribute(ACTIVE_SECTION, PRODUCT);
-        return INDEX;
+        try {
+            ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getBookPageFilterByCategory(CookieUtils.setHeader(req), page, size, sort, desc, categoryId, productState);
+            return handlingResponseBody(response, redirectAttributes, model, page, sort, desc, "관리자 페이지 - 카테고리 필터", req.getRequestURI() + "?");
+        }catch (FeignException e){
+            log.warn("error occurred while getting category filter book page, message : {}", e.getMessage());
+            redirectAttributes.addFlashAttribute(ALTER_MESSAGE, ATTRIBUTE_VALUE);
+            return REDIRECT_ADMIN_MAIN;
+        }
     }
 
     @GetMapping("/like")
@@ -327,15 +372,33 @@ public class AdminBookController {
             @RequestParam(name= "size", required = false)Integer size,
             @RequestParam(name = "sort", required = false)String sort,
             @RequestParam(name = "desc", required = false)Boolean desc,
+            RedirectAttributes redirectAttributes,
             Model model) {
-        ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getLikeBookPage(CookieUtils.setHeader(req), page, size, sort, desc);
-        BookUtils.setBookPage(response, page, sort, desc, model);
-        model.addAttribute(MAIN_TEXT, "관리자 페이지 - 즐겨찾기");
-        model.addAttribute("url", req.getRequestURI() + "?");
-        model.addAttribute(VIEW, ADMIN_PAGE);
-        model.addAttribute(ADMIN_PAGE, PRODUCT_LIST_PAGE);
-        model.addAttribute(ADMIN, true);
-        return INDEX;
+        try {
+            ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getLikeBookPage(CookieUtils.setHeader(req), page, size, sort, desc);
+            return handlingResponseBody(response, redirectAttributes, model, page, sort, desc, "관리자 페이지 - 즐겨찾기", req.getRequestURI() + "?");
+        }catch (FeignException e){
+            log.warn("error occurred while getting like book page, message : {}", e.getMessage());
+            redirectAttributes.addFlashAttribute(ALTER_MESSAGE, ATTRIBUTE_VALUE);
+            return REDIRECT_ADMIN_MAIN;
+        }
+    }
+
+    private void getReview(long productId, Model model){
+        try {
+            Double totalReviewScore = reviewService.getReviewScore(productId);
+            Page<ReviewInfoResponseDto> reviewPage = reviewService.getProductReviewPage(0, 10, productId);
+
+            model.addAttribute("averageScore", totalReviewScore);
+            model.addAttribute("totalPage", reviewPage.getTotalPages());
+            model.addAttribute("reviews", reviewPage.getContent());
+        }catch (FeignException e){
+            log.warn("error occurred while getting book review with id {}, message : {}", productId, e.getMessage());
+            model.addAttribute(ALTER_MESSAGE, "리뷰 조회 과정에서 오류가 발생했습니다.");
+            model.addAttribute("averageScore", 0.0);
+            model.addAttribute("totalPage", 0);
+            model.addAttribute("reviews", null);
+        }
     }
 
     @GetMapping("/{productId}")
@@ -343,22 +406,24 @@ public class AdminBookController {
             HttpServletRequest req,
             @PathVariable("productId") long productId,
             @RequestParam(defaultValue = "0") int page,
+            RedirectAttributes redirectAttributes,
             Model model) {
-        ResponseEntity<BookProductGetResponseDto> response = bookProductService.getSingleBookInfo(CookieUtils.setHeader(req), productId);
+        try {
+            ResponseEntity<BookProductGetResponseDto> response = bookProductService.getSingleBookInfo(CookieUtils.setHeader(req), productId);
 
-        BookUtils.setSingleBookInfo(response, model);
+            BookUtils.setSingleBookInfo(response, model);
 
-        Double totalReviewScore = reviewService.getReviewScore(productId);
-        Page<ReviewInfoResponseDto> reviewPage = reviewService.getProductReviewPage(0, 10, productId);
+            model.addAttribute(ADMIN, true);
+            model.addAttribute(VIEW, ADMIN_PAGE);
+            model.addAttribute(ADMIN_PAGE, "productBookDetail");
+            model.addAttribute("page", page);
 
-        model.addAttribute(ADMIN, true);
-        model.addAttribute(VIEW, ADMIN_PAGE);
-        model.addAttribute(ADMIN_PAGE, "productBookDetail");
-        model.addAttribute("averageScore", totalReviewScore);
-        model.addAttribute("page", page);
-        model.addAttribute("totalPage", reviewPage.getTotalPages());
-        model.addAttribute("reviews", reviewPage.getContent());
+            getReview(productId, model);
 
-        return INDEX;
+            return INDEX;
+        }catch (FeignException e){
+            redirectAttributes.addFlashAttribute(ALTER_MESSAGE, ATTRIBUTE_VALUE);
+            return REDIRECT_PRODUCT_MAIN;
+        }
     }
 }
