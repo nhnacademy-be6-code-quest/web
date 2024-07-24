@@ -1,5 +1,6 @@
 package com.nhnacademy.codequestweb.controller.auth;
 
+import com.nhnacademy.codequestweb.exception.auth.PaycoRedirectException;
 import com.nhnacademy.codequestweb.request.auth.ClientLoginRequestDto;
 import com.nhnacademy.codequestweb.request.auth.ClientRegisterRequestDto;
 import com.nhnacademy.codequestweb.request.auth.OAuthRegisterRequestDto;
@@ -28,18 +29,25 @@ import java.time.format.DateTimeParseException;
 @Controller
 @RequiredArgsConstructor
 public class AuthController {
+    private static final String ACCESS = "access";
+    private static final String REFRESH = "refresh";
+    private static final String SAMESITE = "SameSite";
+    private static final String INDEX = "index";
+    private static final String ALTER_MESSAGE = "alterMessage";
+    private static final String REDIRECT = "redirect:/";
+
     private final AuthService authService;
 
     @GetMapping("/auth")
     public String auth(HttpServletRequest req) {
-        if (CookieUtils.getCookieValue(req, "access") != null) {
-            return "redirect:/";
+        if (CookieUtils.getCookieValue(req, ACCESS) != null) {
+            return REDIRECT;
         }
-        if (req.getParameter("alterMessage") != null) {
-            req.setAttribute("alterMessage", req.getParameter("alterMessage"));
+        if (req.getParameter(ALTER_MESSAGE) != null) {
+            req.setAttribute(ALTER_MESSAGE, req.getParameter(ALTER_MESSAGE));
         }
         req.setAttribute("view", "auth");
-        return "index";
+        return INDEX;
     }
 
     @PostMapping("/register")
@@ -52,35 +60,35 @@ public class AuthController {
     public String loginPost(@Valid @ModelAttribute ClientLoginRequestDto clientLoginRequestDto, HttpServletResponse res) {
         TokenResponseDto response = authService.login(clientLoginRequestDto).getBody();
         if (response != null) {
-            Cookie cookie = new Cookie("access", response.getAccess());
+            Cookie cookie = new Cookie(ACCESS, response.getAccess());
             cookie.setHttpOnly(true);
             cookie.setSecure(true);
             cookie.setPath("/");
             cookie.setMaxAge(60 * 60 * 24 * 14);
-            cookie.setAttribute("SameSite", "Lax");
+            cookie.setAttribute(SAMESITE, "Lax");
             res.addCookie(cookie);
 
-            cookie = new Cookie("refresh", response.getRefresh());
+            cookie = new Cookie(REFRESH, response.getRefresh());
             cookie.setHttpOnly(true);
             cookie.setSecure(true);
             cookie.setPath("/");
             cookie.setMaxAge(60 * 60 * 24 * 14);
-            cookie.setAttribute("SameSite", "Lax");
+            cookie.setAttribute(SAMESITE, "Lax");
             res.addCookie(cookie);
 
             CookieUtils.deleteCookieValue(res, "cart");
         }
-        return "redirect:/";
+        return REDIRECT;
     }
 
     @GetMapping("/logout")
     public String logout(HttpServletRequest req, HttpServletResponse res) {
         HttpHeaders headers = new HttpHeaders();
-        headers.set("access", CookieUtils.getCookieValue(req, "access"));
-        headers.set("refresh", CookieUtils.getCookieValue(req, "refresh"));
+        headers.set(ACCESS, CookieUtils.getCookieValue(req, ACCESS));
+        headers.set(REFRESH, CookieUtils.getCookieValue(req, REFRESH));
         authService.logout(headers);
-        Cookie access = new Cookie("access", null);
-        Cookie refresh = new Cookie("refresh", null);
+        Cookie access = new Cookie(ACCESS, null);
+        Cookie refresh = new Cookie(REFRESH, null);
         access.setMaxAge(0);
         refresh.setMaxAge(0);
         access.setPath("/");
@@ -88,7 +96,7 @@ public class AuthController {
         res.addCookie(access);
         res.addCookie(refresh);
         CookieUtils.deleteCookieValue(res, "cart");
-        return "redirect:/";
+        return REDIRECT;
     }
 
     @GetMapping("/payco/login")
@@ -96,7 +104,7 @@ public class AuthController {
         try {
             res.sendRedirect(authService.getPaycoLoginURL());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new PaycoRedirectException(e.getMessage());
         }
     }
 
@@ -105,7 +113,7 @@ public class AuthController {
         try {
             res.sendRedirect(authService.getPaycoRecoveryURL());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new PaycoRedirectException(e.getMessage());
         }
     }
 
@@ -122,36 +130,36 @@ public class AuthController {
             Cookie cookie;
             TokenResponseDto tokenInfo = authService.paycoLoginCallback(code).getBody();
             if (tokenInfo == null) {
-                req.setAttribute("alterMessage", "휴면/삭제된 계정 입니다.");
+                req.setAttribute(ALTER_MESSAGE, "휴면/삭제된 계정 입니다.");
                 req.setAttribute("view", "auth");
                 req.setAttribute("isDeleted", true);
-                return "index";
+                return INDEX;
             }
 
-            cookie = new Cookie("refresh", tokenInfo.getRefresh());
+            cookie = new Cookie(REFRESH, tokenInfo.getRefresh());
             cookie.setHttpOnly(true);
             cookie.setSecure(true);
             cookie.setPath("/");
             cookie.setMaxAge(60 * 60 * 24 * 14);
-            cookie.setAttribute("SameSite", "Lax");
+            cookie.setAttribute(SAMESITE, "Lax");
             res.addCookie(cookie);
 
             if (tokenInfo.getAccess() == null) {
                 req.setAttribute("view", "oauth");
-                return "index";
+                return INDEX;
             }
 
-            cookie = new Cookie("access", tokenInfo.getAccess());
+            cookie = new Cookie(ACCESS, tokenInfo.getAccess());
             cookie.setHttpOnly(true);
             cookie.setSecure(true);
             cookie.setPath("/");
             cookie.setMaxAge(60 * 60 * 24 * 14);
-            cookie.setAttribute("SameSite", "Lax");
+            cookie.setAttribute(SAMESITE, "Lax");
             res.addCookie(cookie);
         } else {
             log.warn("No code received from Payco");
         }
-        return "redirect:/";
+        return REDIRECT;
     }
 
     @GetMapping("/payco/recovery/callback")
@@ -174,33 +182,33 @@ public class AuthController {
 
     @PostMapping("/oauth/register")
     public String oauthRegister(@ModelAttribute OAuthRegisterRequestDto oAuthRegisterRequestDto, HttpServletRequest req, HttpServletResponse res) {
-        oAuthRegisterRequestDto.setAccess(CookieUtils.getCookieValue(req, "refresh"));
+        oAuthRegisterRequestDto.setAccess(CookieUtils.getCookieValue(req, REFRESH));
         TokenResponseDto response = authService.oAuthRegister(oAuthRegisterRequestDto).getBody();
         if (response != null) {
-            Cookie cookie = new Cookie("access", response.getAccess());
+            Cookie cookie = new Cookie(ACCESS, response.getAccess());
             cookie.setHttpOnly(true);
             cookie.setSecure(true);
             cookie.setPath("/");
             cookie.setMaxAge(60 * 60 * 24 * 14);
-            cookie.setAttribute("SameSite", "Lax");
+            cookie.setAttribute(SAMESITE, "Lax");
             res.addCookie(cookie);
 
-            cookie = new Cookie("refresh", response.getRefresh());
+            cookie = new Cookie(REFRESH, response.getRefresh());
             cookie.setHttpOnly(true);
             cookie.setSecure(true);
             cookie.setPath("/");
             cookie.setMaxAge(60 * 60 * 24 * 14);
-            cookie.setAttribute("SameSite", "Lax");
+            cookie.setAttribute(SAMESITE, "Lax");
             res.addCookie(cookie);
         }
-        return "redirect:/";
+        return REDIRECT;
     }
 
     @ExceptionHandler(FeignException.Unauthorized.class)
     public String loginError(FeignException.Unauthorized e, HttpServletRequest req, HttpServletResponse res) {
         req.setAttribute("login_message", "아이디 또는 비밀번호가 틀렸습니다.");
         req.setAttribute("view", "auth");
-        return "index";
+        return INDEX;
     }
 
     @ExceptionHandler(FeignException.Gone.class)
@@ -208,7 +216,7 @@ public class AuthController {
         req.setAttribute("login_message", "삭제/휴면된 계정입니다.");
         req.setAttribute("view", "auth");
         req.setAttribute("isDeleted", true);
-        return "index";
+        return INDEX;
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -223,7 +231,7 @@ public class AuthController {
         req.setAttribute("register_message", e.getBindingResult().getAllErrors().get(0).getDefaultMessage());
         req.setAttribute("view", "auth");
         req.setAttribute("form", "register");
-        return "index";
+        return INDEX;
     }
 
     @ExceptionHandler(FeignException.Conflict.class)
@@ -238,7 +246,7 @@ public class AuthController {
         req.setAttribute("register_message", "이미 가입된 이메일입니다.");
         req.setAttribute("view", "auth");
         req.setAttribute("form", "register");
-        return "index";
+        return INDEX;
     }
 
     private ClientRegisterRequestDto getRequestDto(HttpServletRequest req) {

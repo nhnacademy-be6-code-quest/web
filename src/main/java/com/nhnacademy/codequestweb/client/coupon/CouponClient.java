@@ -2,7 +2,6 @@ package com.nhnacademy.codequestweb.client.coupon;
 
 import com.nhnacademy.codequestweb.domain.Status;
 import com.nhnacademy.codequestweb.request.coupon.CouponRegisterRequestDto;
-import com.nhnacademy.codequestweb.request.payment.PaymentCompletedCouponRequestDto;
 import com.nhnacademy.codequestweb.response.coupon.CouponAdminPageCouponResponseDto;
 import com.nhnacademy.codequestweb.response.coupon.CouponMyPageCouponResponseDto;
 import com.nhnacademy.codequestweb.response.coupon.CouponOrderResponseDto;
@@ -19,6 +18,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
+
 @FeignClient(name = "couponClient", url = "http://localhost:8001")
 public interface CouponClient {
 

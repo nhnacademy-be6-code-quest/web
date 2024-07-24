@@ -5,7 +5,6 @@ import com.nhnacademy.codequestweb.request.payment.TossApprovePaymentRequest;
 import com.nhnacademy.codequestweb.request.payment.UserUpdateGradeRequestDto;
 import com.nhnacademy.codequestweb.response.payment.PaymentGradeResponseDto;
 import com.nhnacademy.codequestweb.response.payment.TossPaymentsResponseDto;
-import org.json.simple.parser.ParseException;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
