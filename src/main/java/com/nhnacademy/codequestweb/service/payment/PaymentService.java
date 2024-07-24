@@ -80,6 +80,7 @@ public class PaymentService /*implements PaymentService*/ {
         pointRewardOrderRequestDto.setAccumulatedPoint(amount);
         return paymentPointClient.rewardOrderPoint(httpHeaders, pointRewardOrderRequestDto);
     }
+
     public void updateGrade(long clientId){
         UserUpdateGradeRequestDto userUpdateGradeRequestDto = new UserUpdateGradeRequestDto(clientId);
         paymentClient.updateUser(userUpdateGradeRequestDto);

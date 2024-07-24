@@ -1,14 +1,20 @@
 package com.nhnacademy.codequestweb.controller.payment;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhnacademy.codequestweb.request.payment.PaymentOrderApproveRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentOrderShowRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PostProcessRequiredPaymentResponseDto;
+import com.nhnacademy.codequestweb.request.product.cart.CartRequestDto;
 import com.nhnacademy.codequestweb.response.payment.TossPaymentsResponseDto;
 import com.nhnacademy.codequestweb.service.payment.PaymentService;
 import com.nhnacademy.codequestweb.service.product.CartService;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
+import com.nhnacademy.codequestweb.utils.SecretKeyUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +37,8 @@ public class PaymentController {
     // 하나의 컨트롤러가 여러 개의 서비스를 호출하면 1) 테스트 어렵고 2) 확장성도 떨어짐
 
     private final PaymentService paymentService;
-    private final CartService cartService;
+    private final ObjectMapper objectMapper;
+    private static final TypeReference<List<CartRequestDto>> TYPE_REFERENCE = new TypeReference<List<CartRequestDto>>() {};
 
     @GetMapping("/client/order/payment")
     public String savePayment(@RequestHeader HttpHeaders headers, Model model,
@@ -130,11 +137,9 @@ public class PaymentController {
 
         }
 
-        if(Objects.nonNull(postProcessRequiredPaymentResponseDto.getClientId())) {
-            paymentService.updateGrade(postProcessRequiredPaymentResponseDto.getClientId());
-        }        // 장바구니 비우기
+        // 장바구니 비우기
         boolean successClearCartCookie = clearCartCookie(request, response,
-            postProcessRequiredPaymentResponseDto);
+            postProcessRequiredPaymentResponseDto, model);
 
         if (!successClearCartCookie) {
             alterMessage.append("장바구니 쿠키 삭제에 실패했습니다");
@@ -143,6 +148,7 @@ public class PaymentController {
         if(!alterMessage.isEmpty()) {
             model.addAttribute("alterMessage", alterMessage.toString());
         }
+
 
         return "index";
 
@@ -173,15 +179,33 @@ public class PaymentController {
     }
 
     private boolean clearCartCookie(HttpServletRequest request, HttpServletResponse response,
-        PostProcessRequiredPaymentResponseDto postProcessRequiredPaymentResponseDto) {
-        try {
-            cartService.clearCartByCheckout(request, response,
-                postProcessRequiredPaymentResponseDto.getProductIdList());
-            return true;
-        } catch (Exception e) {
-            log.error("장바구니 쿠키에서 구매한 상품들을 삭제하는 중에 에러가 발생했습니다.");
+        PostProcessRequiredPaymentResponseDto postProcessRequiredPaymentResponseDto, Model model) {
+
+        String encryptedCart = CookieUtils.getCookieValue(request, "cart");
+        if (encryptedCart != null) {
+            try {
+                String cartJson = SecretKeyUtils.decrypt(encryptedCart, SecretKeyUtils.getSecretKey());
+                List<CartRequestDto> cartListOfCookie = objectMapper.readValue(cartJson, TYPE_REFERENCE);
+                List<CartRequestDto> cartRequestDtoToDelete = new ArrayList<>();
+
+                for (CartRequestDto cartItem : cartListOfCookie) {
+                    if (postProcessRequiredPaymentResponseDto.getProductIdList().contains(cartItem.productId())) {
+                        cartRequestDtoToDelete.add(cartItem);
+                    }
+                }
+                cartListOfCookie.removeAll(cartRequestDtoToDelete);
+
+                CookieUtils.deleteCookieValue(response, "cart");
+                CookieUtils.setCartCookieValue(cartListOfCookie, objectMapper, response);
+                return true;
+            } catch (Exception e) {
+                return false;
+            }
+        }else{
+            log.warn("cart controller advice may have some problem with processing deleted cookie. check the log with cart controller advice class");
             return false;
         }
+
     }
 
 }
