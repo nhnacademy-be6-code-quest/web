@@ -35,7 +35,7 @@ public interface PaymentClient {
     ResponseEntity<TossPaymentsResponseDto> approvePayment(@RequestHeader HttpHeaders headers, @RequestBody TossApprovePaymentRequest tossApprovePaymentRequest);
 
     @GetMapping("/api/order/payment/post-process")
-    ResponseEntity<PostProcessRequiredPaymentResponseDto> getPostProcessRequiredPaymentResponseDto(@RequestParam("tossOrderId") String tossOrderId);
+    ResponseEntity<PostProcessRequiredPaymentResponseDto> getPostProcessRequiredPaymentResponseDto(@RequestParam("orderCode") String orderCode);
 
     @PostMapping("/api/order/update/user")
     void updateUser(@RequestBody UserUpdateGradeRequestDto userUpdateGradeRequestDto);

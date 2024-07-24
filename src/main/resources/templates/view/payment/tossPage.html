@@ -24,8 +24,8 @@
         - [[${paymentOrderShowRequestDto.getDiscountAmountByCoupon()}]]
         - [[${paymentOrderShowRequestDto.getDiscountAmountByPoint()}]],
 
-    // orderId: `[[${tossOrderId}]]`,
-    orderId: `[[${paymentOrderShowRequestDto.getTossOrderId()}]]`, // 주문번호(주문번호는 상점에서 직접 만들어주세요.)
+    // orderId: `[[${orderCode}]]`,
+    orderId: `[[${paymentOrderShowRequestDto.getOrderCode()}]]`, // 주문번호(주문번호는 상점에서 직접 만들어주세요.)
 
     orderName: `[[${paymentOrderShowRequestDto.getOrderHistoryTitle()}]]`, // 구매상품
 

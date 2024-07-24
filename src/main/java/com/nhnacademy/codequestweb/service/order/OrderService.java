@@ -134,7 +134,7 @@ public class OrderService {
                 .designatedDeliveryDate(clientOrderForm.getDesignatedDeliveryDate())
                 .paymentMethod(clientOrderPayMethodForm.getPaymentMethod())
                 .accumulatePoint(clientOrderPayMethodForm.getExpectedAccumulatingPoint())
-                .tossOrderId(UUID.randomUUID().toString())
+                .orderCode(UUID.randomUUID().toString())
                 .build();
 
         for(ClientOrderForm.OrderDetailDtoItem item : clientOrderForm.getOrderDetailDtoItemList()){
@@ -157,11 +157,11 @@ public class OrderService {
 
         orderClient.saveClientTemporalOrder(headers, clientOrderCreateForm);
 
-        return clientOrderCreateForm.getTossOrderId();
+        return clientOrderCreateForm.getOrderCode();
     }
 
     public void saveNonClientTemporalOrder(HttpServletRequest request, NonClientOrderForm nonClientOrderForm){
-        nonClientOrderForm.setTossOrderId(UUID.randomUUID().toString());
+        nonClientOrderForm.setOrderCode(UUID.randomUUID().toString());
         orderClient.saveNonClientTemporalOrder(getHeader(request), nonClientOrderForm);
     }
 

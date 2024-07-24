@@ -42,7 +42,7 @@ public class PaymentController {
 
     @GetMapping("/client/order/payment")
     public String savePayment(@RequestHeader HttpHeaders headers, Model model,
-        @RequestParam("tossOrderId") String tossOrderId, HttpServletRequest req) {
+        @RequestParam("orderCode") String orderCode, HttpServletRequest req) {
 
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
 
@@ -50,27 +50,27 @@ public class PaymentController {
 
         // 결제 요청 정보
         PaymentOrderShowRequestDto paymentOrderShowRequestDto = paymentService.findPaymentOrderShowRequestDtoByOrderId(
-            headers, tossOrderId);
+            headers, orderCode);
         model.addAttribute("paymentOrderShowRequestDto", paymentOrderShowRequestDto);
 
         log.info("결제 요청 정보: {}", paymentOrderShowRequestDto);
 
         // 쿠폰 및 포인트 할인 후 실 결제 금액이 0원일때?
 //        if (orderTotalAmount - discountAmountByPoint - discountAmountByCoupon == 0) {
-//            String.format("redirect:/client/order/%s/payment/success/post-process", tossOrderId);
+//            String.format("redirect:/client/order/%s/payment/success/post-process", orderCode);
 //        }
 
         model.addAttribute("successUrl",
-            "https://book-store.shop/client/order/" + tossOrderId + "/payment/success");
+            "https://localhost:8080/client/order/" + orderCode + "/payment/success");
         model.addAttribute("failUrl",
-            "https://book-store.shop/client/order/" + tossOrderId + "/payment/fail");
+            "https://localhost:8080/client/order/" + orderCode + "/payment/fail");
 
         return "view/payment/tossPage";
     }
 
-    @GetMapping("/client/order/{tossOrderId}/payment/success")
+    @GetMapping("/client/order/{orderCode}/payment/success")
     public String paymentResult(HttpServletRequest request, Model model,
-        @PathVariable(value = "tossOrderId") String tossOrderId,
+        @PathVariable(value = "orderCode") String orderCode,
         @RequestParam long amount, @RequestParam String paymentKey) throws ParseException {
 
         log.info("결제 요청 성공!");
@@ -80,12 +80,12 @@ public class PaymentController {
 
         // 결제 승인 요청 정보
         PaymentOrderApproveRequestDto paymentOrderApproveRequestDto = paymentService.findPaymentOrderApproveRequestDtoByOrderId(
-            headers, tossOrderId);
+            headers, orderCode);
 
         // 조작 확인하기 : 주문 정보가 일치하지 않으면 실패 페이지로 이동하기.
-        if (!paymentService.isValidTossPayment(paymentOrderApproveRequestDto, tossOrderId,
+        if (!paymentService.isValidTossPayment(paymentOrderApproveRequestDto, orderCode,
             amount)) {
-            log.warn("주문 아이디 : {} 에서 결제 조작이 의심됩니다.", tossOrderId);
+            log.warn("주문 아이디 : {} 에서 결제 조작이 의심됩니다.", orderCode);
             model.addAttribute("alterMessage", "주문 아이디 : {} 에서 결제 조작이 의심됩니다.");
             model.addAttribute("view", "payment");
             model.addAttribute("payment", "failed");
@@ -94,7 +94,7 @@ public class PaymentController {
 
         // 결제 승인하기
         TossPaymentsResponseDto tossPaymentsResponseDto = paymentService.approvePayment(headers,
-            tossOrderId, amount, paymentKey);
+            orderCode, amount, paymentKey);
 
         log.info("결제 승인 성공");
 
@@ -103,11 +103,11 @@ public class PaymentController {
 
         log.info("결제 및 주문 데이터 저장 성공");
 
-        return String.format("redirect:/client/order/%s/payment/success/post-process", tossOrderId);
+        return String.format("redirect:/client/order/%s/payment/success/post-process", orderCode);
     }
 
-    @GetMapping("/client/order/{tossOrderId}/payment/success/post-process")
-    public String postProcessPayment(@PathVariable("tossOrderId") String tossOrderId,
+    @GetMapping("/client/order/{orderCode}/payment/success/post-process")
+    public String postProcessPayment(@PathVariable("orderCode") String orderCode,
 
         HttpServletRequest request, HttpServletResponse response, Model model,
         RedirectAttributes redirectAttributes) {
@@ -118,7 +118,7 @@ public class PaymentController {
         headers.set("access", CookieUtils.getCookieValue(request, "access"));
 
         PostProcessRequiredPaymentResponseDto postProcessRequiredPaymentResponseDto = paymentService.getPostProcessRequiredPaymentResponseDto(
-            tossOrderId);
+            orderCode);
 
         model.addAttribute("orderId", postProcessRequiredPaymentResponseDto.getOrderId());
         model.addAttribute("view", "payment");
@@ -154,11 +154,11 @@ public class PaymentController {
 
     }
 
-    @GetMapping("/client/order/{tossOrderId}/payment/fail")
+    @GetMapping("/client/order/{orderCode}/payment/fail")
     public String paymentResult(
-        @PathVariable String tossOrderId, Model model, @RequestParam(value = "message") String message,
+        @PathVariable String orderCode, Model model, @RequestParam(value = "message") String message,
         @RequestParam(value = "code") Integer code) {
-        // tossOrderId로 재결제 유도하면 좋을듯!!
+        // orderCode로 재결제 유도하면 좋을듯!!
         model.addAttribute("code", code);
         model.addAttribute("message", message);
         model.addAttribute("view", "payment");

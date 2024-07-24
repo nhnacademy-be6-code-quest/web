@@ -263,7 +263,7 @@ public class MyPageController {
         req.setAttribute(MYPAGE, "orders");
         req.setAttribute(ACTIVE_SECTION, "order");
 
-        Page<ClientOrderGetResponseDto> orderResponseDtoList = orderService.getClientOrders(headers, pageSize, pageNo, "orderDatetime", "desc");
+        Page<ClientOrderGetResponseDto> orderResponseDtoList = orderService.getClientOrders(headers, pageSize, pageNo, "order.orderDatetime", "desc");
 
         req.setAttribute("orders", orderResponseDtoList.getContent());
         req.setAttribute("totalPages", orderResponseDtoList.getTotalPages());
