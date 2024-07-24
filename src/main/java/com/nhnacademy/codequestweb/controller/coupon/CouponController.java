@@ -3,8 +3,6 @@ package com.nhnacademy.codequestweb.controller.coupon;
 import com.nhnacademy.codequestweb.domain.Status;
 import com.nhnacademy.codequestweb.request.coupon.CouponRegisterRequestDto;
 import com.nhnacademy.codequestweb.response.coupon.ClientCouponPaymentResponseDto;
-import com.nhnacademy.codequestweb.response.coupon.CouponAdminPageCouponResponseDto;
-import com.nhnacademy.codequestweb.response.coupon.CouponMyPageCouponResponseDto;
 import com.nhnacademy.codequestweb.response.coupon.CouponProvideTypeResponseDto;
 import com.nhnacademy.codequestweb.response.coupon.CouponTypeResponseDto;
 import com.nhnacademy.codequestweb.service.coupon.CouponService;
@@ -28,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 @RequiredArgsConstructor
 public class CouponController {
+    private static final String ACCESS = "access";
 
     private final CouponService couponService;
 
@@ -36,7 +35,7 @@ public class CouponController {
             Model model, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size){
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set("access", CookieUtils.getCookieValue(req, "access"));
+        headers.set(ACCESS, CookieUtils.getCookieValue(req, ACCESS));
 
         Page<ClientCouponPaymentResponseDto> coupons = couponService.getClient(headers, page, size);
         model.addAttribute("couponPayments",coupons);
@@ -46,7 +45,7 @@ public class CouponController {
     @GetMapping("/admin/coupon/register/{couponPolicyId}")
     public String saveCouponView(HttpServletRequest req, Model model, @PathVariable long couponPolicyId){
         HttpHeaders headers = new HttpHeaders();
-        headers.set("access", CookieUtils.getCookieValue(req, "access"));
+        headers.set(ACCESS, CookieUtils.getCookieValue(req, ACCESS));
 
         List<CouponTypeResponseDto> couponTypes = couponService.getAllCouponTypes(headers);
         CouponProvideTypeResponseDto name = couponService.findCouponType(headers, couponPolicyId);
@@ -61,7 +60,7 @@ public class CouponController {
     @PostMapping("/api/coupon/register/{couponPolicyId}")
     public String saveCoupon(HttpServletRequest req, @Valid @PathVariable long couponPolicyId, @ModelAttribute CouponRegisterRequestDto couponRegisterRequestDto){
         HttpHeaders headers = new HttpHeaders();
-        headers.set("access", CookieUtils.getCookieValue(req, "access"));
+        headers.set(ACCESS, CookieUtils.getCookieValue(req, ACCESS));
         couponService.saveCoupon(headers, couponRegisterRequestDto,couponPolicyId);
         return "redirect:/admin/coupon/policy";
     }

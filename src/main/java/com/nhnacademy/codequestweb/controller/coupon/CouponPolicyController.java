@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequiredArgsConstructor
 @Controller
 public class CouponPolicyController {
+    private static final String ACCESS = "access";
 
     private final CouponPolicyService couponPolicyService;
 
@@ -34,7 +35,7 @@ public class CouponPolicyController {
         @RequestParam(name = "desc", required = false) Boolean desc,
         Model model) {
         HttpHeaders headers = new HttpHeaders();
-        headers.set("access", CookieUtils.getCookieValue(req, "access"));
+        headers.set(ACCESS, CookieUtils.getCookieValue(req, ACCESS));
         Page<ProductGetResponseDto> books = couponPolicyService.getAllBooks(headers, page, sort, desc);
         model.addAttribute("books", books);
 
@@ -45,7 +46,7 @@ public class CouponPolicyController {
     public String viewPolicy(HttpServletRequest req, @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "6") int size) {
         HttpHeaders headers = new HttpHeaders();
-        headers.set("access", CookieUtils.getCookieValue(req, "access"));
+        headers.set(ACCESS, CookieUtils.getCookieValue(req, ACCESS));
 
         Page<CouponPolicyListResponseDto> couponPolicies = couponPolicyService.getAllCouponPolicies(headers,
             page, size);
@@ -70,7 +71,7 @@ public class CouponPolicyController {
 
         @Valid @ModelAttribute CouponPolicyRegisterRequestDto couponPolicyRegisterRequestDto) {
         HttpHeaders headers = new HttpHeaders();
-        headers.set("access", CookieUtils.getCookieValue(req, "access"));
+        headers.set(ACCESS, CookieUtils.getCookieValue(req, ACCESS));
         couponPolicyService.savePolicy(headers, couponPolicyRegisterRequestDto);
         return "redirect:/admin/coupon/policy";
     }

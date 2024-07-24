@@ -3,11 +3,9 @@ package com.nhnacademy.codequestweb.controller.coupon;
 import com.nhnacademy.codequestweb.response.product.productCategory.CategoryGetResponseDto;
 import com.nhnacademy.codequestweb.response.product.productCategory.ProductCategory;
 import com.nhnacademy.codequestweb.service.product.CategoryService;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
+
+import java.util.*;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
@@ -25,6 +23,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 @RequiredArgsConstructor
 public class ProductCategoryCouponController {
+    private static final String VIEW_COUPON_CATEGORY_ADD = "view/coupon/categoryAdd";
+    private static final String CATEGORY_NAME_PAGE = "categoryNamePage";
+    private static final String REGISTER = "register";
+
     private final CategoryService categoryService;
 
     @InitBinder
@@ -42,16 +44,16 @@ public class ProductCategoryCouponController {
         for (CategoryGetResponseDto category : categoryNamePage) {
             categoryNameMap.put(category, getAllCategoryPathName(category));
         }
-        model.addAttribute("categoryNamePage", categoryNameMap);
-        model.addAttribute("register", false);
-        return "view/coupon/categoryAdd";
+        model.addAttribute(CATEGORY_NAME_PAGE, categoryNameMap);
+        model.addAttribute(REGISTER, false);
+        return VIEW_COUPON_CATEGORY_ADD;
     }
 
     private String getAllCategoryPathName(CategoryGetResponseDto category) {
         StringBuilder stringBuilder = new StringBuilder();
         ProductCategory parentCategory = category.parentProductCategory();
-        Stack<String> categoryStack = new Stack<>();
-        while (parentCategory != null){
+        Deque<String> categoryStack = new ArrayDeque<>();
+        while (parentCategory != null) {
             categoryStack.push(parentCategory.categoryName());
             parentCategory = parentCategory.parentProductCategory();
         }
@@ -64,13 +66,13 @@ public class ProductCategoryCouponController {
     }
 
     private List<CategoryGetResponseDto> getCategoryPathNameList(ResponseEntity<Page<CategoryGetResponseDto>> response) {
-        if (response.getBody() != null) {
-            return response.getBody().getContent();
-        }else{
+        Page<CategoryGetResponseDto> categoryPage = response.getBody();
+        if (categoryPage != null) {
+            return categoryPage.getContent();
+        } else {
             return new ArrayList<>();
         }
     }
-
 
     @GetMapping("/coupon/categories/containing")
     public String getCategoryContainingPage(@RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "desc", required = false) Boolean desc, @RequestParam(name = "sort", required = false) String sort, @RequestParam("categoryName") String categoryName, Model model) {
@@ -82,9 +84,9 @@ public class ProductCategoryCouponController {
             categoryNameMap.put(category, getAllCategoryPathName(category));
         }
 
-        model.addAttribute("register", false);
-        model.addAttribute("categoryNamePage", categoryNameMap);
-        return "view/coupon/categoryAdd";
+        model.addAttribute(REGISTER, false);
+        model.addAttribute(CATEGORY_NAME_PAGE, categoryNameMap);
+        return VIEW_COUPON_CATEGORY_ADD;
     }
 
     @GetMapping("/coupon/categories/{categoryId}/sub")
@@ -96,8 +98,8 @@ public class ProductCategoryCouponController {
         for (CategoryGetResponseDto category : categoryNamePage) {
             categoryNameMap.put(category, getAllCategoryPathName(category));
         }
-        model.addAttribute("register", true);
-        model.addAttribute("categoryNamePage", categoryNameMap);
-        return "view/coupon/categoryAdd";
+        model.addAttribute(REGISTER, true);
+        model.addAttribute(CATEGORY_NAME_PAGE, categoryNameMap);
+        return VIEW_COUPON_CATEGORY_ADD;
     }
 }

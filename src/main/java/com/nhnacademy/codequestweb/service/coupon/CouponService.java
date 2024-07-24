@@ -21,18 +21,14 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class CouponService {
-
-
     private final CouponClient couponClient;
     private final CouponTypeClient couponTypeClient;
     private final UserCouponClient userCouponClient;
     private final CouponPolicyClient couponPolicyClient;
 
     public void saveCoupon(HttpHeaders headers, CouponRegisterRequestDto couponRegisterRequestDto, long couponPolicyId) {
-
         couponClient.saveCoupon(headers, couponPolicyId, couponRegisterRequestDto);
     }
-
 
     public Page<CouponMyPageCouponResponseDto> findMyPageCoupons(HttpHeaders headers, int page,
         int size, Status status) {
@@ -55,5 +51,4 @@ public class CouponService {
     public CouponProvideTypeResponseDto findCouponType(HttpHeaders headers,long couponPolicyId){
         return couponPolicyClient.findCouponType(headers, couponPolicyId);
     }
-
 }
