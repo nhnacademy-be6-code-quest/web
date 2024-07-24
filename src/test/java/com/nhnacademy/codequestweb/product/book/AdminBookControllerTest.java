@@ -80,8 +80,6 @@ class AdminBookControllerTest {
 
     private static final String INDEX = "index";
 
-    private static final String ADMIN = "admin";
-
     private static final String PRODUCT_LIST_PAGE = "productListPage";
 
     private static final String MAIN_TEXT ="mainText";
@@ -482,10 +480,10 @@ class AdminBookControllerTest {
 
         Pageable pageable = PageRequest.of(0, 4);
         Page<BookProductGetResponseDto> responseDtoPage = new PageImpl<>(responseDtoList, pageable, responseDtoList.size());
-        when(bookProductService.getAllBookPage(headers, 1, 10, "sort", true, 0)).thenReturn(ResponseEntity.ok(responseDtoPage));
+        when(bookProductService.getAllBookPage(any(), eq(1), eq(10), eq("sort"), eq(true), eq(0)))
+                .thenReturn(ResponseEntity.ok(responseDtoPage));
 
         mockMvc.perform(get("/admin/product/book/all")
-                        .headers(headers)
                         .param("page", String.valueOf(1))
                         .param("size", String.valueOf(10))
                         .param("sort", "sort")
@@ -507,10 +505,10 @@ class AdminBookControllerTest {
 
         Pageable pageable = PageRequest.of(0, 4);
         Page<BookProductGetResponseDto> responseDtoPage = new PageImpl<>(responseDtoList, pageable, responseDtoList.size());
-        when(bookProductService.getNameContainingBookPage(headers, 1, 10, "sort", true, "test", 0)).thenReturn(ResponseEntity.ok(responseDtoPage));
+        when(bookProductService.getNameContainingBookPage(any(), eq(1), eq(10), eq("sort"), eq(true), eq("test"), eq(0)))
+                .thenReturn(ResponseEntity.ok(responseDtoPage));
 
         mockMvc.perform(get("/admin/product/book/containing")
-                        .headers(headers)
                         .param("title", "test")
                         .param("page", String.valueOf(1))
                         .param("size", String.valueOf(10))
@@ -535,10 +533,9 @@ class AdminBookControllerTest {
         Page<BookProductGetResponseDto> responseDtoPage = new PageImpl<>(responseDtoList, pageable, responseDtoList.size());
         Set<String> tags = Set.of("tag1","tag2");
 
-        when(bookProductService.getBookPageFilterByTag(headers, 1, 10, "sort", true, tags, true, 0)).thenReturn(ResponseEntity.ok(responseDtoPage));
+        when(bookProductService.getBookPageFilterByTag(any(), eq(1), eq(10), eq("sort"), eq(true), eq(tags), any(), eq(0))).thenReturn(ResponseEntity.ok(responseDtoPage));
 
         mockMvc.perform(get("/admin/product/book/tagFilter")
-                        .headers(headers)
                         .param("tagName", "tag1,tag2")
                         .param("page", String.valueOf(1))
                         .param("size", String.valueOf(10))
@@ -549,7 +546,6 @@ class AdminBookControllerTest {
                 .andExpect(model().attribute(MAIN_TEXT, "관리자 페이지 - 태그 : [tag1, tag2]"))
                 .andExpect(model().attribute(ADMIN_PAGE, PRODUCT_LIST_PAGE))
                 .andExpect(model().attribute(ACTIVE_SECTION, PRODUCT));
-
     }
 
     @Test
@@ -562,10 +558,10 @@ class AdminBookControllerTest {
         Pageable pageable = PageRequest.of(0, 4);
         Page<BookProductGetResponseDto> responseDtoPage = new PageImpl<>(responseDtoList, pageable, responseDtoList.size());
 
-        when(bookProductService.getBookPageFilterByCategory(headers, 1, 10, "sort", true, 1L, 0)).thenReturn(ResponseEntity.ok(responseDtoPage));
+        when(bookProductService.getBookPageFilterByCategory(any(), eq(1), eq(10), eq("sort"), eq(true), eq(1L), eq(0)))
+                .thenReturn(ResponseEntity.ok(responseDtoPage));
 
         mockMvc.perform(get("/admin/product/book/category/1")
-                        .headers(headers)
                         .param("page", String.valueOf(1))
                         .param("size", String.valueOf(10))
                         .param("sort", "sort")
