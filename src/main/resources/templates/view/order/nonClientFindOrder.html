@@ -117,7 +117,7 @@
     </div>
 </div>
 
-<div id="findOrderModal" class="modal" hidden="hidden">
+<div id="findOrderModal" class="modal">
     <div class="modal-content">
         <span class="close">&times;</span>
         <h3>주문 조회</h3>
@@ -201,7 +201,6 @@
 
             modalContent.innerHTML = orderDetails;
             modal.style.display = 'block'; // Open modal'
-            modal.hidden = false;
         })
         .catch(error => {
             modalContent.innerHTML = `<p>${error.message}</p><p>비회원 주문 조회에 실패했습니다. 다시 시도하세요</p>`;
@@ -212,7 +211,6 @@
     document.getElementsByClassName('close')[0].onclick = function() {
         const modal = document.getElementById('findOrderModal');
         modal.style.display = 'none'; // Close modal
-        modal.hidden = true;
     };
 
     window.onclick = function(event) {

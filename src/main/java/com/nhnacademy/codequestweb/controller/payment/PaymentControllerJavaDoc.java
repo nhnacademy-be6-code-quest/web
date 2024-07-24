@@ -33,7 +33,7 @@
 //     *
 //     * @param orderId     주문 ID
 //     * @param model       모델 객체
-//     * @param tossOrderId 토스에서 받은 주문 ID (토스 결제창 제공)
+//     * @param orderCode 토스에서 받은 주문 ID (토스 결제창 제공)
 //     * @param amount      결제 금액 (토스 결제창 제공)
 //     * @param paymentKey  결제 키 (토스 결제창 제공)
 //     * @return 결제 성공 페이지의 뷰 이름
@@ -42,7 +42,7 @@
 //    @GetMapping("/client/order/{orderId}/payment/success")
 //    String paymentResult(
 //        @PathVariable long orderId, Model model,
-//        @RequestParam(value = "orderId") String tossOrderId,
+//        @RequestParam(value = "orderId") String orderCode,
 //        @RequestParam(value = "amount") long amount,
 //        @RequestParam(value = "paymentKey") String paymentKey) throws ParseException;
 //

@@ -255,8 +255,10 @@ class MyPageControllerTest {
     @Test
     void testMypageOrders() {
         Page<ClientOrderGetResponseDto> mockPage = new PageImpl<>(new ArrayList<>());
-        when(orderService.getClientOrders(any(HttpHeaders.class), anyInt(), anyInt(), eq("orderDatetime"), eq("desc")))
+
+        when(orderService.getClientOrders(any(HttpHeaders.class), anyInt(), anyInt(), eq("order.orderDatetime"), eq("desc")))
                 .thenReturn(mockPage);
+
 
         String viewName = myPageController.mypageOrders(request, 10, 0);
 
@@ -266,7 +268,7 @@ class MyPageControllerTest {
         assertEquals("order", request.getAttribute("activeSection"));
         assertNotNull(request.getAttribute("orders"));
 
-        verify(orderService).getClientOrders(any(HttpHeaders.class), eq(10), eq(0), eq("orderDatetime"), eq("desc"));
+        verify(orderService).getClientOrders(any(HttpHeaders.class), eq(10), eq(0), eq("order.orderDatetime"), eq("desc"));
     }
 
     @Test

@@ -38,31 +38,31 @@ public class PaymentService /*implements PaymentService*/ {
     }
 
     public boolean isValidTossPayment(PaymentOrderApproveRequestDto paymentOrderApproveRequestDto,
-        String tossOrderId, long amount) {
+        String orderCode, long amount) {
         return paymentOrderApproveRequestDto != null
-            && paymentOrderApproveRequestDto.getTossOrderId().equals(tossOrderId)
+            && paymentOrderApproveRequestDto.getOrderCode().equals(orderCode)
             && paymentOrderApproveRequestDto.getOrderTotalAmount()
             - paymentOrderApproveRequestDto.getDiscountAmountByCoupon()
             - paymentOrderApproveRequestDto.getDiscountAmountByPoint() == amount;
     }
 
-    public TossPaymentsResponseDto approvePayment(HttpHeaders headers, String tossOrderId, long amount,
+    public TossPaymentsResponseDto approvePayment(HttpHeaders headers, String orderCode, long amount,
         String paymentKey) {
         TossApprovePaymentRequest tossApprovePaymentRequest = new TossApprovePaymentRequest();
         tossApprovePaymentRequest.setPaymentKey(paymentKey);
         tossApprovePaymentRequest.setAmount(amount);
-        tossApprovePaymentRequest.setOrderId(tossOrderId);
+        tossApprovePaymentRequest.setOrderId(orderCode);
         log.info("결제 승인 시도");
         return paymentClient.approvePayment(headers, tossApprovePaymentRequest).getBody();
     }
 
-    public PaymentOrderShowRequestDto findPaymentOrderShowRequestDtoByOrderId(HttpHeaders headers, String tossOrderId) {
-        return orderClient.getPaymentOrderShowRequestDto(headers, tossOrderId).getBody();
+    public PaymentOrderShowRequestDto findPaymentOrderShowRequestDtoByOrderId(HttpHeaders headers, String orderCode) {
+        return orderClient.getPaymentOrderShowRequestDto(headers, orderCode).getBody();
     }
 
     public PaymentOrderApproveRequestDto findPaymentOrderApproveRequestDtoByOrderId(
-        HttpHeaders headers, String tossOrderId) {
-        return orderClient.getPaymentOrderApproveRequestDto(headers, tossOrderId).getBody();
+        HttpHeaders headers, String orderCode) {
+        return orderClient.getPaymentOrderApproveRequestDto(headers, orderCode).getBody();
     }
 
     public ResponseEntity<String> useCoupon(
@@ -80,6 +80,7 @@ public class PaymentService /*implements PaymentService*/ {
         pointRewardOrderRequestDto.setAccumulatedPoint(amount);
         return paymentPointClient.rewardOrderPoint(httpHeaders, pointRewardOrderRequestDto);
     }
+
     public void updateGrade(long clientId){
         UserUpdateGradeRequestDto userUpdateGradeRequestDto = new UserUpdateGradeRequestDto(clientId);
         paymentClient.updateUser(userUpdateGradeRequestDto);
@@ -125,8 +126,8 @@ public class PaymentService /*implements PaymentService*/ {
         return paymentCouponClient.getUserPaymentValue(headers, couponPaymentRewardRequestDto);
     }
 
-    public PostProcessRequiredPaymentResponseDto getPostProcessRequiredPaymentResponseDto(String tossOrderId) {
-        return paymentClient.getPostProcessRequiredPaymentResponseDto(tossOrderId).getBody();
+    public PostProcessRequiredPaymentResponseDto getPostProcessRequiredPaymentResponseDto(String orderCode) {
+        return paymentClient.getPostProcessRequiredPaymentResponseDto(orderCode).getBody();
     }
 
 }

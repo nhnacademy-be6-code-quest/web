@@ -12,7 +12,7 @@ public class OrderResponseDto {
     private Long orderId;
     private Long clientId;
     private Long couponId;
-    private String tossOrderId;
+    private String orderCode;
     private String orderDatetime;
     private String orderStatus;
     private Long productTotalAmount;

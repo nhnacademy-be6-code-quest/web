@@ -19,7 +19,7 @@ public class TossPaymentsRequestDto {
     private String paymentKey;  // 토스에서 각 결제마다 부여하는 고유 값입니다.
 
     @NotNull
-    private String orderId;     // 주문에서 받아 토스에 제공한 tossOrderId 입니다. 토스는 내가 제공한 값을 다시 돌려줍니다.
+    private String orderId;     // 주문에서 받아 토스에 제공한 orderCode 입니다. 토스는 내가 제공한 값을 다시 돌려줍니다.
 
     @NotNull
     private long amount;        // 주문에서 받아 토스에 제공한 순수 결제 금액입니다. 토스는 내가 제공한 값을 다시 돌려줍니다.

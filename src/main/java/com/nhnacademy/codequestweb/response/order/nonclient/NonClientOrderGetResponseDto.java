@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 public class NonClientOrderGetResponseDto {
     private Long orderId;
-    private String tossOrderId;
+    private String orderCode;
     private String orderDatetime;
     private String orderStatus;
     private Long productTotalAmount;

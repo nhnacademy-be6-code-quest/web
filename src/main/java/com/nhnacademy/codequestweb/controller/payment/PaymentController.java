@@ -1,14 +1,20 @@
 package com.nhnacademy.codequestweb.controller.payment;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhnacademy.codequestweb.request.payment.PaymentOrderApproveRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentOrderShowRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PostProcessRequiredPaymentResponseDto;
+import com.nhnacademy.codequestweb.request.product.cart.CartRequestDto;
 import com.nhnacademy.codequestweb.response.payment.TossPaymentsResponseDto;
 import com.nhnacademy.codequestweb.service.payment.PaymentService;
 import com.nhnacademy.codequestweb.service.product.CartService;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
+import com.nhnacademy.codequestweb.utils.SecretKeyUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,11 +37,12 @@ public class PaymentController {
     // 하나의 컨트롤러가 여러 개의 서비스를 호출하면 1) 테스트 어렵고 2) 확장성도 떨어짐
 
     private final PaymentService paymentService;
-    private final CartService cartService;
+    private final ObjectMapper objectMapper;
+    private static final TypeReference<List<CartRequestDto>> TYPE_REFERENCE = new TypeReference<List<CartRequestDto>>() {};
 
     @GetMapping("/client/order/payment")
     public String savePayment(@RequestHeader HttpHeaders headers, Model model,
-        @RequestParam("tossOrderId") String tossOrderId, HttpServletRequest req) {
+        @RequestParam("orderCode") String orderCode, HttpServletRequest req) {
 
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
 
@@ -43,27 +50,27 @@ public class PaymentController {
 
         // 결제 요청 정보
         PaymentOrderShowRequestDto paymentOrderShowRequestDto = paymentService.findPaymentOrderShowRequestDtoByOrderId(
-            headers, tossOrderId);
+            headers, orderCode);
         model.addAttribute("paymentOrderShowRequestDto", paymentOrderShowRequestDto);
 
         log.info("결제 요청 정보: {}", paymentOrderShowRequestDto);
 
         // 쿠폰 및 포인트 할인 후 실 결제 금액이 0원일때?
 //        if (orderTotalAmount - discountAmountByPoint - discountAmountByCoupon == 0) {
-//            String.format("redirect:/client/order/%s/payment/success/post-process", tossOrderId);
+//            String.format("redirect:/client/order/%s/payment/success/post-process", orderCode);
 //        }
 
         model.addAttribute("successUrl",
-            "https://book-store.shop/client/order/" + tossOrderId + "/payment/success");
+            "https://localhost:8080/client/order/" + orderCode + "/payment/success");
         model.addAttribute("failUrl",
-            "https://book-store.shop/client/order/" + tossOrderId + "/payment/fail");
+            "https://localhost:8080/client/order/" + orderCode + "/payment/fail");
 
         return "view/payment/tossPage";
     }
 
-    @GetMapping("/client/order/{tossOrderId}/payment/success")
+    @GetMapping("/client/order/{orderCode}/payment/success")
     public String paymentResult(HttpServletRequest request, Model model,
-        @PathVariable(value = "tossOrderId") String tossOrderId,
+        @PathVariable(value = "orderCode") String orderCode,
         @RequestParam long amount, @RequestParam String paymentKey) throws ParseException {
 
         log.info("결제 요청 성공!");
@@ -73,12 +80,12 @@ public class PaymentController {
 
         // 결제 승인 요청 정보
         PaymentOrderApproveRequestDto paymentOrderApproveRequestDto = paymentService.findPaymentOrderApproveRequestDtoByOrderId(
-            headers, tossOrderId);
+            headers, orderCode);
 
         // 조작 확인하기 : 주문 정보가 일치하지 않으면 실패 페이지로 이동하기.
-        if (!paymentService.isValidTossPayment(paymentOrderApproveRequestDto, tossOrderId,
+        if (!paymentService.isValidTossPayment(paymentOrderApproveRequestDto, orderCode,
             amount)) {
-            log.warn("주문 아이디 : {} 에서 결제 조작이 의심됩니다.", tossOrderId);
+            log.warn("주문 아이디 : {} 에서 결제 조작이 의심됩니다.", orderCode);
             model.addAttribute("alterMessage", "주문 아이디 : {} 에서 결제 조작이 의심됩니다.");
             model.addAttribute("view", "payment");
             model.addAttribute("payment", "failed");
@@ -87,7 +94,7 @@ public class PaymentController {
 
         // 결제 승인하기
         TossPaymentsResponseDto tossPaymentsResponseDto = paymentService.approvePayment(headers,
-            tossOrderId, amount, paymentKey);
+            orderCode, amount, paymentKey);
 
         log.info("결제 승인 성공");
 
@@ -96,11 +103,11 @@ public class PaymentController {
 
         log.info("결제 및 주문 데이터 저장 성공");
 
-        return String.format("redirect:/client/order/%s/payment/success/post-process", tossOrderId);
+        return String.format("redirect:/client/order/%s/payment/success/post-process", orderCode);
     }
 
-    @GetMapping("/client/order/{tossOrderId}/payment/success/post-process")
-    public String postProcessPayment(@PathVariable("tossOrderId") String tossOrderId,
+    @GetMapping("/client/order/{orderCode}/payment/success/post-process")
+    public String postProcessPayment(@PathVariable("orderCode") String orderCode,
 
         HttpServletRequest request, HttpServletResponse response, Model model,
         RedirectAttributes redirectAttributes) {
@@ -111,7 +118,7 @@ public class PaymentController {
         headers.set("access", CookieUtils.getCookieValue(request, "access"));
 
         PostProcessRequiredPaymentResponseDto postProcessRequiredPaymentResponseDto = paymentService.getPostProcessRequiredPaymentResponseDto(
-            tossOrderId);
+            orderCode);
 
         model.addAttribute("orderId", postProcessRequiredPaymentResponseDto.getOrderId());
         model.addAttribute("view", "payment");
@@ -130,11 +137,9 @@ public class PaymentController {
 
         }
 
-        if(Objects.nonNull(postProcessRequiredPaymentResponseDto.getClientId())) {
-            paymentService.updateGrade(postProcessRequiredPaymentResponseDto.getClientId());
-        }        // 장바구니 비우기
+        // 장바구니 비우기
         boolean successClearCartCookie = clearCartCookie(request, response,
-            postProcessRequiredPaymentResponseDto);
+            postProcessRequiredPaymentResponseDto, model);
 
         if (!successClearCartCookie) {
             alterMessage.append("장바구니 쿠키 삭제에 실패했습니다");
@@ -144,15 +149,16 @@ public class PaymentController {
             model.addAttribute("alterMessage", alterMessage.toString());
         }
 
+
         return "index";
 
     }
 
-    @GetMapping("/client/order/{tossOrderId}/payment/fail")
+    @GetMapping("/client/order/{orderCode}/payment/fail")
     public String paymentResult(
-        @PathVariable String tossOrderId, Model model, @RequestParam(value = "message") String message,
+        @PathVariable String orderCode, Model model, @RequestParam(value = "message") String message,
         @RequestParam(value = "code") Integer code) {
-        // tossOrderId로 재결제 유도하면 좋을듯!!
+        // orderCode로 재결제 유도하면 좋을듯!!
         model.addAttribute("code", code);
         model.addAttribute("message", message);
         model.addAttribute("view", "payment");
@@ -173,15 +179,33 @@ public class PaymentController {
     }
 
     private boolean clearCartCookie(HttpServletRequest request, HttpServletResponse response,
-        PostProcessRequiredPaymentResponseDto postProcessRequiredPaymentResponseDto) {
-        try {
-            cartService.clearCartByCheckout(request, response,
-                postProcessRequiredPaymentResponseDto.getProductIdList());
-            return true;
-        } catch (Exception e) {
-            log.error("장바구니 쿠키에서 구매한 상품들을 삭제하는 중에 에러가 발생했습니다.");
+        PostProcessRequiredPaymentResponseDto postProcessRequiredPaymentResponseDto, Model model) {
+
+        String encryptedCart = CookieUtils.getCookieValue(request, "cart");
+        if (encryptedCart != null) {
+            try {
+                String cartJson = SecretKeyUtils.decrypt(encryptedCart, SecretKeyUtils.getSecretKey());
+                List<CartRequestDto> cartListOfCookie = objectMapper.readValue(cartJson, TYPE_REFERENCE);
+                List<CartRequestDto> cartRequestDtoToDelete = new ArrayList<>();
+
+                for (CartRequestDto cartItem : cartListOfCookie) {
+                    if (postProcessRequiredPaymentResponseDto.getProductIdList().contains(cartItem.productId())) {
+                        cartRequestDtoToDelete.add(cartItem);
+                    }
+                }
+                cartListOfCookie.removeAll(cartRequestDtoToDelete);
+
+                CookieUtils.deleteCookieValue(response, "cart");
+                CookieUtils.setCartCookieValue(cartListOfCookie, objectMapper, response);
+                return true;
+            } catch (Exception e) {
+                return false;
+            }
+        }else{
+            log.warn("cart controller advice may have some problem with processing deleted cookie. check the log with cart controller advice class");
             return false;
         }
+
     }
 
 }
