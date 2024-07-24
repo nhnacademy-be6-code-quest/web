@@ -14,22 +14,16 @@ import org.springframework.stereotype.Service;
 @Service
 public class CouponPolicyService {
 
-
     private final CouponPolicyClient couponPolicyClient;
 
     private final BookCouponClient bookCouponClient;
 
-
     public Page<ProductGetResponseDto> getAllBooks(HttpHeaders headers, Integer page, String sort,
-        Boolean desc) {
+                                                   Boolean desc) {
         return bookCouponClient.getAllProducts(headers, page, sort, desc).getBody();
     }
 
-
-
-
-    public Page<CouponPolicyListResponseDto> getAllCouponPolicies(HttpHeaders headers,int page, int size) {
-
+    public Page<CouponPolicyListResponseDto> getAllCouponPolicies(HttpHeaders headers, int page, int size) {
         return couponPolicyClient.getAllCouponPolices(headers, page, size).getBody();
     }
 

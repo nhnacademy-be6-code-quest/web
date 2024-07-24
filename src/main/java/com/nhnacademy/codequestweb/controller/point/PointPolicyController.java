@@ -9,19 +9,18 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 
 @Controller
 @RequiredArgsConstructor
 public class PointPolicyController {
+    private static final String NAME = "access";
+    private static final String REDIRECT_ADMIN_POINT_POLICY = "redirect:/admin/point/policy";
 
     private final PointPolicyService pointPolicyService;
-    private static final String NAME = "access";
+
     HttpHeaders headers = new HttpHeaders();
 
     @PostMapping("/admin/point/policy/register")
@@ -32,7 +31,7 @@ public class PointPolicyController {
 
         pointPolicyService.savePointPolicy(headers, pointPolicyRegisterRequestDto);
 
-        return "redirect:/admin/point/policy";
+        return REDIRECT_ADMIN_POINT_POLICY;
     }
 
 
@@ -41,13 +40,13 @@ public class PointPolicyController {
         @ModelAttribute PointPolicyModifyRequestDto pointPolicyModifyRequestDto) {
         headers.set(NAME, CookieUtils.getCookieValue(req, NAME));
         pointPolicyService.modifyPolicy(headers, pointPolicyModifyRequestDto);
-        return "redirect:/admin/point/policy";
+        return REDIRECT_ADMIN_POINT_POLICY;
     }
     @PutMapping("/admin/point/policy/active")
     public String pointPolicyActive(HttpServletRequest req, @ModelAttribute
         PointPolicyActiveRequestDto pointPolicyActiveRequestDto) {
         headers.set(NAME, CookieUtils.getCookieValue(req, NAME));
         pointPolicyService.pointActive(headers, pointPolicyActiveRequestDto);
-        return "redirect:/admin/point/policy";
+        return REDIRECT_ADMIN_POINT_POLICY;
     }
 }
