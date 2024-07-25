@@ -77,7 +77,7 @@ public class OrderController {
     @PostMapping("/non-client/order/process")
     public String tryNonClientOrder(HttpServletRequest request, @ModelAttribute NonClientOrderForm nonClientOrderForm){
         orderService.saveNonClientTemporalOrder(request, nonClientOrderForm);
-        return String.format("redirect:/client/order/payment?orderCode=%s", nonClientOrderForm.getOrderCode());
+        return String.format("redirect:/client/order/payment?orderCode=%s&method=%s", nonClientOrderForm.getOrderCode(), nonClientOrderForm.getPaymentMethod());
     }
 
     // 비회원 단건 주문 내역 조회 view

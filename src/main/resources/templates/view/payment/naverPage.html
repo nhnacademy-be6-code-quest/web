@@ -15,7 +15,7 @@
   var orderTotalAmount = /*[[${paymentOrderShowRequestDto.getOrderTotalAmount()}]]*/ 0;
   var discountAmountByCoupon = /*[[${paymentOrderShowRequestDto.getDiscountAmountByCoupon()}]]*/ 0;
   var discountAmountByPoint = /*[[${paymentOrderShowRequestDto.getDiscountAmountByPoint()}]]*/ 0;
-  var successUrl = 'https://localhost:8080/client/order/' + orderCode + '/payment/success?method=naver&amount=' + (orderTotalAmount - discountAmountByCoupon - discountAmountByPoint);
+  var successUrl = 'https://book-store.shop/client/order/' + orderCode + '/payment/success?method=naver&amount=' + (orderTotalAmount - discountAmountByCoupon - discountAmountByPoint);
 
   // 클라이언트 키로 객체 초기화
   var oPay = Naver.Pay.create({

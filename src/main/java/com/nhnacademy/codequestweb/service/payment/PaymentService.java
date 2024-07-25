@@ -46,12 +46,13 @@ public class PaymentService /*implements PaymentService*/ {
             - paymentOrderApproveRequestDto.getDiscountAmountByPoint() == amount;
     }
 
-    public TossPaymentsResponseDto approvePayment(HttpHeaders headers, String orderCode, long amount,
+    public TossPaymentsResponseDto approvePayment(HttpHeaders headers,String name, String orderCode, long amount,
         String paymentKey) {
         TossApprovePaymentRequest tossApprovePaymentRequest = new TossApprovePaymentRequest();
         tossApprovePaymentRequest.setPaymentKey(paymentKey);
         tossApprovePaymentRequest.setAmount(amount);
         tossApprovePaymentRequest.setOrderId(orderCode);
+        tossApprovePaymentRequest.setMethodType(name);
         log.info("결제 승인 시도");
         return paymentClient.approvePayment(headers, tossApprovePaymentRequest).getBody();
     }

@@ -64,9 +64,9 @@ public class PaymentController {
         }
 
         model.addAttribute("successUrl",
-            "https://localhost:8080/client/order/" + orderCode + "/payment/success?method="+name);
+            "https://book-store.shop/client/order/" + orderCode + "/payment/success?method="+name);
         model.addAttribute("failUrl",
-            "https://localhost:8080/client/order/" + orderCode + "/payment/fail");
+            "https://book-store.shop/client/order/" + orderCode + "/payment/fail");
 
 
         return paymentMethodProvider.getName(name);
@@ -101,7 +101,7 @@ public class PaymentController {
         }
 
         // 결제 승인하기
-        TossPaymentsResponseDto tossPaymentsResponseDto = paymentService.approvePayment(headers,
+        TossPaymentsResponseDto tossPaymentsResponseDto = paymentService.approvePayment(headers, name,
             orderCode, amount, paymentKey);
 
         log.info("결제 승인 성공");
