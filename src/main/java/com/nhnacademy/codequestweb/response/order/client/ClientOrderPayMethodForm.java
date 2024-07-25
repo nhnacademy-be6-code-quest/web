@@ -7,7 +7,7 @@ import lombok.Setter;
 @Setter
 @Getter
 public class ClientOrderPayMethodForm {
-    private Integer paymentMethod; // 결제 수단 id
+    private String paymentMethod; // 결제 수단 id
     private Long expectedAccumulatingPoint; // 예상 적립금
 
     @Builder

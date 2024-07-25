@@ -69,14 +69,15 @@ public class OrderController {
     @PostMapping("/client/order/process")
     public String processClientOrderPayMethodForm(@ModelAttribute ClientOrderPayMethodForm clientOrderPayMethodForm, HttpServletRequest req){
         req.getSession().setAttribute("clientOrderPayMethodForm", clientOrderPayMethodForm);
-        return String.format("redirect:/client/order/payment?orderCode=%s", orderService.saveClientTemporalOrder(req));
+        return String.format("redirect:/client/order/payment?orderCode=%s&method=%s", orderService.saveClientTemporalOrder(req), clientOrderPayMethodForm.getPaymentMethod());
+
     }
 
     // 비회원 주문 진행
     @PostMapping("/non-client/order/process")
     public String tryNonClientOrder(HttpServletRequest request, @ModelAttribute NonClientOrderForm nonClientOrderForm){
         orderService.saveNonClientTemporalOrder(request, nonClientOrderForm);
-        return String.format("redirect:/client/order/payment?orderCode=%s", nonClientOrderForm.getOrderCode());
+        return String.format("redirect:/client/order/payment?orderCode=%s&method=%s", nonClientOrderForm.getOrderCode(), nonClientOrderForm.getPaymentMethod());
     }
 
     // 비회원 단건 주문 내역 조회 view

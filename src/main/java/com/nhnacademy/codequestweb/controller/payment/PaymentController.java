@@ -9,6 +9,7 @@ import com.nhnacademy.codequestweb.request.product.cart.CartRequestDto;
 import com.nhnacademy.codequestweb.response.payment.TossPaymentsResponseDto;
 import com.nhnacademy.codequestweb.service.payment.PaymentService;
 import com.nhnacademy.codequestweb.service.product.CartService;
+import com.nhnacademy.codequestweb.test.PaymentMethodProvider;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
 import com.nhnacademy.codequestweb.utils.SecretKeyUtils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,10 +40,12 @@ public class PaymentController {
     private final PaymentService paymentService;
     private final ObjectMapper objectMapper;
     private static final TypeReference<List<CartRequestDto>> TYPE_REFERENCE = new TypeReference<List<CartRequestDto>>() {};
+    private final CartService cartService;
+    private final PaymentMethodProvider paymentMethodProvider;
 
     @GetMapping("/client/order/payment")
     public String savePayment(@RequestHeader HttpHeaders headers, Model model,
-        @RequestParam("orderCode") String orderCode, HttpServletRequest req) {
+        @RequestParam("orderCode") String orderCode, HttpServletRequest req, @RequestParam("method") String name) {
 
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
 
@@ -56,22 +59,27 @@ public class PaymentController {
         log.info("결제 요청 정보: {}", paymentOrderShowRequestDto);
 
         // 쿠폰 및 포인트 할인 후 실 결제 금액이 0원일때?
-//        if (orderTotalAmount - discountAmountByPoint - discountAmountByCoupon == 0) {
-//            String.format("redirect:/client/order/%s/payment/success/post-process", orderCode);
-//        }
+        if (paymentOrderShowRequestDto.getOrderTotalAmount() - paymentOrderShowRequestDto.getDiscountAmountByPoint() - paymentOrderShowRequestDto.getDiscountAmountByCoupon() == 0) {
+            return "redirect:/client/order/"+orderCode+"/payment/success/post-process?amount=0&paymentKey=point&name=point" ;
+        }
 
         model.addAttribute("successUrl",
-            "https://localhost:8080/client/order/" + orderCode + "/payment/success");
+            "https://book-store.shop/client/order/" + orderCode + "/payment/success?method="+name);
         model.addAttribute("failUrl",
-            "https://localhost:8080/client/order/" + orderCode + "/payment/fail");
+            "https://book-store.shop/client/order/" + orderCode + "/payment/fail");
 
-        return "view/payment/tossPage";
+
+        return paymentMethodProvider.getName(name);
     }
 
     @GetMapping("/client/order/{orderCode}/payment/success")
     public String paymentResult(HttpServletRequest request, Model model,
+        @RequestParam("method") String name,
         @PathVariable(value = "orderCode") String orderCode,
-        @RequestParam long amount, @RequestParam String paymentKey) throws ParseException {
+        @RequestParam long amount, @RequestParam(required = false) String paymentKey, @RequestParam(required = false) String paymentId) throws ParseException {
+
+
+        String paymentIdentifier = (paymentKey != null) ? paymentKey : paymentId;
 
         log.info("결제 요청 성공!");
 
@@ -93,7 +101,7 @@ public class PaymentController {
         }
 
         // 결제 승인하기
-        TossPaymentsResponseDto tossPaymentsResponseDto = paymentService.approvePayment(headers,
+        TossPaymentsResponseDto tossPaymentsResponseDto = paymentService.approvePayment(headers, name,
             orderCode, amount, paymentKey);
 
         log.info("결제 승인 성공");
@@ -148,7 +156,6 @@ public class PaymentController {
         if(!alterMessage.isEmpty()) {
             model.addAttribute("alterMessage", alterMessage.toString());
         }
-
 
         return "index";
 
@@ -205,7 +212,6 @@ public class PaymentController {
             log.warn("cart controller advice may have some problem with processing deleted cookie. check the log with cart controller advice class");
             return false;
         }
-
     }
 
 }

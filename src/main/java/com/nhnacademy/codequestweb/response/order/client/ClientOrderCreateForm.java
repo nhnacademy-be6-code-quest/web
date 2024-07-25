@@ -27,7 +27,6 @@ public class ClientOrderCreateForm {
     String deliveryAddress; // 주소(주소,상세주소)
     Boolean useDesignatedDeliveryDate; // 배송날짜 지정 여부
     String designatedDeliveryDate; // 배송날짜 지정
-    Integer paymentMethod; // 결제 방식
     Long accumulatePoint; // 예상 적립금
     String orderCode; // 토스 주문 아이디
 
