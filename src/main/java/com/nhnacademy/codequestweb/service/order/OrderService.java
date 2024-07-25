@@ -22,7 +22,7 @@ import com.nhnacademy.codequestweb.response.order.nonclient.NonClientOrderGetRes
 import com.nhnacademy.codequestweb.response.product.book.BookProductGetResponseDto;
 import com.nhnacademy.codequestweb.response.product.common.CartGetResponseDto;
 import com.nhnacademy.codequestweb.response.product.packaging.PackagingGetResponseDto;
-import com.nhnacademy.codequestweb.response.product.productCategory.ProductCategory;
+import com.nhnacademy.codequestweb.response.product.product_category.ProductCategory;
 import com.nhnacademy.codequestweb.response.shipping.ShippingPolicyGetResponseDto;
 import com.nhnacademy.codequestweb.service.mypage.MyPageService;
 import com.nhnacademy.codequestweb.service.product.BookProductService;

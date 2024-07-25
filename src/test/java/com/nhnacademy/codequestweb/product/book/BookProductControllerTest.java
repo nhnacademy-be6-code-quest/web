@@ -1,7 +1,9 @@
 package com.nhnacademy.codequestweb.product.book;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhnacademy.codequestweb.controller.product.everyone.BookProductController;
 import com.nhnacademy.codequestweb.response.product.book.BookProductGetResponseDto;
+import com.nhnacademy.codequestweb.response.product.product_category.ProductCategory;
 import com.nhnacademy.codequestweb.response.review.ReviewInfoResponseDto;
 import com.nhnacademy.codequestweb.service.product.BookProductService;
 import com.nhnacademy.codequestweb.service.review.ReviewService;
@@ -10,6 +12,7 @@ import jakarta.servlet.http.Cookie;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,6 +30,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -44,6 +48,9 @@ class BookProductControllerTest {
 
     @Mock
     private ReviewService reviewService;
+
+    @Mock
+    private ObjectMapper objectMapper;
 
     private MockMvc mockMvc;
 
@@ -296,13 +303,18 @@ class BookProductControllerTest {
         );
         Page<BookProductGetResponseDto> responsDtoPage = new PageImpl<>(responseDtoList);
 
+        Map<String, Page<BookProductGetResponseDto>> responseMap =
+                Map.of("{\"productCategoryId\":1, \"categoryName\":\"test\", \"parentProductCategory\": null}", responsDtoPage);
+
+        ProductCategory category = ProductCategory.builder().build();
+        when(objectMapper.readValue(anyString(), eq(ProductCategory.class))).thenReturn(category);
         when(bookProductService.getBookPageFilterByCategory(any(), any(), any(), any(), any(), eq(1L), any()))
-                .thenReturn(ResponseEntity.ok(responsDtoPage));
+                .thenReturn(ResponseEntity.ok(responseMap));
 
         mockMvc.perform(get("/product/books/category/1")
                         .param("page", "1"))
                 .andExpect(status().isOk())
-                .andExpect(model().attribute("mainText", "카테고리 검색"))
+                .andExpect(model().attribute("mainText", "카테고리 검색 - "))
                 .andExpect(model().attribute("url", "/product/books/category/1?"));
     }
 
@@ -330,7 +342,7 @@ class BookProductControllerTest {
         );
         Page<BookProductGetResponseDto> responsDtoPage = new PageImpl<>(responseDtoList);
 
-        when(bookProductService.getLikeBookPage(any(), any(), any(), any(), any()))
+        when(bookProductService.getLikeBookPage(any(), any(), any(), any(), any(), any()))
                 .thenReturn(ResponseEntity.ok(responsDtoPage));
 
         mockMvc.perform(get("/product/books/like")
@@ -342,7 +354,7 @@ class BookProductControllerTest {
 
     @Test
     void getLikeBookPageTest2() throws Exception {
-        when(bookProductService.getLikeBookPage(any(), any(), any(), any(), any()))
+        when(bookProductService.getLikeBookPage(any(), any(), any(), any(), any(), any()))
                 .thenThrow(FeignException.class);
 
         mockMvc.perform(get("/product/books/like")

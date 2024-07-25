@@ -1,7 +1,7 @@
 package com.nhnacademy.codequestweb.interceptor;
 
 import com.nhnacademy.codequestweb.config.CategoryConfig;
-import com.nhnacademy.codequestweb.response.product.productCategory.CategoryNodeResponseDto;
+import com.nhnacademy.codequestweb.response.product.product_category.CategoryNodeResponseDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;

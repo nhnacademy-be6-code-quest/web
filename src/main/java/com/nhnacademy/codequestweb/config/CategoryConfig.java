@@ -1,13 +1,11 @@
 package com.nhnacademy.codequestweb.config;
 
 import com.nhnacademy.codequestweb.client.product.category.CategoryClient;
-import com.nhnacademy.codequestweb.response.product.productCategory.CategoryNodeResponseDto;
+import com.nhnacademy.codequestweb.response.product.product_category.CategoryNodeResponseDto;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-
-import java.util.Map;
 
 @Slf4j
 @Component

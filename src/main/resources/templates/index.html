@@ -79,6 +79,9 @@
 <div th:if="${view != null} and ${#strings.equals(view, 'productBookDetail')}">
     <section th:replace="~{view/product/productBookDetail.html :: productBookDetailFragment ('book', 'reviews', 'averageScore', 'page', 'totalPage')}"></section>
 </div>
+<div th:if="${view != null} and ${#strings.equals(view, 'packagingListPage')}">
+    <section th:replace="~{view/product/packagingListPage.html :: packagingListFragment}"></section>
+</div>
 
 <div th:if="${view != null} and ${#strings.equals(view, 'bookPage')}">
     <section th:replace="~{view/product/bookPage :: bookPageFragment}"></section>

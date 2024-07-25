@@ -1,13 +1,16 @@
 package com.nhnacademy.codequestweb.controller.product.everyone;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhnacademy.codequestweb.response.product.book.BookProductGetResponseDto;
 import com.nhnacademy.codequestweb.response.review.ReviewInfoResponseDto;
 import com.nhnacademy.codequestweb.service.product.BookProductService;
 import com.nhnacademy.codequestweb.service.review.ReviewService;
 import com.nhnacademy.codequestweb.utils.BookUtils;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
+import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
 
@@ -29,6 +32,8 @@ public class BookProductController {
 
     private final ReviewService reviewService;
     private final BookProductService bookProductService;
+
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     private static final String INDEX = "index";
 
@@ -114,8 +119,8 @@ public class BookProductController {
             }else {
                 model.addAttribute(MAIN_TEXT, "전체 검색");
             }
-
-            BookUtils.setBookPage(response, page, sort, desc, model);
+            Page<BookProductGetResponseDto> bookPage = response.getBody();
+            BookUtils.setBookPage(bookPage, page, sort, desc, model);
             model.addAttribute("url", req.getRequestURI() + "?");
             return INDEX;
         }catch (Exception e){
@@ -136,7 +141,8 @@ public class BookProductController {
             Model model) {
         try {
             ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getNameContainingBookPage(CookieUtils.setHeader(req), page, 10, sort, desc, title, 0);
-            BookUtils.setBookPage(response, page, sort, desc, model);
+            Page<BookProductGetResponseDto> bookPage = response.getBody();
+            BookUtils.setBookPage(bookPage, page, sort, desc, model);
             model.addAttribute(MAIN_TEXT, "제목 검색");
             model.addAttribute("url", req.getRequestURI() + "?title=" + title + "&");
             return INDEX;
@@ -159,7 +165,8 @@ public class BookProductController {
             Model model) {
         try{
             ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getBookPageFilterByTag(CookieUtils.setHeader(req), page, 10, sort, desc, tagNameSet, isAnd, 0);
-            BookUtils.setBookPage(response, page, sort, desc, model);
+            Page<BookProductGetResponseDto> bookPage = response.getBody();
+            BookUtils.setBookPage(bookPage, page, sort, desc, model);
             model.addAttribute(MAIN_TEXT, "태그 검색 - " + tagNameSet);
             StringJoiner stringJoiner = new StringJoiner(",");
             for (String tagName : tagNameSet) {
@@ -184,9 +191,12 @@ public class BookProductController {
             RedirectAttributes redirectAttributes,
             Model model) {
         try {
-            ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getBookPageFilterByCategory(CookieUtils.setHeader(req), page, 10, sort, desc, categoryId, 0);
-            BookUtils.setBookPage(response, page, sort, desc, model);
-            model.addAttribute(MAIN_TEXT, "카테고리 검색");
+            ResponseEntity<Map<String, Page<BookProductGetResponseDto>>> response = bookProductService.getBookPageFilterByCategory(CookieUtils.setHeader(req), page, 10, sort, desc, categoryId, 0);
+            Map<String, Page<BookProductGetResponseDto>> responseBodyMap = response.getBody();
+            Page<BookProductGetResponseDto> bookPage = BookUtils.getBookPageFromMap(objectMapper, responseBodyMap, model);
+            BookUtils.setBookPage(bookPage, page, sort, desc, model);
+
+            model.addAttribute(MAIN_TEXT, "카테고리 검색 - ");
             model.addAttribute("url", req.getRequestURI() + "?");
             return INDEX;
         }catch (Exception e){
@@ -202,18 +212,24 @@ public class BookProductController {
             @RequestParam(name = "page", required = false)Integer page,
             @RequestParam(name = "sort", required = false)String sort,
             @RequestParam(name = "desc", required = false)Boolean desc,
+            @RequestParam(name = "productState", required = false) Integer productState,
             RedirectAttributes redirectAttributes,
             Model model) {
         try {
-            ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getLikeBookPage(CookieUtils.setHeader(req), page, 10, sort, desc);
-            BookUtils.setBookPage(response, page, sort, desc, model);
+            ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getLikeBookPage(CookieUtils.setHeader(req), page, 10, sort, desc, productState);
+            Page<BookProductGetResponseDto> bookPage = response.getBody();
+            BookUtils.setBookPage(bookPage, page, sort, desc, model);
             model.addAttribute(MAIN_TEXT, "좋아요 목록");
             model.addAttribute("url", req.getRequestURI() + "?");
             return INDEX;
         }catch (Exception e){
-            log.warn("error occurred while getting Like book page with page : {}, sort : {}, desc : {}. error message : {}", page, sort, desc, e.getMessage());
-            redirectAttributes.addFlashAttribute(ALTER_MESSAGE, FLASH_ATTRIBUTE);
-            return REDIRECT_MAIN_PAGE;
+            if (e instanceof FeignException feignException && feignException.status() == 401){
+                throw e;
+            }else{
+                log.warn("error occurred while getting Like book page with page : {}, sort : {}, desc : {}. error message : {}", page, sort, desc, e.getMessage());
+                redirectAttributes.addFlashAttribute(ALTER_MESSAGE, FLASH_ATTRIBUTE);
+                return REDIRECT_MAIN_PAGE;
+            }
         }
     }
 }

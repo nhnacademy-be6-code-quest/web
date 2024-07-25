@@ -1,6 +1,7 @@
 package com.nhnacademy.codequestweb.product.packaging;
 
 import com.nhnacademy.codequestweb.controller.product.admin.AdminPackagingController;
+import com.nhnacademy.codequestweb.exception.review.FileSaveException;
 import com.nhnacademy.codequestweb.response.product.common.ProductRegisterResponseDto;
 import com.nhnacademy.codequestweb.response.product.common.ProductUpdateResponseDto;
 import com.nhnacademy.codequestweb.response.product.packaging.PackagingGetResponseDto;
@@ -172,7 +173,7 @@ class AdminPackagingControllerTest {
 
         ProductRegisterResponseDto responseDto = new ProductRegisterResponseDto(1L, LocalDateTime.now());
 
-        when(imageService.uploadImage(any(MultipartFile.class))).thenThrow(FeignException.class);
+        when(imageService.uploadImage(any(MultipartFile.class))).thenThrow(FileSaveException.class);
 
         when(packagingService.savePackaging(any(), any()))
                 .thenReturn(new ResponseEntity<>(responseDto, null, HttpStatus.CREATED));
@@ -232,7 +233,7 @@ class AdminPackagingControllerTest {
 
         ProductUpdateResponseDto responseDto = new ProductUpdateResponseDto(LocalDateTime.now());
 
-        when(imageService.uploadImage(any(MultipartFile.class))).thenThrow(FeignException.class);
+        when(imageService.uploadImage(any(MultipartFile.class))).thenThrow(FileSaveException.class);
 
         when(packagingService.updatePackaging(any(), any()))
                 .thenReturn(new ResponseEntity<>(responseDto, null, HttpStatus.OK));

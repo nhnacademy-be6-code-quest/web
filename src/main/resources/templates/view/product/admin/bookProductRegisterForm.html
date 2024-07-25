@@ -29,6 +29,7 @@
         }
 
         .book-container {
+            min-width: 700px;
             width: 50%;
             display: flex; /* Flexbox를 사용하여 요소들을 배치합니다 */
             align-items: center; /* 요소들을 수직 가운데 정렬합니다 */
@@ -92,6 +93,7 @@
             const description = document.getElementById('productDescriptionValue').value;
             const categories = document.querySelectorAll('input[name="categories"]');
             const isbnCheck = document.getElementById('isbnExist').value;
+            const isbn13 = document.getElementById('isbn13').value;
 
             if (!title) {
                 alert('도서를 선택하세요.');
@@ -123,6 +125,10 @@
             }
             if (isbnCheck === 'false') {
                 alert('도서 중복 여부가 확인되지 않았거나, 중복된 도서입니다.');
+                return; // 유효하지 않으면 제출하지 않음
+            }
+            if (isbn13.length !== 0 && isbn13.length !==13){
+                alert('isbn 13은 비어있거나, 13자리여야 합니다.');
                 return; // 유효하지 않으면 제출하지 않음
             }
             event.target.submit(); // 폼 제출
@@ -322,7 +328,7 @@
         function isbnCheck() {
             const isbn = document.getElementById("isbn").value;
 
-            if (isbn.length !== 0) {
+            if (isbn.length === 10) {
                 fetch(`/admin/product/book/isbnCheck?isbn=` + isbn, {
                     method: 'GET'
                 })
@@ -341,10 +347,17 @@
                         console.error('Error:', error);
                         alert('An error occurred while checking ISBN');
                     });
+            }else {
+                alert('ISBN 은 10자리여야 합니다.');
             }
         }
 
-            function readURL(input) {
+        function isbnRead(){
+            const isbn = document.getElementById("isbn").value;
+            document.getElementById("isbnExist").value = isbn.length === 0;
+        }
+
+        function readURL(input) {
             if (input.files && input.files[0]) {
             var reader = new FileReader();
             reader.onload = function (e) {
@@ -360,7 +373,8 @@
     </script>
 </head>
 <body>
-<h1 style="margin:0 auto">신규 도서 등록</h1>
+<h1  th:if="${register == true}" style="margin:0 auto">신규 도서 등록</h1>
+<h1  th:if="${update == true}" style="margin:0 auto">기존 도서 수정</h1>
 <div class="body">
 
     <div th:if="${register}" style="margin:0 auto">
@@ -393,7 +407,7 @@
             <span id="isbnText" th:text="'isbn10 : ' + ${isbn == null ? '' : isbn}"></span>
             <span id="isbn13Text" th:text="'isbn13 : ' + ${isb13 == null ? '' : isbn13}"></span>
             <span id="priceStandardText" th:text="'정가' + ${priceStandard == null ? '' : priceStandard}"></span>
-            <button type="button" onclick="isbnCheck()">중복 확인</button>
+            <button th:if="${update == null}" type="button" onclick="isbnCheck()">중복 확인</button>
         </div>
         <div class="book-info">
             <input type="hidden" name="cover" id="coverURL" th:value="${cover}" readonly/><br>
@@ -401,9 +415,10 @@
             <label for="author"></label><input th:type="${aladin != null ? 'hidden' : 'text'}" id="author" name="author" th:value="${author}" placeholder="작가"/><br>
             <label for="publisher"></label><input th:type="${aladin != null ? 'hidden' : 'text'}" name="publisher" id="publisher" th:value="${publisher}" placeholder="출판사"/><br>
             <label for="pubDate"></label><input th:type="${aladin != null ? 'hidden' : 'date'}" name="pubDate" id="pubDate" th:value="${pubDate}"/><br>
-            <label for="isbn"></label><input th:type="${aladin != null ? 'hidden' : 'text'}" name="isbn" id="isbn" th:value="${isbn}"  placeholder="isbn"/><br>
-            <label for="isbn13"></label><input th:type="${aladin != null ? 'hidden' : 'text'}" name="isbn13" id="isbn13" th:value="${isbn13}" placeholder="isbn13"/><br>
+            <label for="isbn"></label><input th:type="${aladin != null ? 'hidden' : 'text'}" name="isbn" id="isbn" th:value="${isbn}" th:readonly="${isbn != null}" onchange="isbnRead()" placeholder="isbn"/><br>
+            <label for="isbn13"></label><input th:type="${aladin != null ? 'hidden' : 'text'}" name="isbn13" id="isbn13" th:readonly="${isbn13 != null}" th:value="${isbn13}" placeholder="isbn13"/><br>
             <label for="priceStandard"></label><input th:type="${aladin != null ? 'hidden' : 'number'}" name="productPriceStandard" id="priceStandard" th:value="${priceStandard}" required placeholder="정가"/><br>
+            <button th:if="${self != null}" type="button" onclick="isbnCheck()">중복 확인</button>
         </div>
     </div>
         <input type="hidden" id="isbnExist" value="true">
@@ -411,8 +426,8 @@
     <label for="priceSales">판매가 : </label><input type="number" th:value="${priceSales}" name="productPriceSales" id="priceSales" onchange="calculateDiscount()" required/><br>
     <label for="discount"> 할인율 : </label><span id="discount"></span><br>
     <label for="productInventory">재고 : </label><input type="number" name="productInventory" id="productInventory" placeholder="재고" th:default="0" th:value="${inventory == null ? 0 : inventory}"><br>
-    <label for="packable">포장 가능 여부</label><input type="radio" id="packable" name="packable" value="true"><span th:text="가능"></span>
-    <label for="notPackable"></label><input type="radio" id="notPackable" name="packable" value="false" checked><span th:text="불가능"></span>
+    <label for="packable">포장 가능 여부</label><input type="radio" id="packable" name="packable" th:checked="${packable == true || packable == null}" value="true"><span th:text="가능"></span>
+    <label for="notPackable"></label><input type="radio" id="notPackable" name="packable" th:checked="${packable == false}" value="false" checked><span th:text="불가능"></span>
 
     <input type="hidden" name="productDescription" id="productDescription" placeholder="설명">
     <input type="hidden" name="productDescriptionValue" id="productDescriptionValue" placeholder="설명" required>

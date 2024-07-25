@@ -1,6 +1,6 @@
 package com.nhnacademy.codequestweb.response.search;
 
-import com.nhnacademy.codequestweb.response.product.productCategory.ProductCategory;
+import com.nhnacademy.codequestweb.response.product.product_category.ProductCategory;
 import com.nhnacademy.codequestweb.response.product.tag.Tag;
 import lombok.*;
 import org.springframework.data.annotation.Id;

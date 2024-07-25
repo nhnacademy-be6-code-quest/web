@@ -63,34 +63,96 @@
             background-color: #ddd;
             border-radius: 5px;
         }
+
+        .grid-container {
+
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 열의 너비를 동일하게 설정 */
+            gap: 40px; /* 각 셀 사이의 간격 */
+        }
+
+        .grid-item {
+            display: flex;
+            flex-direction: column; /* 세로 방향으로 아이템을 정렬 */
+            justify-content: center; /* 세로 방향으로 중앙 정렬 */
+            align-items: center; /* 가로 방향으로 중앙 정렬 */
+            background-color: #f9f9f9; /* 배경색을 밝은 회색으로 변경 */
+            border: 1px solid #ddd;
+            border-radius: 50px;
+            padding: 40px; /* 패딩을 추가하여 내부 여백을 만듭니다 */
+            text-align: center; /* 텍스트를 중앙 정렬 */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .grid-item-admin{
+            cursor: pointer;
+        }
+
+        .grid-item img {
+            width: 80%; /* 이미지가 그리드 셀의 가로 너비에 맞게 조정 */
+            height: auto; /* 이미지의 높이는 비율에 맞게 자동 조정 */
+            max-height: 200px; /* 이미지의 최대 높이 설정 */
+            object-fit: cover; /* 이미지가 셀을 채우도록 설정 */
+            display: block; /* 이미지가 블록 요소로 취급되도록 설정 */
+            padding-top: 20px;
+            border-radius: 30px;
+            margin: 0 auto; /* 이미지의 좌우 마진을 자동으로 설정하여 중앙 정렬 */
+        }
+
+        .grid-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .info {
+            margin-top: 10px; /* 이미지와 정보 사이에 여백을 추가 */
+        }
+
+        .price-info {
+            margin-top: 10px; /* 정보와 가격 사이에 여백을 추가 */
+        }
+
+        .original-price {
+            text-decoration: line-through;
+            color: #bdc3c7;
+            font-size: 0.8em;
+        }
+        .product-book-not-available{
+            opacity: 0.5;
+        }
     </style>
 </head>
 <section style="background-color: #fafafa;">
     <div class="pt-5 pb-5">
         <div th:if="${packagingList != null and not #lists.isEmpty(packagingList)}" class="container my-5">
             <h2 class="mb-5" th:text="${mainText}"></h2>
-            <div class="book-listing" th:each="product : ${packagingList}">
-<!--                <div th:with="url = ${admin != null ? '/admin/product/book/' + product.productId : '/product/books/' + product.productId}">-->
-                    <div th:with="url = '/admin/product/packaging/updateForm/' + ${product.productId}">
-
-                    <div th:onclick="|location.href='@{${url}}'|" class="row align-items-center">
-                        <div class="col-md-2">
-                            <img th:src="${product.packagingImage}" class="img-fluid rounded-4" alt="Book Image" style="height: 12vh; width: 8vh; border: black solid 1px">
-                        </div>
-                        <div class="col-md-8">
+            <div class="grid-container" th:each="product : ${packagingList}"
+                 th:classappend="${product.productInventory == 0 || product.productState!= 0} ? 'product-book-not-available' : ''">
+                <div th:with="url = ${admin != null ? '/admin/product/packaging/updateForm/' + product.productId : '#'}">
+                    <div th:onclick="|location.href='@{${url}}'|" class="grid-item"
+                         th:classappend="${admin != null ? 'grid-item-admin' : ''}">
+                        <img th:src="${product.packagingImage == 'no image' ? 'https://i.postimg.cc/ydkCbCbC/image-2935360-1280.png' : product.packagingImage}" class="img-fluid rounded-4" alt="Book Image">
+                        <div class="info">
                             <p class="book-title" th:text="${product.productName}"></p>
-                            <p class="book-price">
-                            <div style="margin-top: -23px;" >
-                                <span th:if="${product.productPriceSales < product.productPriceStandard}"
-                                      th:text="'(' + ${#numbers.formatDecimal(product.productPriceStandard, 0, 'COMMA', 0, 'POINT')} + '원)'"
-                                      style="text-decoration: line-through; color: #bdc3c7; font-size: 0.8em; margin-left: 10px; margin-top: -23px;">정가</span>
+                            <div class="price-info">
+                    <span th:if="${product.productPriceSales < product.productPriceStandard}"
+                          th:text="'(' + ${#numbers.formatDecimal(product.productPriceStandard, 0, 'COMMA', 0, 'POINT')} + '원)'"
+                          class="original-price">정가</span>
                                 <span style="margin-left: 5px; color: #ff5f50" th:text="${product.productPriceSales < product.productPriceStandard? '(- ' + (100 - (100 * product.productPriceSales/product.productPriceStandard) + '%)')  : ''}">할인율</span>
+                                <h5 class="secondary-font text-primary" th:text="${product.productPriceSales < product.productPriceStandard? ' -> ' : ''} + ${#numbers.formatDecimal(product.productPriceSales, 0, 'COMMA', 0, 'POINT')} + '원'"></h5>
                             </div>
-                            <h5 class="secondary-font text-primary" th:text="${product.productPriceSales < product.productPriceStandard? ' -> ' : ''} + ${#numbers.formatDecimal(product.productPriceSales, 0, 'COMMA', 0, 'POINT')} + '원'"></h5>
+                        </div>
+                        <div th:if="${product.productState == 0}">
+                            <div class="warn-info" th:if="${product.productInventory == 0}">
+                                임시 품절
+                            </div>
+                        </div>
+                        <div class="warn-info" th:if="${product.productState != 0}">
+                            판매 중인 상품이 아닙니다.
                         </div>
                     </div>
                 </div>
-
             </div>
             <div class="pagination" th:attr="data-total-pages=${totalPage},data-current-page=${page}">
                 <span th:if="${page > 1}">

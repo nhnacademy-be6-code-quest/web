@@ -274,7 +274,7 @@
                 <ul class="product-book-detail-categories">
                     <li th:each="categoryList : ${listOfCategoryList}">
                         <span th:each="category, categoryStat : ${categoryList}">
-                            <a th:href="'/product/books/category/' + ${category.productCategoryId()}"><span  class="product-book-detail-category-tag" th:text=" ${category.categoryName()}"></span></a>
+                            <a th:href="${admin != null ? '/admin/product/book/category/': '/product/books/category/'} + ${category.productCategoryId()}"><span  class="product-book-detail-category-tag" th:text=" ${category.categoryName()}"></span></a>
                             <span th:unless="${categoryStat.last}"> > </span>
                         </span>
                     </li>
@@ -282,7 +282,7 @@
                 <div class="product-book-detail-tags" th:if="${not #sets.isEmpty(book.tagSet)}">
                     <h3>태그</h3>
                     <span th:each="tag : ${book.tagSet}" class="product-book-detail-category-tag">
-                        <a th:href="'/product/books/tagFilter?tagName=' + ${tag.tagName}" th:text="'#' + ${tag.tagName}">태그</a>
+                        <a th:href="${admin != null ? '/admin/product/book/tagFilter?tagName=': '/product/books/tagFilter?tagName='} + ${tag.tagName}" th:text="'#' + ${tag.tagName}">태그</a>
                     </span>
                 </div>
                 <div class="book-description" th:utext="${book.productDescription}">

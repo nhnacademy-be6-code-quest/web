@@ -7,6 +7,7 @@ import com.nhnacademy.codequestweb.response.product.book.BookProductGetResponseD
 import com.nhnacademy.codequestweb.response.product.common.ProductRegisterResponseDto;
 import com.nhnacademy.codequestweb.response.product.common.ProductUpdateResponseDto;
 import jakarta.validation.Valid;
+import java.util.Map;
 import java.util.Set;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.domain.Page;
@@ -83,7 +84,7 @@ public interface BookProductClient {
         );
 
         @GetMapping("/api/product/books/category/{categoryId}")
-        ResponseEntity<Page<BookProductGetResponseDto>> getBookPageFilterByCategory(
+        ResponseEntity<Map<String, Page<BookProductGetResponseDto>>> getBookPageFilterByCategory(
                 @RequestHeader HttpHeaders headers,
                 @RequestParam(value = "page", required = false) Integer page,
                 @RequestParam(name = "size", required = false) Integer size,
@@ -99,6 +100,8 @@ public interface BookProductClient {
                 @RequestParam(value = "page", required = false) Integer page,
                 @RequestParam(name = "size", required = false) Integer size,
                 @RequestParam(name = "sort", required = false)String sort,
-                @RequestParam(name = "desc", required = false)Boolean desc);
+                @RequestParam(name = "desc", required = false)Boolean desc,
+                @RequestParam(name = "productState", required = false) Integer productState
+        );
 
 }

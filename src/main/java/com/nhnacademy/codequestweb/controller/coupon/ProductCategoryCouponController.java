@@ -1,7 +1,7 @@
 package com.nhnacademy.codequestweb.controller.coupon;
 
-import com.nhnacademy.codequestweb.response.product.productCategory.CategoryGetResponseDto;
-import com.nhnacademy.codequestweb.response.product.productCategory.ProductCategory;
+import com.nhnacademy.codequestweb.response.product.product_category.CategoryGetResponseDto;
+import com.nhnacademy.codequestweb.response.product.product_category.ProductCategory;
 import com.nhnacademy.codequestweb.service.product.CategoryService;
 
 import java.util.*;

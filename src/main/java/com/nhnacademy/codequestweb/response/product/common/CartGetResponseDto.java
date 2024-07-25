@@ -1,12 +1,11 @@
 package com.nhnacademy.codequestweb.response.product.common;
 
-import com.nhnacademy.codequestweb.response.product.productCategory.ProductCategory;
+import com.nhnacademy.codequestweb.response.product.product_category.ProductCategory;
 import com.nhnacademy.codequestweb.response.product.tag.Tag;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import java.util.Map;
 import java.util.Set;
 import lombok.Builder;
 import org.hibernate.validator.constraints.Length;
