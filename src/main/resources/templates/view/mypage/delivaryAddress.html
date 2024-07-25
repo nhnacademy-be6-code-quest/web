@@ -40,11 +40,18 @@
 
             // 폼을 제출하거나 다른 동작을 수행하도록 원하는 경우
             var postcode = document.getElementById('postcode').value;
+            var saveButton = document.getElementById('saveButton');
+            var buttonText = document.getElementById('buttonText');
+            var spinner = document.getElementById('spinner');
 
             if (!postcode) {
                 alert('우편번호를 입력하세요.');
                 return; // 유효하지 않으면 제출하지 않음
             }
+
+            saveButton.disabled = true;
+            buttonText.classList.add('d-none');
+            spinner.classList.remove('d-none');
 
             event.target.submit(); // 폼 제출
 
@@ -161,7 +168,10 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-                <button type="submit" class="btn btn-primary">저장</button>
+                <button type="submit" class="btn btn-primary" id="saveButton">
+                    <span id="buttonText">저장</span>
+                    <span id="spinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                </button>
             </div>
             </form>
         </div>

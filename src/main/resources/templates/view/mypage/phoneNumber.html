@@ -27,6 +27,17 @@
         }
     </style>
     <script>
+        function buttonChanger(event) {
+            var saveButton = document.getElementById('saveButton');
+            var buttonText = document.getElementById('buttonText');
+            var spinner = document.getElementById('spinner');
+
+            saveButton.disabled = true;
+            buttonText.classList.add('d-none');
+            spinner.classList.remove('d-none');
+
+            event.target.submit(); // 폼 제출
+        }
         function deleteNumber(phoneId) {
             if (confirm('해당 번호를 삭제하시겠습니까?')) {
                 fetch(`/mypage/phone/` + phoneId, {
@@ -79,7 +90,7 @@
                 <h5 class="modal-title" id="addAddressModalLabel">Add Number</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="/mypage/phone" method="post">
+            <form action="/mypage/phone" method="post" onsubmit="buttonChanger(event)">
                 <div class="modal-body">
                     <div class="form-group">
                         <label>핸드폰 번호</label>
@@ -88,7 +99,10 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-                    <button type="submit" class="btn btn-primary">저장</button>
+                    <button type="submit" class="btn btn-primary" id="saveButton">
+                        <span id="buttonText">저장</span>
+                        <span id="spinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                    </button>
                 </div>
             </form>
         </div>
