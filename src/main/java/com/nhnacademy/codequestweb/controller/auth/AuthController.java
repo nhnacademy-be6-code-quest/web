@@ -83,6 +83,9 @@ public class AuthController {
 
     @GetMapping("/logout")
     public String logout(HttpServletRequest req, HttpServletResponse res) {
+        if (CookieUtils.getCookieValue(req, ACCESS) == null) {
+            return REDIRECT;
+        }
         HttpHeaders headers = new HttpHeaders();
         headers.set(ACCESS, CookieUtils.getCookieValue(req, ACCESS));
         headers.set(REFRESH, CookieUtils.getCookieValue(req, REFRESH));
