@@ -14,6 +14,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Chilanka&family=Montserrat:wght@300;400;500&display=swap"
           rel="stylesheet">
 
+    <style>
+        .logout.disabled {
+            pointer-events: none;
+            opacity: 0.5;
+            text-decoration: none;
+            cursor: default;
+        }
+    </style>
+
     <script th:src="@{js/jquery-1.11.0.min.js}"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
@@ -24,6 +33,18 @@
     <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
     <script type="text/javascript" th:src="@{/js/message/message.js}"></script>
     <link rel="stylesheet" th:href="@{/css/message/style.css}">
+    <script>
+        function disableLogout(event) {
+            event.preventDefault();  // 기본 링크 동작 방지
+            var logoutLink = document.getElementById('logout');
+            if (!logoutLink.classList.contains('disabled')) {
+                logoutLink.classList.add('disabled');
+                logoutLink.style.pointerEvents = 'none';
+                logoutLink.style.opacity = '0.5';
+                window.location.href = logoutLink.getAttribute('href');
+            }
+        }
+    </script>
 </head>
 <div th:replace="~{icon/icon :: iconAsset}"></div>
 
@@ -36,7 +57,7 @@
                     </a>
 
                     <span th:if="${isLogin == null}" class="fs-6 secondary-font text-muted"><a id="login" href="/auth">로그인 / 회원가입</a></span>
-                    <span th:if="${isLogin != null}" class="fs-6 secondary-font text-muted"><a id="logout" href="/logout">로그아웃</a></span>
+                    <span th:if="${isLogin != null}" class="fs-6 secondary-font text-muted"><a class="logout" id="logout" href="/logout" onclick="disableLogout(event)">로그아웃</a></span>
                 </div>
 
 
