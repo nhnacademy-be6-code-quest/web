@@ -5,6 +5,7 @@ import com.nhnacademy.codequestweb.request.payment.TossApprovePaymentRequest;
 import com.nhnacademy.codequestweb.request.payment.UserUpdateGradeRequestDto;
 import com.nhnacademy.codequestweb.response.payment.PaymentGradeResponseDto;
 import com.nhnacademy.codequestweb.response.payment.TossPaymentsResponseDto;
+import org.json.simple.parser.ParseException;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -35,8 +36,5 @@ public interface PaymentClient {
     ResponseEntity<TossPaymentsResponseDto> approvePayment(@RequestHeader HttpHeaders headers, @RequestBody TossApprovePaymentRequest tossApprovePaymentRequest);
 
     @GetMapping("/api/order/payment/post-process")
-    ResponseEntity<PostProcessRequiredPaymentResponseDto> getPostProcessRequiredPaymentResponseDto(@RequestParam("orderCode") String orderCode);
-
-    @PostMapping("/api/order/update/user")
-    void updateUser(@RequestBody UserUpdateGradeRequestDto userUpdateGradeRequestDto);
+    ResponseEntity<PostProcessRequiredPaymentResponseDto> getPostProcessRequiredPaymentResponseDto(@RequestParam("tossOrderId") String tossOrderId);
 }

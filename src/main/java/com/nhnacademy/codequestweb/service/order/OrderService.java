@@ -132,7 +132,6 @@ public class OrderService {
                 .deliveryAddress(clientOrderForm.getDeliveryAddress())
                 .useDesignatedDeliveryDate(clientOrderForm.getUseDesignatedDeliveryDate() != null && clientOrderForm.getUseDesignatedDeliveryDate())
                 .designatedDeliveryDate(clientOrderForm.getDesignatedDeliveryDate())
-                .paymentMethod(clientOrderPayMethodForm.getPaymentMethod())
                 .accumulatePoint(clientOrderPayMethodForm.getExpectedAccumulatingPoint())
                 .orderCode(UUID.randomUUID().toString())
                 .build();

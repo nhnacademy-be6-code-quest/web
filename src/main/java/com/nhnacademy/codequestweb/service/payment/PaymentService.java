@@ -81,11 +81,6 @@ public class PaymentService /*implements PaymentService*/ {
         return paymentPointClient.rewardOrderPoint(httpHeaders, pointRewardOrderRequestDto);
     }
 
-    public void updateGrade(long clientId){
-        UserUpdateGradeRequestDto userUpdateGradeRequestDto = new UserUpdateGradeRequestDto(clientId);
-        paymentClient.updateUser(userUpdateGradeRequestDto);
-    }
-
     public void decreaseProductInventory(
         List<ProductOrderDetailRequestDto> productOrderDetailRequestDtoList) {
         List<InventoryDecreaseRequestDto> inventoryDecreaseRequestDtoList = new ArrayList<>();
@@ -116,15 +111,8 @@ public class PaymentService /*implements PaymentService*/ {
         return paymentClient.getPaymentRecordOfClient(clientId).getBody();
     }
 
-    public ResponseEntity<String> updateClientGrade(
-        UserUpdateGradeRequestDto userUpdateGradeRequestDto) {
-        return paymentClientClient.updateClientGrade(userUpdateGradeRequestDto);
-    }
 
-    public ResponseEntity<String> giveRewardCoupon(HttpHeaders headers, long amount) {
-        CouponPaymentRewardRequestDto couponPaymentRewardRequestDto = CouponPaymentRewardRequestDto.builder().paymentValue(amount).build();
-        return paymentCouponClient.getUserPaymentValue(headers, couponPaymentRewardRequestDto);
-    }
+
 
     public PostProcessRequiredPaymentResponseDto getPostProcessRequiredPaymentResponseDto(String orderCode) {
         return paymentClient.getPostProcessRequiredPaymentResponseDto(orderCode).getBody();
