@@ -52,12 +52,16 @@ public class ProductController {
     public String like(HttpServletRequest req,
                        RedirectAttributes redirectAttributes,
                        @ModelAttribute ProductLikeRequestDto productLikeRequestDto) {
-        try{
+        try {
             ResponseEntity<Void> response = productService.saveProductLike(CookieUtils.setHeader(req), productLikeRequestDto);
             return handleResponse(response, redirectAttributes);
-        }catch (FeignException e){
-            redirectAttributes.addFlashAttribute(ALTER_MESSAGE, ATTRIBUTE_VALUE);
-            return REDIRECTION_PRODUCT_MAIN;
+        }catch (Exception e) {
+            if (e instanceof FeignException feignException && feignException.status() == 401){
+                throw e;
+            }else {
+                redirectAttributes.addFlashAttribute(ALTER_MESSAGE, ATTRIBUTE_VALUE);
+                return REDIRECTION_PRODUCT_MAIN;
+            }
         }
     }
 
@@ -68,9 +72,13 @@ public class ProductController {
         try {
             ResponseEntity<Void> response = productService.deleteProductLike(CookieUtils.setHeader(req), productId);
             return handleResponse(response, redirectAttributes);
-        }catch (FeignException e){
-            redirectAttributes.addFlashAttribute(ALTER_MESSAGE, ATTRIBUTE_VALUE);
-            return REDIRECTION_PRODUCT_MAIN;
+        }catch (Exception e) {
+            if (e instanceof FeignException feignException && feignException.status() == 401){
+                throw e;
+            }else {
+                redirectAttributes.addFlashAttribute(ALTER_MESSAGE, ATTRIBUTE_VALUE);
+                return REDIRECTION_PRODUCT_MAIN;
+            }
         }
     }
 

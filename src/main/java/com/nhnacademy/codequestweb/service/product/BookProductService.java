@@ -7,6 +7,8 @@ import com.nhnacademy.codequestweb.response.product.book.AladinBookResponseDto;
 import com.nhnacademy.codequestweb.response.product.book.BookProductGetResponseDto;
 import com.nhnacademy.codequestweb.response.product.common.ProductRegisterResponseDto;
 import com.nhnacademy.codequestweb.response.product.common.ProductUpdateResponseDto;
+import com.nhnacademy.codequestweb.response.product.product_category.ProductCategory;
+import java.util.Map;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -68,7 +70,7 @@ public class BookProductService {
         return bookProductClient.getBookPageFilterByTagAndProductState(headers, page, size, sort, desc, tagNameSet, conditionIsAnd, productState);
     }
 
-    public ResponseEntity<Page<BookProductGetResponseDto>> getBookPageFilterByCategory(
+    public ResponseEntity<Map<String, Page<BookProductGetResponseDto>>> getBookPageFilterByCategory(
             HttpHeaders headers,
             Integer page, Integer size, String sort, Boolean desc,
             Long categoryId, Integer productState) {
@@ -77,7 +79,7 @@ public class BookProductService {
 
     public ResponseEntity<Page<BookProductGetResponseDto>> getLikeBookPage(
             HttpHeaders headers,
-            Integer page, Integer size, String sort, Boolean desc) {
-        return bookProductClient.getLikeBookPage(headers, page, size, sort, desc);
+            Integer page, Integer size, String sort, Boolean desc, Integer productState) {
+        return bookProductClient.getLikeBookPage(headers, page, size, sort, desc, productState);
     }
 }

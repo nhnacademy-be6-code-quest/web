@@ -1,5 +1,6 @@
 package com.nhnacademy.codequestweb.controller.product.admin;
 
+import com.nhnacademy.codequestweb.exception.review.FileSaveException;
 import com.nhnacademy.codequestweb.request.product.packaging.PackagingRegisterRequestDto;
 import com.nhnacademy.codequestweb.request.product.packaging.PackagingUpdateRequestDto;
 import com.nhnacademy.codequestweb.response.product.common.ProductRegisterResponseDto;
@@ -60,6 +61,7 @@ public class AdminPackagingController {
                 model.addAttribute("view", ADMIN_PAGE);
                 model.addAttribute(ADMIN_PAGE, "packagingListPage");
                 model.addAttribute("url", "?");
+                model.addAttribute("admin", "true");
                 return INDEX;
             }else {
                 redirectAttributes.addFlashAttribute(ALTER_MESSAGE, "응답 본문이 비어있습니다.");
@@ -102,6 +104,18 @@ public class AdminPackagingController {
         }
     }
 
+    private String imageSave(MultipartFile file){
+        if (file != null && !file.isEmpty()){
+            try {
+                return imageService.uploadImage(file);
+            } catch (FileSaveException e){
+                log.warn("error occurred while uploading image. message : {}", e.getMessage());
+                return null;
+            }
+        }else{
+            return null;
+        }
+    }
 
     @PostMapping("/register")
     public String savePackaging(
@@ -109,17 +123,11 @@ public class AdminPackagingController {
             @RequestParam("image") MultipartFile file,
             @ModelAttribute PackagingRegisterRequestDto requestDto,
             RedirectAttributes redirectAttributes){
-        boolean imageSaved = true;
-        if (file != null && !file.isEmpty()){
-            imageSaved = false;
-            try {
-                String imageUrl = imageService.uploadImage(file);
-                requestDto.setProductThumbnailUrl(imageUrl);
-                imageSaved = true;
-            }catch (FeignException e){
-                log.warn("error occurred while saving image for save new packaging. message : {}", e.getMessage());
-            }
+        String image = imageSave(file);
+        if (image != null){
+            requestDto.setProductThumbnailUrl(image);
         }
+        boolean imageSaved =  !(file != null && !file.isEmpty() && image == null);
         try {
             ResponseEntity<ProductRegisterResponseDto> responseEntity = packagingService.savePackaging(CookieUtils.setHeader(req), requestDto);
             if (responseEntity.getStatusCode().is2xxSuccessful()){
@@ -143,17 +151,11 @@ public class AdminPackagingController {
             @RequestParam(name = "image", required = false) MultipartFile file,
             @ModelAttribute PackagingUpdateRequestDto requestDto,
             RedirectAttributes redirectAttributes){
-        boolean imageSaved = true;
-        if (file != null && !file.isEmpty()){
-            imageSaved = false;
-            try {
-                String imageUrl = imageService.uploadImage(file);
-                requestDto.setProductThumbnailUrl(imageUrl);
-                imageSaved = true;
-            }catch (FeignException e){
-                log.warn("error occurred while saving image for update packaging. message : {}", e.getMessage());
-            }
+        String image = imageSave(file);
+        if (image != null){
+            requestDto.setProductThumbnailUrl(image);
         }
+        boolean imageSaved =  !(file != null && !file.isEmpty() && image == null);
         try {
             ResponseEntity<ProductUpdateResponseDto> responseEntity = packagingService.updatePackaging(CookieUtils.setHeader(req), requestDto);
             if (responseEntity.getStatusCode().is2xxSuccessful()){

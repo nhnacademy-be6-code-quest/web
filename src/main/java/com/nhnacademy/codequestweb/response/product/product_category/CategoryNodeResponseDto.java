@@ -1,4 +1,4 @@
-package com.nhnacademy.codequestweb.response.product.productCategory;
+package com.nhnacademy.codequestweb.response.product.product_category;
 
 import lombok.*;
 

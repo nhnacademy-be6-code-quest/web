@@ -69,7 +69,6 @@
             var reader = new FileReader();
             reader.onload = function (e) {
                 document.getElementById('preview').src = e.target.result;
-                document.getElementById('image').value = '';
             };
             reader.readAsDataURL(input.files[0]);
         } else {
@@ -84,14 +83,14 @@
         <h2 th:if="${action eq 'update'}">포장지 수정</h2>
         <div>
             <img id="preview" width="800px"
-                 th:src="${packaging == null ? 'https://i.postimg.cc/ydkCbCbC/image-2935360-1280.png' : packaging.packagingImage}"/>
+                 th:src="${packaging == null ? 'https://i.postimg.cc/ydkCbCbC/image-2935360-1280.png' : packaging.packagingImage == 'no image' ? 'https://i.postimg.cc/ydkCbCbC/image-2935360-1280.png' : packaging.packagingImage}"/>
         </div>
         <input type="file" name="image" onchange="readURL(this)" accept="image/jpeg,image/png,image/jpg" th:required="${action == 'register'}" >
 
         포장지명 <input type="text" name="packagingName" th:value="${packaging == null ? '' : packaging.packagingName}" required>
         상품명 <input type="text" name="productName" th:value="${packaging == null ? '' : packaging.productName}" required>
-        <input type="hidden" id="image" name="productThumbnailUrl" th:value="${packaging == null ? 'value' : packaging.packagingImage}">
-            설명 <textarea id="myTextarea" class="myTextarea" name="productDescription" th:value="${packaging == null ? '' : packaging.productDescription}" required></textarea>
+        <input type="hidden" id="image" name="productThumbnailUrl" th:value="${packaging == null ? 'no image' : packaging.packagingImage}">
+            설명 <textarea id="myTextarea" class="myTextarea" name="productDescription" th:text="${packaging == null ? '' : packaging.productDescription}" required></textarea>
         정가 <input type="number" name="productPriceStandard" th:value="${packaging == null ? '' : packaging.productPriceStandard}" min="1" required>
         판매가 <input type="number" name="productPriceSales" th:value="${packaging == null ? '' : packaging.productPriceSales}" min="1" required>
         재고 <input type="number" name="productInventory" th:value="${packaging == null ? '' : packaging.productInventory}" min="1" required>

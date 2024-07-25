@@ -1,13 +1,14 @@
 package com.nhnacademy.codequestweb.product.book;
 
 import com.nhnacademy.codequestweb.controller.product.admin.AdminBookController;
+import com.nhnacademy.codequestweb.exception.review.FileSaveException;
 import com.nhnacademy.codequestweb.request.product.book_product.BookProductRegisterRequestDto;
 import com.nhnacademy.codequestweb.request.product.book_product.BookProductUpdateRequestDto;
 import com.nhnacademy.codequestweb.response.product.book.AladinBookResponseDto;
 import com.nhnacademy.codequestweb.response.product.book.BookProductGetResponseDto;
 import com.nhnacademy.codequestweb.response.product.common.ProductRegisterResponseDto;
 import com.nhnacademy.codequestweb.response.product.common.ProductUpdateResponseDto;
-import com.nhnacademy.codequestweb.response.product.productCategory.ProductCategory;
+import com.nhnacademy.codequestweb.response.product.product_category.ProductCategory;
 import com.nhnacademy.codequestweb.response.product.tag.Tag;
 import com.nhnacademy.codequestweb.service.image.ImageService;
 import com.nhnacademy.codequestweb.service.product.BookProductService;
@@ -17,6 +18,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -366,7 +368,7 @@ class AdminBookControllerTest {
         MockMultipartFile
                 file = new MockMultipartFile("coverImage", "cover.jpg", MediaType.IMAGE_JPEG_VALUE, "image content".getBytes());
 
-        when(imageService.uploadImage(any(MultipartFile.class))).thenThrow(FeignException.class);
+        when(imageService.uploadImage(any(MultipartFile.class))).thenThrow(FileSaveException.class);
         when(bookProductService.saveBook(any(), any())).thenReturn(ResponseEntity.ok(new ProductRegisterResponseDto(1L, LocalDateTime.now())));
 
         mockMvc.perform(multipart("/admin/product/book/register")
@@ -420,16 +422,20 @@ class AdminBookControllerTest {
     void updateBookTest1() throws Exception {
         when(bookProductService.updateBook(any(), any())).thenReturn(ResponseEntity.ok(new ProductUpdateResponseDto(LocalDateTime.now())));
 
-        mockMvc.perform(put("/admin/product/book/update")
-                        .param("productId", String.valueOf(updateRequestDto.productId()))
-                        .param("productName", updateRequestDto.productName())
-                        .param("packable", String.valueOf(updateRequestDto.packable()))
-                        .param("productDescription", updateRequestDto.productDescription())
-                        .param("productPriceSales", String.valueOf(updateRequestDto.productPriceSales()))
-                        .param("productInventory", String.valueOf(updateRequestDto.productInventory()))
-                        .param("categories", String.join(",", updateRequestDto.categories()))
-                        .param("productState", String.valueOf(updateRequestDto.productState()))
-                        .param("tags", String.join(",", updateRequestDto.tags())))
+        mockMvc.perform(multipart("/admin/product/book/update")
+                        .with(request -> {
+                            request.setMethod("PUT"); // 강제로 PUT 메서드로 설정
+                            return request;
+                        })
+                        .param("productId", String.valueOf(updateRequestDto.getProductId()))
+                        .param("productName", updateRequestDto.getProductName())
+                        .param("packable", String.valueOf(updateRequestDto.isPackable()))
+                        .param("productDescription", updateRequestDto.getProductDescription())
+                        .param("productPriceSales", String.valueOf(updateRequestDto.getProductPriceSales()))
+                        .param("productInventory", String.valueOf(updateRequestDto.getProductInventory()))
+                        .param("categories", String.join(",", updateRequestDto.getCategories()))
+                        .param("productState", String.valueOf(updateRequestDto.getProductState()))
+                        .param("tags", String.join(",", updateRequestDto.getTags())))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/admin/product/book/all"))
                 .andExpect(flash().attribute(ALTER_MESSAGE, "성공적으로 수정되었습니다."));
@@ -440,15 +446,15 @@ class AdminBookControllerTest {
         when(bookProductService.updateBook(any(), any())).thenThrow(FeignException.class);
 
         mockMvc.perform(put("/admin/product/book/update")
-                        .param("productId", String.valueOf(updateRequestDto.productId()))
+                        .param("productId", String.valueOf(updateRequestDto.getProductId()))
                         .param("productName", "t")
-                        .param("packable", String.valueOf(updateRequestDto.packable()))
-                        .param("productDescription", updateRequestDto.productDescription())
-                        .param("productPriceSales", String.valueOf(updateRequestDto.productPriceSales()))
-                        .param("productInventory", String.valueOf(updateRequestDto.productInventory()))
-                        .param("categories", String.join(",", updateRequestDto.categories()))
-                        .param("productState", String.valueOf(updateRequestDto.productState()))
-                        .param("tags", String.join(",", updateRequestDto.tags())))
+                        .param("packable", String.valueOf(updateRequestDto.isPackable()))
+                        .param("productDescription", updateRequestDto.getProductDescription())
+                        .param("productPriceSales", String.valueOf(updateRequestDto.getProductPriceSales()))
+                        .param("productInventory", String.valueOf(updateRequestDto.getProductInventory()))
+                        .param("categories", String.join(",", updateRequestDto.getCategories()))
+                        .param("productState", String.valueOf(updateRequestDto.getProductState()))
+                        .param("tags", String.join(",", updateRequestDto.getTags())))
                 .andExpect(status().isBadRequest());
     }
 
@@ -457,15 +463,15 @@ class AdminBookControllerTest {
         when(bookProductService.updateBook(any(), any())).thenThrow(FeignException.class);
 
         mockMvc.perform(put("/admin/product/book/update")
-                        .param("productId", String.valueOf(updateRequestDto.productId()))
-                        .param("productName", updateRequestDto.productName())
-                        .param("packable", String.valueOf(updateRequestDto.packable()))
-                        .param("productDescription", updateRequestDto.productDescription())
-                        .param("productPriceSales", String.valueOf(updateRequestDto.productPriceSales()))
-                        .param("productInventory", String.valueOf(updateRequestDto.productInventory()))
-                        .param("categories", String.join(",", updateRequestDto.categories()))
-                        .param("productState", String.valueOf(updateRequestDto.productState()))
-                        .param("tags", String.join(",", updateRequestDto.tags())))
+                        .param("productId", String.valueOf(updateRequestDto.getProductId()))
+                        .param("productName", updateRequestDto.getProductName())
+                        .param("packable", String.valueOf(updateRequestDto.isPackable()))
+                        .param("productDescription", updateRequestDto.getProductDescription())
+                        .param("productPriceSales", String.valueOf(updateRequestDto.getProductPriceSales()))
+                        .param("productInventory", String.valueOf(updateRequestDto.getProductInventory()))
+                        .param("categories", String.join(",", updateRequestDto.getCategories()))
+                        .param("productState", String.valueOf(updateRequestDto.getProductState()))
+                        .param("tags", String.join(",", updateRequestDto.getTags())))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/admin/product/book/all"))
                 .andExpect(flash().attribute(ALTER_MESSAGE, "상품 정보를 수정하는 데 실패했습니다.\n자세한 정보는 로그를 확인하세요."));
@@ -490,7 +496,7 @@ class AdminBookControllerTest {
                         .param("desc", String.valueOf(true))
                         .param("productState", String.valueOf(0)))
                 .andExpect(status().isOk())
-                .andExpect(model().attribute(MAIN_TEXT, "관리자 페이지"))
+                .andExpect(model().attribute(MAIN_TEXT, "관리자 페이지 - 판매 중"))
                 .andExpect(model().attribute(ADMIN_PAGE, PRODUCT_LIST_PAGE))
                 .andExpect(model().attribute(ACTIVE_SECTION, PRODUCT));
 
@@ -558,8 +564,11 @@ class AdminBookControllerTest {
         Pageable pageable = PageRequest.of(0, 4);
         Page<BookProductGetResponseDto> responseDtoPage = new PageImpl<>(responseDtoList, pageable, responseDtoList.size());
 
+        Map<String, Page<BookProductGetResponseDto>> responseMap
+                = Map.of("{\"productCategoryId\":1, \"categoryName\":\"test\", \"parentProductCategory\": null}", responseDtoPage);
+
         when(bookProductService.getBookPageFilterByCategory(any(), eq(1), eq(10), eq("sort"), eq(true), eq(1L), eq(0)))
-                .thenReturn(ResponseEntity.ok(responseDtoPage));
+                .thenReturn(ResponseEntity.ok(responseMap));
 
         mockMvc.perform(get("/admin/product/book/category/1")
                         .param("page", String.valueOf(1))
@@ -568,7 +577,7 @@ class AdminBookControllerTest {
                         .param("desc", String.valueOf(true))
                         .param("productState", String.valueOf(0)))
                 .andExpect(status().isOk())
-                .andExpect(model().attribute(MAIN_TEXT, "관리자 페이지 - 카테고리 필터"))
+                .andExpect(model().attribute(MAIN_TEXT, "관리자 페이지 - 카테고리 : "))
                 .andExpect(model().attribute(ADMIN_PAGE, PRODUCT_LIST_PAGE))
                 .andExpect(model().attribute(ACTIVE_SECTION, PRODUCT));
 

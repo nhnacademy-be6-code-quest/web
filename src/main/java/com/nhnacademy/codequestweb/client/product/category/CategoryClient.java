@@ -2,10 +2,10 @@ package com.nhnacademy.codequestweb.client.product.category;
 
 import com.nhnacademy.codequestweb.request.product.product_category.CategoryRegisterRequestDto;
 import com.nhnacademy.codequestweb.request.product.product_category.CategoryUpdateRequestDto;
-import com.nhnacademy.codequestweb.response.product.productCategory.CategoryGetResponseDto;
-import com.nhnacademy.codequestweb.response.product.productCategory.CategoryNodeResponseDto;
-import com.nhnacademy.codequestweb.response.product.productCategory.CategoryRegisterResponseDto;
-import com.nhnacademy.codequestweb.response.product.productCategory.CategoryUpdateResponseDto;
+import com.nhnacademy.codequestweb.response.product.product_category.CategoryGetResponseDto;
+import com.nhnacademy.codequestweb.response.product.product_category.CategoryNodeResponseDto;
+import com.nhnacademy.codequestweb.response.product.product_category.CategoryRegisterResponseDto;
+import com.nhnacademy.codequestweb.response.product.product_category.CategoryUpdateResponseDto;
 import jakarta.validation.Valid;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.domain.Page;

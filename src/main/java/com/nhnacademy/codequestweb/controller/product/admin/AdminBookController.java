@@ -1,13 +1,15 @@
 package com.nhnacademy.codequestweb.controller.product.admin;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nhnacademy.codequestweb.exception.review.FileSaveException;
 import com.nhnacademy.codequestweb.request.product.book_product.BookProductRegisterRequestDto;
 import com.nhnacademy.codequestweb.request.product.book_product.BookProductUpdateRequestDto;
 import com.nhnacademy.codequestweb.response.product.book.AladinBookResponseDto;
 import com.nhnacademy.codequestweb.response.product.book.BookProductGetResponseDto;
 import com.nhnacademy.codequestweb.response.product.common.ProductRegisterResponseDto;
 import com.nhnacademy.codequestweb.response.product.common.ProductUpdateResponseDto;
-import com.nhnacademy.codequestweb.response.product.productCategory.ProductCategory;
+import com.nhnacademy.codequestweb.response.product.product_category.ProductCategory;
 import com.nhnacademy.codequestweb.response.product.tag.Tag;
 import com.nhnacademy.codequestweb.response.review.ReviewInfoResponseDto;
 import com.nhnacademy.codequestweb.service.image.ImageService;
@@ -20,8 +22,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
 import java.util.Set;
+import java.util.StringJoiner;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
@@ -85,6 +88,8 @@ public class AdminBookController {
 
     private static final String ATTRIBUTE_VALUE = "도서 정보 조회에 실패했습니다.";
 
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
@@ -122,7 +127,7 @@ public class AdminBookController {
                 redirectAttributes.addFlashAttribute(ALTER_MESSAGE, "응답 본문이 비어있습니다.");
                 return REDIRECT_ADMIN_MAIN;
             }else {
-                String description = Objects.requireNonNull(bookProductGetResponseDto).productDescription();
+                String description = bookProductGetResponseDto.productDescription();
                 log.info("description: {}", description);
                 String markdown = flexmarkHtmlConverter.convert(description);
                 List<String> categoryNameSet = bookProductGetResponseDto.categorySet().stream().map(ProductCategory::categoryName).toList();
@@ -130,6 +135,8 @@ public class AdminBookController {
 
                 if (bookProductGetResponseDto.isbn() != null && !bookProductGetResponseDto.isbn().isBlank()){
                     model.addAttribute("aladin", true);
+                }else {
+                    model.addAttribute("self", true);
                 }
 
                 model.addAttribute("update", true);
@@ -146,6 +153,7 @@ public class AdminBookController {
                 model.addAttribute("priceSales", bookProductGetResponseDto.productPriceSales());
                 model.addAttribute("productName", bookProductGetResponseDto.productName());
                 model.addAttribute("inventory", bookProductGetResponseDto.productInventory());
+                model.addAttribute("packable", bookProductGetResponseDto.packable());
                 model.addAttribute("categorySet", categoryNameSet);
                 model.addAttribute("tagSet", tagNameSet);
                 model.addAttribute("initialValue", markdown);
@@ -206,22 +214,30 @@ public class AdminBookController {
         }
     }
 
+    private String imageSave(MultipartFile file){
+        if (file != null && !file.isEmpty()){
+            try {
+                return imageService.uploadImage(file);
+            } catch (FileSaveException e){
+                log.warn("error occurred while uploading image. message : {}", e.getMessage());
+                return null;
+            }
+        }else{
+            return null;
+        }
+    }
 
     @PostMapping("/register")
-    public String saveBook(@RequestParam(name = "coverImage", required = false) MultipartFile file,
-                           @ModelAttribute @Valid BookProductRegisterRequestDto dto, HttpServletRequest req,
-                           RedirectAttributes redirectAttributes){
-        boolean imageSaved = true;
-        if (file != null && !file.isEmpty()){
-            imageSaved = false;
-            try {
-                String imageUrl = imageService.uploadImage(file);
-                dto.setCover(imageUrl);
-                imageSaved = true;
-            }catch (FeignException e){
-                log.warn("error occurred while uploading image. message : {}", e.getMessage());
-            }
+    public String saveBook(
+            @RequestParam(name = "coverImage", required = false) MultipartFile file,
+            @ModelAttribute @Valid BookProductRegisterRequestDto dto,
+            HttpServletRequest req,
+            RedirectAttributes redirectAttributes){
+        String image = imageSave(file);
+        if (image != null){
+            dto.setCover(image);
         }
+        boolean imageSaved =  !(file != null && !file.isEmpty() && image == null);
         try {
             ResponseEntity<ProductRegisterResponseDto> responseEntity = bookProductService.saveBook(CookieUtils.setHeader(req), dto);
             if (responseEntity.getStatusCode().is2xxSuccessful()){
@@ -239,11 +255,24 @@ public class AdminBookController {
     }
 
     @PutMapping("/update")
-    public String updateBook(HttpServletRequest req, @ModelAttribute @Valid BookProductUpdateRequestDto dto, RedirectAttributes redirectAttributes){
+    public String updateBook(
+            @RequestParam(name = "coverImage", required = false) MultipartFile file,
+            @ModelAttribute @Valid BookProductUpdateRequestDto dto,
+            HttpServletRequest req,
+            RedirectAttributes redirectAttributes){
+        String image = imageSave(file);
+        if (image != null){
+            dto.setCover(image);
+        }
+        boolean imageSaved =  !(file != null && !file.isEmpty() && image == null);
         try {
             ResponseEntity<ProductUpdateResponseDto> responseEntity = bookProductService.updateBook(CookieUtils.setHeader(req), dto);
             if (responseEntity.getStatusCode().is2xxSuccessful()){
-                redirectAttributes.addFlashAttribute(ALTER_MESSAGE, "성공적으로 수정되었습니다.");
+                if (imageSaved){
+                    redirectAttributes.addFlashAttribute(ALTER_MESSAGE, "성공적으로 수정되었습니다.");
+                }else {
+                    redirectAttributes.addFlashAttribute(ALTER_MESSAGE, "수정은 이루어졌지만, 표지 이미지를 저장하는 과정에서 문제가 발생했습니다.\n 자세한 정보는 로그를 확인하세요.");
+                }
             }
         }catch (FeignException e){
             redirectAttributes.addFlashAttribute(ALTER_MESSAGE, "상품 정보를 수정하는 데 실패했습니다.\n자세한 정보는 로그를 확인하세요.");
@@ -254,29 +283,23 @@ public class AdminBookController {
 
 
     private String handlingResponseBody(
-            ResponseEntity<Page<BookProductGetResponseDto>> response, RedirectAttributes redirectAttributes, Model model,
-    Integer page, String sort, Boolean desc, String mainText, String url
+            Page<BookProductGetResponseDto> bookPage, RedirectAttributes redirectAttributes, Model model,
+    Integer page, String sort, Boolean desc, Integer productState,  String mainText, String url
     ){
-        if (response == null){
-            log.warn("the response itself is null");
-            redirectAttributes.addFlashAttribute(ALTER_MESSAGE, "응답 자체가 비어있습니다.");
+        if (bookPage == null){
+            log.warn("the response body is null with response");
+            redirectAttributes.addFlashAttribute(ALTER_MESSAGE, "응답 본문이 비어있습니다.");
             return REDIRECT_ADMIN_MAIN;
         }else {
-            Page<BookProductGetResponseDto> responseBody = response.getBody();
-            if (responseBody == null){
-                log.warn("the response body is null with response: {}", response);
-                redirectAttributes.addFlashAttribute(ALTER_MESSAGE, "응답 본문이 비어있습니다.");
-                return REDIRECT_ADMIN_MAIN;
-            }else {
-                BookUtils.setBookPage(response, page, sort, desc, model);
-                model.addAttribute(MAIN_TEXT, mainText);
-                model.addAttribute("url", url);
-                model.addAttribute(VIEW, ADMIN_PAGE);
-                model.addAttribute(ADMIN_PAGE, PRODUCT_LIST_PAGE);
-                model.addAttribute(ADMIN, true);
-                model.addAttribute(ACTIVE_SECTION, PRODUCT);
-                return INDEX;
-            }
+            BookUtils.setBookPage(bookPage, page, sort, desc, model);
+            model.addAttribute(MAIN_TEXT, mainText);
+            model.addAttribute("url", url);
+            model.addAttribute(VIEW, ADMIN_PAGE);
+            model.addAttribute(ADMIN_PAGE, PRODUCT_LIST_PAGE);
+            model.addAttribute(ADMIN, true);
+            model.addAttribute(ACTIVE_SECTION, PRODUCT);
+            model.addAttribute("productState", productState);
+            return INDEX;
         }
     }
 
@@ -292,8 +315,31 @@ public class AdminBookController {
             Model model) {
         try {
             ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getAllBookPage(CookieUtils.setHeader(req), page, size, sort, desc, productState);
-            return handlingResponseBody(response, redirectAttributes, model, page, sort, desc, "관리자 페이지", req.getRequestURI() + "?");
-        }catch (FeignException e){
+            StringJoiner joiner = new StringJoiner(" - ");
+            joiner.add("관리자 페이지");
+
+            // product_state 라는 테이블을 뒀다면 아마 이렇게 일일이 switch 문에 조건 추가할 필요가 없을 거라 생각하지만 늦어서 일단 이렇게 구현했습니다.
+            switch (productState){
+                case null:
+                    joiner.add("전체");
+                    break;
+                case 0 :
+                    joiner.add("판매 중");
+                    break;
+                case 1 :
+                    joiner.add("임시 판매 중지");
+                    break;
+                case 2 :
+                    joiner.add("영구 판매 중지");
+                    break;
+                default:
+                    joiner.add("오류. (상태가 데이터베이스상 존재하지 않음.)");
+                    break;
+            }
+            Page<BookProductGetResponseDto> bookPage = response.getBody();
+            BookUtils.setBookPage(bookPage, page, sort, desc, model);
+            return handlingResponseBody(bookPage, redirectAttributes, model, page, sort, desc, productState, joiner.toString(), req.getRequestURI() + "?");
+        }catch (Exception e){
             log.warn("error occurred while getting all book page, message : {}", e.getMessage());
             redirectAttributes.addFlashAttribute(ALTER_MESSAGE, ATTRIBUTE_VALUE);
             return REDIRECT_ADMIN_MAIN;
@@ -314,8 +360,9 @@ public class AdminBookController {
 
         try {
             ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getNameContainingBookPage(CookieUtils.setHeader(req), page, size, sort, desc, title, productState);
-            return handlingResponseBody(response, redirectAttributes, model, page, sort, desc, "관리자 페이지 - 제목 : " + title, req.getRequestURI()+ "?title=" + title + "&");
-        }catch (FeignException e){
+            Page<BookProductGetResponseDto> bookPage = response.getBody();
+            return handlingResponseBody(bookPage, redirectAttributes, model, page, sort, desc, productState, "관리자 페이지 - 제목 : " + title, req.getRequestURI()+ "?title=" + title + "&");
+        }catch (Exception e){
             log.warn("error occurred while getting name containing book page, message : {}", e.getMessage());
             redirectAttributes.addFlashAttribute(ALTER_MESSAGE, ATTRIBUTE_VALUE);
             return REDIRECT_ADMIN_MAIN;
@@ -336,8 +383,9 @@ public class AdminBookController {
             Model model) {
         try {
             ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getBookPageFilterByTag(CookieUtils.setHeader(req), page, size, sort, desc, tagNameSet, isAnd, productState);
-            return handlingResponseBody(response, redirectAttributes, model, page, sort, desc, "관리자 페이지 - 태그 : " + tagNameSet, req.getRequestURI() + "?");
-        }catch (FeignException e){
+            Page<BookProductGetResponseDto> bookPage = response.getBody();
+            return handlingResponseBody(bookPage, redirectAttributes, model, page, sort, desc, productState, "관리자 페이지 - 태그 : " + tagNameSet, req.getRequestURI() + "?");
+        }catch (Exception e){
             log.warn("error occurred while getting tag filter book page, message : {}", e.getMessage());
             redirectAttributes.addFlashAttribute(ALTER_MESSAGE, ATTRIBUTE_VALUE);
             return REDIRECT_ADMIN_MAIN;
@@ -356,9 +404,12 @@ public class AdminBookController {
             RedirectAttributes redirectAttributes,
             Model model) {
         try {
-            ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getBookPageFilterByCategory(CookieUtils.setHeader(req), page, size, sort, desc, categoryId, productState);
-            return handlingResponseBody(response, redirectAttributes, model, page, sort, desc, "관리자 페이지 - 카테고리 필터", req.getRequestURI() + "?");
-        }catch (FeignException e){
+            ResponseEntity<Map<String, Page<BookProductGetResponseDto>>> response = bookProductService.getBookPageFilterByCategory(CookieUtils.setHeader(req), page, size, sort, desc, categoryId, productState);
+            Map<String, Page<BookProductGetResponseDto>> responseBodyMap = response.getBody();
+            Page<BookProductGetResponseDto> bookPage = BookUtils.getBookPageFromMap(objectMapper, responseBodyMap, model);
+
+            return handlingResponseBody(bookPage, redirectAttributes, model, page, sort, desc, productState, "관리자 페이지 - 카테고리 : ", req.getRequestURI() + "?");
+        }catch (Exception e){
             log.warn("error occurred while getting category filter book page, message : {}", e.getMessage());
             redirectAttributes.addFlashAttribute(ALTER_MESSAGE, ATTRIBUTE_VALUE);
             return REDIRECT_ADMIN_MAIN;
@@ -372,15 +423,21 @@ public class AdminBookController {
             @RequestParam(name= "size", required = false)Integer size,
             @RequestParam(name = "sort", required = false)String sort,
             @RequestParam(name = "desc", required = false)Boolean desc,
+            @RequestParam(name = "productState", required = false) Integer productState,
             RedirectAttributes redirectAttributes,
             Model model) {
         try {
-            ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getLikeBookPage(CookieUtils.setHeader(req), page, size, sort, desc);
-            return handlingResponseBody(response, redirectAttributes, model, page, sort, desc, "관리자 페이지 - 즐겨찾기", req.getRequestURI() + "?");
-        }catch (FeignException e){
-            log.warn("error occurred while getting like book page, message : {}", e.getMessage());
-            redirectAttributes.addFlashAttribute(ALTER_MESSAGE, ATTRIBUTE_VALUE);
-            return REDIRECT_ADMIN_MAIN;
+            ResponseEntity<Page<BookProductGetResponseDto>> response = bookProductService.getLikeBookPage(CookieUtils.setHeader(req), page, size, sort, desc, productState);
+            Page<BookProductGetResponseDto> bookPage = response.getBody();
+            return handlingResponseBody(bookPage, redirectAttributes, model, page, sort, desc, productState, "관리자 페이지 - 즐겨찾기", req.getRequestURI() + "?");
+        }catch (Exception e){
+            if (e instanceof FeignException feignException && feignException.status() == 401) {
+                throw e;
+            }else {
+                log.warn("error occurred while getting like book page, message : {}", e.getMessage());
+                redirectAttributes.addFlashAttribute(ALTER_MESSAGE, ATTRIBUTE_VALUE);
+                return REDIRECT_ADMIN_MAIN;
+            }
         }
     }
 

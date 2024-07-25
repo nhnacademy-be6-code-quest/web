@@ -63,13 +63,50 @@
             background-color: #ddd;
             border-radius: 5px;
         }
+        .product-book-not-available{
+            opacity: 0.5;
+        }
+        .admin-button{
+            color: white;
+            border-radius: 5px;
+            border: none;
+            background-color: rgb(0, 122, 252);
+            margin: 10px;
+            padding: 10px;
+            font-weight: 350;
+        }
     </style>
 </head>
 <section style="background-color: #fafafa;">
     <div class="pt-5 pb-5">
         <div th:if="${productList != null and not #lists.isEmpty(productList)}" class="container my-5">
-        <h2 class="mb-5" th:text="${mainText}"></h2>
-            <div class="book-listing" th:each="product : ${productList}">
+            <h2 class="mb-5">
+                <span th:text="${mainText}"></span>
+                <span th:each="category, categoryStat : ${categoryList}">
+                            <a th:href="${admin != null ? '/admin/product/book/category/': '/product/books/category/'} +  ${category.productCategoryId()}"><span  class="product-book-detail-category-tag" th:text=" ${category.categoryName()}"></span></a>
+                            <span th:unless="${categoryStat.last}"> > </span>
+                        </span>
+            </h2>
+            <div th:if="${admin != null}">
+                <a href="/admin/product/book/all">
+                    <button class="admin-button" th:text="'전체 상품 보기 (필터링 초기화)'"/>
+                </a>
+                <a href="/admin/product/book/like">
+                    <button class="admin-button" th:text="'즐겨찾기 상품 보기 (필터링 초기화)'"/>
+                </a>
+                <a th:href="${url}">
+                    <button class="admin-button" th:text="'전체 상품 보기 (필터링 유지)'"/>
+                </a>
+                <a th:href="${url} + 'productState=0'">
+                    <button class="admin-button" th:text="'판매중 상품 보기 (필터링 유지)'"/>
+                </a>
+                <a th:href="${url} + 'productState=1'">
+                    <button class="admin-button" th:text="'판매 중지 상품 보기 (필터링 유지)'"/>
+                </a>
+            </div>
+            <br>
+            <div class="book-listing" th:each="product : ${productList}"
+                 th:classappend="${product.productInventory == 0 || product.productState!= 0} ? 'product-book-not-available' : ''">
                 <div th:with="url = ${admin != null ? '/admin/product/book/' + product.productId : '/product/books/' + product.productId}">
                     <div th:onclick="|location.href='@{${url}}'|" class="row align-items-center">
                     <div class="col-md-2">
@@ -85,6 +122,14 @@
                             <span style="margin-left: 5px; color: #ff5f50" th:text="${product.productPriceSales < product.productPriceStandard? '(- ' + (100 - (100 * product.productPriceSales/product.productPriceStandard) + '%)')  : ''}">할인율</span>
                         </div>
                         <h5 class="secondary-font text-primary" th:text="${product.productPriceSales < product.productPriceStandard? ' -> ' : ''} + ${#numbers.formatDecimal(product.productPriceSales, 0, 'COMMA', 0, 'POINT')} + '원'"></h5>
+                        <div th:if="${product.productState == 0}">
+                            <div class="warn-info" th:if="${product.productInventory == 0}">
+                                임시 품절
+                            </div>
+                        </div>
+                        <div class="warn-info" th:if="${product.productState != 0}">
+                            판매 중인 상품이 아닙니다.
+                        </div>
                     </div>
                     <div class="col-md-2 text-end">
                         <div th:if="${product.hasLike()}">
@@ -99,20 +144,43 @@
             </div>
             <div class="pagination" th:attr="data-total-pages=${totalPage},data-current-page=${page}">
                 <span th:if="${page > 1}">
-                    <a th:href="${url} + 'page=' + ${page - 1} + ${sort == null ? '' : '&sort=' + sort} + ${desc == null ? '' : '&desc=' + desc}">Previous</a>
+                    <a th:href="${url} + 'page=' + ${page - 1} + ${sort == null ? '' : '&sort=' + sort} + ${desc == null ? '' : '&desc=' + desc} + ${productState == null? '' : '%productState=' + productState}">Previous</a>
                 </span>
                 <span th:each="pageNum : ${#numbers.sequence(1, totalPage)}">
                     <a th:if="${pageNum == page}" th:text="${pageNum}" th:class="'active'"></a>
-                    <a th:if="${pageNum != page}" th:href="${url} + 'page=' + ${pageNum} + ${sort == null ? '' : '&sort=' + sort} + ${desc == null ? '' : '&desc=' + desc}" th:text="${pageNum}"></a>
+                    <a th:if="${pageNum != page}" th:href="${url} + 'page=' + ${pageNum} + ${sort == null ? '' : '&sort=' + sort} + ${desc == null ? '' : '&desc=' + desc} + ${productState == null? '' : '%productState=' + productState}" th:text="${pageNum}"></a>
                 </span>
                 <span th:if="${page < totalPage}">
-                    <a th:href="${url} + 'page=' + ${page + 1}+ ${sort == null ? '' : '&sort=' + sort} + ${desc == null ? '' : '&desc=' + desc}">Next</a>
+                    <a th:href="${url} + 'page=' + ${page + 1}+ ${sort == null ? '' : '&sort=' + sort} + ${desc == null ? '' : '&desc=' + desc} + ${productState == null? '' : '%productState=' + productState}">Next</a>
                 </span>
             </div>
         </div>
 
-        <div th:if="${productList == null or #lists.isEmpty(productList)}">
-            <h2 class="mb-4" th:text="${mainText}"></h2>
+        <div class="container my-5" th:if="${productList == null or #lists.isEmpty(productList)}">
+            <h2 class="mb-5">
+                <span th:text="${mainText}"></span>
+                <span th:each="category, categoryStat : ${categoryList}">
+                            <a th:href="${admin != null ? '/admin/product/book/category/': '/product/books/category/'} +  ${category.productCategoryId()}"><span  class="product-book-detail-category-tag" th:text=" ${category.categoryName()}"></span></a>
+                            <span th:unless="${categoryStat.last}"> > </span>
+                        </span>
+            </h2>
+            <div th:if="${admin != null}">
+                <a href="/admin/product/book/all">
+                    <button class="admin-button" th:text="'전체 상품 보기 (필터링 초기화)'"/>
+                </a>
+                <a href="/admin/product/book/like">
+                    <button class="admin-button" th:text="'즐겨찾기 상품 보기 (필터링 초기화)'"/>
+                </a>
+                <a th:href="${url}">
+                    <button class="admin-button" th:text="'전체 상품 보기 (필터링 유지)'"/>
+                </a>
+                <a th:href="${url} + 'productState=0'">
+                    <button class="admin-button" th:text="'판매중 상품 보기 (필터링 유지)'"/>
+                </a>
+                <a th:href="${url} + 'productState=1'">
+                    <button class="admin-button" th:text="'판매 중지 상품 보기 (필터링 유지)'"/>
+                </a>
+            </div>
             <div class="mb-4 text-center border" >
                 <h3>검색 결과 없음</h3>
             </div>

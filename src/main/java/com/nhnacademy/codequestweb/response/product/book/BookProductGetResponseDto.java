@@ -1,6 +1,6 @@
 package com.nhnacademy.codequestweb.response.product.book;
 
-import com.nhnacademy.codequestweb.response.product.productCategory.ProductCategory;
+import com.nhnacademy.codequestweb.response.product.product_category.ProductCategory;
 import com.nhnacademy.codequestweb.response.product.tag.Tag;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

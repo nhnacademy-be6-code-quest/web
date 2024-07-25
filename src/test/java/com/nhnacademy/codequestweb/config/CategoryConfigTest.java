@@ -1,7 +1,7 @@
 package com.nhnacademy.codequestweb.config;
 
 import com.nhnacademy.codequestweb.client.product.category.CategoryClient;
-import com.nhnacademy.codequestweb.response.product.productCategory.CategoryNodeResponseDto;
+import com.nhnacademy.codequestweb.response.product.product_category.CategoryNodeResponseDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
