@@ -29,7 +29,7 @@ public class PaymentOrderShowRequestDto {
     @NotNull
     String orderCode;
 
-    // orderName : ex) "초코파이 외 10건" 을 만들어 주기 위해 필요한 정보
+//     orderName : ex) "초코파이 외 10건" 을 만들어 주기 위해 필요한 정보
     @NotBlank
     String orderHistoryTitle;
 }

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 public class PaymentMethodProvider {
 
     private final Map<String, String> method;
+    private Map<String, String> paymentKey;
 
     public PaymentMethodProvider() {
         this.method = new HashMap<>();
@@ -18,5 +19,10 @@ public class PaymentMethodProvider {
 
     public String getName(String methodName) {
         return method.get(methodName);
+    }
+
+    public Map<String, String> PaymentKey(String id, String value){
+        paymentKey.put(id,value);
+        return paymentKey;
     }
 }

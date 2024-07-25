@@ -1,14 +1,21 @@
 package com.nhnacademy.codequestweb.controller.payment;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhnacademy.codequestweb.request.payment.PaymentOrderApproveRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentOrderShowRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PostProcessRequiredPaymentResponseDto;
+import com.nhnacademy.codequestweb.request.product.cart.CartRequestDto;
 import com.nhnacademy.codequestweb.response.payment.TossPaymentsResponseDto;
 import com.nhnacademy.codequestweb.service.payment.PaymentService;
 import com.nhnacademy.codequestweb.service.product.CartService;
+import com.nhnacademy.codequestweb.test.PaymentMethodProvider;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
+import com.nhnacademy.codequestweb.utils.SecretKeyUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +45,7 @@ public class PaymentController {
 
     @GetMapping("/client/order/payment")
     public String savePayment(@RequestHeader HttpHeaders headers, Model model,
-        @RequestParam("tossOrderId") String tossOrderId, HttpServletRequest req, @RequestParam("method") String name) {
+        @RequestParam("orderCode") String orderCode, HttpServletRequest req, @RequestParam("method") String name) {
 
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
 
@@ -53,13 +60,13 @@ public class PaymentController {
 
         // 쿠폰 및 포인트 할인 후 실 결제 금액이 0원일때?
         if (paymentOrderShowRequestDto.getOrderTotalAmount() - paymentOrderShowRequestDto.getDiscountAmountByPoint() - paymentOrderShowRequestDto.getDiscountAmountByCoupon() == 0) {
-            return "redirect:/client/order/"+tossOrderId+"/payment/success/post-process?amount=0&paymentKey=point&name=point" ;
+            return "redirect:/client/order/"+orderCode+"/payment/success/post-process?amount=0&paymentKey=point&name=point" ;
         }
 
         model.addAttribute("successUrl",
-            "https://book-store.shop/client/order/" + tossOrderId + "/payment/success");
+            "https://localhost:8080/client/order/" + orderCode + "/payment/success?method="+name);
         model.addAttribute("failUrl",
-            "https://book-store.shop/client/order/" + tossOrderId + "/payment/fail");
+            "https://localhost:8080/client/order/" + orderCode + "/payment/fail");
 
 
         return paymentMethodProvider.getName(name);
@@ -67,10 +74,12 @@ public class PaymentController {
 
     @GetMapping("/client/order/{orderCode}/payment/success")
     public String paymentResult(HttpServletRequest request, Model model,
+        @RequestParam("method") String name,
         @PathVariable(value = "orderCode") String orderCode,
-        @RequestParam long amount, @RequestParam String paymentKey, @RequestParam("method") String name) throws ParseException {
+        @RequestParam long amount, @RequestParam(required = false) String paymentKey, @RequestParam(required = false) String paymentId) throws ParseException {
 
 
+        String paymentIdentifier = (paymentKey != null) ? paymentKey : paymentId;
 
         log.info("결제 요청 성공!");
 
