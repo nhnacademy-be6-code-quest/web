@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coupon Component</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f7fafc; /* Equivalent to bg-gray-100 */
+      margin: 0;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr; /* Change to single column */
+      gap: 1rem; /* Equivalent to gap-4 */
+      background-color: #ffffff; /* Equivalent to bg-white */
+      padding: 2rem; /* Equivalent to p-8 */
+      border-radius: 0.5rem; /* Equivalent to rounded-lg */
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06); /* Equivalent to shadow-md */
+      width: 100%;
+      max-width: 32rem; /* Equivalent to max-w-2xl */
+    }
+
+    .coupon {
+      background-color: #e2e8f0; /* Equivalent to bg-gray-200 */
+      padding: 1rem; /* Equivalent to p-4 */
+      border-radius: 0.5rem; /* Equivalent to rounded-lg */
+    }
+
+    .title {
+      font-size: 1.125rem; /* Equivalent to text-lg */
+      font-weight: bold; /* Equivalent to font-bold */
+      margin-bottom: 0.5rem; /* Equivalent to mb-2 */
+    }
+
+    .text {
+      color: #718096; /* Equivalent to text-gray-600 */
+      margin-bottom: 0.5rem; /* Equivalent to mb-2 */
+    }
+
+    .button {
+      width: 100%; /* Equivalent to w-full */
+      padding: 0.5rem; /* Add padding to make it look better */
+      background-color: #3182ce; /* Equivalent to a blue background, adjust as needed */
+      color: white;
+      border: none;
+      border-radius: 0.25rem; /* Add some border radius */
+      cursor: pointer;
+    }
+
+    .button:hover {
+      background-color: #2b6cb0; /* Darker blue for hover effect */
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="grid">
+    <form action="https://api.example.com/send-coupon" method="post">
+    <div class="coupon">
+      <h2 class="title">여름 특별 할인 쿠폰</h2>
+      <p class="text">20% 할인 쿠폰</p>
+      <p class="text">만료기간 : 60일</p>
+      <input type="hidden" name="coupon" value="summer">
+      <button class="button">쿠폰 발급</button>
+    </div>
+    </form>
+    <form action="https://api.example.com/send-coupon" method="post">
+    <div class="coupon">
+      <h2 class="title">QBS 오픈 할인 쿠폰</h2>
+      <p class="text">20000원 할인 쿠폰</p>
+      <p class="text">만료기간: 30일</p>
+      <input type="hidden" name="coupon" value="new">
+      <button class="button">쿠폰 발급</button>
+    </div>
+    </form>
+    <form action="https://api.example.com/send-coupon" method="post">
+    <div class="coupon">
+      <h2 class="title">NHN 할인 쿠폰</h2>
+      <p class="text">10% 할인 쿠폰</p>
+      <p class="text">만료기간: 1년</p>
+      <input type="hidden" name="coupon" value="NHN">
+      <button class="button">쿠폰 발급</button>
+    </div>
+    </form>
+    <form action="https://api.example.com/send-coupon" method="post">
+    <div class="coupon">
+      <h2 class="title">의 특별 할인 쿠폰</h2>
+      <p class="text">50000원 할인 쿠폰</p>
+      <p class="text">만료기간: 30일</p>
+      <input type="hidden" name="coupon" value="special">
+      <button class="button">쿠폰 발급</button>
+    </div>
+    </form>
+  </div>
+</div>
+</body>
+</html>
