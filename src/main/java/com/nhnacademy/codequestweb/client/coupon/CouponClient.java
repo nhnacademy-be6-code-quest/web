@@ -38,5 +38,6 @@ public interface CouponClient {
     @PutMapping("/api/coupon/refund")
     ResponseEntity<String> refundCoupon(@RequestBody RefundCouponResponseDto refundCouponResponseDto);
 
-
+    @PostMapping("/api/coupon/client/reward")
+    ResponseEntity<String> rewardUserCoupon (@RequestHeader HttpHeaders httpHeaders,@RequestParam String methodName);
 }
