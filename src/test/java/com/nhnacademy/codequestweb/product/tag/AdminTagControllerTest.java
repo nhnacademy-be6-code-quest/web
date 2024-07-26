@@ -55,7 +55,7 @@ class AdminTagControllerTest {
 
         Page<TagGetResponseDto> tagGetResponseDtoPage = new PageImpl<>(Arrays.asList(tagGetResponseDto1, tagGetResponseDto2));
 
-        when(tagService.getAllTags(any(),any(),any())).thenReturn(ResponseEntity.ok(tagGetResponseDtoPage));
+        when(tagService.getAllTags(any(), any(),any(),any())).thenReturn(ResponseEntity.ok(tagGetResponseDtoPage));
 
         mockMvc.perform(get("/admin/tags"))
                 .andExpect(status().isOk())
@@ -67,7 +67,7 @@ class AdminTagControllerTest {
     @Test
     void getAllTagsTest2() throws Exception {
 
-        when(tagService.getAllTags(any(),any(),any())).thenThrow(FeignException.class);
+        when(tagService.getAllTags(any(), any(),any(),any())).thenThrow(FeignException.class);
 
         mockMvc.perform(get("/admin/tags"))
                 .andExpect(status().is3xxRedirection())
@@ -79,7 +79,7 @@ class AdminTagControllerTest {
     @Test
     void getAllTagsTest3() throws Exception {
 
-        when(tagService.getAllTags(any(),any(),any())).thenReturn(ResponseEntity.ok(null));
+        when(tagService.getAllTags(any(), any(),any(),any())).thenReturn(ResponseEntity.ok(null));
 
         mockMvc.perform(get("/admin/tags"))
 
@@ -91,7 +91,7 @@ class AdminTagControllerTest {
     @Test
     void getAllTagsTest4() throws Exception {
 
-        when(tagService.getAllTags(any(),any(),any())).thenReturn(null);
+        when(tagService.getAllTags(any(), any(),any(),any())).thenReturn(null);
 
         mockMvc.perform(get("/admin/tags"))
 
@@ -107,7 +107,7 @@ class AdminTagControllerTest {
 
         Page<TagGetResponseDto> tagGetResponseDtoPage = new PageImpl<>(Arrays.asList(tagGetResponseDto1, tagGetResponseDto2));
 
-        when(tagService.getNameContainingTagPage(any(),any(),any(), eq("test"))).thenReturn(ResponseEntity.ok(tagGetResponseDtoPage));
+        when(tagService.getNameContainingTagPage(any(), any(),any(),any(), eq("test"))).thenReturn(ResponseEntity.ok(tagGetResponseDtoPage));
 
         mockMvc.perform(get("/admin/tags/containing")
                         .param("tagName","test"))
@@ -120,7 +120,7 @@ class AdminTagControllerTest {
     @Test
     void getNameContainingTagsTest2() throws Exception {
 
-        when(tagService.getNameContainingTagPage(any(),any(),any(), eq("test"))).thenThrow(FeignException.class);
+        when(tagService.getNameContainingTagPage(any(), any(),any(),any(), eq("test"))).thenThrow(FeignException.class);
 
         mockMvc.perform(get("/admin/tags/containing")
                         .param("tagName","test"))
@@ -133,7 +133,7 @@ class AdminTagControllerTest {
     @Test
     void getNameContainingTagsTest3() throws Exception {
 
-        when(tagService.getNameContainingTagPage(any(),any(),any(), eq("test"))).thenReturn(ResponseEntity.ok(null));
+        when(tagService.getNameContainingTagPage(any(), any(),any(),any(), eq("test"))).thenReturn(ResponseEntity.ok(null));
 
         mockMvc.perform(get("/admin/tags/containing")
                         .param("tagName","test"))
@@ -145,7 +145,7 @@ class AdminTagControllerTest {
     @Test
     void getNameContainingTagsTest4() throws Exception {
 
-        when(tagService.getNameContainingTagPage(any(),any(),any(), eq("test"))).thenReturn(null);
+        when(tagService.getNameContainingTagPage(any(), any(),any(),any(), eq("test"))).thenReturn(null);
 
         mockMvc.perform(get("/admin/tags/containing")
                         .param("tagName","test"))
@@ -162,7 +162,7 @@ class AdminTagControllerTest {
 
         Page<TagGetResponseDto> tagGetResponseDtoPage = new PageImpl<>(Arrays.asList(tagGetResponseDto1, tagGetResponseDto2));
 
-        when(tagService.getAllTags(any(),any(),any())).thenReturn(ResponseEntity.ok(tagGetResponseDtoPage));
+        when(tagService.getAllTags(any(), any(),any(),any())).thenReturn(ResponseEntity.ok(tagGetResponseDtoPage));
 
 
         mockMvc.perform(get("/tags/all"))
@@ -174,7 +174,7 @@ class AdminTagControllerTest {
     @Test
     void getAllTagsModalTest2() throws Exception {
 
-        when(tagService.getAllTags(any(),any(),any())).thenThrow(FeignException.class);
+        when(tagService.getAllTags(any(), any(),any(),any())).thenThrow(FeignException.class);
 
         mockMvc.perform(get("/tags/all"))
                 .andExpect(status().isOk())
@@ -185,7 +185,7 @@ class AdminTagControllerTest {
     @Test
     void getAllTagsModalTest3() throws Exception {
 
-        when(tagService.getAllTags(any(),any(),any())).thenReturn(ResponseEntity.ok(null));
+        when(tagService.getAllTags(any(), any(),any(),any())).thenReturn(ResponseEntity.ok(null));
 
         mockMvc.perform(get("/tags/all"))
                 .andExpect(status().isOk())
@@ -196,7 +196,7 @@ class AdminTagControllerTest {
     @Test
     void getAllTagsModalTest4() throws Exception {
 
-        when(tagService.getAllTags(any(),any(),any())).thenReturn(null);
+        when(tagService.getAllTags(any(), any(),any(),any())).thenReturn(null);
 
         mockMvc.perform(get("/tags/all"))
                 .andExpect(status().isOk())
@@ -212,7 +212,7 @@ class AdminTagControllerTest {
 
         Page<TagGetResponseDto> tagGetResponseDtoPage = new PageImpl<>(Arrays.asList(tagGetResponseDto1, tagGetResponseDto2));
 
-        when(tagService.getNameContainingTagPage(any(),any(),any(), eq("test"))).thenReturn(ResponseEntity.ok(tagGetResponseDtoPage));
+        when(tagService.getNameContainingTagPage(any(), any(),any(),any(), eq("test"))).thenReturn(ResponseEntity.ok(tagGetResponseDtoPage));
 
 
         mockMvc.perform(get("/tags/containing")
@@ -225,7 +225,7 @@ class AdminTagControllerTest {
     @Test
     void getNameContainingTagsModalTest2() throws Exception {
 
-        when(tagService.getNameContainingTagPage(any(),any(),any(), eq("test"))).thenThrow(FeignException.class);
+        when(tagService.getNameContainingTagPage(any(), any(),any(),any(), eq("test"))).thenThrow(FeignException.class);
 
         mockMvc.perform(get("/tags/containing")
                         .param("tagName","test"))
@@ -237,7 +237,7 @@ class AdminTagControllerTest {
     @Test
     void getNameContainingTagsModalTest3() throws Exception {
 
-        when(tagService.getNameContainingTagPage(any(),any(),any(), eq("test"))).thenReturn(ResponseEntity.ok(null));
+        when(tagService.getNameContainingTagPage(any(), any(),any(),any(), eq("test"))).thenReturn(ResponseEntity.ok(null));
 
         mockMvc.perform(get("/tags/containing")
                         .param("tagName","test"))
@@ -249,7 +249,7 @@ class AdminTagControllerTest {
     @Test
     void getNameContainingTagsModalTest4() throws Exception {
 
-        when(tagService.getNameContainingTagPage(any(),any(),any(), eq("test"))).thenReturn(null);
+        when(tagService.getNameContainingTagPage(any(), any(),any(),any(), eq("test"))).thenReturn(null);
 
         mockMvc.perform(get("/tags/containing")
                         .param("tagName","test"))

@@ -3,14 +3,17 @@ package com.nhnacademy.codequestweb.controller.advice;
 
 import feign.FeignException;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+@Slf4j
 @ControllerAdvice
 public class WebAdvicer {
     @ExceptionHandler(FeignException.Unauthorized.class)
-    public String handleBadRequest(FeignException.Unauthorized ex, HttpServletResponse response) {
+    public String handleUnauthorized(FeignException.Unauthorized ex, HttpServletResponse response) {
         Cookie access = new Cookie("access", null);
         Cookie refresh = new Cookie("refresh", null);
         access.setMaxAge(0);
@@ -19,6 +22,12 @@ public class WebAdvicer {
         refresh.setPath("/");
         response.addCookie(access);
         response.addCookie(refresh);
+        return "redirect:/auth";
+    }
+
+    @ExceptionHandler(FeignException.Forbidden.class)
+    public String handleForbidden(HttpServletRequest req) {
+        log.warn("someone tried to access this resource ip : {}, request uri : {}", req.getRemoteAddr(), req.getRequestURI());
         return "redirect:/auth";
     }
 }

@@ -18,6 +18,11 @@ import org.springframework.stereotype.Service;
 public class PackagingService {
     private final PackagingClient packagingClient;
 
+    public ResponseEntity<Void> roleCheck(
+            HttpHeaders headers){
+        return packagingClient.roleCheck(headers);
+    }
+
     public ResponseEntity<ProductRegisterResponseDto> savePackaging(
             HttpHeaders headers,
             PackagingRegisterRequestDto requestDto) {
@@ -40,8 +45,15 @@ public class PackagingService {
         return packagingClient.getPackagingPage(productState, page, size);
     }
 
-    public ResponseEntity<PackagingGetResponseDto> getPackagingByProductId(
+    public ResponseEntity<Page<PackagingGetResponseDto>> getPackagingPageForAdmin(
+            HttpHeaders headers,
+            Integer productState, int page, int size){
+        return packagingClient.getPackagingPageForAdmin(headers, productState, page, size);
+    }
+
+    public ResponseEntity<PackagingGetResponseDto> getPackagingByProductIdForAdmin(
+            HttpHeaders headers,
             Long productId){
-        return packagingClient.getPackagingByProductId(productId);
+        return packagingClient.getPackagingByProductId(headers, productId);
     }
 }

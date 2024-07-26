@@ -19,33 +19,39 @@ public class CategoryService {
     private final CategoryClient categoryClient;
     private final CategoryConfig categoryConfig;
 
-    public ResponseEntity<CategoryRegisterResponseDto> saveCategory(HttpHeaders headers, CategoryRegisterRequestDto categoryRegisterRequestDto) {
+    public ResponseEntity<CategoryRegisterResponseDto> saveCategory(
+            HttpHeaders headers, CategoryRegisterRequestDto categoryRegisterRequestDto) {
         ResponseEntity<CategoryRegisterResponseDto> response = categoryClient.saveCategory(headers, categoryRegisterRequestDto);
         categoryConfig.update(categoryClient.getCategoriesTree().getBody());
         return response;
     }
 
-    public ResponseEntity<CategoryUpdateResponseDto> updateCategory(HttpHeaders headers, CategoryUpdateRequestDto categoryUpdateRequestDto) {
+    public ResponseEntity<CategoryUpdateResponseDto> updateCategory(
+            HttpHeaders headers, CategoryUpdateRequestDto categoryUpdateRequestDto) {
         ResponseEntity<CategoryUpdateResponseDto> response = categoryClient.updateCategory(headers, categoryUpdateRequestDto);
         categoryConfig.update(categoryClient.getCategoriesTree().getBody());
         return response;
     }
 
-    public ResponseEntity<Void> deleteCategory(HttpHeaders headers, Long categoryId) {
+    public ResponseEntity<Void> deleteCategory(
+            HttpHeaders headers, Long categoryId) {
         ResponseEntity<Void> response = categoryClient.deleteCategory(headers, categoryId);
         categoryConfig.update(categoryClient.getCategoriesTree().getBody());
         return response;
     }
 
-    public ResponseEntity<Page<CategoryGetResponseDto>> getCategories(Integer page, Boolean desc, String sort) {
-        return categoryClient.getAllCategories(page, desc, sort);
+    public ResponseEntity<Page<CategoryGetResponseDto>> getCategories(
+           HttpHeaders headers, Integer page, Boolean desc, String sort) {
+        return categoryClient.getAllCategories(headers, page, desc, sort);
     }
 
-    public ResponseEntity<Page<CategoryGetResponseDto>> getNameContainingCategories(Integer page, Boolean desc, String sort, String categoryName){
-        return categoryClient.getNameContainingCategories(page, desc, sort, categoryName);
+    public ResponseEntity<Page<CategoryGetResponseDto>> getNameContainingCategories(
+            HttpHeaders headers, Integer page, Boolean desc, String sort, String categoryName){
+        return categoryClient.getNameContainingCategories(headers, page, desc, sort, categoryName);
     }
 
-    public ResponseEntity<Page<CategoryGetResponseDto>> getSubCategories(Integer page, Boolean desc, String sort, Long categoryId){
-        return categoryClient.getSubCategories(page, desc, sort, categoryId);
+    public ResponseEntity<Page<CategoryGetResponseDto>> getSubCategories(
+            HttpHeaders headers, Integer page, Boolean desc, String sort, Long categoryId){
+        return categoryClient.getSubCategories(headers, page, desc, sort, categoryId);
     }
 }

@@ -23,11 +23,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(name = "book", url = "http://localhost:8001")
 public interface BookProductClient {
-
-        @GetMapping("/api/product/book")
-        ResponseEntity<Page<AladinBookResponseDto>> getBookList(
-                @RequestParam(value = "page", required = false) Integer page,
-                @RequestParam("title") String title);
+        @GetMapping("/api/product/admin/book/roleCheck")
+        ResponseEntity<Void> roleCheck(
+                @RequestHeader HttpHeaders headers
+        );
 
         @PostMapping("/api/product/admin/book/register")
         ResponseEntity<ProductRegisterResponseDto> saveBook(
@@ -39,9 +38,75 @@ public interface BookProductClient {
                 @RequestHeader HttpHeaders headers,
                 @RequestBody @Valid BookProductUpdateRequestDto bookProductUpdateRequestDto);
 
-        @GetMapping("/api/product/book/isbnCheck")
-        ResponseEntity<Void> isbnCheck(
+        @GetMapping("/api/product/admin/book")
+        ResponseEntity<Page<AladinBookResponseDto>> getBookListForAdmin(
+                @RequestHeader HttpHeaders headers,
+                @RequestParam(value = "page", required = false) Integer page,
+                @RequestParam("title") String title);
+
+        @GetMapping("/api/product/admin/book/isbnCheck")
+        ResponseEntity<Void> isbnCheckForAdmin(
+                @RequestHeader HttpHeaders headers,
                 @RequestParam("isbn") String isbn
+        );
+
+        @GetMapping("/api/product/admin/book/{productId}")
+        ResponseEntity<BookProductGetResponseDto> getSingleBookInfoForAdmin(
+                @RequestHeader HttpHeaders headers,
+                @PathVariable("productId") long productId);
+
+        @GetMapping("/api/product/admin/books")
+        ResponseEntity<Page<BookProductGetResponseDto>> getAllBookPageByProductStateForAdmin(
+                @RequestHeader HttpHeaders headers,
+                @RequestParam(value = "page", required = false) Integer page,
+                @RequestParam(name = "size", required = false) Integer size,
+                @RequestParam(name = "sort", required = false) String sort,
+                @RequestParam(name = "desc", required = false) Boolean desc,
+                @RequestParam(name= "productState", required = false) Integer productState
+        );
+
+        @GetMapping("/api/product/admin/books/containing")
+        ResponseEntity<Page<BookProductGetResponseDto>> getNameContainingBookPageByProductStateForAdmin(
+                @RequestHeader HttpHeaders headers,
+                @RequestParam(value = "page", required = false) Integer page,
+                @RequestParam(name = "size", required = false) Integer size,
+                @RequestParam(name = "sort", required = false)String sort,
+                @RequestParam(name = "desc", required = false)Boolean desc,
+                @RequestParam(name = "title")String title,
+                @RequestParam(name= "productState", required = false) Integer productState
+        );
+
+        @GetMapping("/api/product/admin/books/tagFilter")
+        ResponseEntity<Page<BookProductGetResponseDto>> getBookPageFilterByTagAndProductStateForAdmin(
+                @RequestHeader HttpHeaders headers,
+                @RequestParam(value = "page", required = false) Integer page,
+                @RequestParam(name = "size", required = false) Integer size,
+                @RequestParam(name = "sort", required = false)String sort,
+                @RequestParam(name = "desc", required = false)Boolean desc,
+                @RequestParam("tagName") Set<String> tagNameSet,
+                @RequestParam(value = "isAnd", required = false)Boolean conditionIsAnd,
+                @RequestParam(name= "productState", required = false) Integer productState
+        );
+
+        @GetMapping("/api/product/admin/books/category/{categoryId}")
+        ResponseEntity<Map<String, Page<BookProductGetResponseDto>>> getBookPageFilterByCategoryForAdmin(
+                @RequestHeader HttpHeaders headers,
+                @RequestParam(value = "page", required = false) Integer page,
+                @RequestParam(name = "size", required = false) Integer size,
+                @RequestParam(name = "sort", required = false)String sort,
+                @RequestParam(name = "desc", required = false)Boolean desc,
+                @PathVariable("categoryId") Long categoryId,
+                @RequestParam(name= "productState", required = false) Integer productState
+                );
+
+        @GetMapping("/api/product/admin/books/like")
+        ResponseEntity<Page<BookProductGetResponseDto>> getLikeBookPageForAdmin(
+                @RequestHeader HttpHeaders headers,
+                @RequestParam(value = "page", required = false) Integer page,
+                @RequestParam(name = "size", required = false) Integer size,
+                @RequestParam(name = "sort", required = false)String sort,
+                @RequestParam(name = "desc", required = false)Boolean desc,
+                @RequestParam(name = "productState", required = false) Integer productState
         );
 
 
@@ -92,7 +157,9 @@ public interface BookProductClient {
                 @RequestParam(name = "desc", required = false)Boolean desc,
                 @PathVariable("categoryId") Long categoryId,
                 @RequestParam(name= "productState", required = false) Integer productState
-                );
+        );
+
+
 
         @GetMapping("/api/product/client/books/like")
         ResponseEntity<Page<BookProductGetResponseDto>> getLikeBookPage(
@@ -103,5 +170,4 @@ public interface BookProductClient {
                 @RequestParam(name = "desc", required = false)Boolean desc,
                 @RequestParam(name = "productState", required = false) Integer productState
         );
-
 }

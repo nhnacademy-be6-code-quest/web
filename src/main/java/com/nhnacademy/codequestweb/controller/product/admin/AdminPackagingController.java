@@ -43,16 +43,19 @@ public class AdminPackagingController {
 
     private static final String REDIRECT_ADMIN_MAIN = "redirect:/admin/client/0";
 
+    private static final String TEMPORARY_ERROR = "일시적으로 오류가 발생했습니다.\n 문제가 지속된다면 로그를 확인하세요.";
+
 
     @GetMapping("/page")
     public String getPackagingPage(
+            HttpServletRequest req,
             @RequestParam(required = false, name = "productState") Integer productState,
             @RequestParam(required = false, name = "page") Integer page,
             RedirectAttributes redirectAttributes,
             Model model) {
         page = page == null ? 1 : page;
         try {
-            ResponseEntity<Page<PackagingGetResponseDto>> response = packagingService.getPackagingPage(productState, page, 10);
+            ResponseEntity<Page<PackagingGetResponseDto>> response = packagingService.getPackagingPageForAdmin (CookieUtils.setHeader(req), productState, page, 10);
             Page<PackagingGetResponseDto> responsePage = response.getBody();
             if (responsePage != null) {
                 model.addAttribute("packagingList", responsePage.getContent());
@@ -68,24 +71,46 @@ public class AdminPackagingController {
                 return REDIRECT_ADMIN_MAIN;
             }
         }catch (FeignException e) {
+            if (e instanceof FeignException.Forbidden || e instanceof FeignException.Unauthorized) {throw e;}
             log.warn("error occurred while getting packaging list, message : {}", e.getMessage());
             redirectAttributes.addFlashAttribute(ALTER_MESSAGE, "포장지 조회에 실패했습니다.");
             return REDIRECT_ADMIN_MAIN;
         }
     }
 
+
+
     @GetMapping("/registerForm")
-    public String registerForm(HttpServletRequest req) {
-        req.setAttribute("action", "register");
-        req.setAttribute("view", ADMIN_PAGE);
-        req.setAttribute(ADMIN_PAGE, "packagingRegisterForm");
-        return INDEX;
+    public String registerForm(HttpServletRequest req, RedirectAttributes redirectAttributes) {
+        try {
+            ResponseEntity<Void> roleCheck = packagingService.roleCheck(CookieUtils.setHeader(req));
+            if (roleCheck.getStatusCode().is2xxSuccessful()) {
+                req.setAttribute("action", "register");
+                req.setAttribute("view", ADMIN_PAGE);
+                req.setAttribute(ADMIN_PAGE, "packagingRegisterForm");
+                return INDEX;
+            }else {
+                log.warn("something went wrong, the status must be 2xx or 4xx or 5xx but {}", roleCheck.getStatusCode().value());
+                redirectAttributes.addFlashAttribute(ALTER_MESSAGE, TEMPORARY_ERROR);
+                return REDIRECT_ADMIN_MAIN;
+            }
+        }catch (Exception e){
+            if (e instanceof FeignException.Forbidden || e instanceof FeignException.Unauthorized) {throw e;}
+            redirectAttributes.addFlashAttribute(ALTER_MESSAGE, TEMPORARY_ERROR);
+            return REDIRECT_ADMIN_MAIN;
+        }
     }
 
+
+
     @GetMapping("/updateForm/{productId}")
-    public String updateForm(@PathVariable Long productId, RedirectAttributes redirectAttributes, Model model) {
+    public String updateForm(
+            HttpServletRequest req,
+            @PathVariable Long productId,
+            RedirectAttributes redirectAttributes,
+            Model model) {
         try {
-            ResponseEntity<PackagingGetResponseDto> response = packagingService.getPackagingByProductId(productId);
+            ResponseEntity<PackagingGetResponseDto> response = packagingService.getPackagingByProductIdForAdmin(CookieUtils.setHeader(req), productId);
             PackagingGetResponseDto responseDto = response.getBody();
             if (responseDto != null) {
                 model.addAttribute("packaging", response.getBody());
@@ -98,6 +123,7 @@ public class AdminPackagingController {
                 return REDIRECT_ADMIN_MAIN;
             }
         }catch (FeignException e) {
+            if (e instanceof FeignException.Forbidden || e instanceof FeignException.Unauthorized) {throw e;}
             log.warn("error occurred while getting packaging with id {}, message : {}", productId, e.getMessage());
             redirectAttributes.addFlashAttribute(ALTER_MESSAGE, "포장지 조회에 실패했습니다.");
             return REDIRECT_ADMIN_MAIN;
@@ -138,6 +164,7 @@ public class AdminPackagingController {
                 }
             }
         }catch (FeignException e){
+            if (e instanceof FeignException.Forbidden || e instanceof FeignException.Unauthorized) {throw e;}
             redirectAttributes.addFlashAttribute(ALTER_MESSAGE, "포장지를 등록하는 데 실패했습니다.\n자세한 정보는 로그를 확인하세요.");
             log.warn("error occurred while registering packaging product : {}", e.getMessage());
         }
@@ -166,6 +193,7 @@ public class AdminPackagingController {
                 }
             }
         }catch (FeignException e){
+            if (e instanceof FeignException.Forbidden || e instanceof FeignException.Unauthorized) {throw e;}
             redirectAttributes.addFlashAttribute(ALTER_MESSAGE, "포장지를 수정하는 데 실패했습니다.\n자세한 정보는 로그를 확인하세요.");
             log.warn("error occurred while updating packaging product : {}", e.getMessage());
         }

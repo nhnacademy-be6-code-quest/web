@@ -12,19 +12,19 @@
             outline: 0;
             background: url(//img1a.coupangcdn.com/image/dragonstone/sdp/PCSDP_imageasset_180417-min.png) no-repeat -262px -209px;
         }
-        .book-listing {
-            background-color: #ffffff;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        .book-listing:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-        }
+        /*.book-listing {*/
+        /*    background-color: #ffffff;*/
+        /*    border-radius: 10px;*/
+        /*    padding: 20px;*/
+        /*    margin-bottom: 20px;*/
+        /*    box-shadow: 0 4px 8px rgba(0,0,0,0.1);*/
+        /*    transition: all 0.3s ease;*/
+        /*    cursor: pointer;*/
+        /*}*/
+        /*.book-listing:hover {*/
+        /*    transform: translateY(-5px);*/
+        /*    box-shadow: 0 6px 12px rgba(0,0,0,0.15);*/
+        /*}*/
         .book-title {
             font-size: 1.2em;
             font-weight: bold;
@@ -34,11 +34,11 @@
             text-overflow: ellipsis;
             white-space:nowrap;
         }
-        .book-price {
-            color: #f8c471;
-            font-size: 1.2em;
-            font-weight: bold;
-        }
+        /*.book-price {*/
+        /*    color: #f8c471;*/
+        /*    font-size: 1.2em;*/
+        /*    font-weight: bold;*/
+        /*}*/
 
         .pagination {
             display: flex;
@@ -121,7 +121,41 @@
         .product-book-not-available{
             opacity: 0.5;
         }
+
+
+        .product-details {
+            display: flex;
+            flex-direction: column; /* 세로로 정렬 */
+            margin-left: 20px; /* 이미지와 텍스트 사이 간격 조정 */
+        }
+
+        .form-group-flex {
+            display: flex;
+            flex-direction: column; /* 세로 정렬 */
+            align-items: center; /* 중앙 정렬 */
+            text-align: center; /* 텍스트 중앙 정렬 */
+        }
+
+        #packaging-image {
+            width: 80%;
+            min-width: 150px; /* 이미지의 최대 너비 설정 */
+            margin-top: 30px; /* 이미지와 텍스트 사이의 간격 설정 */
+        }
     </style>
+    <script>
+        function showPackagingInfo(image, productName, packagingName, description, priceStandard, priceSales, productId){
+            priceStandard = Number(priceStandard);
+            priceSales = Number(priceSales);
+            document.getElementById("packaging-image").src = image === 'no image' ? 'https://i.postimg.cc/ydkCbCbC/image-2935360-1280.png' : image;
+            document.getElementById("product-name").innerText = productName;
+            document.getElementById("packaging-name").innerText = packagingName;
+            document.getElementById("packaging-description").innerText = description;
+            document.getElementById("price-standard").innerText = priceSales < priceStandard ?  priceStandard.toLocaleString() + '원' : '';
+            document.getElementById("price-info1").innerText = priceSales < priceStandard ? '(- ' + (100 - (100 * priceSales/priceStandard)) + '%)' : '' ;
+            document.getElementById("price-info2").innerText = (priceSales < priceStandard ? ' -> ' : '') + priceSales.toLocaleString() + '원';
+            document.getElementById("update-url").href= '/admin/product/packaging/updateForm/' + productId;
+        }
+    </script>
 </head>
 <section style="background-color: #fafafa;">
     <div class="pt-5 pb-5">
@@ -130,15 +164,38 @@
             <div class="grid-container" th:each="product : ${packagingList}"
                  th:classappend="${product.productInventory == 0 || product.productState!= 0} ? 'product-book-not-available' : ''">
                 <div th:with="url = ${admin != null ? '/admin/product/packaging/updateForm/' + product.productId : '#'}">
-                    <div th:onclick="|location.href='@{${url}}'|" class="grid-item"
-                         th:classappend="${admin != null ? 'grid-item-admin' : ''}">
-                        <img th:src="${product.packagingImage == 'no image' ? 'https://i.postimg.cc/ydkCbCbC/image-2935360-1280.png' : product.packagingImage}" class="img-fluid rounded-4" alt="Book Image">
+<!--                    <div class="admin-category-add-btn" th:tagName="${tag.tagName}" onclick="openUpdateTagModal(this.getAttribute('tagName'))" data-bs-toggle="modal" th:on data-bs-target="#updateTagModal"> 수정</div>-->
+<!--                    th:onclick="|location.href='@{${url}}'|"-->
+                    <div class="grid-item"
+                         th:image="${product.packagingImage}"
+                         th:productName="${product.productName}"
+                         th:packagingName="${product.packagingName}"
+                         th:description="${product.productDescription}"
+                         th:priceStandard="${product.productPriceStandard}"
+                         th:priceSales="${product.productPriceSales}"
+                         th:productId="${product.productId}"
+
+                         onclick="showPackagingInfo(
+                             this.getAttribute('image'),
+                             this.getAttribute('productName'),
+                             this.getAttribute('packagingName'),
+                             this.getAttribute('description'),
+                             this.getAttribute('priceStandard'),
+                             this.getAttribute('priceSales'),
+                             this.getAttribute('productId')
+
+                             )"
+
+                         th:classappend="${admin != null ? 'grid-item-admin' : ''}"
+                         data-bs-toggle="modal" th:on data-bs-target="#packagingInfoModal"
+                    >
+                        <img th:src="${product.packagingImage == 'no image' ? 'https://i.postimg.cc/ydkCbCbC/image-2935360-1280.png' : product.packagingImage}" class="img-fluid rounded-4" alt="Packaging Image">
                         <div class="info">
                             <p class="book-title" th:text="${product.productName}"></p>
                             <div class="price-info">
-                    <span th:if="${product.productPriceSales < product.productPriceStandard}"
-                          th:text="'(' + ${#numbers.formatDecimal(product.productPriceStandard, 0, 'COMMA', 0, 'POINT')} + '원)'"
-                          class="original-price">정가</span>
+                                <span th:if="${product.productPriceSales < product.productPriceStandard}"
+                                      th:text="'(' + ${#numbers.formatDecimal(product.productPriceStandard, 0, 'COMMA', 0, 'POINT')} + '원)'"
+                                      class="original-price">정가</span>
                                 <span style="margin-left: 5px; color: #ff5f50" th:text="${product.productPriceSales < product.productPriceStandard? '(- ' + (100 - (100 * product.productPriceSales/product.productPriceStandard) + '%)')  : ''}">할인율</span>
                                 <h5 class="secondary-font text-primary" th:text="${product.productPriceSales < product.productPriceStandard? ' -> ' : ''} + ${#numbers.formatDecimal(product.productPriceSales, 0, 'COMMA', 0, 'POINT')} + '원'"></h5>
                             </div>
@@ -172,6 +229,34 @@
             <h2 class="mb-4" th:text="${mainText}"></h2>
             <div class="mb-4 text-center border" >
                 <h3>검색 결과 없음</h3>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="packagingInfoModal" tabindex="-1" aria-labelledby="packagingInfoModal" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="packagingInfoLabel"><span id="modal-title"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group form-group-flex">
+                        <img  id="packaging-image" src="" alt="포장지 이미지">
+                        <span class="book-title" id="product-name"></span>
+                        <span class="book-title" id="packaging-name"></span>
+                        <span class="warn-info" id="packaging-description"></span>
+                        <div class="price-info">
+                            <span id="price-standard" class="original-price">정가</span>
+                            <span id="price-info1" style="margin-left: 5px; color: #ff5f50">할인율</span>
+                            <h5 id="price-info2" class="secondary-font text-primary"></h5>
+                        </div>
+                        <div th:if="${admin != null}">
+                            <a id="update-url" href="#">
+                                <button>수정</button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

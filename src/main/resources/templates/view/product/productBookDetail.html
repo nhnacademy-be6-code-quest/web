@@ -235,7 +235,7 @@
                         </div>
                     </form>
                 </div>
-                <div th:if="${!admin}" class="book-actions">
+                <div th:if="${admin == null}" class="book-actions">
                     <form id="purchase" th:action="${orderURL}" method="post">
                         <input type="hidden" id="purchaseQuantity" th:value="1" min="1" name="quantity">
                         <input type="hidden" name="productId" th:value="${book.productId()}">
@@ -258,7 +258,7 @@
                         </div>
                     </div>
                 </div>
-                <div th:if="${admin}" class="book-actions">
+                <div th:if="${admin != null}" class="book-actions">
                     <div class="form-container">
                         <a th:href="'/admin/product/book/update/' + ${book.productId}"><button class="product-book-sold-out">수정하기</button></a>
                         <button class="product-book-state-change" th:if="${book.productState != 0}" th:productId="${book.productId}" onclick="changeState(this.getAttribute('productId'), 0)">판매 재개</button>

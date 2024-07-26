@@ -113,18 +113,20 @@ public class AdminCategoryController {
 
     @GetMapping("/admin/categories")
     public String getCategories(
+            HttpServletRequest req,
             @RequestParam(name = "page", required = false)Integer page,
             @RequestParam(name = "sort", required = false) String sort,
             @RequestParam(name = "desc", required = false)Boolean desc,
             RedirectAttributes redirectAttributes,
             Model model) {
         try {
-            ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getCategories(page, desc, sort);
+            ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getCategories(CookieUtils.setHeader(req), page, desc, sort);
 
             Page<CategoryGetResponseDto> responsePage = response.getBody();
 
             return makeView(responsePage, redirectAttributes, model, page, sort, desc, "/admin/categories?");
         }catch (FeignException e) {
+            if (e instanceof FeignException.Forbidden || e instanceof FeignException.Unauthorized) {throw e;}
             log.warn("error occurred while get all category, message : {}", e.getMessage());
             redirectAttributes.addFlashAttribute(ALTER_MESSAGE, ATTRIBUTE_VALUE);
             return REDIRECT_ADMIN_MAIN;
@@ -133,6 +135,7 @@ public class AdminCategoryController {
 
     @GetMapping("/admin/categories/containing")
     public String getCategoryContainingPage(
+            HttpServletRequest req,
             @RequestParam(name = "page", required = false) Integer page,
             @RequestParam(name = "sort", required = false) String sort,
             @RequestParam(name = "desc", required = false) Boolean desc,
@@ -140,12 +143,13 @@ public class AdminCategoryController {
             @RequestParam("categoryName") String categoryName,
             Model model) {
         try {
-            ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getNameContainingCategories(page, desc, sort, categoryName);
+            ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getNameContainingCategories(CookieUtils.setHeader(req), page, desc, sort, categoryName);
 
             Page<CategoryGetResponseDto> responsePage = response.getBody();
 
             return makeView(responsePage, redirectAttributes ,model, page, sort, desc, "/admin/categories/containing?title=" + categoryName + "&");
         }catch (FeignException e) {
+            if (e instanceof FeignException.Forbidden || e instanceof FeignException.Unauthorized) {throw e;}
             log.warn("error occurred while get name containing category with name {}, message : {}", categoryName, e.getMessage());
             redirectAttributes.addFlashAttribute(ALTER_MESSAGE, ATTRIBUTE_VALUE);
             return REDIRECT_ADMIN_MAIN;
@@ -153,18 +157,21 @@ public class AdminCategoryController {
     }
 
     @GetMapping("/admin/categories/{categoryId}/sub")
-    public String getCategorySubPage(@RequestParam(name = "page", required = false) Integer page,
-                                     @RequestParam(name = "sort", required = false) String sort,
-                                     @RequestParam(name = "desc", required = false) Boolean desc,
-                                     RedirectAttributes redirectAttributes,
-                                     @PathVariable("categoryId") Long categoryId,
-                                     Model model) {
+    public String getCategorySubPage(
+            HttpServletRequest req,
+            @RequestParam(name = "page", required = false) Integer page,
+            @RequestParam(name = "sort", required = false) String sort,
+            @RequestParam(name = "desc", required = false) Boolean desc,
+            RedirectAttributes redirectAttributes,
+            @PathVariable("categoryId") Long categoryId,
+            Model model) {
 
         try {
-            ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getSubCategories(page, desc, sort, categoryId);
+            ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getSubCategories(CookieUtils.setHeader(req), page, desc, sort, categoryId);
             Page<CategoryGetResponseDto> responsePage = response.getBody();
             return makeView(responsePage, redirectAttributes, model, page, sort, desc, "/admin/categories/" + categoryId + "/sub?");
         }catch (FeignException e) {
+            if (e instanceof FeignException.Forbidden || e instanceof FeignException.Unauthorized) {throw e;}
             log.warn("error occurred while get sub category with id {}, message : {}", categoryId, e.getMessage());
             redirectAttributes.addFlashAttribute(ALTER_MESSAGE, ATTRIBUTE_VALUE);
             return REDIRECT_ADMIN_MAIN;
@@ -181,6 +188,7 @@ public class AdminCategoryController {
             ResponseEntity<CategoryRegisterResponseDto> response = categoryService.saveCategory(CookieUtils.setHeader(req), dto);
             return ResponseEntity.status(response.getStatusCode().value()).body(null);
         }catch (FeignException e){
+            if (e instanceof FeignException.Forbidden || e instanceof FeignException.Unauthorized) {throw e;}
             log.warn("error occurred while save new category with request {}, message : {}", dto, e.getMessage());
             return ResponseEntity.status(e.status() != 0 ? e.status() : 500).build();
         }
@@ -194,6 +202,7 @@ public class AdminCategoryController {
             ResponseEntity<CategoryUpdateResponseDto> response = categoryService.updateCategory(CookieUtils.setHeader(req), dto);
             return ResponseEntity.status(response.getStatusCode().value()).body(null);
         }catch (FeignException e){
+            if (e instanceof FeignException.Forbidden || e instanceof FeignException.Unauthorized) {throw e;}
             log.warn("error occurred while update category with request {}, message : {}", dto, e.getMessage());
             return ResponseEntity.status(e.status() != 0 ? e.status() : 500).build();
         }
@@ -204,6 +213,7 @@ public class AdminCategoryController {
         try {
             return categoryService.deleteCategory(CookieUtils.setHeader(req), categoryId);
         }catch (FeignException e){
+            if (e instanceof FeignException.Forbidden || e instanceof FeignException.Unauthorized) {throw e;}
             log.warn("error occurred while delete category with id {} (but it may be just it has relation with product), message : {}", categoryId, e.getMessage());
             return ResponseEntity.status(e.status() != 0 ? e.status() : 500).build();
         }
@@ -242,27 +252,36 @@ public class AdminCategoryController {
 
     @GetMapping("/categories/all")
     public String getAllCategoriesPage(
+            HttpServletRequest req,
             @RequestParam(name = "page", required = false) Integer page,
             @RequestParam(name = "desc", required = false) Boolean desc,
             @RequestParam(name = "sort", required = false) String sort,
             Model model) {
         try {
-            ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getCategories(page, desc, sort);
+            ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getCategories(CookieUtils.setHeader(req), page, desc, sort);
             Page<CategoryGetResponseDto> responsePage = response.getBody();
             return makeModalView(responsePage, model,  false, "/categories/all?page=");
         }catch (FeignException e){
+            if (e instanceof FeignException.Forbidden || e instanceof FeignException.Unauthorized) {throw e;}
             log.warn("error occurred while get all categories. message : {}", e.getMessage());
             return WINDOW_CLOSE;
         }
     }
 
     @GetMapping("/categories/containing")
-    public String getContainingCategoriesPage(@RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "desc", required = false) Boolean desc, @RequestParam(name = "sort", required = false) String sort, @RequestParam("categoryName") String categoryName,  Model model) {
+    public String getContainingCategoriesPage(
+            HttpServletRequest req,
+            @RequestParam(name = "page", required = false) Integer page,
+            @RequestParam(name = "desc", required = false) Boolean desc,
+            @RequestParam(name = "sort", required = false) String sort,
+            @RequestParam("categoryName") String categoryName,
+            Model model) {
         try {
-            ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getNameContainingCategories(page, desc, sort, categoryName);
+            ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getNameContainingCategories(CookieUtils.setHeader(req), page, desc, sort, categoryName);
             Page<CategoryGetResponseDto> responsePage = response.getBody();
             return makeModalView(responsePage, model,  false, "/categories/containing?categoryName="+categoryName +"&page=");
         }catch (FeignException e){
+            if (e instanceof FeignException.Forbidden || e instanceof FeignException.Unauthorized) {throw e;}
             log.warn("error occurred while get name containing (name : {}) categories. message : {}", categoryName, e.getMessage());
             return WINDOW_CLOSE;
         }
@@ -271,17 +290,19 @@ public class AdminCategoryController {
 
     @GetMapping("/categories/{categoryId}/sub")
     public String getCategorySubAllPage(
+            HttpServletRequest req,
             @RequestParam(name = "page", required = false) Integer page,
             @RequestParam(name = "desc", required = false) Boolean desc,
             @RequestParam(name = "sort", required = false) String sort,
             @PathVariable("categoryId") Long categoryId, Model model){
         try {
-            ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getSubCategories(page, desc, sort, categoryId);
+            ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getSubCategories(CookieUtils.setHeader(req), page, desc, sort, categoryId);
 
             Page<CategoryGetResponseDto> responsePage = response.getBody();
 
             return makeModalView(responsePage, model,true, "/categories/"+ categoryId + "/sub?page=");
         }catch (FeignException e){
+            if (e instanceof FeignException.Forbidden || e instanceof FeignException.Unauthorized) {throw e;}
             log.warn("error occurred while get sub (categoryId : {}) categories. message : {}", categoryId, e.getMessage());
             return WINDOW_CLOSE;
         }
