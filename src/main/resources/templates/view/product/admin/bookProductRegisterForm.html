@@ -134,6 +134,12 @@
             event.target.submit(); // 폼 제출
         }
 
+        document.addEventListener('DOMContentLoaded', (event) => {
+            var searchButton = document.getElementById('search-button');
+            if (searchButton) {
+                searchButton.addEventListener('click', openNewWindowWithParam);
+            }
+        });
 
         function openNewWindowWithParam() {
             // 파라미터 값을 가져옵니다 (여기서는 input의 값을 사용합니다)
@@ -372,10 +378,7 @@
             document.getElementById('preview').src = "";
         }
         }
-    /*]]>*/++
-
-
-
+    /*]]>*/
     </script>
 </head>
 <body>
@@ -387,7 +390,7 @@
         <div th:if="${aladin != null}">
             <label for="inputValue">제목 :</label>
             <input type="text" id="inputValue" name="inputValue" required>
-            <button onclick="openNewWindowWithParam()">검색</button>
+            <button id="search-button" onclick="openNewWindowWithParam()">검색</button>
         </div>
     </div>
     <div id="errorMessage" style="color: red;"></div>
