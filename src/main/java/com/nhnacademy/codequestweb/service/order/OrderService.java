@@ -7,6 +7,8 @@ import com.nhnacademy.codequestweb.client.auth.UserClient;
 import com.nhnacademy.codequestweb.client.coupon.CouponClient;
 import com.nhnacademy.codequestweb.client.order.OrderClient;
 import com.nhnacademy.codequestweb.client.point.OrderPointClient;
+import com.nhnacademy.codequestweb.request.mypage.ClientRegisterAddressRequestDto;
+import com.nhnacademy.codequestweb.request.mypage.ClientRegisterPhoneNumberRequestDto;
 import com.nhnacademy.codequestweb.request.order.field.OrderItemDto;
 import com.nhnacademy.codequestweb.response.coupon.CouponOrderResponseDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientDeliveryAddressResponseDto;
@@ -303,12 +305,20 @@ public class OrderService {
         return orderClient.findNonClientOrder(headers, orderId, orderPassword).getBody();
     }
 
-    public List<ClientDeliveryAddressResponseDto> getClientDeliveryAddressList(HttpHeaders headers){
+    public List<ClientDeliveryAddressResponseDto> getClientDeliveryAddressListOnOrderPage(HttpHeaders headers){
         return userClient.getDeliveryAddresses(headers).getBody();
     }
 
-    public List<ClientPhoneNumberResponseDto> getClientPhoneNumberList(HttpHeaders headers){
+    public List<ClientPhoneNumberResponseDto> getClientPhoneNumberListOnOrderPage(HttpHeaders headers){
         return userClient.getPhoneNumber(headers).getBody();
+    }
+
+    public String registerPhoneNumberOnOrderPage(HttpHeaders headers, ClientRegisterPhoneNumberRequestDto clientRegisterPhoneNumberDto){
+        return userClient.registerPhoneNumber(headers, clientRegisterPhoneNumberDto).getBody();
+    }
+
+    public String registerAddressOnOrderPage(HttpHeaders headers, ClientRegisterAddressRequestDto clientRegisterAddressRequestDto){
+        return userClient.registerAddress(headers, clientRegisterAddressRequestDto).getBody();
     }
 
     private HttpHeaders getHeader(HttpServletRequest req){
