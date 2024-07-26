@@ -63,14 +63,14 @@
 
     <div th:if="${#lists.size(reviews) > 0}" class="pagination" th:attr="data-total-pages=${totalPage},data-current-page=${page}">
         <span th:if="${page > 1}">
-            <a th:href="'/mypage/my-review/?page=' + ${page - 1}">Previous</a>
+            <a th:href="'/mypage/my-review?page=' + ${page - 1}">Previous</a>
         </span>
         <span th:each="pageNum : ${#numbers.sequence(1, totalPage)}">
                     <a th:if="${pageNum == page + 1}" th:text="${pageNum}" th:class="'active'"></a>
-                    <a th:if="${pageNum != page + 1}" th:href="'/mypage/my-review/?page=' + ${pageNum - 1}" th:text="${pageNum}"></a>
+                    <a th:if="${pageNum != page + 1}" th:href="'/mypage/my-review?page=' + ${pageNum - 1}" th:text="${pageNum}"></a>
         </span>
         <span th:if="${page + 1 < totalPage}">
-            <a th:href="'/mypage/my-review/?page=' + ${page + 1}">Next</a>
+            <a th:href="'/mypage/my-review?page=' + ${page + 1}">Next</a>
         </span>
     </div>
 </section>
