@@ -111,9 +111,6 @@ public class PaymentService /*implements PaymentService*/ {
         return paymentClient.getPaymentRecordOfClient(clientId).getBody();
     }
 
-
-
-
     public PostProcessRequiredPaymentResponseDto getPostProcessRequiredPaymentResponseDto(HttpHeaders headers, String orderCode) {
         return paymentClient.getPostProcessRequiredPaymentResponseDto(headers, orderCode).getBody();
     }

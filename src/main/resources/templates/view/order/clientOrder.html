@@ -154,8 +154,10 @@
         <div>
             <span>배송지</span>
             <span class="btn-group" role="group">
-                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addressRegisterModal" style="font-size: small; padding: 0; height: 30px; width: 90px; border-color: #e9b775; color: #e9b775;">주소등록</button>
-                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addressSelectModal" style="font-size: small; padding: 0; height: 30px; width: 90px; border-color: #e9b775; color: #e9b775;">주소선택</button>
+                <button type="button" onclick="registerAddress()" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addressRegisterModal" style="font-size: small; padding: 0; height: 30px; width: 90px; border-color: #e9b775; color: #e9b775;">주소등록</button>
+                <form>
+                    <button type="submit" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addressSelectModal" style="font-size: small; padding: 0; height: 30px; width: 90px; border-color: #e9b775; color: #e9b775;">주소선택</button>
+                </form>
             </span>
         </div>
         <div id="selectedAddressInfo">
@@ -213,6 +215,27 @@
     </div>
 
     <!-- 주소선택 Modal -->
+<!--    <div class="modal fade" id="addressSelectModal" tabindex="-1" aria-labelledby="addressSelectModal" aria-hidden="true">-->
+<!--        <div class="modal-dialog modal-dialog-scrollable">-->
+<!--            <div class="modal-content">-->
+<!--                <div class="modal-header">-->
+<!--                    <h1 class="modal-title fs-5" id="addressSelectModalModalLabel">주소를 선택해 주세요</h1>-->
+<!--                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
+<!--                </div>-->
+<!--                <div class="modal-body" id="address-select-modal-body">-->
+<!--                    <div class="border border-secondary-subtle rounded" th:each="clientAddressDto, iterStat : ${deliveryAddressList}" style="margin: 10px; padding: 10px">-->
+<!--                        <div id="addressForm">-->
+<!--                            <div>[[${clientAddressDto.clientDeliveryAddressNickname}]]</div>-->
+<!--                            <div>[[${clientAddressDto.clientDeliveryZipCode}]]</div>-->
+<!--                            <div>[[${clientAddressDto.clientDeliveryAddress}]]</div>-->
+<!--                            <div>[[${clientAddressDto.clientDeliveryAddressDetail}]]</div>-->
+<!--                        </div>-->
+<!--                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" onclick="handleSelectAddress(this.previousElementSibling)">선택</button>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
     <div class="modal fade" id="addressSelectModal" tabindex="-1" aria-labelledby="addressSelectModal" aria-hidden="true">
         <div class="modal-dialog modal-dialog-scrollable">
             <div class="modal-content">
@@ -220,22 +243,79 @@
                     <h1 class="modal-title fs-5" id="addressSelectModalModalLabel">주소를 선택해 주세요</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <div class="border border-secondary-subtle rounded" th:each="clientAddressDto, iterStat : ${deliveryAddressList}" style="margin: 10px; padding: 10px">
-                        <div id="addressForm">
-                            <div>[[${clientAddressDto.clientDeliveryAddressNickname}]]</div>
-                            <div>[[${clientAddressDto.clientDeliveryZipCode}]]</div>
-                            <div>[[${clientAddressDto.clientDeliveryAddress}]]</div>
-                            <div>[[${clientAddressDto.clientDeliveryAddressDetail}]]</div>
-                        </div>
-                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" onclick="handleSelectAddress(this.previousElementSibling)">선택</button>
-                    </div>
+                <div class="modal-body" id="address-select-modal-body">
+                    <!--내용 들어갈 자리-->
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- 주소등록 Modal -->
+<!--    <div class="modal fade" id="addAddressModal" tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">-->
+<!--        <div class="modal-dialog" role="document">-->
+<!--            <div class="modal-content">-->
+<!--                <div class="modal-header">-->
+<!--                    <h5 class="modal-title" id="addAddressModalLabel">Add Address</h5>-->
+<!--                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
+<!--                </div>-->
+<!--                <form action="/mypage/delivary" method="post" onsubmit="formValidation(event)">-->
+<!--                    <div class="modal-body">-->
+<!--                        <div class="form-group">-->
+<!--                            <label for="postcode">우편번호</label>-->
+<!--                            <div class="input-group">-->
+<!--                                <input type="text" class="form-control" id="postcode" placeholder="우편번호" name="clientDeliveryZipCode" required="required" readonly="readonly">-->
+<!--                                <button type="button" class="btn btn-secondary" onclick="daumPost()">찾기</button>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="form-group">-->
+<!--                            <label for="address">주소</label>-->
+<!--                            <input type="text" class="form-control" id="address" placeholder="주소" name="clientDeliveryAddress" required="required" readonly="readonly">-->
+<!--                        </div>-->
+<!--                        <div class="form-group">-->
+<!--                            <label for="detailAddress">상세 주소</label>-->
+<!--                            <input type="text" class="form-control" id="detailAddress" placeholder="상세 주소" name="clientDeliveryAddressDetail" required="required">-->
+<!--                        </div>-->
+<!--                        <div class="form-group">-->
+<!--                            <label for="nickname">주소 별칭</label>-->
+<!--                            <input type="text" class="form-control" id="nickname" placeholder="주소 별칭" name="clientDeliveryAddressNickname" required="required">-->
+<!--                        </div>-->
+
+<!--                        <div id="postcodeModal" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:white; z-index:1050;">-->
+<!--                            <div id="postcodeEmbed" style="display: block;"></div>-->
+<!--                            <button type="button" class="btn btn-secondary" onclick="closePostcodeModal()">취소</button>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="modal-footer">-->
+<!--                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>-->
+<!--                        <button type="submit" class="btn btn-primary" id="saveButton">-->
+<!--                            <span id="buttonText">저장</span>-->
+<!--                            <span id="spinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>-->
+<!--                        </button>-->
+<!--                    </div>-->
+<!--                </form>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+
     <!-- 번호선택 Modal -->
+<!--    <div class="modal fade" id="phoneNumberSelectModal" tabindex="-1" aria-labelledby="phoneNumberSelectModal" aria-hidden="true">-->
+<!--        <div class="modal-dialog modal-dialog-scrollable">-->
+<!--            <div class="modal-content">-->
+<!--                <div class="modal-header">-->
+<!--                    <h1 class="modal-title fs-5" id="phoneNumberSelectModalModalLabel">전화번호를 선택해 주세요</h1>-->
+<!--                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>-->
+<!--                </div>-->
+<!--                <div class="modal-body" id="phoneNumber-select-modal-body">-->
+<!--                    <div class="border border-secondary-subtle rounded" th:each="phoneNumberDto, iterStat : ${phoneNumberList}" style="margin: 10px; padding: 10px">-->
+<!--                        <div id="phoneNumberForm">-->
+<!--                            <div>[[${phoneNumberDto.clientPhoneNumber}]]</div>-->
+<!--                        </div>-->
+<!--                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" onclick="handleSelectPhoneNumber(this.previousElementSibling)">선택</button>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
     <div class="modal fade" id="phoneNumberSelectModal" tabindex="-1" aria-labelledby="phoneNumberSelectModal" aria-hidden="true">
         <div class="modal-dialog modal-dialog-scrollable">
             <div class="modal-content">
@@ -243,13 +323,28 @@
                     <h1 class="modal-title fs-5" id="phoneNumberSelectModalModalLabel">전화번호를 선택해 주세요</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
+                <div class="modal-body" id="phoneNumber-select-modal-body">
+                    <!-- 데이터 들어갈 자리 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 번호 등록 Modal -->
+    <div class="modal fade" id="phoneNumberRegisterModal" tabindex="-1" aria-labelledby="phoneNumberRegisterModal" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="phoneNumberRegisterModalModalLabel">전화번호를 등록해 주세요</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
                 <div class="modal-body">
-                    <div class="border border-secondary-subtle rounded" th:each="phoneNumberDto, iterStat : ${phoneNumberList}" style="margin: 10px; padding: 10px">
-                        <div id="phoneNumberForm">
-                            <div>[[${phoneNumberDto.clientPhoneNumber}]]</div>
-                        </div>
-                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" onclick="handleSelectPhoneNumber(this.previousElementSibling)">선택</button>
-                    </div>
+                    <form action="/mypage/phone" method="post" onsubmit="buttonChanger(event)">
+                        <label>핸드폰 번호:
+                            <input type="text" class="form-control" name="phoneNumber" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');" required />
+                        </label>
+                    </form>
                 </div>
             </div>
         </div>
@@ -283,7 +378,7 @@
         </div>
     </div>
 </form>
-
+<!--<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>-->
 <script th:inline="javascript">
 
     document.addEventListener('DOMContentLoaded', function (){
@@ -293,7 +388,24 @@
         updateProductTotalAmountClient();
         updateShippingFee();
         updatePayAmountClient();
+        // 번호선택 버튼에 이벤트 리스너 달기
+        document.querySelector('button[data-bs-target="#phoneNumberSelectModal"]').addEventListener('click', loadPhoneNumberList())
+        // 주소 선택 버튼에 이벤트 리스너 달기
+        document.querySelector('button[data-bs-target="#addressSelectModal"]').addEventListener('click', loadAddressList())
     });
+
+    <!-- 스피너 -->
+    function buttonChanger(event) {
+        var saveButton = document.getElementById('saveButton');
+        var buttonText = document.getElementById('buttonText');
+        var spinner = document.getElementById('spinner');
+
+        saveButton.disabled = true;
+        buttonText.classList.add('d-none');
+        spinner.classList.remove('d-none');
+
+        event.target.submit(); // 폼 제출
+    }
 
     <!--포장여부 선택 관련-->
     function handleOnChangeUsedPackaging(checked, index){
@@ -353,6 +465,82 @@
         document.getElementById("deliveryAddress").value = selectedClientAddressElement.children[2].innerText + ", " +  selectedClientAddressElement.children[3].innerText;
     }
 
+    function loadAddressList(){
+        fetch("/client/order/addressList")
+        .then(response => {
+            if(!response.ok){
+                throw new Error('API 호출 오류가 발생했습니다.');
+            }
+            return response.json();
+        })
+        .then(response => {
+            updateAddressList(response);
+        })
+        .catch(error => {
+            console.log("주소 목록을 가져오는데 실패하였습니다.");
+            console.log(error);
+        })
+    }
+
+    function updateAddressList(response){
+
+        // 모달에 주소 목록 업데이트
+
+        // 주소 선택 모달 바디에 <div class="border border-secondary-subtle rounded" style="margin: 10px; padding: 10px"></div> 추가하기
+        const addressSelectModalBody = document.getElementById("address-select-modal-body");
+
+        addressSelectModalBody.innerText = '';
+
+        for(let i = 0; i < response.size(); i++){
+
+            const addressContainer = document.createElement('div');
+            addressContainer.className = "border border-secondary-subtle rounded";
+            addressContainer.style.margin = "10px";
+            addressContainer.style.padding = "10px";
+
+            const addressForm = document.createElement('div');
+
+            const addressNickName = document.createElement('div');
+            const addressZipCode = document.createElement('div');
+            const address = document.createElement('div');
+            const addressDetail = document.createElement('div');
+
+            addressNickName.innerText = response[i].clientDeliveryAddressNickname;
+            addressZipCode.innerText = response[i].clientDeliveryZipCode;
+            address.innerText = response[i].clientDeliveryAddress;
+            addressDetail.innerText = response[i].clientDeliveryAddressDetail;
+
+            addressForm.append(addressNickName);
+            addressForm.append(addressZipCode);
+            addressForm.append(address);
+            addressForm.append(addressDetail);
+
+            const btn = document.createElement('button');
+
+            btn.type = "button";
+            btn.className = "btn btn-outline-secondary";
+
+            btn.dataset.addressNickname = addressNickName.innerText;
+            btn.dataset.addressZipcode = addressZipCode.innerText;
+            btn.dataset.address = address.innerText;
+            btn.dataset.addressDetail = addressDetail.innerText;
+
+            btn.addEventListener('click', selectAddressBtn(this))
+
+            addressContainer.append(addressForm);
+            addressContainer.append(btn);
+
+            addressSelectModalBody.append(addressContainer);
+        }
+
+    }
+
+    function selectAddressBtn(btn){
+        document.getElementById("addressNickname").value = btn.getAttribute('data-address-nickname');
+        document.getElementById("addressZipCode").value = btn.getAttribute('data-address-zipcode');
+        document.getElementById("deliveryAddress").value = btn.getAttribute('data-address') + " , " + btn.getAttribute('data-address-detail');
+    }
+
     <!--번호 선택 관련-->
     function handleSelectPhoneNumber(phoneNumberElement){
         showSelectedPhoneNumberInfo();
@@ -369,20 +557,81 @@
         document.getElementById("phoneNumber").value = phoneNumberElement.children[0].innerText;
     }
 
+    function loadPhoneNumberList(){
+        fetch("/client/order/phoneNumberList")
+        .then(response => {
+            if(!response.ok){
+                throw new Error('API 호출 오류가 발생했습니다.');
+            }
+            return response.json();
+        })
+        .then(response => {
+            updatePhoneNumber(response);
+        })
+        .catch(error => {
+            console.log("주소 목록을 가져오는데 실패하였습니다.");
+            console.log(error);
+        })
+    }
+
+    function updatePhoneNumberList(response) {
+
+        // 모달에 핸드폰 번호 리스트 업데이트
+
+        // 번호 선택 모달 바디에 <div class="border border-secondary-subtle rounded" style="margin: 10px; padding: 10px"></div> 추가하기
+        const phoneNumberSelectModalBody = document.getElementById("phoneNumber-select-modal-body");
+
+        phoneNumberSelectModalBody.innerText = '';
+
+        for(let i = 0; i < response.size(); i++){
+
+            const phoneNumberContainer = document.createElement('div');
+            phoneNumberContainer.className = "border border-secondary-subtle rounded";
+            phoneNumberContainer.style.margin = "10px";
+            phoneNumberContainer.style.padding = "10px";
+
+            const phoneNumber = document.createElement('div');
+
+            phoneNumber.innerText = response[i].clientPhoneNumber;
+
+            phoneNumberContainer.append(phoneNumber);
+
+            const btn = document.createElement('button');
+
+            btn.type = "button";
+            btn.className = "btn btn-outline-secondary";
+
+            btn.dataset.phonenumber = phoneNumber.innerText;
+
+            btn.addEventListener('click', selectPhoneNumberBtn(this))
+
+            phoneNumberContainer.append(phoneNumber);
+            phoneNumberContainer.append(btn);
+
+            phoneNumberSelectModalBody.append(phoneNumberContainer);
+        }
+
+    }
+
+    function selectPhoneNumberBtn(btn){
+        document.getElementById("phoneNumber").value = btn.getAttribute("data-phonenumber");
+    }
+
     <!--금액 관련-->
-    function updateShippingFee(){
+    function updateShippingFee() {
         const originShippingFee = [[${shippingPolicy.shippingFee}]];
         const minPurchaseAmount = [[${shippingPolicy.minPurchaseAmount}]];
         const productTotalAmount = document.getElementById("productTotalAmount").value;
-        if(productTotalAmount >= minPurchaseAmount){
+        if (productTotalAmount >= minPurchaseAmount) {
             document.getElementById("shippingFee").value = 0;
-        }else{
+        } else {
             document.getElementById("shippingFee").value = originShippingFee;
         }
         updatePayAmountClient();
     }
 
     function updateProductTotalAmountClient(){
+        console.log("??");
         let totalPrice = 0;
         document.querySelectorAll('tr[data-product-index]').forEach(function(row, index) {
             // 순수 상품 총 가격
@@ -398,6 +647,7 @@
             }
         });
         document.getElementById("productTotalAmount").value = totalPrice
+        console.log("totalPrice: " + totalPrice);
     }
 
     function updatePayAmountClient(){

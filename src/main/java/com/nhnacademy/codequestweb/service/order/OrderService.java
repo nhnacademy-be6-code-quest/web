@@ -3,6 +3,7 @@ package com.nhnacademy.codequestweb.service.order;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nhnacademy.codequestweb.client.auth.UserClient;
 import com.nhnacademy.codequestweb.client.coupon.CouponClient;
 import com.nhnacademy.codequestweb.client.order.OrderClient;
 import com.nhnacademy.codequestweb.client.point.OrderPointClient;
@@ -53,6 +54,7 @@ public class OrderService {
     private static final String SHIPPING_POLICY = "shippingPolicy";
 
 
+    private final UserClient userClient;
     private final OrderClient orderClient;
     private final CouponClient couponClient;
     private final MyPageService myPageService;
@@ -206,6 +208,7 @@ public class OrderService {
 
         // 책 상세 정보
         BookProductGetResponseDto book = bookProductService.getSingleBookInfo(headers, orderItemDto.getProductId()).getBody();
+
         // 폼에 추가
         assert book != null;
         nonClientOrderForm.addOrderDetailDtoItem(
@@ -298,6 +301,14 @@ public class OrderService {
 
     public NonClientOrderGetResponseDto findNonClientOrder(HttpHeaders headers, long orderId, String orderPassword) {
         return orderClient.findNonClientOrder(headers, orderId, orderPassword).getBody();
+    }
+
+    public List<ClientDeliveryAddressResponseDto> getClientDeliveryAddressList(HttpHeaders headers){
+        return userClient.getDeliveryAddresses(headers).getBody();
+    }
+
+    public List<ClientPhoneNumberResponseDto> getClientPhoneNumberList(HttpHeaders headers){
+        return userClient.getPhoneNumber(headers).getBody();
     }
 
     private HttpHeaders getHeader(HttpServletRequest req){
