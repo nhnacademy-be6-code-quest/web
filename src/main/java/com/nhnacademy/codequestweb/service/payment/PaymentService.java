@@ -8,10 +8,9 @@ import com.nhnacademy.codequestweb.request.payment.PaymentOrderApproveRequestDto
 import com.nhnacademy.codequestweb.request.point.PointRewardOrderRequestDto;
 import com.nhnacademy.codequestweb.request.product.common.InventoryDecreaseRequestDto;
 import com.nhnacademy.codequestweb.response.payment.PaymentGradeResponseDto;
-import com.nhnacademy.codequestweb.response.payment.TossPaymentsResponseDto;
+import com.nhnacademy.codequestweb.response.payment.PaymentsResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.User;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -32,9 +31,9 @@ public class PaymentService /*implements PaymentService*/ {
     private final OrderClient orderClient;
     private final PaymentClientClient paymentClientClient;
 
-    public void savePayment(HttpHeaders headers, TossPaymentsResponseDto tossPaymentsResponseDto) {
+    public void savePayment(HttpHeaders headers, PaymentsResponseDto paymentsResponseDto) {
         log.info("결제 및 주문 생성 시도");
-        paymentClient.savePayment(headers, tossPaymentsResponseDto);
+        paymentClient.savePayment(headers, paymentsResponseDto);
     }
 
     public boolean isValidTossPayment(PaymentOrderApproveRequestDto paymentOrderApproveRequestDto,
@@ -46,15 +45,15 @@ public class PaymentService /*implements PaymentService*/ {
             - paymentOrderApproveRequestDto.getDiscountAmountByPoint() == amount;
     }
 
-    public TossPaymentsResponseDto approvePayment(HttpHeaders headers,String name, String orderCode, long amount,
+    public PaymentsResponseDto approvePayment(HttpHeaders headers,String name, String orderCode, long amount,
         String paymentKey) {
-        TossApprovePaymentRequest tossApprovePaymentRequest = new TossApprovePaymentRequest();
-        tossApprovePaymentRequest.setPaymentKey(paymentKey);
-        tossApprovePaymentRequest.setAmount(amount);
-        tossApprovePaymentRequest.setOrderId(orderCode);
-        tossApprovePaymentRequest.setMethodType(name);
+        ApprovePaymentRequestDto approvePaymentRequestDto = new ApprovePaymentRequestDto();
+        approvePaymentRequestDto.setPaymentKey(paymentKey);
+        approvePaymentRequestDto.setAmount(amount);
+        approvePaymentRequestDto.setOrderCode(orderCode);
+        approvePaymentRequestDto.setMethodType(name);
         log.info("결제 승인 시도");
-        return paymentClient.approvePayment(headers, tossApprovePaymentRequest).getBody();
+        return paymentClient.approvePayment(headers, approvePaymentRequestDto).getBody();
     }
 
     public PaymentOrderShowRequestDto findPaymentOrderShowRequestDtoByOrderId(HttpHeaders headers, String orderCode) {
@@ -115,8 +114,8 @@ public class PaymentService /*implements PaymentService*/ {
 
 
 
-    public PostProcessRequiredPaymentResponseDto getPostProcessRequiredPaymentResponseDto(String orderCode) {
-        return paymentClient.getPostProcessRequiredPaymentResponseDto(orderCode).getBody();
+    public PostProcessRequiredPaymentResponseDto getPostProcessRequiredPaymentResponseDto(HttpHeaders headers, String orderCode) {
+        return paymentClient.getPostProcessRequiredPaymentResponseDto(headers, orderCode).getBody();
     }
 
 }
