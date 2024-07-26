@@ -227,7 +227,11 @@ public class AdminBookController {
         if (header == null || !header.equals("XMLHttpRequest")) {
             return ResponseEntity.status(302).location(URI.create("/")).build();
         }else {
-            return bookProductService.isbnCheckForAdmin(CookieUtils.setHeader(req), isbn);
+            try {
+                return bookProductService.isbnCheckForAdmin(CookieUtils.setHeader(req), isbn);
+            }catch (FeignException.Conflict e){
+                return ResponseEntity.status(409).build();
+            }
         }
     }
 
