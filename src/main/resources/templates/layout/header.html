@@ -25,6 +25,15 @@
     <script type="text/javascript" th:src="@{/js/message/message.js}"></script>
     <link rel="stylesheet" th:href="@{/css/message/style.css}">
     <style>
+
+        .modal{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f7fafc; /* Equivalent to bg-gray-100 */
+            margin: 0;
+        }
         #search-results {
             width: 20%;
             max-width: 20%;
@@ -190,7 +199,7 @@
                             <a href="blog.html" class="nav-link">Event</a>
                         </li>
                         <li class="nav-item">
-                            <a href="contact.html" class="nav-link">Policy</a>
+                            <button class="nav-link" onclick="openCouponModal(this)">쿠폰지급</button>
                         </li>
 
                     </ul>
@@ -235,9 +244,73 @@
         </div>
 
     </div>
+    <div id="couponModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('couponModal')">&times;</span>
+            <form action="/coupon/reward" method="post">
+                <div class="coupon">
+                    <h2 class="title">여름 특별 할인 쿠폰</h2>
+                    <p class="text">20% 할인 쿠폰</p>
+                    <p class="text">만료기간 : 60일</p>
+                    <input type="hidden" name="methodName" value="summer">
+                    <button class="button">쿠폰 발급</button>
+                </div>
+            </form>
+            <form action="/coupon/reward" method="post">
+                <div class="coupon">
+                    <h2 class="title">QBS 오픈 할인 쿠폰</h2>
+                    <p class="text">20000원 할인 쿠폰</p>
+                    <p class="text">만료기간: 30일</p>
+                    <input type="hidden" name="methodName" value="new">
+                    <button class="button">쿠폰 발급</button>
+                </div>
+            </form>
+            <form action="/coupon/reward" method="post">
+                <div class="coupon">
+                    <h2 class="title">NHN 할인 쿠폰</h2>
+                    <p class="text">10% 할인 쿠폰</p>
+                    <p class="text">만료기간: 1년</p>
+                    <input type="hidden" name="methodName" value="NHN">
+                    <button class="button">쿠폰 발급</button>
+                </div>
+            </form>
+            <form action="/coupon/reward" method="post">
+                <div class="coupon">
+                    <h2 class="title">의 특별 할인 쿠폰</h2>
+                    <p class="text">50000원 할인 쿠폰</p>
+                    <p class="text">만료기간: 30일</p>
+                    <input type="hidden" name="methodName" value="special">
+                    <button class="button">쿠폰 발급</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </header>
 
 <script>
+
+    function openModal(modalId) {
+        document.getElementById(modalId).style.display = "block";
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = "none";
+    }
+    function openCouponModal(button){
+        const modal = document.getElementById('couponModal');
+        modal.style.display = "block";
+    }
+    window.onclick = function(event) {
+        const modals = document.getElementsByClassName("modal");
+        for (let i = 0; i < modals.length; i++) {
+            if (event.target == modals[i]) {
+                closeModal(modals[i].id);
+
+            }
+        }
+    }
+
+
     document.addEventListener('DOMContentLoaded', function() {
         var categoryItems = document.querySelectorAll('.category-item');
 

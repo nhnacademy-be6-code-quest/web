@@ -2,17 +2,22 @@ package com.nhnacademy.codequestweb.controller.coupon;
 
 import com.nhnacademy.codequestweb.domain.Status;
 import com.nhnacademy.codequestweb.request.coupon.CouponRegisterRequestDto;
+import com.nhnacademy.codequestweb.request.review.WriteReviewRequestDto;
 import com.nhnacademy.codequestweb.response.coupon.ClientCouponPaymentResponseDto;
 import com.nhnacademy.codequestweb.response.coupon.CouponProvideTypeResponseDto;
+import com.nhnacademy.codequestweb.response.coupon.CouponRewardMethodRequestDto;
 import com.nhnacademy.codequestweb.response.coupon.CouponTypeResponseDto;
 import com.nhnacademy.codequestweb.service.coupon.CouponService;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +25,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
 @Controller
@@ -63,6 +68,17 @@ public class CouponController {
         headers.set(ACCESS, CookieUtils.getCookieValue(req, ACCESS));
         couponService.saveCoupon(headers, couponRegisterRequestDto,couponPolicyId);
         return "redirect:/admin/coupon/policy";
+    }
+
+    @PostMapping("/coupon/reward")
+    public String couponReward(@ModelAttribute CouponRewardMethodRequestDto couponRewardMethodRequestDto, HttpServletRequest req, RedirectAttributes redirectAttributes
+    ) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(ACCESS, CookieUtils.getCookieValue(req, ACCESS));
+        String message = couponService.rewardCoupon(headers, couponRewardMethodRequestDto);
+
+        redirectAttributes.addFlashAttribute("alterMessage", message);
+        return "redirect:/";
     }
 
 }
