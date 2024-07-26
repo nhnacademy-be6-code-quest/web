@@ -186,11 +186,9 @@
                 <button type="button" onclick="daumPost()" class="btn btn-outline-primary"
                         data-bs-toggle="modal" data-bs-target="#addressRegisterModal"
                         style="font-size: small; padding: 0; height: 30px; width: 90px; border-color: #e9b775; color: #e9b775;">주소등록</button>
-                <form>
                     <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
                             data-bs-target="#addressSelectModal"
                             style="font-size: small; padding: 0; height: 30px; width: 90px; border-color: #e9b775; color: #e9b775;">주소선택</button>
-                </form>
             </span>
     </div>
     <div>
@@ -256,149 +254,149 @@
     </button>
   </div>
 
-  <!-- 주소선택 Modal -->
-  <div class="modal fade" id="addressSelectModal" tabindex="-1" aria-labelledby="addressSelectModal"
-       aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="addressSelectModalModalLabel">주소를 선택해 주세요</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body" id="address-select-modal-body">
-          <!--내용 들어갈 자리-->
-        </div>
+</form>
+
+<!-- 주소선택 Modal -->
+<div class="modal fade" id="addressSelectModal" tabindex="-1" aria-labelledby="addressSelectModal"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="addressSelectModalModalLabel">주소를 선택해 주세요</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="address-select-modal-body">
+        <!--내용 들어갈 자리-->
       </div>
     </div>
   </div>
+</div>
 
-  <!-- 주소등록 Modal -->
-  <div class="modal fade" id="addressRegisterModal" tabindex="-1"
-       aria-labelledby="addAddressModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="addAddressModalLabel">주소를 등록해 주세요</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" id="addressRegisterModalClose"
-                  aria-label="Close"></button>
+<!-- 주소등록 Modal -->
+<div class="modal fade" id="addressRegisterModal" tabindex="-1"
+     aria-labelledby="addAddressModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addAddressModalLabel">주소를 등록해 주세요</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" id="addressRegisterModalClose"
+                aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="clientDeliveryZipCode">우편번호</label>
+          <div class="input-group">
+            <input type="text" class="form-control" id="clientDeliveryZipCode" placeholder="우편번호" required="required" readonly="readonly">
+            <button type="button" class="btn btn-secondary" onclick="daumPost()">찾기</button>
+          </div>
         </div>
-        <div class="modal-body">
-          <div class="form-group">
-            <label for="clientDeliveryZipCode">우편번호</label>
-            <div class="input-group">
-              <input type="text" class="form-control" id="clientDeliveryZipCode" placeholder="우편번호" required="required" readonly="readonly">
-              <button type="button" class="btn btn-secondary" onclick="daumPost()">찾기</button>
+        <div class="form-group">
+          <label for="clientDeliveryAddress">주소</label>
+          <input type="text" class="form-control" id="clientDeliveryAddress" placeholder="주소" required="required" readonly="readonly">
+        </div>
+        <div class="form-group">
+          <label for="clientDeliveryAddressDetail">상세 주소</label>
+          <input type="text" class="form-control" id="clientDeliveryAddressDetail" placeholder="상세 주소" required="required">
+        </div>
+        <div class="form-group">
+          <label for="clientDeliveryAddressNickname">주소 별칭</label>
+          <input type="text" class="form-control" id="clientDeliveryAddressNickname" placeholder="주소 별칭" required="required">
+        </div>
+
+        <div id="postcodeModal"
+             style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:white; z-index:1050;">
+          <div id="postcodeEmbed" style="display: block;"></div>
+          <button type="button" class="btn btn-secondary" onclick="closePostcodeModal()">취소
+          </button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+        <button type="submit" class="btn btn-outline-warning" id="saveButton"
+                onclick="addressRegisterOnOrderPage(this)">
+          <span id="addressRegisterButtonText">저장</span>
+          <span id="addressRegisterButtonSpinner" class="spinner-border spinner-border-sm d-none" role="status"
+                aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 번호선택 Modal -->
+<div class="modal fade" id="phoneNumberSelectModal" tabindex="-1"
+     aria-labelledby="phoneNumberSelectModal" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="phoneNumberSelectModalModalLabel">전화번호를 선택해 주세요</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="phoneNumber-select-modal-body">
+        <!-- 데이터 들어갈 자리 -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 번호 등록 Modal -->
+<div class="modal fade" id="phoneNumberRegisterModal" tabindex="-1"
+     aria-labelledby="phoneNumberRegisterModal" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="phoneNumberRegisterModalModalLabel">전화번호를 등록해 주세요</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                id="phoneNumberRegisterModalClose" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <label>핸드폰 번호:
+          <input type="text" class="form-control" id="newPhoneNumber"
+                 oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');"
+                 required/>
+          <button type="button" class="btn btn-outline-secondary"
+                  onclick="phoneNumberRegisterOnOrderPage()">등록
+          </button>
+        </label>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--쿠폰선택 Modal-->
+<div class="modal fade" id="couponSelectModal" tabindex="-1" aria-labelledby="couponSelectModal"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="couponSelectModalLabel">쿠폰을 선택해 주세요</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="border border-secondary-subtle rounded"
+             th:each="coupon, iterStat : ${couponList}" style="margin: 10px; padding: 10px">
+          <div class="couponForm">
+            <div>
+              [[${coupon.couponPolicy.couponPolicyDescription}]]
             </div>
+            <div>할인금액:
+              <span th:if="${coupon.couponPolicy.discountType == 'AMOUNTDISCOUNT'}"><span>[[${coupon.couponPolicy.discountValue}]]</span>원</span>
+              <span th:if="${coupon.couponPolicy.discountType == 'PERCENTAGEDISCOUNT'}"><span>[[${coupon.couponPolicy.discountValue}]]</span>%</span>
+            </div>
+            <div>최소구매금액: <span>[[${coupon.couponPolicy.minPurchaseAmount}]] 원</span></div>
+            <div th:if="${coupon.couponPolicy.discountType == 'PERCENTAGEDISCOUNT'}">최대 할인 금액:
+              <span>[[${coupon.couponPolicy.maxDiscountAmount}]] 원</span></div>
           </div>
-          <div class="form-group">
-            <label for="clientDeliveryAddress">주소</label>
-            <input type="text" class="form-control" id="clientDeliveryAddress" placeholder="주소" required="required" readonly="readonly">
-          </div>
-          <div class="form-group">
-            <label for="clientDeliveryAddressDetail">상세 주소</label>
-            <input type="text" class="form-control" id="clientDeliveryAddressDetail" placeholder="상세 주소" required="required">
-          </div>
-          <div class="form-group">
-            <label for="clientDeliveryAddressNickname">주소 별칭</label>
-            <input type="text" class="form-control" id="clientDeliveryAddressNickname" placeholder="주소 별칭" required="required">
-          </div>
-
-          <div id="postcodeModal"
-               style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:white; z-index:1050;">
-            <div id="postcodeEmbed" style="display: block;"></div>
-            <button type="button" class="btn btn-secondary" onclick="closePostcodeModal()">취소
-            </button>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-          <button type="submit" class="btn btn-outline-warning" id="saveButton"
-                  onclick="addressRegisterOnOrderPage()">
-            <span id="buttonText">저장</span>
-            <span id="spinner" class="spinner-border spinner-border-sm d-none" role="status"
-                  aria-hidden="true"></span>
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal"
+                  th:onclick="handleSelectCoupon([[${coupon}]])" disabled=>선택
           </button>
         </div>
       </div>
     </div>
   </div>
-
-  <!-- 번호선택 Modal -->
-  <div class="modal fade" id="phoneNumberSelectModal" tabindex="-1"
-       aria-labelledby="phoneNumberSelectModal" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="phoneNumberSelectModalModalLabel">전화번호를 선택해 주세요</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"
-                  aria-label="Close"></button>
-        </div>
-        <div class="modal-body" id="phoneNumber-select-modal-body">
-          <!-- 데이터 들어갈 자리 -->
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 번호 등록 Modal -->
-  <div class="modal fade" id="phoneNumberRegisterModal" tabindex="-1"
-       aria-labelledby="phoneNumberRegisterModal" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="phoneNumberRegisterModalModalLabel">전화번호를 등록해 주세요</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"
-                  id="phoneNumberRegisterModalClose" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <label>핸드폰 번호:
-            <input type="text" class="form-control" id="newPhoneNumber"
-                   oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');"
-                   required/>
-            <button type="button" class="btn btn-outline-secondary"
-                    onclick="phoneNumberRegisterOnOrderPage()">등록
-            </button>
-          </label>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!--쿠폰선택 Modal-->
-  <div class="modal fade" id="couponSelectModal" tabindex="-1" aria-labelledby="couponSelectModal"
-       aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="couponSelectModalLabel">쿠폰을 선택해 주세요</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"
-                  aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <div class="border border-secondary-subtle rounded"
-               th:each="coupon, iterStat : ${couponList}" style="margin: 10px; padding: 10px">
-            <div class="couponForm">
-              <div>
-                [[${coupon.couponPolicy.couponPolicyDescription}]]
-              </div>
-              <div>할인금액:
-                <span th:if="${coupon.couponPolicy.discountType == 'AMOUNTDISCOUNT'}"><span>[[${coupon.couponPolicy.discountValue}]]</span>원</span>
-                <span th:if="${coupon.couponPolicy.discountType == 'PERCENTAGEDISCOUNT'}"><span>[[${coupon.couponPolicy.discountValue}]]</span>%</span>
-              </div>
-              <div>최소구매금액: <span>[[${coupon.couponPolicy.minPurchaseAmount}]] 원</span></div>
-              <div th:if="${coupon.couponPolicy.discountType == 'PERCENTAGEDISCOUNT'}">최대 할인 금액:
-                <span>[[${coupon.couponPolicy.maxDiscountAmount}]] 원</span></div>
-            </div>
-            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal"
-                    th:onclick="handleSelectCoupon([[${coupon}]])" disabled=>선택
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-</form>
+</div>
 
 
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
@@ -444,19 +442,6 @@
     document.querySelector('button[data-bs-target="#addressSelectModal"]').addEventListener('click',
         loadAddressList)
   });
-
-  <!-- 스피너 -->
-  // function buttonChanger(event) {
-  //     var saveButton = document.getElementById('saveButton');
-  //     var buttonText = document.getElementById('buttonText');
-  //     var spinner = document.getElementById('spinner');
-  //
-  //     saveButton.disabled = true;
-  //     buttonText.classList.add('d-none');
-  //     spinner.classList.remove('d-none');
-  //
-  //     event.target.submit(); // 폼 제출
-  // }
 
   <!--포장여부 선택 관련-->
   function handleOnChangeUsedPackaging(checked, index) {
@@ -610,7 +595,9 @@
     document.getElementById("selectedAddressInfo").hidden = false;
   }
 
-  function addressRegisterOnOrderPage() {
+  function addressRegisterOnOrderPage(btn) {
+
+    // TODO 스피너
 
     // 유효성 검사
     const zipCode = document.getElementById("clientDeliveryZipCode").value;
@@ -737,6 +724,9 @@
 
   function phoneNumberRegisterOnOrderPage() {
 
+    // TODO 스피너 추가
+
+
     const phoneNumber = document.getElementById("newPhoneNumber");
 
     if (phoneNumber.value.length < 10 || phoneNumber.value.length > 11) {
@@ -812,6 +802,8 @@
 
   function checkValidate(form) {
 
+    console.log("checkValidate");
+
     let isValid = true;
     let errorMessage = '';
 
@@ -827,8 +819,10 @@
     }
 
     if (isValid) {
+      console.log("valid");
       return true;
     } else {
+      console.log("invalid");
       alert(errorMessage);
       return false;
     }

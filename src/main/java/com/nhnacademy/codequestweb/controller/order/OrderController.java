@@ -76,10 +76,6 @@ public class OrderController {
     @PostMapping("/non-client/order/process")
     public String tryNonClientOrder(HttpServletRequest request, @ModelAttribute NonClientOrderForm nonClientOrderForm){
         orderService.saveNonClientTemporalOrder(request, nonClientOrderForm);
-//        if(!res) {
-//            request.setAttribute("alterMessage", "다시 주문 시도해 주세요");
-//            return "index";
-//        }
         return String.format("redirect:/client/order/payment?orderCode=%s&method=%s", nonClientOrderForm.getOrderCode(), nonClientOrderForm.getPaymentMethod());
     }
 
