@@ -1,11 +1,9 @@
 package com.nhnacademy.codequestweb.client.payment;
 
 import com.nhnacademy.codequestweb.request.payment.PostProcessRequiredPaymentResponseDto;
-import com.nhnacademy.codequestweb.request.payment.TossApprovePaymentRequest;
-import com.nhnacademy.codequestweb.request.payment.UserUpdateGradeRequestDto;
+import com.nhnacademy.codequestweb.request.payment.ApprovePaymentRequestDto;
 import com.nhnacademy.codequestweb.response.payment.PaymentGradeResponseDto;
-import com.nhnacademy.codequestweb.response.payment.TossPaymentsResponseDto;
-import org.json.simple.parser.ParseException;
+import com.nhnacademy.codequestweb.response.payment.PaymentsResponseDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -24,17 +22,17 @@ public interface PaymentClient {
     /**
      * 주문 결제 정보를 서버에 저장하는 메서드입니다.
      *
-     * @param tossPaymentsResponseDto Toss Payments 결제 응답 정보
+     * @param paymentsResponseDto Toss Payments 결제 응답 정보
      */
     @PostMapping("/api/order/payment/save")
-    void savePayment(@RequestHeader HttpHeaders headers, @RequestBody TossPaymentsResponseDto tossPaymentsResponseDto);
+    void savePayment(@RequestHeader HttpHeaders headers, @RequestBody PaymentsResponseDto paymentsResponseDto);
 
     @GetMapping("/api/payment/grade/{clientId}")
     ResponseEntity<PaymentGradeResponseDto> getPaymentRecordOfClient(@PathVariable Long clientId);
 
     @PostMapping("/api/order/payment/approve")
-    ResponseEntity<TossPaymentsResponseDto> approvePayment(@RequestHeader HttpHeaders headers, @RequestBody TossApprovePaymentRequest tossApprovePaymentRequest);
+    ResponseEntity<PaymentsResponseDto> approvePayment(@RequestHeader HttpHeaders headers, @RequestBody ApprovePaymentRequestDto approvePaymentRequestDto);
 
     @GetMapping("/api/order/payment/post-process")
-    ResponseEntity<PostProcessRequiredPaymentResponseDto> getPostProcessRequiredPaymentResponseDto(@RequestParam("tossOrderId") String tossOrderId);
+    ResponseEntity<PostProcessRequiredPaymentResponseDto> getPostProcessRequiredPaymentResponseDto(@RequestHeader HttpHeaders headers, @RequestParam("orderCode") String orderCode);
 }

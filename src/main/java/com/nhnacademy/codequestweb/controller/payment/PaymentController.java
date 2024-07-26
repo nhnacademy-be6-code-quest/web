@@ -6,7 +6,7 @@ import com.nhnacademy.codequestweb.request.payment.PaymentOrderApproveRequestDto
 import com.nhnacademy.codequestweb.request.payment.PaymentOrderShowRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PostProcessRequiredPaymentResponseDto;
 import com.nhnacademy.codequestweb.request.product.cart.CartRequestDto;
-import com.nhnacademy.codequestweb.response.payment.TossPaymentsResponseDto;
+import com.nhnacademy.codequestweb.response.payment.PaymentsResponseDto;
 import com.nhnacademy.codequestweb.service.payment.PaymentService;
 import com.nhnacademy.codequestweb.service.product.CartService;
 import com.nhnacademy.codequestweb.test.PaymentMethodProvider;
@@ -64,9 +64,9 @@ public class PaymentController {
         }
 
         model.addAttribute("successUrl",
-            "https://book-store.shop/client/order/" + orderCode + "/payment/success?method="+name);
+            "https://localhost:8080/client/order/" + orderCode + "/payment/success?method="+name);
         model.addAttribute("failUrl",
-            "https://book-store.shop/client/order/" + orderCode + "/payment/fail");
+            "https://localhost:8080/client/order/" + orderCode + "/payment/fail");
 
 
         return paymentMethodProvider.getName(name);
@@ -101,13 +101,13 @@ public class PaymentController {
         }
 
         // 결제 승인하기
-        TossPaymentsResponseDto tossPaymentsResponseDto = paymentService.approvePayment(headers, name,
+        PaymentsResponseDto paymentsResponseDto = paymentService.approvePayment(headers, name,
             orderCode, amount, paymentKey);
 
         log.info("결제 승인 성공");
 
         // 결제 승인 후 DB에 저장
-        paymentService.savePayment(headers, tossPaymentsResponseDto);
+        paymentService.savePayment(headers, paymentsResponseDto);
 
         log.info("결제 및 주문 데이터 저장 성공");
 
@@ -125,10 +125,9 @@ public class PaymentController {
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(request, "access"));
 
-        PostProcessRequiredPaymentResponseDto postProcessRequiredPaymentResponseDto = paymentService.getPostProcessRequiredPaymentResponseDto(
-            orderCode);
+        PostProcessRequiredPaymentResponseDto postProcessRequiredPaymentResponseDto = paymentService.getPostProcessRequiredPaymentResponseDto(headers, orderCode);
 
-        model.addAttribute("orderId", postProcessRequiredPaymentResponseDto.getOrderId());
+        model.addAttribute("orderCode", postProcessRequiredPaymentResponseDto.getOrderCode());
         model.addAttribute("view", "payment");
         model.addAttribute("payment", "success");
 
