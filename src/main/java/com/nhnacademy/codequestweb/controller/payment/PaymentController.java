@@ -127,7 +127,7 @@ public class PaymentController {
 
         PostProcessRequiredPaymentResponseDto postProcessRequiredPaymentResponseDto = paymentService.getPostProcessRequiredPaymentResponseDto(headers, orderCode);
 
-        model.addAttribute("orderCode", postProcessRequiredPaymentResponseDto.getOrderCode());
+        model.addAttribute("orderId", postProcessRequiredPaymentResponseDto.getOrderId());
         model.addAttribute("view", "payment");
         model.addAttribute("payment", "success");
 

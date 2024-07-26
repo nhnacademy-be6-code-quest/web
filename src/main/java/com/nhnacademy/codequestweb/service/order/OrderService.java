@@ -3,9 +3,12 @@ package com.nhnacademy.codequestweb.service.order;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nhnacademy.codequestweb.client.auth.UserClient;
 import com.nhnacademy.codequestweb.client.coupon.CouponClient;
 import com.nhnacademy.codequestweb.client.order.OrderClient;
 import com.nhnacademy.codequestweb.client.point.OrderPointClient;
+import com.nhnacademy.codequestweb.request.mypage.ClientRegisterAddressRequestDto;
+import com.nhnacademy.codequestweb.request.mypage.ClientRegisterPhoneNumberRequestDto;
 import com.nhnacademy.codequestweb.request.order.field.OrderItemDto;
 import com.nhnacademy.codequestweb.response.coupon.CouponOrderResponseDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientDeliveryAddressResponseDto;
@@ -53,6 +56,7 @@ public class OrderService {
     private static final String SHIPPING_POLICY = "shippingPolicy";
 
 
+    private final UserClient userClient;
     private final OrderClient orderClient;
     private final CouponClient couponClient;
     private final MyPageService myPageService;
@@ -206,6 +210,7 @@ public class OrderService {
 
         // 책 상세 정보
         BookProductGetResponseDto book = bookProductService.getSingleBookInfo(headers, orderItemDto.getProductId()).getBody();
+
         // 폼에 추가
         assert book != null;
         nonClientOrderForm.addOrderDetailDtoItem(
@@ -298,6 +303,22 @@ public class OrderService {
 
     public NonClientOrderGetResponseDto findNonClientOrder(HttpHeaders headers, long orderId, String orderPassword) {
         return orderClient.findNonClientOrder(headers, orderId, orderPassword).getBody();
+    }
+
+    public List<ClientDeliveryAddressResponseDto> getClientDeliveryAddressListOnOrderPage(HttpHeaders headers){
+        return userClient.getDeliveryAddresses(headers).getBody();
+    }
+
+    public List<ClientPhoneNumberResponseDto> getClientPhoneNumberListOnOrderPage(HttpHeaders headers){
+        return userClient.getPhoneNumber(headers).getBody();
+    }
+
+    public String registerPhoneNumberOnOrderPage(HttpHeaders headers, ClientRegisterPhoneNumberRequestDto clientRegisterPhoneNumberDto){
+        return userClient.registerPhoneNumber(headers, clientRegisterPhoneNumberDto).getBody();
+    }
+
+    public String registerAddressOnOrderPage(HttpHeaders headers, ClientRegisterAddressRequestDto clientRegisterAddressRequestDto){
+        return userClient.registerAddress(headers, clientRegisterAddressRequestDto).getBody();
     }
 
     private HttpHeaders getHeader(HttpServletRequest req){

@@ -70,7 +70,6 @@ public class OrderController {
     public String processClientOrderPayMethodForm(@ModelAttribute ClientOrderPayMethodForm clientOrderPayMethodForm, HttpServletRequest req){
         req.getSession().setAttribute("clientOrderPayMethodForm", clientOrderPayMethodForm);
         return String.format("redirect:/client/order/payment?orderCode=%s&method=%s", orderService.saveClientTemporalOrder(req), clientOrderPayMethodForm.getPaymentMethod());
-
     }
 
     // 비회원 주문 진행
