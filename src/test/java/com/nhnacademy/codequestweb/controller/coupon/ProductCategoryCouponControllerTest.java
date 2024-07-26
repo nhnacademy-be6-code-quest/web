@@ -3,6 +3,7 @@ package com.nhnacademy.codequestweb.controller.coupon;
 import com.nhnacademy.codequestweb.response.product.product_category.CategoryGetResponseDto;
 import com.nhnacademy.codequestweb.response.product.product_category.ProductCategory;
 import com.nhnacademy.codequestweb.service.product.CategoryService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -10,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 
@@ -29,9 +31,12 @@ class ProductCategoryCouponControllerTest {
     @Mock
     private Model model;
 
+    private HttpServletRequest req;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        req = mock(HttpServletRequest.class);
     }
 
     @Test
@@ -40,9 +45,9 @@ class ProductCategoryCouponControllerTest {
                 new CategoryGetResponseDto(1L, "Category1", null, List.of()),
                 new CategoryGetResponseDto(2L, "Category2", new ProductCategory(1L, "Category1", null), List.of())
         ));
-        when(categoryService.getCategories(anyInt(), anyBoolean(), anyString())).thenReturn(ResponseEntity.ok(mockPage));
+        when(categoryService.getCategories(any(), anyInt(), anyBoolean(), anyString())).thenReturn(ResponseEntity.ok(mockPage));
 
-        String result = productCategoryCouponController.getAllCategoriesPage(0, false, "name", model);
+        String result = productCategoryCouponController.getAllCategoriesPage(req,  0, false, "name", model);
 
         assertEquals("view/coupon/categoryAdd", result);
         verify(model).addAttribute(eq("categoryNamePage"), anyMap());
@@ -54,9 +59,9 @@ class ProductCategoryCouponControllerTest {
         Page<CategoryGetResponseDto> mockPage = new PageImpl<>(List.of(
                 new CategoryGetResponseDto(1L, "TestCategory", null, List.of())
         ));
-        when(categoryService.getNameContainingCategories(anyInt(), anyBoolean(), anyString(), anyString())).thenReturn(ResponseEntity.ok(mockPage));
+        when(categoryService.getNameContainingCategories(any(), anyInt(), anyBoolean(), anyString(), anyString())).thenReturn(ResponseEntity.ok(mockPage));
 
-        String result = productCategoryCouponController.getCategoryContainingPage(0, false, "name", "Test", model);
+        String result = productCategoryCouponController.getCategoryContainingPage(req,0, false, "name", "Test", model);
 
         assertEquals("view/coupon/categoryAdd", result);
         verify(model).addAttribute(eq("categoryNamePage"), anyMap());
@@ -68,9 +73,9 @@ class ProductCategoryCouponControllerTest {
         Page<CategoryGetResponseDto> mockPage = new PageImpl<>(List.of(
                 new CategoryGetResponseDto(2L, "SubCategory", new ProductCategory(1L, "ParentCategory", null), List.of())
         ));
-        when(categoryService.getSubCategories(anyInt(), anyBoolean(), anyString(), anyLong())).thenReturn(ResponseEntity.ok(mockPage));
+        when(categoryService.getSubCategories(any(), anyInt(), anyBoolean(), anyString(), anyLong())).thenReturn(ResponseEntity.ok(mockPage));
 
-        String result = productCategoryCouponController.getCategorySubPage(0, false, "name", 1L, model);
+        String result = productCategoryCouponController.getCategorySubPage(req,0, false, "name", 1L, model);
 
         assertEquals("view/coupon/categoryAdd", result);
         verify(model).addAttribute(eq("categoryNamePage"), anyMap());

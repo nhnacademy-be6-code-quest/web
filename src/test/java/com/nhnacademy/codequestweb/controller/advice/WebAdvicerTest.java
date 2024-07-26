@@ -25,12 +25,12 @@ class WebAdvicerTest {
     }
 
     @Test
-    void testHandleBadRequest() {
+    void testHandleUnauthorized() {
         // 준비
         MockHttpServletResponse response = new MockHttpServletResponse();
 
         // 실행
-        String result = webAdvicer.handleBadRequest(mockException, response);
+        String result = webAdvicer.handleUnauthorized(mockException, response);
 
         // 검증
         assertEquals("redirect:/auth", result);
@@ -50,12 +50,12 @@ class WebAdvicerTest {
     }
 
     @Test
-    void testHandleBadRequestCookieDetails() {
+    void testHandleUnauthorizedCookieDetails() {
         // 준비
         MockHttpServletResponse response = new MockHttpServletResponse();
 
         // 실행
-        webAdvicer.handleBadRequest(mockException, response);
+        webAdvicer.handleUnauthorized(mockException, response);
 
         // 검증
         Cookie[] cookies = response.getCookies();

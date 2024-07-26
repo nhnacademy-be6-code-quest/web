@@ -29,11 +29,11 @@ public class TagService {
         return tagClient.deleteTag(headers, tagId);
     }
 
-    public ResponseEntity<Page<TagGetResponseDto>> getAllTags(Integer page, String sort, Boolean desc){
-        return tagClient.getAllTags(page, sort, desc);
+    public ResponseEntity<Page<TagGetResponseDto>> getAllTags(HttpHeaders headers, Integer page, String sort, Boolean desc){
+        return tagClient.getAllTags(headers, page, sort, desc);
     }
 
-    public ResponseEntity<Page<TagGetResponseDto>> getNameContainingTagPage(Integer page, String sort, Boolean desc, String tagName){
-        return tagClient.getNameContainingTagPage(page, sort, desc, tagName);
+    public ResponseEntity<Page<TagGetResponseDto>> getNameContainingTagPage(HttpHeaders headers, Integer page, String sort, Boolean desc, String tagName){
+        return tagClient.getNameContainingTagPage(headers, page, sort, desc, tagName);
     }
 }

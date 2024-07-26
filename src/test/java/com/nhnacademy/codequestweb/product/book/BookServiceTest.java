@@ -28,6 +28,8 @@ import org.springframework.http.ResponseEntity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -51,6 +53,17 @@ class BookServiceTest {
         headers.setContentType(MediaType.APPLICATION_JSON);
         testTime = LocalDateTime.of(2000, 12, 20, 10, 50);
     }
+
+    @Test
+    void roleCheckTest(){
+        when(bookProductClient.roleCheck(any())).thenReturn(ResponseEntity.ok().build());
+
+        ResponseEntity<Void> response = bookService.roleCheck(headers);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        verify(bookProductClient, times(1)).roleCheck(any());
+    }
+
     @Test
     void saveBookTest(){
         BookProductRegisterRequestDto requestDto = BookProductRegisterRequestDto.builder()
@@ -72,14 +85,14 @@ class BookServiceTest {
                 AladinBookResponseDto.builder().build()
         ));
 
-        when(bookProductClient.getBookList(1, "test")).thenReturn(new ResponseEntity<>(responseDtoPage, headers, HttpStatus.OK));
+        when(bookProductClient.getBookListForAdmin(any(), eq(1), eq("test"))).thenReturn(new ResponseEntity<>(responseDtoPage, headers, HttpStatus.OK));
 
-        ResponseEntity<Page<AladinBookResponseDto>> responseEntity = bookService.getBookList(1, "test");
+        ResponseEntity<Page<AladinBookResponseDto>> responseEntity = bookService.getBookListForAdmin(headers,1, "test");
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(responseDtoPage, responseEntity.getBody());
         assertEquals(2, Objects.requireNonNull(responseEntity.getBody()).getTotalElements());
-        verify(bookProductClient, times(1)).getBookList(1, "test");
+        verify(bookProductClient, times(1)).getBookListForAdmin (headers,1, "test");
     }
 
     @Test
@@ -98,11 +111,11 @@ class BookServiceTest {
     @Test
     void isbnCheckTest(){
         String isbn = "isbn";
-        when(bookProductClient.isbnCheck(isbn)).thenReturn(new ResponseEntity<>(null, headers, HttpStatus.OK));
-        ResponseEntity<Void> responseEntity = bookService.isbnCheck(isbn);
+        when(bookProductClient.isbnCheckForAdmin(any(), eq(isbn))).thenReturn(new ResponseEntity<>(null, headers, HttpStatus.OK));
+        ResponseEntity<Void> responseEntity = bookService.isbnCheckForAdmin(headers, isbn);
         assertNotNull(responseEntity);
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        verify(bookProductClient, times(1)).isbnCheck(isbn);
+        verify(bookProductClient, times(1)).isbnCheckForAdmin(headers, isbn);
     }
 
     @Test
@@ -213,5 +226,115 @@ class BookServiceTest {
         assertEquals(responseDtoPage, response.getBody());
         assertEquals(7, Objects.requireNonNull(response.getBody()).getTotalElements());
         verify(bookProductClient, times(1)).getLikeBookPage(headers,1,10,"sort",true, 0);
+    }
+
+    @Test
+    void getSingleBookForAdminTest(){
+        BookProductGetResponseDto responseDto = BookProductGetResponseDto.builder().build();
+        long productId = 1L;
+        when(bookProductClient.getSingleBookInfoForAdmin(headers, productId)).thenReturn(new ResponseEntity<>(responseDto, headers, HttpStatus.OK));
+
+        ResponseEntity<BookProductGetResponseDto> responseEntity = bookService.getSingleBookInfoForAdmin(headers, productId);
+        assertNotNull(responseEntity);
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals(responseDto, responseEntity.getBody());
+        verify(bookProductClient, times(1)).getSingleBookInfoForAdmin(headers, productId);
+    }
+
+    @Test
+    void getAllBookPageForAdminTest(){
+        Page<BookProductGetResponseDto> responseDtoPage = new PageImpl<>(Arrays.asList(
+                BookProductGetResponseDto.builder().build(),
+                BookProductGetResponseDto.builder().build(),
+                BookProductGetResponseDto.builder().build()
+        ));
+
+        when(bookProductClient.getAllBookPageByProductStateForAdmin(headers, 1,  10, "sort", true, 0)).thenReturn(new ResponseEntity<>(responseDtoPage, headers, HttpStatus.OK));
+        ResponseEntity<Page<BookProductGetResponseDto>> response = bookService.getAllBookPageForAdmin(headers, 1, 10, "sort", true, 0);
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(responseDtoPage, response.getBody());
+        assertEquals(3, Objects.requireNonNull(response.getBody()).getTotalElements());
+        verify(bookProductClient, times(1)).getAllBookPageByProductStateForAdmin(headers, 1, 10, "sort", true, 0);
+    }
+
+    @Test
+    void getNameContainingBookPageForAdminTest(){
+        Page<BookProductGetResponseDto> responseDtoPage = new PageImpl<>(Arrays.asList(
+                BookProductGetResponseDto.builder().build(),
+                BookProductGetResponseDto.builder().build(),
+                BookProductGetResponseDto.builder().build(),
+                BookProductGetResponseDto.builder().build()
+        ));
+
+        when(bookProductClient.getNameContainingBookPageByProductStateForAdmin(headers, 1, 10, "sort", true, "title", 0)).thenReturn(new ResponseEntity<>(responseDtoPage, headers, HttpStatus.OK));
+        ResponseEntity<Page<BookProductGetResponseDto>> response = bookService.getNameContainingBookPageForAdmin(headers, 1, 10, "sort", true, "title", 0);
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(responseDtoPage, response.getBody());
+        assertEquals(4, Objects.requireNonNull(response.getBody()).getTotalElements());
+        verify(bookProductClient, times(1)).getNameContainingBookPageByProductStateForAdmin(headers, 1, 10, "sort", true, "title", 0);
+    }
+
+    @Test
+    void getBookPageFilterByTagForAdminTest(){
+        Page<BookProductGetResponseDto> responseDtoPage = new PageImpl<>(Arrays.asList(
+                BookProductGetResponseDto.builder().build(),
+                BookProductGetResponseDto.builder().build(),
+                BookProductGetResponseDto.builder().build(),
+                BookProductGetResponseDto.builder().build(),
+                BookProductGetResponseDto.builder().build()
+        ));
+        Set<String> tagSet = Set.of("tag1", "tag2");
+
+        when(bookProductClient.getBookPageFilterByTagAndProductStateForAdmin(headers, 1, 10, "sort", true, tagSet, true, 0)).thenReturn(new ResponseEntity<>(responseDtoPage, headers, HttpStatus.OK));
+        ResponseEntity<Page<BookProductGetResponseDto>> response = bookService.getBookPageFilterByTagForAdmin(headers, 1, 10, "sort", true, tagSet, true, 0);
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(responseDtoPage, response.getBody());
+        assertEquals(5, Objects.requireNonNull(response.getBody()).getTotalElements());
+        verify(bookProductClient, times(1)).getBookPageFilterByTagAndProductStateForAdmin(headers, 1, 10, "sort", true, tagSet, true, 0);
+    }
+
+    @Test
+    void getBookPageFilterByCategoryForAdminTest(){
+        Page<BookProductGetResponseDto> responseDtoPage = new PageImpl<>(Arrays.asList(
+                BookProductGetResponseDto.builder().build(),
+                BookProductGetResponseDto.builder().build(),
+                BookProductGetResponseDto.builder().build(),
+                BookProductGetResponseDto.builder().build(),
+                BookProductGetResponseDto.builder().build(),
+                BookProductGetResponseDto.builder().build()
+        ));
+
+        Map<String, Page<BookProductGetResponseDto>> responseDtoMap = Map.of("test", responseDtoPage);
+
+        when(bookProductClient.getBookPageFilterByCategoryForAdmin(headers,1,10,"sort",true,1L, 0)).thenReturn(new ResponseEntity<>(responseDtoMap, headers, HttpStatus.OK));
+        ResponseEntity<Map<String, Page<BookProductGetResponseDto>>> response = bookService.getBookPageFilterByCategoryForAdmin(headers, 1, 10, "sort", true, 1L, 0);
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(6, Objects.requireNonNull(Objects.requireNonNull(response.getBody()).values().stream().findFirst().orElseThrow()).getTotalElements());
+        verify(bookProductClient, times(1)).getBookPageFilterByCategoryForAdmin(headers, 1, 10, "sort", true, 1L, 0);
+    }
+
+    @Test
+    void getLikeBookPageForAdminTest(){
+        Page<BookProductGetResponseDto> responseDtoPage = new PageImpl<>(Arrays.asList(
+                BookProductGetResponseDto.builder().build(),
+                BookProductGetResponseDto.builder().build(),
+                BookProductGetResponseDto.builder().build(),
+                BookProductGetResponseDto.builder().build(),
+                BookProductGetResponseDto.builder().build(),
+                BookProductGetResponseDto.builder().build(),
+                BookProductGetResponseDto.builder().build()
+        ));
+
+        when(bookProductClient.getLikeBookPageForAdmin(headers, 1, 10, "sort", true, 0)).thenReturn(new ResponseEntity<>(responseDtoPage, headers, HttpStatus.OK));
+        ResponseEntity<Page<BookProductGetResponseDto>> response = bookService.getLikeBookPageForAdmin(headers, 1, 10, "sort", true, 0);
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(responseDtoPage, response.getBody());
+        assertEquals(7, Objects.requireNonNull(response.getBody()).getTotalElements());
+        verify(bookProductClient, times(1)).getLikeBookPageForAdmin(headers,1,10,"sort",true, 0);
     }
 }

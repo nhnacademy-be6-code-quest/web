@@ -330,7 +330,10 @@
 
             if (isbn.length === 10) {
                 fetch(`/admin/product/book/isbnCheck?isbn=` + isbn, {
-                    method: 'GET'
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
                 })
                     .then(response => {
                         console.log(response);

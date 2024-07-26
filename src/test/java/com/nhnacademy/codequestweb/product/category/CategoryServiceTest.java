@@ -120,43 +120,43 @@ class CategoryServiceTest {
     @Test
     void getAllCategoriesTest(){
         Page<CategoryGetResponseDto> responseDtoPage = new PageImpl<>(categoryGetResponseDtoList, pageRequest, 2);
-        when(categoryClient.getAllCategories(null, null, null)).thenReturn(ResponseEntity.ok(responseDtoPage));
+        when(categoryClient.getAllCategories(headers, null, null, null)).thenReturn(ResponseEntity.ok(responseDtoPage));
 
-        ResponseEntity<Page<CategoryGetResponseDto>> realResponseDtoPage = categoryService.getCategories(null, null, null);
+        ResponseEntity<Page<CategoryGetResponseDto>> realResponseDtoPage = categoryService.getCategories(headers, null, null, null);
 
         assertNotNull(realResponseDtoPage);
         assertEquals(responseDtoPage, realResponseDtoPage.getBody());
         assertEquals(2, Objects.requireNonNull(realResponseDtoPage.getBody()).getTotalElements());
 
-        verify(categoryClient, times(1)).getAllCategories(null, null, null);
+        verify(categoryClient, times(1)).getAllCategories(headers, null, null, null);
     }
 
     @Test
     void getNameContainingCategoriesTest(){
         Page<CategoryGetResponseDto> responseDtoPage = new PageImpl<>(categoryGetResponseDtoList, pageRequest, 2);
-        when(categoryClient.getNameContainingCategories(null, null, null, "test")).thenReturn(ResponseEntity.ok(responseDtoPage));
+        when(categoryClient.getNameContainingCategories(headers, null, null, null, "test")).thenReturn(ResponseEntity.ok(responseDtoPage));
 
-        ResponseEntity<Page<CategoryGetResponseDto>> realResponseDtoPage = categoryService.getNameContainingCategories(null, null, null, "test");
+        ResponseEntity<Page<CategoryGetResponseDto>> realResponseDtoPage = categoryService.getNameContainingCategories(headers, null, null, null, "test");
 
         assertNotNull(realResponseDtoPage);
         assertEquals(responseDtoPage, realResponseDtoPage.getBody());
         assertEquals(2, Objects.requireNonNull(realResponseDtoPage.getBody()).getTotalElements());
 
-        verify(categoryClient, times(1)).getNameContainingCategories(null, null, null, "test");
+        verify(categoryClient, times(1)).getNameContainingCategories(headers, null, null, null, "test");
     }
 
 
     @Test
     void getSubCategoriesTest(){
         Page<CategoryGetResponseDto> responseDtoPage = new PageImpl<>(categoryGetResponseDtoList, pageRequest, 2);
-        when(categoryClient.getSubCategories(null, null, null, 1L)).thenReturn(ResponseEntity.ok(responseDtoPage));
+        when(categoryClient.getSubCategories(headers, null, null, null, 1L)).thenReturn(ResponseEntity.ok(responseDtoPage));
 
-        ResponseEntity<Page<CategoryGetResponseDto>> realResponseDtoPage = categoryService.getSubCategories(null, null, null, 1L);
+        ResponseEntity<Page<CategoryGetResponseDto>> realResponseDtoPage = categoryService.getSubCategories(headers, null, null, null, 1L);
 
         assertNotNull(realResponseDtoPage);
         assertEquals(responseDtoPage, realResponseDtoPage.getBody());
         assertEquals(2, Objects.requireNonNull(realResponseDtoPage.getBody()).getTotalElements());
 
-        verify(categoryClient, times(1)).getSubCategories(null, null, null, 1L);
+        verify(categoryClient, times(1)).getSubCategories(headers, null, null, null, 1L);
     }
 }

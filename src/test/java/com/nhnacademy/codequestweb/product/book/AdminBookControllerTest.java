@@ -10,18 +10,25 @@ import com.nhnacademy.codequestweb.response.product.common.ProductRegisterRespon
 import com.nhnacademy.codequestweb.response.product.common.ProductUpdateResponseDto;
 import com.nhnacademy.codequestweb.response.product.product_category.ProductCategory;
 import com.nhnacademy.codequestweb.response.product.tag.Tag;
+import com.nhnacademy.codequestweb.response.review.ReviewInfoResponseDto;
 import com.nhnacademy.codequestweb.service.image.ImageService;
 import com.nhnacademy.codequestweb.service.product.BookProductService;
+import com.nhnacademy.codequestweb.service.review.ReviewService;
 import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -44,7 +51,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.flash;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
@@ -61,6 +68,9 @@ class AdminBookControllerTest {
 
     @Mock
     private ImageService imageService;
+
+    @Mock
+    private ReviewService reviewService;
 
     private MockMvc mockMvc;
 
@@ -132,7 +142,9 @@ class AdminBookControllerTest {
 
 
     @Test
-    void getAladinFormTest() throws Exception {
+    void getAladinFormTest1() throws Exception {
+        when(bookProductService.roleCheck(any())).thenReturn(ResponseEntity.ok(null));
+
         MvcResult mvcResult = mockMvc.perform(get("/admin/product/book/register/aladin"))
                 .andExpect(status().isOk())
                 .andExpect(view().name(INDEX))
@@ -149,7 +161,9 @@ class AdminBookControllerTest {
     }
 
     @Test
-    void getSelfFormTest() throws Exception {
+    void getSelfFormTest1() throws Exception {
+        when(bookProductService.roleCheck(any())).thenReturn(ResponseEntity.ok(null));
+
         MvcResult mvcResult = mockMvc.perform(get("/admin/product/book/register/self"))
                 .andExpect(status().isOk())
                 .andExpect(view().name(INDEX))
@@ -215,9 +229,12 @@ class AdminBookControllerTest {
     @Test
     void checkIsbnExistTest1() throws Exception {
         String isbn = "test isbn";
-        when(bookProductService.isbnCheck(isbn)).thenReturn(ResponseEntity.status(409).body(null));
+        when(bookProductService.isbnCheckForAdmin(any(), eq(isbn))).thenReturn(ResponseEntity.status(409).body(null));
+
+        headers.set("X-Requested-With", "XMLHttpRequest");
 
         mockMvc.perform(get("/admin/product/book/isbnCheck")
+                        .headers(headers)
                         .param("isbn", isbn)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isConflict());
@@ -225,15 +242,52 @@ class AdminBookControllerTest {
 
     @Test
     void checkIsbnExistTest2() throws Exception {
+        when(bookProductService.roleCheck(any())).thenReturn(ResponseEntity.ok(null));
+
         String isbn = "test isbn";
-        when(bookProductService.isbnCheck(isbn)).thenReturn(ResponseEntity.ok(null));
+        when(bookProductService.isbnCheckForAdmin(any(), eq(isbn))).thenReturn(ResponseEntity.ok(null));
+
+        headers.set("X-Requested-With", "XMLHttpRequest");
 
 
         mockMvc.perform(get("/admin/product/book/isbnCheck")
+                        .headers(headers)
                         .param("isbn", isbn)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+    }
 
+    @Test
+    void checkIsbnExistTest3() throws Exception {
+        when(bookProductService.roleCheck(any())).thenReturn(ResponseEntity.ok(null));
+
+        String isbn = "test isbn";
+        when(bookProductService.isbnCheckForAdmin(any(), eq(isbn))).thenReturn(ResponseEntity.ok(null));
+
+        headers.set("X-Requested-With", "wrong");
+
+
+        mockMvc.perform(get("/admin/product/book/isbnCheck")
+                        .headers(headers)
+                        .param("isbn", isbn)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/"));
+    }
+
+    @Test
+    void checkIsbnExistTest4() throws Exception {
+        when(bookProductService.roleCheck(any())).thenReturn(ResponseEntity.ok(null));
+
+        String isbn = "test isbn";
+        when(bookProductService.isbnCheckForAdmin(any(), eq(isbn))).thenReturn(ResponseEntity.ok(null));
+
+        mockMvc.perform(get("/admin/product/book/isbnCheck")
+                        .headers(headers)
+                        .param("isbn", isbn)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/"));
     }
 
     @Test
@@ -245,7 +299,7 @@ class AdminBookControllerTest {
         );
 
         Page<AladinBookResponseDto> responseDtoPage = new PageImpl<>(responseDtoList);
-        when(bookProductService.getBookList(any(), eq(title))).thenReturn(ResponseEntity.ok(responseDtoPage));
+        when(bookProductService.getBookListForAdmin(any(), any(), eq(title))).thenReturn(ResponseEntity.ok(responseDtoPage));
 
         mockMvc.perform(get("/admin/product/book/aladinList")
                         .param("title", title)
@@ -268,7 +322,7 @@ class AdminBookControllerTest {
 
         Pageable pageable = PageRequest.of(0, 4);
         Page<AladinBookResponseDto> responseDtoPage = new PageImpl<>(responseDtoList, pageable, responseDtoList.size());
-        when(bookProductService.getBookList(any(), eq(title))).thenReturn(ResponseEntity.ok(responseDtoPage));
+        when(bookProductService.getBookListForAdmin(any(), any(), eq(title))).thenReturn(ResponseEntity.ok(responseDtoPage));
 
         mockMvc.perform(get("/admin/product/book/aladinList")
                         .param("title", title)
@@ -280,6 +334,19 @@ class AdminBookControllerTest {
                 .andExpect(model().attribute("title", title))
                 .andExpect(model().attribute("pageNumSet", Set.of(1, 8, 9, 10, 11, 12, 25)))
                 .andExpect(model().attribute("warning", true));
+    }
+
+    @Test
+    void getAladinBookListTest3() throws Exception {
+        String title = "test title";
+        when(bookProductService.getBookListForAdmin(any(), any(), eq(title))).thenThrow(FeignException.class);
+
+        mockMvc.perform(get("/admin/product/book/aladinList")
+                        .param("title", title)
+                        .param("page", "10")
+                        .headers(headers))
+                .andExpect(status().isOk())
+                .andExpect(view().name("view/product/window.close"));
     }
 
     @Test
@@ -341,7 +408,7 @@ class AdminBookControllerTest {
         MockMultipartFile
                 file = new MockMultipartFile("coverImage", "cover.jpg", MediaType.IMAGE_JPEG_VALUE, "image content".getBytes());
 
-        when(imageService.uploadImage(any(MultipartFile.class))).thenThrow(FeignException.class);
+        when(imageService.uploadImage(any(MultipartFile.class))).thenReturn("image_url");
         when(bookProductService.saveBook(any(), any())).thenReturn(ResponseEntity.ok(new ProductRegisterResponseDto(1L, LocalDateTime.now())));
 
         mockMvc.perform(multipart("/admin/product/book/register")
@@ -360,7 +427,9 @@ class AdminBookControllerTest {
                         .param("productInventory", String.valueOf(registerRequestDto.getProductInventory()))
                         .param("categories", String.join(",", registerRequestDto.getCategories()))
                         .param("tags", String.join(",", registerRequestDto.getTags())))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin/client/0"))
+                .andExpect(flash().attributeExists("alterMessage"));
     }
 
     @Test
@@ -441,11 +510,73 @@ class AdminBookControllerTest {
                 .andExpect(flash().attribute(ALTER_MESSAGE, "성공적으로 수정되었습니다."));
     }
 
+
     @Test
     void updateBookTest2() throws Exception {
+        MockMultipartFile
+                file = new MockMultipartFile("coverImage", "cover.jpg", MediaType.IMAGE_JPEG_VALUE, "image content".getBytes());
+
+        when(imageService.uploadImage(any(MultipartFile.class))).thenReturn("image_url");
+        when(bookProductService.updateBook(any(), any())).thenReturn(ResponseEntity.ok(new ProductUpdateResponseDto(LocalDateTime.now())));
+
+        mockMvc.perform(multipart("/admin/product/book/update")
+                        .file(file)
+                        .with(request -> {
+                            request.setMethod("PUT"); // 강제로 PUT 메서드로 설정
+                            return request;
+                        })
+                        .param("productId", String.valueOf(updateRequestDto.getProductId()))
+                        .param("productName", updateRequestDto.getProductName())
+                        .param("packable", String.valueOf(updateRequestDto.isPackable()))
+                        .param("productDescription", updateRequestDto.getProductDescription())
+                        .param("productPriceSales", String.valueOf(updateRequestDto.getProductPriceSales()))
+                        .param("productInventory", String.valueOf(updateRequestDto.getProductInventory()))
+                        .param("categories", String.join(",", updateRequestDto.getCategories()))
+                        .param("productState", String.valueOf(updateRequestDto.getProductState()))
+                        .param("tags", String.join(",", updateRequestDto.getTags())))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin/product/book/all"))
+                .andExpect(flash().attribute(ALTER_MESSAGE, "성공적으로 수정되었습니다."));
+    }
+
+    @Test
+    void updateBookTest3() throws Exception {
+        MockMultipartFile
+                file = new MockMultipartFile("coverImage", "cover.jpg", MediaType.IMAGE_JPEG_VALUE, "image content".getBytes());
+
+        when(imageService.uploadImage(any(MultipartFile.class))).thenThrow(FileSaveException.class);
+        when(bookProductService.updateBook(any(), any())).thenReturn(ResponseEntity.ok(new ProductUpdateResponseDto(LocalDateTime.now())));
+
+        mockMvc.perform(multipart("/admin/product/book/update")
+                        .file(file)
+                        .with(request -> {
+                            request.setMethod("PUT"); // 강제로 PUT 메서드로 설정
+                            return request;
+                        })
+                        .param("productId", String.valueOf(updateRequestDto.getProductId()))
+                        .param("productName", updateRequestDto.getProductName())
+                        .param("packable", String.valueOf(updateRequestDto.isPackable()))
+                        .param("productDescription", updateRequestDto.getProductDescription())
+                        .param("productPriceSales", String.valueOf(updateRequestDto.getProductPriceSales()))
+                        .param("productInventory", String.valueOf(updateRequestDto.getProductInventory()))
+                        .param("categories", String.join(",", updateRequestDto.getCategories()))
+                        .param("productState", String.valueOf(updateRequestDto.getProductState()))
+                        .param("tags", String.join(",", updateRequestDto.getTags())))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin/product/book/all"))
+                .andExpect(flash().attribute(ALTER_MESSAGE, "수정은 이루어졌지만, 표지 이미지를 저장하는 과정에서 문제가 발생했습니다.\n 자세한 정보는 로그를 확인하세요."));
+    }
+
+
+    @Test
+    void updateBookTest4() throws Exception {
         when(bookProductService.updateBook(any(), any())).thenThrow(FeignException.class);
 
-        mockMvc.perform(put("/admin/product/book/update")
+        mockMvc.perform(multipart("/admin/product/book/update")
+                        .with(request -> {
+                            request.setMethod("PUT"); // 강제로 PUT 메서드로 설정
+                            return request;
+                        })
                         .param("productId", String.valueOf(updateRequestDto.getProductId()))
                         .param("productName", "t")
                         .param("packable", String.valueOf(updateRequestDto.isPackable()))
@@ -455,14 +586,20 @@ class AdminBookControllerTest {
                         .param("categories", String.join(",", updateRequestDto.getCategories()))
                         .param("productState", String.valueOf(updateRequestDto.getProductState()))
                         .param("tags", String.join(",", updateRequestDto.getTags())))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin/client/0"))
+                .andExpect(flash().attributeExists("alterMessage"));
     }
 
     @Test
-    void updateBookTest3() throws Exception {
+    void updateBookTest5() throws Exception {
         when(bookProductService.updateBook(any(), any())).thenThrow(FeignException.class);
 
-        mockMvc.perform(put("/admin/product/book/update")
+        mockMvc.perform(multipart("/admin/product/book/update")
+                        .with(request -> {
+                            request.setMethod("PUT"); // 강제로 PUT 메서드로 설정
+                            return request;
+                        })
                         .param("productId", String.valueOf(updateRequestDto.getProductId()))
                         .param("productName", updateRequestDto.getProductName())
                         .param("packable", String.valueOf(updateRequestDto.isPackable()))
@@ -477,8 +614,23 @@ class AdminBookControllerTest {
                 .andExpect(flash().attribute(ALTER_MESSAGE, "상품 정보를 수정하는 데 실패했습니다.\n자세한 정보는 로그를 확인하세요."));
     }
 
-    @Test
-    void getAllBookPageTest() throws Exception {
+    private static Stream<Arguments> provideTestParameters(String prefix) {
+        return Stream.of(
+                Arguments.of(null, prefix + " - 전체"),
+                Arguments.of(0, prefix + " - 판매 중"),
+                Arguments.of(1, prefix + " - 임시 판매 중지"),
+                Arguments.of(2, prefix + " - 영구 판매 중지"),
+                Arguments.of(3, prefix + " - 오류. (상태가 데이터베이스상 존재하지 않음.)")
+        );
+    }
+
+    static Stream<Arguments> provideAllBooksTestParameters() {
+        return provideTestParameters("관리자 페이지 - 모든 도서");
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideAllBooksTestParameters")
+    void getAllBookPageTest(Integer productState, String mainText) throws Exception {
         List<BookProductGetResponseDto> responseDtoList = new ArrayList<>();
         for (int i = 0 ; i < 10; i ++){
             responseDtoList.add(BookProductGetResponseDto.builder().build());
@@ -486,7 +638,7 @@ class AdminBookControllerTest {
 
         Pageable pageable = PageRequest.of(0, 4);
         Page<BookProductGetResponseDto> responseDtoPage = new PageImpl<>(responseDtoList, pageable, responseDtoList.size());
-        when(bookProductService.getAllBookPage(any(), eq(1), eq(10), eq("sort"), eq(true), eq(0)))
+        when(bookProductService.getAllBookPageForAdmin(any(), eq(1), eq(10), eq("sort"), eq(true), eq(productState)))
                 .thenReturn(ResponseEntity.ok(responseDtoPage));
 
         mockMvc.perform(get("/admin/product/book/all")
@@ -494,16 +646,38 @@ class AdminBookControllerTest {
                         .param("size", String.valueOf(10))
                         .param("sort", "sort")
                         .param("desc", String.valueOf(true))
-                        .param("productState", String.valueOf(0)))
+                        .param("productState", productState == null? null : String.valueOf(productState)))
                 .andExpect(status().isOk())
-                .andExpect(model().attribute(MAIN_TEXT, "관리자 페이지 - 판매 중"))
+                .andExpect(model().attribute(MAIN_TEXT, mainText))
                 .andExpect(model().attribute(ADMIN_PAGE, PRODUCT_LIST_PAGE))
                 .andExpect(model().attribute(ACTIVE_SECTION, PRODUCT));
 
     }
 
-    @Test
-    void getNameContainingBookPageTest() throws Exception {
+    @ParameterizedTest
+    @MethodSource("provideAllBooksTestParameters")
+    void getAllBookPageTest2(Integer productState) throws Exception {
+        when(bookProductService.getAllBookPageForAdmin(any(), eq(1), eq(10), eq("sort"), eq(true), eq(productState)))
+                .thenThrow(FeignException.class);
+
+        mockMvc.perform(get("/admin/product/book/all")
+                        .param("page", String.valueOf(1))
+                        .param("size", String.valueOf(10))
+                        .param("sort", "sort")
+                        .param("desc", String.valueOf(true))
+                        .param("productState", productState == null? null : String.valueOf(productState)))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin/client/0"))
+                .andExpect(flash().attribute("alterMessage", "도서 정보 조회에 실패했습니다."));
+    }
+
+    static Stream<Arguments> provideNameContainingBooksTestParameters() {
+        return provideTestParameters("관리자 페이지 - 제목 : test");
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideNameContainingBooksTestParameters")
+    void getNameContainingBookPageTest1(Integer productState, String mainText) throws Exception {
         List<BookProductGetResponseDto> responseDtoList = new ArrayList<>();
         for (int i = 0 ; i < 10; i ++){
             responseDtoList.add(BookProductGetResponseDto.builder().build());
@@ -511,7 +685,7 @@ class AdminBookControllerTest {
 
         Pageable pageable = PageRequest.of(0, 4);
         Page<BookProductGetResponseDto> responseDtoPage = new PageImpl<>(responseDtoList, pageable, responseDtoList.size());
-        when(bookProductService.getNameContainingBookPage(any(), eq(1), eq(10), eq("sort"), eq(true), eq("test"), eq(0)))
+        when(bookProductService.getNameContainingBookPageForAdmin(any(), eq(1), eq(10), eq("sort"), eq(true), eq("test"), eq(productState)))
                 .thenReturn(ResponseEntity.ok(responseDtoPage));
 
         mockMvc.perform(get("/admin/product/book/containing")
@@ -520,16 +694,42 @@ class AdminBookControllerTest {
                         .param("size", String.valueOf(10))
                         .param("sort", "sort")
                         .param("desc", String.valueOf(true))
-                        .param("productState", String.valueOf(0)))
+                        .param("productState", productState == null? null : String.valueOf(productState)))
                 .andExpect(status().isOk())
-                .andExpect(model().attribute(MAIN_TEXT, "관리자 페이지 - 제목 : test"))
+                .andExpect(model().attribute(MAIN_TEXT, mainText))
                 .andExpect(model().attribute(ADMIN_PAGE, PRODUCT_LIST_PAGE))
                 .andExpect(model().attribute(ACTIVE_SECTION, PRODUCT));
-
     }
 
-    @Test
-    void getBookPageFilterByTagTest() throws Exception {
+
+    @ParameterizedTest
+    @MethodSource("provideNameContainingBooksTestParameters")
+    void getNameContainingBookPageTest2(Integer productState) throws Exception {
+        when(bookProductService.getNameContainingBookPageForAdmin(any(), eq(1), eq(10), eq("sort"), eq(true), eq("test"), eq(productState)))
+                .thenThrow(FeignException.class);
+
+        mockMvc.perform(get("/admin/product/book/containing")
+                        .param("title", "test")
+                        .param("page", String.valueOf(1))
+                        .param("size", String.valueOf(10))
+                        .param("sort", "sort")
+                        .param("desc", String.valueOf(true))
+                        .param("productState", productState == null? null : String.valueOf(productState)))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin/client/0"))
+                .andExpect(flash().attribute("alterMessage", "도서 정보 조회에 실패했습니다."));
+    }
+
+
+
+    static Stream<Arguments> provideTagFilterBooksTestParameters() {
+        return provideTestParameters("관리자 페이지 - 태그 : [tag1, tag2]");
+    }
+
+
+    @ParameterizedTest
+    @MethodSource("provideTagFilterBooksTestParameters")
+    void getBookPageFilterByTagTest1(Integer productState, String mainText) throws Exception {
         List<BookProductGetResponseDto> responseDtoList = new ArrayList<>();
         for (int i = 0 ; i < 10; i ++){
             responseDtoList.add(BookProductGetResponseDto.builder().build());
@@ -539,7 +739,8 @@ class AdminBookControllerTest {
         Page<BookProductGetResponseDto> responseDtoPage = new PageImpl<>(responseDtoList, pageable, responseDtoList.size());
         Set<String> tags = Set.of("tag1","tag2");
 
-        when(bookProductService.getBookPageFilterByTag(any(), eq(1), eq(10), eq("sort"), eq(true), eq(tags), any(), eq(0))).thenReturn(ResponseEntity.ok(responseDtoPage));
+        when(bookProductService.getBookPageFilterByTagForAdmin(any(), eq(1), eq(10), eq("sort"), eq(true), eq(tags), any(), eq(productState)))
+                .thenReturn(ResponseEntity.ok(responseDtoPage));
 
         mockMvc.perform(get("/admin/product/book/tagFilter")
                         .param("tagName", "tag1,tag2")
@@ -547,15 +748,39 @@ class AdminBookControllerTest {
                         .param("size", String.valueOf(10))
                         .param("sort", "sort")
                         .param("desc", String.valueOf(true))
-                        .param("productState", String.valueOf(0)))
+                        .param("productState", productState == null? null : String.valueOf(productState)))
                 .andExpect(status().isOk())
-                .andExpect(model().attribute(MAIN_TEXT, "관리자 페이지 - 태그 : [tag1, tag2]"))
+                .andExpect(model().attribute(MAIN_TEXT, mainText))
                 .andExpect(model().attribute(ADMIN_PAGE, PRODUCT_LIST_PAGE))
                 .andExpect(model().attribute(ACTIVE_SECTION, PRODUCT));
     }
 
-    @Test
-    void getBookPageFilterByCategoryTest() throws Exception {
+    @ParameterizedTest
+    @MethodSource("provideTagFilterBooksTestParameters")
+    void getBookPageFilterByTagTest2(Integer productState) throws Exception {
+        when(bookProductService.getNameContainingBookPageForAdmin(any(), eq(1), eq(10), eq("sort"), eq(true), eq("test"), eq(productState)))
+                .thenThrow(FeignException.class);
+
+        mockMvc.perform(get("/admin/product/book/tagFilter")
+                        .param("tagName", "tag1,tag2")
+                        .param("page", String.valueOf(1))
+                        .param("size", String.valueOf(10))
+                        .param("sort", "sort")
+                        .param("desc", String.valueOf(true))
+                        .param("productState", productState == null? null : String.valueOf(productState)))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin/client/0"))
+                .andExpect(flash().attribute("alterMessage", "도서 정보 조회에 실패했습니다."));
+    }
+
+
+    static Stream<Arguments> provideCategoryFilterBooksTestParameters() {
+        return provideTestParameters("관리자 페이지 - 카테고리");
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideCategoryFilterBooksTestParameters")
+    void getBookPageFilterByCategoryTest1(Integer productState, String mainText) throws Exception {
         List<BookProductGetResponseDto> responseDtoList = new ArrayList<>();
         for (int i = 0 ; i < 10; i ++){
             responseDtoList.add(BookProductGetResponseDto.builder().build());
@@ -567,7 +792,7 @@ class AdminBookControllerTest {
         Map<String, Page<BookProductGetResponseDto>> responseMap
                 = Map.of("{\"productCategoryId\":1, \"categoryName\":\"test\", \"parentProductCategory\": null}", responseDtoPage);
 
-        when(bookProductService.getBookPageFilterByCategory(any(), eq(1), eq(10), eq("sort"), eq(true), eq(1L), eq(0)))
+        when(bookProductService.getBookPageFilterByCategoryForAdmin(any(), eq(1), eq(10), eq("sort"), eq(true), eq(1L), eq(productState)))
                 .thenReturn(ResponseEntity.ok(responseMap));
 
         mockMvc.perform(get("/admin/product/book/category/1")
@@ -575,12 +800,175 @@ class AdminBookControllerTest {
                         .param("size", String.valueOf(10))
                         .param("sort", "sort")
                         .param("desc", String.valueOf(true))
-                        .param("productState", String.valueOf(0)))
+                        .param("productState", productState == null? null : String.valueOf(productState)))
                 .andExpect(status().isOk())
-                .andExpect(model().attribute(MAIN_TEXT, "관리자 페이지 - 카테고리 : "))
+                .andExpect(model().attribute(MAIN_TEXT, mainText))
                 .andExpect(model().attribute(ADMIN_PAGE, PRODUCT_LIST_PAGE))
                 .andExpect(model().attribute(ACTIVE_SECTION, PRODUCT));
+    }
 
+    @ParameterizedTest
+    @MethodSource("provideCategoryFilterBooksTestParameters")
+    void getBookPageFilterByCategoryTest2(Integer productState) throws Exception {
+        when(bookProductService.getBookPageFilterByCategoryForAdmin(any(), eq(1), eq(10), eq("sort"), eq(true), eq(1L), eq(productState)))
+                .thenThrow(FeignException.class);
+
+        mockMvc.perform(get("/admin/product/book/category/1")
+                        .param("page", String.valueOf(1))
+                        .param("size", String.valueOf(10))
+                        .param("sort", "sort")
+                        .param("desc", String.valueOf(true))
+                        .param("productState", productState == null? null : String.valueOf(productState)))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin/client/0"))
+                .andExpect(flash().attribute("alterMessage", "도서 정보 조회에 실패했습니다."));
+    }
+
+    static Stream<Arguments> provideLikeBooksTestParameters() {
+        return provideTestParameters("관리자 페이지 - 즐겨찾기");
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideLikeBooksTestParameters")
+    void getLikeBookPageTest1(Integer productState, String mainText) throws Exception {
+        List<BookProductGetResponseDto> responseDtoList = new ArrayList<>();
+        for (int i = 0 ; i < 10; i ++){
+            responseDtoList.add(BookProductGetResponseDto.builder().build());
+        }
+
+        Pageable pageable = PageRequest.of(0, 4);
+        Page<BookProductGetResponseDto> responseDtoPage = new PageImpl<>(responseDtoList, pageable, responseDtoList.size());
+
+        when(bookProductService.getLikeBookPageForAdmin(any(), eq(1), eq(10), eq("sort"), eq(true), eq(productState)))
+                .thenReturn(ResponseEntity.ok(responseDtoPage));
+
+        mockMvc.perform(get("/admin/product/book/like")
+                        .param("page", String.valueOf(1))
+                        .param("size", String.valueOf(10))
+                        .param("sort", "sort")
+                        .param("desc", String.valueOf(true))
+                        .param("productState", productState == null? null : String.valueOf(productState)))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute(MAIN_TEXT, mainText))
+                .andExpect(model().attribute(ADMIN_PAGE, PRODUCT_LIST_PAGE))
+                .andExpect(model().attribute(ACTIVE_SECTION, PRODUCT));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideLikeBooksTestParameters")
+    void getLikeBookPageTest2(Integer productState) throws Exception {
+        when(bookProductService.getLikeBookPageForAdmin(any(), eq(1), eq(10), eq("sort"), eq(true), eq(productState)))
+                .thenThrow(FeignException.class);
+
+        mockMvc.perform(get("/admin/product/book/like")
+                        .param("page", String.valueOf(1))
+                        .param("size", String.valueOf(10))
+                        .param("sort", "sort")
+                        .param("desc", String.valueOf(true))
+                        .param("productState", productState == null? null : String.valueOf(productState)))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin/client/0"))
+                .andExpect(flash().attribute("alterMessage", "도서 정보 조회에 실패했습니다."));
+    }
+
+    @Test
+    void getSingleBookTest1() throws Exception{
+        BookProductGetResponseDto responseDto = BookProductGetResponseDto.builder()
+                .categorySet(new HashSet<>())
+                .build();
+
+        when(bookProductService.getSingleBookInfoForAdmin(any(), eq(1L)))
+                .thenReturn(ResponseEntity.ok(responseDto));
+        List<ReviewInfoResponseDto> testList = new ArrayList<>();
+        when(reviewService.getReviewScore(1L)).thenReturn(1.1);
+        when(reviewService.getProductReviewPage(0, 10, 1L)).thenReturn(new PageImpl<>(testList));
+
+        mockMvc.perform(get("/admin/product/book/1"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("index"))
+                .andExpect(model().attribute("view","adminPage"))
+                .andExpect(model().attribute("averageScore", 1.1))
+                .andExpect(model().attribute("totalPage", 1))
+                .andExpect(model().attributeDoesNotExist("alterMessage"));
+    }
+
+    @Test
+    void getSingleBookTest2() throws Exception{
+        BookProductGetResponseDto responseDto = BookProductGetResponseDto.builder()
+                .categorySet(new HashSet<>())
+                .build();
+
+        when(bookProductService.getSingleBookInfoForAdmin(any(), eq(1L)))
+                .thenReturn(ResponseEntity.ok(responseDto));
+        when(reviewService.getReviewScore(1L)).thenReturn(1.1);
+        when(reviewService.getProductReviewPage(0, 10, 1L)).thenThrow(FeignException.class);
+
+        mockMvc.perform(get("/admin/product/book/1"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("index"))
+                .andExpect(model().attribute("view","adminPage"))
+                .andExpect(model().attribute("averageScore", 0.0))
+                .andExpect(model().attribute("totalPage", 0))
+                .andExpect(model().attribute("alterMessage", "리뷰 조회 과정에서 오류가 발생했습니다."));
+    }
+
+    @Test
+    void getSingleBookTest3() throws Exception{
+        BookProductGetResponseDto responseDto = BookProductGetResponseDto.builder()
+                .categorySet(new HashSet<>())
+                .build();
+
+        when(bookProductService.getSingleBookInfoForAdmin(any(), eq(1L)))
+                .thenReturn(ResponseEntity.ok(responseDto));
+        when(reviewService.getReviewScore(1L)).thenThrow(FeignException.class);
+
+        List<ReviewInfoResponseDto> testList = new ArrayList<>();
+        when(reviewService.getProductReviewPage(0, 10, 1L)).thenReturn(new PageImpl<>(testList));
+
+
+        mockMvc.perform(get("/admin/product/book/1"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("index"))
+                .andExpect(model().attribute("view","adminPage"))
+                .andExpect(model().attribute("averageScore", 0.0))
+                .andExpect(model().attribute("totalPage", 0))
+                .andExpect(model().attribute("alterMessage", "리뷰 조회 과정에서 오류가 발생했습니다."));
+    }
+
+    @Test
+    void getSingleBookTest4() throws Exception{
+        when(bookProductService.getSingleBookInfoForAdmin(any(), eq(1L)))
+                .thenThrow(FeignException.class);
+
+        mockMvc.perform(get("/admin/product/book/1"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin/product/book/all"))
+                .andExpect(flash().attribute("alterMessage", "도서 정보 조회에 실패했습니다."))
+                .andExpect(model().attributeDoesNotExist("alterMessage", "averageScore", "totalPage", "view"));
+    }
+
+    @Test
+    void exceptionHandlerTest1() throws Exception{
+        mockMvc.perform(get("/admin/product/book/isbnCheck"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin/client/0"))
+                .andExpect(flash().attribute("alterMessage", "파라미터가 존재하지 않습니다."));
+    }
+
+    @Test
+    void exceptionHandlerTest2() throws Exception{
+        mockMvc.perform(get("/admin/product/book/aladinList"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin/client/0"))
+                .andExpect(flash().attribute("alterMessage", "파라미터가 존재하지 않습니다."));
+    }
+
+    @Test
+    void exceptionHandlerTest3() throws Exception{
+        mockMvc.perform(post("/admin/product/book/register"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin/client/0"))
+                .andExpect(flash().attributeExists("alterMessage"));
     }
 }
 

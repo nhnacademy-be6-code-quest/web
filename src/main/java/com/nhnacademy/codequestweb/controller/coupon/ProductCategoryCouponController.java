@@ -4,6 +4,8 @@ import com.nhnacademy.codequestweb.response.product.product_category.CategoryGet
 import com.nhnacademy.codequestweb.response.product.product_category.ProductCategory;
 import com.nhnacademy.codequestweb.service.product.CategoryService;
 
+import com.nhnacademy.codequestweb.utils.CookieUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.*;
 
 import lombok.RequiredArgsConstructor;
@@ -36,8 +38,13 @@ public class ProductCategoryCouponController {
 
 
     @GetMapping("/coupon/categories/all")
-    public String getAllCategoriesPage(@RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "desc", required = false) Boolean desc, @RequestParam(name = "sort", required = false) String sort, Model model) {
-        ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getCategories(page, desc, sort);
+    public String getAllCategoriesPage(
+            HttpServletRequest req,
+            @RequestParam(name = "page", required = false) Integer page,
+            @RequestParam(name = "desc", required = false) Boolean desc,
+            @RequestParam(name = "sort", required = false) String sort,
+            Model model) {
+        ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getCategories(CookieUtils.setHeader(req), page, desc, sort);
         List<CategoryGetResponseDto> categoryNamePage = getCategoryPathNameList(response);
         Map<CategoryGetResponseDto, String> categoryNameMap = new LinkedHashMap<>();
 
@@ -75,8 +82,13 @@ public class ProductCategoryCouponController {
     }
 
     @GetMapping("/coupon/categories/containing")
-    public String getCategoryContainingPage(@RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "desc", required = false) Boolean desc, @RequestParam(name = "sort", required = false) String sort, @RequestParam("categoryName") String categoryName, Model model) {
-        ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getNameContainingCategories(page, desc, sort, categoryName);
+    public String getCategoryContainingPage(
+            HttpServletRequest req,
+            @RequestParam(name = "page", required = false) Integer page,
+            @RequestParam(name = "desc", required = false) Boolean desc,
+            @RequestParam(name = "sort", required = false) String sort,
+            @RequestParam("categoryName") String categoryName, Model model) {
+        ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getNameContainingCategories(CookieUtils.setHeader(req),page, desc, sort, categoryName);
         List<CategoryGetResponseDto> categoryNamePage = getCategoryPathNameList(response);
         Map<CategoryGetResponseDto, String> categoryNameMap = new LinkedHashMap<>();
 
@@ -90,8 +102,13 @@ public class ProductCategoryCouponController {
     }
 
     @GetMapping("/coupon/categories/{categoryId}/sub")
-    public String getCategorySubPage(@RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "desc", required = false) Boolean desc, @RequestParam(name = "sort", required = false) String sort, @PathVariable("categoryId") Long categoryId, Model model) {
-        ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getSubCategories(page, desc, sort, categoryId);
+    public String getCategorySubPage(
+            HttpServletRequest req,
+            @RequestParam(name = "page", required = false) Integer page,
+            @RequestParam(name = "desc", required = false) Boolean desc,
+            @RequestParam(name = "sort", required = false) String sort,
+            @PathVariable("categoryId") Long categoryId, Model model) {
+        ResponseEntity<Page<CategoryGetResponseDto>> response = categoryService.getSubCategories(CookieUtils.setHeader(req),page, desc, sort, categoryId);
         List<CategoryGetResponseDto> categoryNamePage = getCategoryPathNameList(response);
         Map<CategoryGetResponseDto, String> categoryNameMap = new LinkedHashMap<>();
 

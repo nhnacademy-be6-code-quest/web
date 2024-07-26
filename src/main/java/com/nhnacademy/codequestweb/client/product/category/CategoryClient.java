@@ -24,25 +24,42 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface CategoryClient {
 
     @PostMapping("/product/admin/category/register")
-    ResponseEntity<CategoryRegisterResponseDto> saveCategory(@RequestHeader HttpHeaders headers, @Valid @RequestBody CategoryRegisterRequestDto categoryRegisterRequestDto);
+    ResponseEntity<CategoryRegisterResponseDto> saveCategory(
+            @RequestHeader HttpHeaders headers,
+            @Valid @RequestBody CategoryRegisterRequestDto categoryRegisterRequestDto);
 
     @PutMapping("/product/admin/category/update")
-    ResponseEntity<CategoryUpdateResponseDto> updateCategory(@RequestHeader HttpHeaders headers, @Valid @RequestBody
-    CategoryUpdateRequestDto categoryUpdateRequestDto);
+    ResponseEntity<CategoryUpdateResponseDto> updateCategory(
+            @RequestHeader HttpHeaders headers,
+            @Valid @RequestBody CategoryUpdateRequestDto categoryUpdateRequestDto);
 
     @DeleteMapping("/product/admin/category/delete/{categoryId}")
-    ResponseEntity<Void> deleteCategory(@RequestHeader HttpHeaders headers, @PathVariable("categoryId") Long categoryId);
+    ResponseEntity<Void> deleteCategory(
+            @RequestHeader HttpHeaders headers,
+            @PathVariable("categoryId") Long categoryId);
 
-    @GetMapping("/product/categories/all")
-    ResponseEntity<Page<CategoryGetResponseDto>> getAllCategories(@RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "desc", required = false) Boolean desc, @RequestParam(name = "sort", required = false) String sort);
+    @GetMapping("/product/admin/categories/all")
+    ResponseEntity<Page<CategoryGetResponseDto>> getAllCategories(
+            @RequestHeader HttpHeaders headers,
+            @RequestParam(name = "page", required = false) Integer page,
+            @RequestParam(name = "desc", required = false) Boolean desc,
+            @RequestParam(name = "sort", required = false) String sort);
 
-    @GetMapping("/product/categories/containing")
-    ResponseEntity<Page<CategoryGetResponseDto>> getNameContainingCategories(@RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "desc", required = false) Boolean desc, @RequestParam(name = "sort", required = false) String sort,
-                                                                             @RequestParam("categoryName") String categoryName);
+    @GetMapping("/product/admin/categories/containing")
+    ResponseEntity<Page<CategoryGetResponseDto>> getNameContainingCategories(
+            @RequestHeader HttpHeaders headers,
+            @RequestParam(name = "page", required = false) Integer page,
+            @RequestParam(name = "desc", required = false) Boolean desc,
+            @RequestParam(name = "sort", required = false) String sort,
+            @RequestParam("categoryName") String categoryName);
 
-    @GetMapping("/product/categories/{categoryId}/sub")
-    ResponseEntity<Page<CategoryGetResponseDto>> getSubCategories(@RequestParam(name = "page", required = false) Integer page, @RequestParam(name = "desc", required = false) Boolean desc, @RequestParam(name = "sort", required = false) String sort,
-                                                                  @PathVariable("categoryId") Long categoryId);
+    @GetMapping("/product/admin/categories/{categoryId}/sub")
+    ResponseEntity<Page<CategoryGetResponseDto>> getSubCategories(
+            @RequestHeader HttpHeaders headers,
+            @RequestParam(name = "page", required = false) Integer page,
+            @RequestParam(name = "desc", required = false) Boolean desc,
+            @RequestParam(name = "sort", required = false) String sort,
+            @PathVariable("categoryId") Long categoryId);
 
 
     @GetMapping("/product/categories/tree")
