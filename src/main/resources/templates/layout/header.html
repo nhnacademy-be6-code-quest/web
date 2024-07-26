@@ -26,14 +26,7 @@
     <link rel="stylesheet" th:href="@{/css/message/style.css}">
     <style>
 
-        .modal{
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f7fafc; /* Equivalent to bg-gray-100 */
-            margin: 0;
-        }
+
         #search-results {
             width: 20%;
             max-width: 20%;
@@ -64,6 +57,84 @@
 
         #search-results .list-group-item:last-child {
             border-bottom: none;
+        }
+        .modalCoupon {
+            z-index: 1000; /* 최상위 레이어 */
+            display: none; /* 기본적으로 숨김 */
+            position: fixed; /* 화면에 고정 */
+            justify-content: center; /* 가로 중앙 정렬 */
+
+            left: 0;
+            top: 0;
+            width: 100%; /* 전체 너비 */
+            height: 100%; /* 전체 높이 */
+            background-color: rgba(0, 0, 0, 0.4); /* 반투명 검은색 배경 */
+        }
+
+        /* 모달 내용 스타일 */
+        .modalCoupon-content {
+            background-color: rgba(255, 255, 255); /* 배경색을 흰색으로 하고 투명도 50% */
+            margin: 20% auto; /* 화면 중앙에서 약간 위로 조정 */
+            padding: 20px; /* 내부 여백 */
+            border-radius: 0.5rem; /* 테두리 둥글게 */
+            width: 100%; /* 너비 설정 */
+            max-width: 500px; /* 최대 너비 설정 */
+            position: relative; /* 위치를 상대적으로 조정 */
+            overflow-y: auto;
+            transform: translate(0%, -50%); /* 모달 내용을 중앙으로 이동 */
+            max-height: 80vh;
+        }
+
+        /* 쿠폰 내용 스타일 */
+        .coupon {
+            background-color: #e2e8f0; /* 배경색 */
+            padding: 1rem; /* 내부 여백 */
+            border-radius: 0.5rem; /* 테두리 둥글게 */
+            margin: 10px 0; /* 사이사이 여백 추가 */
+        }
+
+        /* 제목 스타일 */
+        .title {
+            font-size: 1.125rem; /* 제목 글자 크기 */
+            font-weight: bold; /* 제목 글자 두께 */
+            margin-bottom: 0.5rem; /* 제목 아래 여백 */
+        }
+
+        /* 텍스트 스타일 */
+        .text {
+            color: #718096; /* 텍스트 색상 */
+            margin-bottom: 0.5rem; /* 텍스트 아래 여백 */
+        }
+
+        /* 버튼 스타일 */
+        .button {
+            width: 70%; /* 버튼 너비 */
+            padding: 0.5rem; /* 버튼 내부 여백 */
+            background-color: #dfa761; /* 버튼 배경색 */
+            color: white;
+            border: none;
+            border-radius: 0.25rem; /* 버튼 테두리 둥글게 */
+            cursor: pointer;
+
+        }
+
+        .button:hover {
+            background-color: #ddb147; /* 버튼 호버 시 배경색 */
+        }
+
+        /* 닫기 버튼 스타일 */
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -199,7 +270,7 @@
                             <a href="blog.html" class="nav-link">Event</a>
                         </li>
                         <li class="nav-item">
-                            <button class="nav-link" onclick="openCouponModal(this)">쿠폰지급</button>
+                            <button class="nav-link" onclick="openCouponModal('couponModal')">쿠폰지급</button>
                         </li>
 
                     </ul>
@@ -244,8 +315,8 @@
         </div>
 
     </div>
-    <div id="couponModal" class="modal">
-        <div class="modal-content">
+    <div id="couponModal" class="modalCoupon">
+        <div class="modalCoupon-content">
             <span class="close" onclick="closeModal('couponModal')">&times;</span>
             <form action="/coupon/reward" method="post">
                 <div class="coupon">
@@ -296,12 +367,11 @@
     function closeModal(modalId) {
         document.getElementById(modalId).style.display = "none";
     }
-    function openCouponModal(button){
-        const modal = document.getElementById('couponModal');
-        modal.style.display = "block";
+    function openCouponModal(modalId) {
+        openModal(modalId);
     }
     window.onclick = function(event) {
-        const modals = document.getElementsByClassName("modal");
+        const modals = document.getElementsByClassName("modalCoupon");
         for (let i = 0; i < modals.length; i++) {
             if (event.target == modals[i]) {
                 closeModal(modals[i].id);
