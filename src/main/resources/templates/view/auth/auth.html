@@ -6,6 +6,20 @@
 
     <link rel="stylesheet" type="text/css" th:href="@{/css/auth/style.css}">
 
+    <script>
+        function buttonChanger(event) {
+            var saveButton = document.getElementById('saveButton');
+            var buttonText = document.getElementById('buttonText');
+            var spinner = document.getElementById('spinner1');
+
+            saveButton.disabled = true;
+            buttonText.classList.add('d-none');
+            spinner.classList.remove('d-none');
+
+            event.target.submit(); // 폼 제출
+        }
+    </script>
+
     <script th:inline="javascript">
         /*<![CDATA[*/
         document.addEventListener('DOMContentLoaded', (event) => {
@@ -149,7 +163,6 @@
             </div>
             <button type="submit" class="submit">Sign In</button>
             <button type="button" class="submit payco-login" th:onclick="|location.href='@{/payco/login}'|">Payco</button>
-<!--            <button type="button" class="submit payco-login" th:onclick="|location.href='@{https://id.payco.com/oauth2.0/authorize?client_id=3RDkRhlndPoNojD5rfh0Joe&redirect_uri=http%3A%2F%2Ftest.com%3A8009%2Fapi%2Fpayco%2Flogin%2Fcallback&response_type=code&serviceProviderCode=FRIENDS&userLocale=ko_KR}'|">Payco</button>-->
             <span th:if="${login_message != null}" class="error-message" th:text="${login_message}" />
         </form>
         <div class="sub-cont">
@@ -191,7 +204,11 @@
                     <span>Phone Number</span>
                     <input type="tel" name="clientPhoneNumber" th:value="${prev_data != null ? prev_data.clientPhoneNumber : ''}" />
                 </label>
-                <button type="submit" class="submit">Sign Up</button>
+
+                <button type="submit" class="submit" id="saveButton">
+                    <span id="buttonText">Sign Up</span>
+                    <span id="spinner1" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                </button>
                 <span th:if="${register_message != null}" class="error-message" th:text="${register_message}" />
             </form>
         </div>
