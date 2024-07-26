@@ -9,8 +9,12 @@ import com.nhnacademy.codequestweb.service.review.ReviewService;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
 import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -44,7 +48,7 @@ public class ReviewController {
     }
 
     @PostMapping("/write/review")
-    public ResponseEntity<Map<String, String>> writeReviewPost(@ModelAttribute WriteReviewRequestDto writeReviewRequestDto, HttpServletRequest req) {
+    public ResponseEntity<Map<String, String>> writeReviewPost(@Valid @ModelAttribute WriteReviewRequestDto writeReviewRequestDto, HttpServletRequest req) {
         log.info("WriteReviewRequestDto: {}", writeReviewRequestDto);
         String message = reviewService.posttingReview(writeReviewRequestDto, CookieUtils.getCookieValue(req, "access"));
         String redirectUrl = "/product/books/" + writeReviewRequestDto.getProductId();
@@ -75,5 +79,11 @@ public class ReviewController {
     @ExceptionHandler(FeignException.BadRequest.class)
     public String handleBadRequest(HttpServletRequest req) {
         return "redirect:/";
+    }
+
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<String> handleValidationException(ValidationException e, HttpServletRequest req) {
+        log.warn("ValidationException: {}, {}", req.getLocalAddr(), e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 }
