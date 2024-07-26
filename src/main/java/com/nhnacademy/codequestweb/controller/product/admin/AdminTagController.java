@@ -83,15 +83,17 @@ public class AdminTagController {
 
     @GetMapping("/admin/tags")
     public String getTags(
+            HttpServletRequest req,
             @RequestParam(name = "page", required = false)Integer page,
             @RequestParam(name = "sort", required = false) String sort,
             @RequestParam(name = "desc", required = false)Boolean desc,
             RedirectAttributes redirectAttributes,
             Model model) {
         try {
-            ResponseEntity<Page<TagGetResponseDto>> response = tagService.getAllTags(page, sort, desc);
+            ResponseEntity<Page<TagGetResponseDto>> response = tagService.getAllTags(CookieUtils.setHeader(req), page, sort, desc);
             return handlingResponseBody(response, redirectAttributes, page, sort, desc, "/admin/tags?", model);
         }catch (FeignException e) {
+            if (e instanceof FeignException.Forbidden || e instanceof FeignException.Unauthorized) {throw e;}
             log.warn("error occurred while getting tags, error message : {}", e.getMessage());
             redirectAttributes.addFlashAttribute(ALTER_MESSAGE, ATTRIBUTE_VALUE);
             return REDIRECT_ADMIN_MAIN;
@@ -100,6 +102,7 @@ public class AdminTagController {
 
     @GetMapping("/admin/tags/containing")
     public String getNameContainingTags(
+            HttpServletRequest req,
             @RequestParam(name = "page", required = false)Integer page,
             @RequestParam(name = "sort", required = false) String sort,
             @RequestParam(name = "desc", required = false)Boolean desc,
@@ -107,9 +110,10 @@ public class AdminTagController {
             RedirectAttributes redirectAttributes,
             Model model) {
         try {
-            ResponseEntity<Page<TagGetResponseDto>> response = tagService.getNameContainingTagPage(page, sort, desc, tagName);
+            ResponseEntity<Page<TagGetResponseDto>> response = tagService.getNameContainingTagPage(CookieUtils.setHeader(req), page, sort, desc, tagName);
             return handlingResponseBody(response, redirectAttributes, page, sort, desc, "/admin/tags/containing?tagName=" + tagName + "&", model);
         }catch (FeignException e) {
+            if (e instanceof FeignException.Forbidden || e instanceof FeignException.Unauthorized) {throw e;}
             log.warn("error occurred while getting name containing tags, error message : {}", e.getMessage());
             redirectAttributes.addFlashAttribute(ALTER_MESSAGE, ATTRIBUTE_VALUE);
             return REDIRECT_ADMIN_MAIN;
@@ -143,14 +147,16 @@ public class AdminTagController {
     //도서 등록시 불러야 함 일단 냅두기.
     @GetMapping("/tags/all")
     public String getRegisterForm(
+            HttpServletRequest req,
             @RequestParam(name = "page", required = false) Integer page,
             @RequestParam(name = "desc", required = false) Boolean desc,
             @RequestParam(name = "sort", required = false) String sort,
             Model model) {
         try {
-            ResponseEntity<Page<TagGetResponseDto>> response = tagService.getAllTags(page, sort, desc);
+            ResponseEntity<Page<TagGetResponseDto>> response = tagService.getAllTags(CookieUtils.setHeader(req), page, sort, desc);
             return handleModalView(response, model, "/tags/all?page=");
         }catch (FeignException e) {
+            if (e instanceof FeignException.Forbidden || e instanceof FeignException.Unauthorized) {throw e;}
             log.warn("error occurred while getting all tags modal, error message : {}", e.getMessage());
             return WINDOW_CLOSE;
         }
@@ -159,15 +165,17 @@ public class AdminTagController {
 
     @GetMapping("/tags/containing")
     public String getContainingRegisterForm(
+            HttpServletRequest req,
             @RequestParam(name = "page", required = false) Integer page,
             @RequestParam(name = "desc", required = false) Boolean desc,
             @RequestParam(name = "sort", required = false) String sort,
             @RequestParam("tagName") String tagName,
             Model model) {
         try {
-            ResponseEntity<Page<TagGetResponseDto>> response = tagService.getNameContainingTagPage(page, sort, desc, tagName);
+            ResponseEntity<Page<TagGetResponseDto>> response = tagService.getNameContainingTagPage(CookieUtils.setHeader(req), page, sort, desc, tagName);
             return handleModalView(response, model, "/tags/containing?tagName="+tagName +"&page=");
         }catch (FeignException e) {
+            if (e instanceof FeignException.Forbidden || e instanceof FeignException.Unauthorized) {throw e;}
             log.warn("error occurred while getting name containing tags modal, error message : {}", e.getMessage());
             return WINDOW_CLOSE;
         }
@@ -179,6 +187,7 @@ public class AdminTagController {
             ResponseEntity<TagRegisterResponseDto> response = tagService.saveTag(CookieUtils.setHeader(req), dto);
             return ResponseEntity.status(response.getStatusCode()).build();
         }catch (FeignException e){
+            if (e instanceof FeignException.Forbidden || e instanceof FeignException.Unauthorized) {throw e;}
             log.warn(e.getMessage());
             return ResponseEntity.status(e.status()).body(null);
         }
@@ -190,6 +199,7 @@ public class AdminTagController {
             ResponseEntity<TagUpdateResponseDto> response = tagService.updateTag(CookieUtils.setHeader(req), dto);
             return ResponseEntity.status(response.getStatusCode()).build();
         }catch (FeignException e){
+            if (e instanceof FeignException.Forbidden || e instanceof FeignException.Unauthorized) {throw e;}
             log.warn(e.getMessage());
             return ResponseEntity.status(e.status()).body(null);
         }
@@ -200,6 +210,7 @@ public class AdminTagController {
         try {
             return tagService.deleteTag(CookieUtils.setHeader(req), tagId);
         }catch (FeignException e){
+            if (e instanceof FeignException.Forbidden || e instanceof FeignException.Unauthorized) {throw e;}
             log.warn(e.getMessage());
             return ResponseEntity.status(e.status()).body(null);
         }

@@ -36,14 +36,16 @@ public interface TagClient {
             @RequestHeader HttpHeaders headers,
             @PathVariable("tagId") Long tagId);
 
-    @GetMapping("/product/tags/all")
+    @GetMapping("/product/admin/tags/all")
     ResponseEntity<Page<TagGetResponseDto>> getAllTags(
+            @RequestHeader HttpHeaders headers,
             @RequestParam(name = "page", required = false)Integer page,
             @RequestParam(name = "sort", required = false) String sort,
             @RequestParam(name = "desc", required = false)Boolean desc);
 
-    @GetMapping("/product/tags/containing")
+    @GetMapping("/product/admin/tags/containing")
     ResponseEntity<Page<TagGetResponseDto>> getNameContainingTagPage(
+            @RequestHeader HttpHeaders headers,
             @RequestParam(name = "page", required = false)Integer page,
             @RequestParam(name = "sort", required = false) String sort,
             @RequestParam(name = "desc", required = false)Boolean desc,

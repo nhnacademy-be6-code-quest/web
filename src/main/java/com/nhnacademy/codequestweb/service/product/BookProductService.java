@@ -23,24 +23,21 @@ import org.springframework.stereotype.Service;
 public class BookProductService {
     private final BookProductClient bookProductClient;
 
+    public ResponseEntity<Void> roleCheck(
+            HttpHeaders headers){
+        return bookProductClient.roleCheck(headers);
+    }
+
     public ResponseEntity<ProductRegisterResponseDto> saveBook(
             HttpHeaders headers,
             BookProductRegisterRequestDto bookProductRegisterRequestDto) {
         return bookProductClient.saveBook(headers, bookProductRegisterRequestDto);
     }
 
-    public ResponseEntity<Page<AladinBookResponseDto>> getBookList(Integer page, String title) {
-        return bookProductClient.getBookList(page, title);
-    }
-
     public ResponseEntity<ProductUpdateResponseDto> updateBook(
             HttpHeaders headers,
             BookProductUpdateRequestDto bookProductUpdateRequestDto) {
         return bookProductClient.updateBook(headers, bookProductUpdateRequestDto);
-    }
-
-    public ResponseEntity<Void> isbnCheck(String isbn) {
-        return bookProductClient.isbnCheck(isbn);
     }
 
     public ResponseEntity<BookProductGetResponseDto> getSingleBookInfo(
@@ -77,9 +74,60 @@ public class BookProductService {
         return bookProductClient.getBookPageFilterByCategory(headers, page, size, sort, desc, categoryId, productState);
     }
 
+
     public ResponseEntity<Page<BookProductGetResponseDto>> getLikeBookPage(
             HttpHeaders headers,
             Integer page, Integer size, String sort, Boolean desc, Integer productState) {
         return bookProductClient.getLikeBookPage(headers, page, size, sort, desc, productState);
+    }
+
+    public ResponseEntity<Page<AladinBookResponseDto>> getBookListForAdmin(HttpHeaders headers, Integer page, String title) {
+        return bookProductClient.getBookListForAdmin(headers, page, title);
+    }
+
+
+    public ResponseEntity<Void> isbnCheckForAdmin(HttpHeaders headers, String isbn) {
+        return bookProductClient.isbnCheckForAdmin(headers, isbn);
+    }
+
+    public ResponseEntity<BookProductGetResponseDto> getSingleBookInfoForAdmin(
+            HttpHeaders headers,
+            long productId) {
+        return bookProductClient.getSingleBookInfoForAdmin(headers, productId);
+    }
+
+    public ResponseEntity<Page<BookProductGetResponseDto>> getAllBookPageForAdmin(
+            HttpHeaders headers,
+            Integer page, Integer size, String sort, Boolean desc,
+            Integer productState) {
+        return bookProductClient.getAllBookPageByProductStateForAdmin(headers, page, size, sort, desc, productState);
+    }
+
+    public ResponseEntity<Page<BookProductGetResponseDto>> getNameContainingBookPageForAdmin(
+            HttpHeaders headers,
+            Integer page, Integer size, String sort, Boolean desc,
+            String title, Integer productState) {
+        return bookProductClient.getNameContainingBookPageByProductStateForAdmin(headers, page, size, sort, desc, title, productState);
+    }
+
+    public ResponseEntity<Page<BookProductGetResponseDto>> getBookPageFilterByTagForAdmin(
+            HttpHeaders headers,
+            Integer page, Integer size, String sort, Boolean desc,
+            Set<String> tagNameSet, Boolean conditionIsAnd, Integer productState) {
+        return bookProductClient.getBookPageFilterByTagAndProductStateForAdmin(headers, page, size, sort, desc, tagNameSet, conditionIsAnd, productState);
+    }
+
+    public ResponseEntity<Map<String, Page<BookProductGetResponseDto>>> getBookPageFilterByCategoryForAdmin(
+            HttpHeaders headers,
+            Integer page, Integer size, String sort, Boolean desc,
+            Long categoryId, Integer productState) {
+        return bookProductClient.getBookPageFilterByCategoryForAdmin(headers, page, size, sort, desc, categoryId, productState);
+    }
+
+
+    public ResponseEntity<Page<BookProductGetResponseDto>> getLikeBookPageForAdmin(
+            HttpHeaders headers,
+            Integer page, Integer size, String sort, Boolean desc, Integer productState) {
+        return bookProductClient.getLikeBookPageForAdmin(headers, page, size, sort, desc, productState);
     }
 }

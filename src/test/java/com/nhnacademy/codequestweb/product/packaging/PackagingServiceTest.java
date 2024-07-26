@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -122,12 +123,12 @@ class PackagingServiceTest {
     @Test
     void getSinglePackagingTest(){
         PackagingGetResponseDto responseDto = PackagingGetResponseDto.builder().build();
-        when(packagingClient.getPackagingByProductId(1L)).thenReturn(ResponseEntity.ok(responseDto));
-
-        ResponseEntity<PackagingGetResponseDto> response = packagingService.getPackagingByProductId(1L);
+        when(packagingClient.getPackagingByProductId(any(), eq(1L))).thenReturn(ResponseEntity.ok(responseDto));
+        HttpHeaders headers = new HttpHeaders();
+        ResponseEntity<PackagingGetResponseDto> response = packagingService.getPackagingByProductIdForAdmin(headers,  1L);
         assertNotNull(response);
         assertEquals(responseDto, response.getBody());
 
-        verify(packagingClient, times(1)).getPackagingByProductId(1L);
+        verify(packagingClient, times(1)).getPackagingByProductId(headers, 1L);
     }
 }

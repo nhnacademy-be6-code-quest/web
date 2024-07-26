@@ -20,6 +20,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -53,6 +54,8 @@ class AdminCategoryControllerTest {
 
     private List<CategoryGetResponseDto> categoryGetResponseDtoList;
 
+    private HttpHeaders headers;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -71,15 +74,19 @@ class AdminCategoryControllerTest {
         categoryGetResponseDtoList = Arrays.asList(
                 categoryGetResponseDto1, categoryGetResponseDto2
         );
+
+        headers = new HttpHeaders();
     }
 
     @Test
     void getAllCategoriesTest1() throws Exception {
 
         Page<CategoryGetResponseDto> responseDtoPage = new PageImpl<>(categoryGetResponseDtoList, pageRequest,2);
-        when(categoryService.getCategories(null, null, null)).thenReturn(ResponseEntity.ok(responseDtoPage));
+        when(categoryService.getCategories(any(), eq(null), eq(null), eq(null)))
+                .thenReturn(ResponseEntity.ok(responseDtoPage));
 
-        mockMvc.perform(get("/admin/categories"))
+        mockMvc.perform(get("/admin/categories")
+                        .headers(headers))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("totalCount", 2L))
                 .andExpect(model().attribute("totalPage", 1))
@@ -91,9 +98,11 @@ class AdminCategoryControllerTest {
     void getAllCategoriesTest2() throws Exception {
 
         Page<CategoryGetResponseDto> responseDtoPage = new PageImpl<>(new ArrayList<>(), pageRequest,0);
-        when(categoryService.getCategories(null, null, null)).thenReturn(ResponseEntity.ok(responseDtoPage));
+        when(categoryService.getCategories(any(), eq(null), eq(null), eq(null)))
+                .thenReturn(ResponseEntity.ok(responseDtoPage));
 
-        mockMvc.perform(get("/admin/categories"))
+        mockMvc.perform(get("/admin/categories")
+                        .headers(headers))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("totalCount", 0L))
                 .andExpect(model().attribute("totalPage", 0))
@@ -104,9 +113,11 @@ class AdminCategoryControllerTest {
     @Test
     void getAllCategoriesTest3() throws Exception {
 
-        when(categoryService.getCategories(null, null, null)).thenThrow(FeignException.class);
+        when(categoryService.getCategories(any(), eq(null), eq(null), eq(null)))
+                .thenThrow(FeignException.class);
 
-        mockMvc.perform(get("/admin/categories"))
+        mockMvc.perform(get("/admin/categories")
+                        .headers(headers))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/admin/client/0"))
                 .andExpect(flash().attribute("alterMessage", "failed to get categories."));
@@ -116,9 +127,11 @@ class AdminCategoryControllerTest {
     void getNameContainingCategoriesTest1() throws Exception {
 
         Page<CategoryGetResponseDto> responseDtoPage = new PageImpl<>(categoryGetResponseDtoList, pageRequest,2);
-        when(categoryService.getNameContainingCategories(null, null, null, "test")).thenReturn(ResponseEntity.ok(responseDtoPage));
+        when(categoryService.getNameContainingCategories(any(), eq(null), eq(null), eq(null),  eq("test")))
+                .thenReturn(ResponseEntity.ok(responseDtoPage));
 
         mockMvc.perform(get("/admin/categories/containing")
+                        .headers(headers)
                         .param("categoryName","test"))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("totalCount", 2L))
@@ -126,16 +139,18 @@ class AdminCategoryControllerTest {
                 .andExpect(model().attributeDoesNotExist("empty"))
         ;
 
-        verify(categoryService, times(1)).getNameContainingCategories(null, null, null, "test");
+        verify(categoryService, times(1)).getNameContainingCategories(any(),  eq(null), eq(null), eq(null),  eq("test"));
     }
 
     @Test
     void getNameContainingCategoriesTest2() throws Exception {
 
         Page<CategoryGetResponseDto> responseDtoPage = new PageImpl<>(new ArrayList<>(), pageRequest,0);
-        when(categoryService.getNameContainingCategories(null, null, null, "test")).thenReturn(ResponseEntity.ok(responseDtoPage));
+        when(categoryService.getNameContainingCategories(any(), eq(null), eq(null), eq(null),  eq("test")))
+                .thenReturn(ResponseEntity.ok(responseDtoPage));
 
         mockMvc.perform(get("/admin/categories/containing")
+                        .headers(headers)
                         .param("categoryName","test"))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("totalCount", 0L))
@@ -143,61 +158,65 @@ class AdminCategoryControllerTest {
                 .andExpect(model().attribute("empty", true))
         ;
 
-        verify(categoryService, times(1)).getNameContainingCategories(null, null, null, "test");
+        verify(categoryService, times(1)).getNameContainingCategories(any(),  eq(null), eq(null), eq(null),  eq("test"));
     }
 
     @Test
     void getNameContainingCategoriesTest3() throws Exception {
-
-        when(categoryService.getNameContainingCategories(null, null, null, "test")).thenThrow(FeignException.class);
+        when(categoryService.getNameContainingCategories(any(), eq(null), eq(null), eq(null),  eq("test")))
+                .thenThrow(FeignException.class);
 
         mockMvc.perform(get("/admin/categories/containing")
+                        .headers(headers)
                         .param("categoryName","test"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/admin/client/0"))
                 .andExpect(flash().attribute("alterMessage", "failed to get categories."));
 
-        verify(categoryService, times(1)).getNameContainingCategories(null, null, null, "test");
+        verify(categoryService, times(1)).getNameContainingCategories(any(),  eq(null), eq(null), eq(null),  eq("test"));
     }
 
     @Test
     void getSubCategoriesTest1() throws Exception {
 
         Page<CategoryGetResponseDto> responseDtoPage = new PageImpl<>(categoryGetResponseDtoList, pageRequest,2);
-        when(categoryService.getSubCategories(null, null, null, 1L)).thenReturn(ResponseEntity.ok(responseDtoPage));
+        when(categoryService.getSubCategories(any(), eq(null), eq(null), eq(null),  eq(1L)))
+                .thenReturn(ResponseEntity.ok(responseDtoPage));
 
         mockMvc.perform(get("/admin/categories/1/sub")
-                )
+                        .headers(headers))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("totalCount", 2L))
                 .andExpect(model().attribute("totalPage", 1))
                 .andExpect(model().attributeDoesNotExist("empty"))
         ;
 
-        verify(categoryService, times(1)).getSubCategories(null, null, null, 1L);
+        verify(categoryService, times(1)).getSubCategories(any(), eq(null), eq(null), eq(null),  eq(1L));
     }
 
     @Test
     void getSubCategoriesTest2() throws Exception {
 
         Page<CategoryGetResponseDto> responseDtoPage = new PageImpl<>(new ArrayList<>(), pageRequest,0);
-        when(categoryService.getSubCategories(null, null, null, 1L)).thenReturn(ResponseEntity.ok(responseDtoPage));
+        when(categoryService.getSubCategories(any(), eq(null), eq(null), eq(null),  eq(1L)))
+                .thenReturn(ResponseEntity.ok(responseDtoPage));
 
         mockMvc.perform(get("/admin/categories/1/sub")
-                )
+                        .headers(headers))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("totalCount", 0L))
                 .andExpect(model().attribute("totalPage", 0))
                 .andExpect(model().attribute("empty", true))
         ;
 
-        verify(categoryService, times(1)).getSubCategories(null, null, null, 1L);
+        verify(categoryService, times(1)).getSubCategories(any(), eq(null), eq(null), eq(null),  eq(1L));
     }
 
     @Test
     void getSubCategoriesTest3() throws Exception {
 
-        when(categoryService.getSubCategories(null, null, null, 1L)).thenThrow(FeignException.class);
+        when(categoryService.getSubCategories(any(), eq(null), eq(null), eq(null),  eq(1L)))
+                .thenThrow(FeignException.class);
 
         mockMvc.perform(get("/admin/categories/1/sub")
                 )
@@ -205,7 +224,7 @@ class AdminCategoryControllerTest {
                 .andExpect(redirectedUrl("/admin/client/0"))
                 .andExpect(flash().attribute("alterMessage", "failed to get categories."));
 
-        verify(categoryService, times(1)).getSubCategories(null, null, null, 1L);
+        verify(categoryService, times(1)).getSubCategories(any(), eq(null), eq(null), eq(null),  eq(1L));
     }
 
     @Test
@@ -332,9 +351,11 @@ class AdminCategoryControllerTest {
     @Test
     void getAllCategoryModalTest1() throws Exception {
         Page<CategoryGetResponseDto> responseDtoPage = new PageImpl<>(categoryGetResponseDtoList, pageRequest,2);
-        when(categoryService.getCategories(null, null, null)).thenReturn(ResponseEntity.ok(responseDtoPage));
+        when(categoryService.getCategories(any(), eq(null), eq(null), eq(null)))
+                .thenReturn(ResponseEntity.ok(responseDtoPage));
 
-        mockMvc.perform(get("/categories/all"))
+        mockMvc.perform(get("/categories/all")
+                        .headers(headers))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("register",  false))
                 .andExpect(model().attribute("url",  "/categories/all?page="))
@@ -343,9 +364,11 @@ class AdminCategoryControllerTest {
 
     @Test
     void getAllCategoryModalTest2() throws Exception {
-        when(categoryService.getCategories(null, null, null)).thenThrow(FeignException.class);
+        when(categoryService.getCategories(any(), eq(null), eq(null), eq(null)))
+                .thenThrow(FeignException.class);
 
-        mockMvc.perform(get("/categories/all"))
+        mockMvc.perform(get("/categories/all")
+                        .headers(headers))
                 .andExpect(status().isOk())
                 .andExpect(model().attributeDoesNotExist("url", "register"))
                 .andExpect(view().name("view/product/window.close"));
@@ -356,9 +379,11 @@ class AdminCategoryControllerTest {
     @Test
     void getNameContainingCategoryModalTest1() throws Exception {
         Page<CategoryGetResponseDto> responseDtoPage = new PageImpl<>(categoryGetResponseDtoList, pageRequest,2);
-        when(categoryService.getNameContainingCategories(null, null, null, "test")).thenReturn(ResponseEntity.ok(responseDtoPage));
+        when(categoryService.getNameContainingCategories(any(), eq(null), eq(null), eq(null), eq("test")))
+                .thenReturn(ResponseEntity.ok(responseDtoPage));
 
         mockMvc.perform(get("/categories/containing")
+                        .headers(headers)
                         .param("categoryName","test"))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("register",  false))
@@ -368,9 +393,11 @@ class AdminCategoryControllerTest {
 
     @Test
     void getNameContainingCategoryModalTest2() throws Exception {
-        when(categoryService.getNameContainingCategories(null, null, null, "test")).thenThrow(FeignException.class);
+        when(categoryService.getNameContainingCategories(any(), eq(null), eq(null), eq(null), eq("test")))
+                .thenThrow(FeignException.class);
 
         mockMvc.perform(get("/categories/containing")
+                        .headers(headers)
                         .param("categoryName","test"))
                 .andExpect(status().isOk())
                 .andExpect(model().attributeDoesNotExist("url", "register"))
@@ -381,9 +408,11 @@ class AdminCategoryControllerTest {
     @Test
     void getSubCategoryModalTest1() throws Exception {
         Page<CategoryGetResponseDto> responseDtoPage = new PageImpl<>(categoryGetResponseDtoList, pageRequest,2);
-        when(categoryService.getSubCategories(null, null, null, 1L)).thenReturn(ResponseEntity.ok(responseDtoPage));
+        when(categoryService.getSubCategories(any(), eq(null), eq(null), eq(null), eq(1L)))
+                .thenReturn(ResponseEntity.ok(responseDtoPage));
 
-        mockMvc.perform(get("/categories/1/sub"))
+        mockMvc.perform(get("/categories/1/sub")
+                        .headers(headers))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("register",  true))
                 .andExpect(model().attribute("url",  "/categories/1/sub?page="))
@@ -392,9 +421,11 @@ class AdminCategoryControllerTest {
 
     @Test
     void getSubCategoryModalTest2() throws Exception {
-        when(categoryService.getSubCategories(null, null, null, 1L)).thenThrow(FeignException.class);
+        when(categoryService.getSubCategories(any(), eq(null), eq(null), eq(null), eq(1L)))
+                .thenThrow(FeignException.class);
 
-        mockMvc.perform(get("/categories/1/sub"))
+        mockMvc.perform(get("/categories/1/sub")
+                        .headers(headers))
                 .andExpect(status().isOk())
                 .andExpect(model().attributeDoesNotExist("url", "register"))
                 .andExpect(view().name("view/product/window.close"));

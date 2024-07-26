@@ -10,6 +10,7 @@ import com.nhnacademy.codequestweb.utils.BookUtils;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
 import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
@@ -60,10 +61,11 @@ public class BookProductController {
             log.warn("error occurred while getting book review with id {}, message : {}", productId, e.getMessage());
             model.addAttribute("averageScore", 0.0);
             model.addAttribute("totalPage", 0);
-            model.addAttribute("reviews", null);
+            model.addAttribute("reviews", new ArrayList<>());
             model.addAttribute(ALTER_MESSAGE, "리뷰 조회 과정에서 오류가 발생했습니다.");
         }
     }
+
 
     @GetMapping("/product/books/{productId}")
     public String book(
@@ -77,7 +79,6 @@ public class BookProductController {
 
             BookUtils.setSingleBookInfo(response, model);
 
-            model.addAttribute("admin", false);
             model.addAttribute("view", "productBookDetail");
             model.addAttribute("page", page);
 

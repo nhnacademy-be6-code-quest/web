@@ -99,16 +99,16 @@ class TagServiceTest {
                 TagGetResponseDto.builder().build()
         ));
 
-        when(tagClient.getAllTags(any(), any(), any()))
+        when(tagClient.getAllTags(any(), any(), any(), any()))
                 .thenReturn(ResponseEntity.ok(responseDtoPage));
 
-        ResponseEntity<Page<TagGetResponseDto>> response = tagService.getAllTags(null, null, null);
+        ResponseEntity<Page<TagGetResponseDto>> response = tagService.getAllTags(headers, null, null, null);
 
         assertNotNull(response);
         assertNotNull(response.getBody());
         assertEquals(200, response.getStatusCode().value());
         assertEquals(responseDtoPage, response.getBody());
-        verify(tagClient, times(1)).getAllTags(any(), any(), any());
+        verify(tagClient, times(1)).getAllTags(any(), any(), any(), any());
     }
 
     @Test
@@ -118,15 +118,15 @@ class TagServiceTest {
                 TagGetResponseDto.builder().build()
         ));
 
-        when(tagClient.getNameContainingTagPage(any(), any(), any(), eq("test")))
+        when(tagClient.getNameContainingTagPage(any(), any(), any(), any(), eq("test")))
                 .thenReturn(ResponseEntity.ok(responseDtoPage));
 
-        ResponseEntity<Page<TagGetResponseDto>> response = tagService.getNameContainingTagPage(null, null, null, "test");
+        ResponseEntity<Page<TagGetResponseDto>> response = tagService.getNameContainingTagPage(headers, null, null, null, "test");
 
         assertNotNull(response);
         assertNotNull(response.getBody());
         assertEquals(200, response.getStatusCode().value());
         assertEquals(responseDtoPage, response.getBody());
-        verify(tagClient, times(1)).getNameContainingTagPage(any(), any(), any(), eq("test"));
+        verify(tagClient, times(1)).getNameContainingTagPage(any(), any(), any(), any(), eq("test"));
     }
 }

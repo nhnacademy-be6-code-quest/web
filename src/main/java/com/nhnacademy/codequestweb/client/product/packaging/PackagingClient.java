@@ -23,6 +23,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient(name = "packaging", url = "http://localhost:8001")
 public interface PackagingClient {
 
+    @GetMapping("/api/product/admin/packaging/roleCheck")
+    ResponseEntity<Void> roleCheck(
+            @RequestHeader HttpHeaders headers
+    );
+
     @PostMapping("/api/product/admin/packaging/register")
     ResponseEntity<ProductRegisterResponseDto> savePackaging(
             @RequestHeader HttpHeaders headers,
@@ -44,8 +49,16 @@ public interface PackagingClient {
             @RequestParam(name = "page") int page, @RequestParam(name = "size") int size
     );
 
+    @GetMapping("/api/product/admin/packaging/page")
+    ResponseEntity<Page<PackagingGetResponseDto>> getPackagingPageForAdmin(
+            @RequestHeader HttpHeaders headers,
+            @RequestParam(name = "productState", required = false) Integer productState,
+            @RequestParam(name = "page") int page, @RequestParam(name = "size") int size
+    );
+
     @GetMapping("/api/product/packaging/single/byProduct/{productId}")
     ResponseEntity<PackagingGetResponseDto> getPackagingByProductId(
+            @RequestHeader HttpHeaders headers,
             @PathVariable("productId") Long productId
     );
 

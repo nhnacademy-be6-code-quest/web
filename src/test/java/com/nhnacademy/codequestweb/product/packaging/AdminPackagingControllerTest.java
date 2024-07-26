@@ -28,6 +28,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.multipart.MultipartFile;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -71,7 +72,7 @@ class AdminPackagingControllerTest {
 
         Page<PackagingGetResponseDto> responseDtoPage = new PageImpl<>(packagingGetResponseDtoList, pageRequest, 5);
 
-        when(packagingService.getPackagingPage(0, 1, 10)).thenReturn(ResponseEntity.ok(responseDtoPage));
+        when(packagingService.getPackagingPageForAdmin (any(), eq(0), eq(1), eq(10))).thenReturn(ResponseEntity.ok(responseDtoPage));
 
         mockMvc.perform(get("/admin/product/packaging/page")
                 .param("productState","0")
@@ -83,7 +84,7 @@ class AdminPackagingControllerTest {
 
     @Test
     void getPackagingPageTest2() throws Exception {
-        when(packagingService.getPackagingPage(0, 1, 10)).thenReturn(ResponseEntity.ok(null));
+        when(packagingService.getPackagingPageForAdmin (any(), eq(0), eq(1), eq(10))).thenReturn(ResponseEntity.ok(null));
 
         mockMvc.perform(get("/admin/product/packaging/page")
                         .param("productState","0")
@@ -95,7 +96,7 @@ class AdminPackagingControllerTest {
 
     @Test
     void getPackagingPageTest3() throws Exception {
-        when(packagingService.getPackagingPage(0, 1, 10)).thenThrow(FeignException.class);
+        when(packagingService.getPackagingPageForAdmin(any(), eq(0), eq(1), eq(10))).thenThrow(FeignException.class);
 
         mockMvc.perform(get("/admin/product/packaging/page")
                         .param("productState","0")
@@ -106,7 +107,9 @@ class AdminPackagingControllerTest {
     }
 
     @Test
-    void getRegisterFormTest() throws Exception {
+    void getRegisterFormTest1() throws Exception {
+        when(packagingService.roleCheck(any())).thenReturn(ResponseEntity.ok(null));
+
         mockMvc.perform(get("/admin/product/packaging/registerForm"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("index"))
@@ -114,9 +117,30 @@ class AdminPackagingControllerTest {
     }
 
     @Test
+    void getRegisterFormTest2() throws Exception {
+        when(packagingService.roleCheck(any())).thenReturn(ResponseEntity.badRequest().build());
+
+        mockMvc.perform(get("/admin/product/packaging/registerForm"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin/client/0"))
+                .andExpect(flash().attribute("alterMessage", "일시적으로 오류가 발생했습니다.\n 문제가 지속된다면 로그를 확인하세요."));
+
+    }
+
+    @Test
+    void getRegisterFormTest3() throws Exception {
+        when(packagingService.roleCheck(any())).thenThrow(FeignException.class);
+
+        mockMvc.perform(get("/admin/product/packaging/registerForm"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/admin/client/0"))
+                .andExpect(flash().attribute("alterMessage", "일시적으로 오류가 발생했습니다.\n 문제가 지속된다면 로그를 확인하세요."));
+    }
+
+    @Test
     void getUpdateFormTest1() throws Exception {
         PackagingGetResponseDto packagingGetResponseDto = PackagingGetResponseDto.builder().build();
-        when(packagingService.getPackagingByProductId(1L)).thenReturn(ResponseEntity.ok(packagingGetResponseDto));
+        when(packagingService.getPackagingByProductIdForAdmin (any(), eq(1L))).thenReturn(ResponseEntity.ok(packagingGetResponseDto));
 
         mockMvc.perform(get("/admin/product/packaging/updateForm/1"))
                 .andExpect(status().isOk())
@@ -126,7 +150,7 @@ class AdminPackagingControllerTest {
 
     @Test
     void getUpdateFormTest2() throws Exception {
-        when(packagingService.getPackagingByProductId(1L)).thenReturn(ResponseEntity.ok(null));
+        when(packagingService.getPackagingByProductIdForAdmin(any(), eq(1L))).thenReturn(ResponseEntity.ok(null));
 
         mockMvc.perform(get("/admin/product/packaging/updateForm/1"))
                 .andExpect(status().is3xxRedirection())
@@ -137,7 +161,7 @@ class AdminPackagingControllerTest {
     @Test
     void getUpdateFormTest3() throws Exception {
 
-        when(packagingService.getPackagingByProductId(1L)).thenThrow(FeignException.class);
+        when(packagingService.getPackagingByProductIdForAdmin(any(), eq(1L))).thenThrow(FeignException.class);
 
         mockMvc.perform(get("/admin/product/packaging/updateForm/1"))
                 .andExpect(status().is3xxRedirection())
