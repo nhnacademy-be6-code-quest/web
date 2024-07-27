@@ -262,6 +262,15 @@
 
     <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
     <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var defaultPaymentMethod = "toss"; // 기본값 설정
+            var radioButtons = document.querySelectorAll('input[name="paymentMethod"]');
+            radioButtons.forEach(function(radioButton) {
+                if (radioButton.value === defaultPaymentMethod) {
+                    radioButton.checked = true;
+                }
+            });
+        });
         // 우편번호 찾기 찾기 화면을 넣을 element
         var element_wrap = document.getElementById('nonclient-address-wrap');
 
