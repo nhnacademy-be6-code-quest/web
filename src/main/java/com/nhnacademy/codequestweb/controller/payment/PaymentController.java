@@ -60,7 +60,7 @@ public class PaymentController {
 
         // 쿠폰 및 포인트 할인 후 실 결제 금액이 0원일때?
         if (paymentOrderShowRequestDto.getOrderTotalAmount() - paymentOrderShowRequestDto.getDiscountAmountByPoint() - paymentOrderShowRequestDto.getDiscountAmountByCoupon() == 0) {
-            return "https://book-store.shop/client/order/"+orderCode+"/payment/success/post-process?amount=0&paymentKey=point&name=point" ;
+            return "https://book-store.shop/client/order/"+orderCode+"/payment/success/amount=0&paymentKey=point&name=point" ;
         }
 
         model.addAttribute("successUrl",
