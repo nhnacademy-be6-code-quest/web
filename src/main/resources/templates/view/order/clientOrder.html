@@ -52,6 +52,10 @@
   <h1></h1>
   <div class="sub-container">
     <h3>주문 상품 목록</h3>
+    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+    등록중..
+    <button class="btn btn-primary" type="button" disabled>
+    </button>
     <label>
       <input hidden="hidden" th:field="*{totalQuantity}">
     </label>
@@ -314,9 +318,8 @@
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
         <button type="submit" class="btn btn-outline-warning" id="saveButton"
                 onclick="addressRegisterOnOrderPage(this)">
-          <span id="addressRegisterButtonText">저장</span>
-          <span id="addressRegisterButtonSpinner" class="spinner-border spinner-border-sm d-none" role="status"
-                aria-hidden="true"></span>
+          등록
+          <span id="addressRegisterBtnSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
         </button>
       </div>
     </div>
@@ -356,7 +359,9 @@
                  oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');"
                  required/>
           <button type="button" class="btn btn-outline-secondary"
-                  onclick="phoneNumberRegisterOnOrderPage()">등록
+                  onclick="phoneNumberRegisterOnOrderPage(this)">
+            등록
+            <span id="phoneNumberRegisterBtnSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
           </button>
         </label>
       </div>
@@ -597,18 +602,11 @@
 
   function addressRegisterOnOrderPage(btn) {
 
-    // TODO 스피너
-
     // 유효성 검사
     const zipCode = document.getElementById("clientDeliveryZipCode").value;
     const address = document.getElementById("clientDeliveryAddress").value;
     const detailAddress = document.getElementById("clientDeliveryAddressDetail").value;
     const addressNickname = document.getElementById("clientDeliveryAddressNickname").value;
-
-    console.log("zipCode: ", zipCode)
-    console.log("address: ", address);
-    console.log("detailAddress: ", detailAddress);
-    console.log("addressNickname: ", addressNickname);
 
     if (isEmpty(zipCode)) {
       alert('우편번호를 입력하세요.');
@@ -619,6 +617,12 @@
     } else if (isEmpty(addressNickname)) {
       alert('주소 별칭을 입력하세요.');
     } else {
+
+      // 버튼 비활성화 및 스피너 활성
+      btn.disabled = true;
+      const spinner = document.getElementById("addressRegisterBtnSpinner");
+      spinner.classList.remove('d-none');
+
       fetch("/client/order/address", {
         method: "POST",
         headers: {
@@ -641,6 +645,11 @@
           document.getElementById("clientDeliveryAddressDetail").hidden = true; // 선택 배송지 정보 숨기기
           document.getElementById("addressRegisterModalClose").click(); // 전화번호 등록 모달창 닫기
         }
+
+        // 버튼 활성화 및 스피너 비활성화
+        btn.disabled = false;
+        spinner.classList.add('d-none');
+
       })
       .catch(error => {
           alert("주소지 등록에 실패했습니다.\n" + error)
@@ -722,10 +731,7 @@
     document.getElementById("selectedPhoneNumberForm").hidden = false;
   }
 
-  function phoneNumberRegisterOnOrderPage() {
-
-    // TODO 스피너 추가
-
+  function phoneNumberRegisterOnOrderPage(btn) {
 
     const phoneNumber = document.getElementById("newPhoneNumber");
 
@@ -733,6 +739,12 @@
       phoneNumber.value = "";
       alert("전화번호는 10자리 혹은 11자리여야 합니다.");
     } else {
+
+      // 버튼 비활성화 및 스피너 활성화
+      btn.disabled = true;
+      const spinner = document.getElementById("phoneNumberRegisterBtnSpinner");
+      spinner.classList.remove('d-none');
+
       fetch("/client/order/phone", {
         method: "POST",
         headers: {
@@ -751,6 +763,11 @@
           document.getElementById("selectedPhoneNumberForm").hidden = true;
           document.getElementById("phoneNumberRegisterModalClose").click(); // 전화번호 등록 모달창 닫기
         }
+
+        // 버튼 활성화 및 스피너 비활성화
+        btn.disabled = false;
+        spinner.classList.add('d-none');
+
       })
       .catch(error => {
         alert("번호 등록에 실패했습니다.\n" + error)
