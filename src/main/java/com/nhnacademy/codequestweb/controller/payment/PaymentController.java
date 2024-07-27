@@ -59,8 +59,11 @@ public class PaymentController {
         log.info("결제 요청 정보: {}", paymentOrderShowRequestDto);
 
         // 쿠폰 및 포인트 할인 후 실 결제 금액이 0원일때?
-        if (paymentOrderShowRequestDto.getOrderTotalAmount() - paymentOrderShowRequestDto.getDiscountAmountByPoint() - paymentOrderShowRequestDto.getDiscountAmountByCoupon() == 0) {
-            return "https://book-store.shop/client/order/"+orderCode+"/payment/success/amount=0&paymentKey=point&method=point" ;
+        long amount= paymentOrderShowRequestDto.getOrderTotalAmount() - paymentOrderShowRequestDto.getDiscountAmountByPoint() - paymentOrderShowRequestDto.getDiscountAmountByCoupon();
+        if (amount == 0) {
+            log.error("결제1"+orderCode);
+            return "redirect:/client/order/"+orderCode+"/payment/success/post-process?amount="+amount+"&paymentKey=point&name=point" ;
+
         }
 
         model.addAttribute("successUrl",
@@ -99,7 +102,7 @@ public class PaymentController {
             model.addAttribute("payment", "failed");
             return "index";
         }
-
+        log.error("승인1"+orderCode);
         // 결제 승인하기
         PaymentsResponseDto paymentsResponseDto = paymentService.approvePayment(headers, name,
             orderCode, amount, paymentKey);
@@ -110,7 +113,7 @@ public class PaymentController {
         paymentService.savePayment(headers, paymentsResponseDto);
 
         log.info("결제 및 주문 데이터 저장 성공");
-
+        log.error("승인2"+orderCode);
         return String.format("redirect:/client/order/%s/payment/success/post-process", orderCode);
     }
 
@@ -124,13 +127,13 @@ public class PaymentController {
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(request, "access"));
-
+        log.error("후처리1"+orderCode);
         PostProcessRequiredPaymentResponseDto postProcessRequiredPaymentResponseDto = paymentService.getPostProcessRequiredPaymentResponseDto(headers, orderCode);
 
         model.addAttribute("orderId", postProcessRequiredPaymentResponseDto.getOrderId());
         model.addAttribute("view", "payment");
         model.addAttribute("payment", "success");
-
+        log.error("후처리2"+orderCode);
         // 포인트 적립하기
         if(Objects.nonNull(postProcessRequiredPaymentResponseDto.getClientId())){
 
