@@ -74,5 +74,16 @@
         <button type="submit" class="btn text-white" style="background-color:#ecb54f; width: 15%;" >다음단계</button>
     </div>
 </form>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var defaultPaymentMethod = "toss"; // 기본값 설정
+        var radioButtons = document.querySelectorAll('input[name="paymentMethod"]');
+        radioButtons.forEach(function(radioButton) {
+            if (radioButton.value === defaultPaymentMethod) {
+                radioButton.checked = true;
+            }
+        });
+    });
+</script>
 </body>
 </html>
