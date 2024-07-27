@@ -1,5 +1,3 @@
-<!DOCTYPE html>
-<html lang="ko">
 <head>
   <meta charset="utf-8"/>
   <title>결제하기</title>
@@ -9,44 +7,44 @@
 <body>
 
 <script>
-  document.addEventListener("DOMContentLoaded", function() {
-    // 클라이언트 키로 객체 초기화
-    var clientKey = 'test_ck_6bJXmgo28eAm5avd4Pbj8LAnGKWx';
-    var tossPayments = TossPayments(clientKey);
+  // ------ 클라이언트 키로 객체 초기화 ------
+  var clientKey = 'test_ck_6bJXmgo28eAm5avd4Pbj8LAnGKWx'
+  //TODO ck바꾸기
+  //TODO tk바꾸기
+  var tossPayments = TossPayments(clientKey)
 
-    // 결제 정보 가져오기
-    var orderTotalAmount = [[${paymentOrderShowRequestDto.getOrderTotalAmount()}]];
-    var discountAmountByCoupon = [[${paymentOrderShowRequestDto.getDiscountAmountByCoupon()}]];
-    var discountAmountByPoint = [[${paymentOrderShowRequestDto.getDiscountAmountByPoint()}]];
-    var amount = orderTotalAmount - discountAmountByCoupon - discountAmountByPoint;
+  // ------ 결제창 띄우기 ------
+  tossPayments.requestPayment('카드', {
+    // 결제수단 파라미터 (카드, 계좌이체, 가상계좌, 휴대폰 등)
+    // 결제 정보 파라미터
+    // 더 많은 결제 정보 파라미터는 결제창 Javascript SDK에서 확인하세요.
+    // https://docs.tosspayments.com/sdk/payment-js
 
-    var orderId = `[[${paymentOrderShowRequestDto.getOrderCode()}]]`;
-    var orderName = `[[${paymentOrderShowRequestDto.getOrderHistoryTitle()}]]`;
-    var successUrl = `[[${successUrl}]]`;
-    var failUrl = `[[${failUrl}]]`;
+    // amount: [[${payAmount}]], // 결제 금액
+    amount: [[${paymentOrderShowRequestDto.getOrderTotalAmount()}]]
+        - [[${paymentOrderShowRequestDto.getDiscountAmountByCoupon()}]]
+        - [[${paymentOrderShowRequestDto.getDiscountAmountByPoint()}]],
 
-    // amount가 0이면 successUrl로 리디렉션
-    if (amount === 0) {
-      window.location.href = successUrl;
-    } else {
-      // 결제창 띄우기
-      tossPayments.requestPayment('카드', {
-        amount: amount,
-        orderId: orderId,
-        orderName: orderName,
-        successUrl: successUrl,
-        failUrl: failUrl
-      })
-      .catch(function (error) {
-        if (error.code === 'USER_CANCEL') {
-          // 결제 고객이 결제창을 닫았을 때 에러 처리
-        } else if (error.code === 'INVALID_CARD_COMPANY') {
-          // 유효하지 않은 카드 코드에 대한 에러 처리
-        }
-      });
+    // orderId: `[[${orderCode}]]`,
+    orderId: `[[${paymentOrderShowRequestDto.getOrderCode()}]]`, // 주문번호(주문번호는 상점에서 직접 만들어주세요.)
+
+    orderName: `[[${paymentOrderShowRequestDto.getOrderHistoryTitle()}]]`, // 구매상품
+
+    successUrl: `[[${successUrl}]]`, // 결제 성공 시 이동할 페이지(이 주소는 예시입니다. 상점에서 직접 만들어주세요.)
+
+    failUrl: `[[${failUrl}]]`, // 결제 실패 시 이동할 페이지(이 주소는 예시입니다. 상점에서 직접 만들어주세요.)
+  })
+  // ------결제창을 띄울 수 없는 에러 처리 ------
+  // 메서드 실행에 실패해서 reject 된 에러를 처리하는 블록입니다.
+  // 결제창에서 발생할 수 있는 에러를 확인하세요.
+  // https://docs.tosspayments.com/reference/error-codes#결제창공통-sdk-에러
+  .catch(function (error) {
+    if (error.code === 'USER_CANCEL') {
+      // 결제 고객이 결제창을 닫았을 때 에러 처리
+    } else if (error.code === 'INVALID_CARD_COMPANY') {
+      // 유효하지 않은 카드 코드에 대한 에러 처리
     }
-  });
-</script>
+  })
 
+</script>
 </body>
-</html>

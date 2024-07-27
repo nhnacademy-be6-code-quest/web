@@ -59,9 +59,9 @@ public class PaymentController {
         log.info("결제 요청 정보: {}", paymentOrderShowRequestDto);
 
         // 쿠폰 및 포인트 할인 후 실 결제 금액이 0원일때?
-//        if (paymentOrderShowRequestDto.getOrderTotalAmount() - paymentOrderShowRequestDto.getDiscountAmountByPoint() - paymentOrderShowRequestDto.getDiscountAmountByCoupon() == 0) {
-//            return "https://book-store.shop/client/order/"+orderCode+"/payment/success/amount=0&paymentKey=point&name=point" ;
-//        }
+        if (paymentOrderShowRequestDto.getOrderTotalAmount() - paymentOrderShowRequestDto.getDiscountAmountByPoint() - paymentOrderShowRequestDto.getDiscountAmountByCoupon() == 0) {
+            return "https://book-store.shop/client/order/"+orderCode+"/payment/success/amount=0&paymentKey=point&method=point" ;
+        }
 
         model.addAttribute("successUrl",
             "https://book-store.shop/client/order/" + orderCode + "/payment/success?method="+name);
