@@ -49,13 +49,8 @@
 <body>
 <form th:action="@{/client/order-discount}" th:object="${clientOrderForm}" method="post"
       onsubmit="return checkValidate(this)">
-  <h1></h1>
   <div class="sub-container">
     <h3>주문 상품 목록</h3>
-    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-    등록중..
-    <button class="btn btn-primary" type="button" disabled>
-    </button>
     <label>
       <input hidden="hidden" th:field="*{totalQuantity}">
     </label>
