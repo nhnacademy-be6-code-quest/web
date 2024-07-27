@@ -62,14 +62,14 @@ public class PaymentController {
         long amount= paymentOrderShowRequestDto.getOrderTotalAmount() - paymentOrderShowRequestDto.getDiscountAmountByPoint() - paymentOrderShowRequestDto.getDiscountAmountByCoupon();
         if (amount == 0) {
             log.error("결제1"+orderCode);
-            return "redirect:/client/order/"+orderCode+"/payment/success/post-process?amount="+amount+"&paymentKey=point&name=point" ;
+            return "redirect:/client/order/"+orderCode+"/payment/success?amount="+amount+"&paymentKey=point&method=point" ;
 
         }
 
         model.addAttribute("successUrl",
-            "https://book-store.shop/client/order/" + orderCode + "/payment/success?method="+name);
+            "https://localhost:8080/client/order/" + orderCode + "/payment/success?method="+name);
         model.addAttribute("failUrl",
-            "https://book-store.shop/client/order/" + orderCode + "/payment/fail");
+            "https://localhost:8080/client/order/" + orderCode + "/payment/fail");
 
 
         return paymentMethodProvider.getName(name);
