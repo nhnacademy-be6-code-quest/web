@@ -62,6 +62,7 @@ public class OrderController {
     @PostMapping("/client/order-pay-method")
     public String viewClientOrderPayMethodForm(@ModelAttribute ClientOrderDiscountForm clientOrderDiscountForm, Model model, HttpServletRequest req){
         req.getSession().setAttribute("clientOrderDiscountForm", clientOrderDiscountForm);
+
         return orderService.viewClientOrderPayMethod(req, model);
     }
 
