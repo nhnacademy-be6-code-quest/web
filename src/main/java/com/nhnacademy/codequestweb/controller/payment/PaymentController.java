@@ -67,9 +67,9 @@ public class PaymentController {
         }
 
         model.addAttribute("successUrl",
-            "https://localhost:8080/client/order/" + orderCode + "/payment/success?method="+name);
+            "https://book-store.shop/client/order/" + orderCode + "/payment/success?method="+name);
         model.addAttribute("failUrl",
-            "https://localhost:8080/client/order/" + orderCode + "/payment/fail");
+            "https://book-store.shop/client/order/" + orderCode + "/payment/fail");
 
 
         return paymentMethodProvider.getName(name);
@@ -102,7 +102,6 @@ public class PaymentController {
             model.addAttribute("payment", "failed");
             return "index";
         }
-        log.error("승인1"+orderCode);
         // 결제 승인하기
         PaymentsResponseDto paymentsResponseDto = paymentService.approvePayment(headers, name,
             orderCode, amount, paymentKey);
@@ -113,7 +112,6 @@ public class PaymentController {
         paymentService.savePayment(headers, paymentsResponseDto);
 
         log.info("결제 및 주문 데이터 저장 성공");
-        log.error("승인2"+orderCode);
         return String.format("redirect:/client/order/%s/payment/success/post-process", orderCode);
     }
 
@@ -127,13 +125,12 @@ public class PaymentController {
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(request, "access"));
-        log.error("후처리1"+orderCode);
         PostProcessRequiredPaymentResponseDto postProcessRequiredPaymentResponseDto = paymentService.getPostProcessRequiredPaymentResponseDto(headers, orderCode);
 
         model.addAttribute("orderId", postProcessRequiredPaymentResponseDto.getOrderId());
         model.addAttribute("view", "payment");
         model.addAttribute("payment", "success");
-        log.error("후처리2"+orderCode);
+
         // 포인트 적립하기
         if(Objects.nonNull(postProcessRequiredPaymentResponseDto.getClientId())){
 
