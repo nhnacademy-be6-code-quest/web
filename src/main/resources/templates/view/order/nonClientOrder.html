@@ -281,7 +281,6 @@
 
         function findNonClientAddress() {
             // 현재 scroll 위치를 저장해놓는다.
-            var currentScroll = Math.max(document.body.scrollTop, document.documentElement.scrollTop);
             new daum.Postcode({
                 oncomplete: function(data) {
                     var addr = ''; // 주소 변수
