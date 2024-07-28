@@ -187,7 +187,7 @@
 </div>
 
 
-<!-- 비회원 주문 비밀번호 조회 -->
+<!-- 비회원 주문 비밀번호 조회(수정) -->
 <div class="non-client-order-container" id="non-client-order-password-find-container" style="display: none">
     <div class="non-client-order-header">
         <div class="non-client-order-title">비회원 주문 비밀번호 변경</div>
@@ -265,8 +265,10 @@
     }
 
     function openNonClientOrderFindModal() {
+
         const inputOrderIdStr = document.getElementById('orderIdStr').value;
         const orderPassword = document.getElementById('orderPassword').value;
+
         const modal = document.getElementById('findOrderModal');
         const modalContent = document.getElementById('findOrderModalContent');
 
@@ -337,6 +339,7 @@
             modalContent.innerHTML = `<p>비회원 주문 조회에 실패했습니다. 다시 시도하세요</p>`;
             modal.style.display = 'block'; // Open modal
         });
+
     }
 
     function openNonClientOrderIdFindModal() {
@@ -418,8 +421,63 @@
     function openNonClientOrderPasswordFindModal() {
       const modal = document.getElementById("findOrderPasswordModal");
       const content = document.getElementById("findOrderPasswordModalContent");
+      content.innerHTML = "";
 
-      modal.style.display = 'block';
+      const ordererName = document.getElementById("ordererNameTofindOrderPassword").value;
+      const orderId = document.getElementById("orderIdTofindOrderPassword").value;
+      const phoneNumber=  document.getElementById("ordererPhoneNumberTofindOrderPassword").value;
+      const email = document.getElementById("ordererEmailTofindOrderPassword").value;
+      const newPassword = document.getElementById("newOrderPasswordTofindOrderPassword").value;
+
+      if(isEmpty(ordererName)){
+        alert("주문자 이름을 입력하세요.");
+        return;
+      }
+      else if(isEmpty(orderId)){
+        alert("주문 아이디를 입력하세요");
+        return;
+      }
+      else if(isEmpty(phoneNumber)){
+        alert("핸드폰 번호를 입력하세요");
+        return;
+      }
+      else if(isEmpty(email)){
+        alert("이메일 주소를 입력하세요");
+        return;
+      }
+      else if(!isValidEmail(email)){
+        alert("이메일 형식이 올바르지 않습니다.");
+        return;
+      }
+      else if(isEmpty(newPassword)){
+        alert("새로운 비밀번호를 입력새 주세요.");
+        return;
+      }
+
+      fetch(`/non-client/order/${orderId}/password`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          "ordererName": ordererName,
+          "phoneNumber": phoneNumber,
+          "email": email,
+          "newPassword": newPassword
+        })
+      })
+      .then(response => {
+        if(!response.ok){
+          throw new Error("API 호출 오류가 발생했습니다.");
+        }
+        content.innerText = "비회원 주문 비밀번호가 변경되었습니다";
+        modal.style.display = 'block';
+      })
+      .catch(error => {
+        content.innerHTML = `<p>주문 비밀번호 변경에 실패했습니다. 주문 정보를 정확히 입력해 주세요.</p>`;
+        modal.style.display = 'block';
+      })
+
     }
 
     function closeFindOrderModal(){
@@ -428,10 +486,20 @@
 
     function closeFindOrderIdModal(){
       document.getElementById("findOrderIdModal").style.display = 'none';
+      // 입력 칸 비우기
+      document.getElementById("ordererNameTofindOrderId").value = null;
+      document.getElementById("ordererPhoneNumberTofindOrderId").value = null;
+      document.getElementById("ordererEmailTofindOrderId").value = null;
     }
 
     function closeFindOrderPasswordModal(){
       document.getElementById("findOrderPasswordModal").style.display = 'none';
+      // 입력 칸 비우기
+      document.getElementById("ordererNameTofindOrderPassword").value = null;
+      document.getElementById("orderIdTofindOrderPassword").value = null;
+      document.getElementById("ordererPhoneNumberTofindOrderPassword").value = null
+      document.getElementById("ordererEmailTofindOrderPassword").value = null;
+      document.getElementById("newOrderPasswordTofindOrderPassword").value = null;
     }
 
     function isEmpty(value) {

@@ -20,6 +20,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -71,12 +72,19 @@ public class OrderRestController {
         return ResponseEntity.ok(nonClientOrderIdInfoResponseDto);
     }
 
-    @PutMapping("/non-client/order/password")
+    @PutMapping("/non-client/order/{orderId}/password")
     public ResponseEntity<String> nonClientFindOrderPassword(HttpServletRequest request,
-        long orderId,
-        UpdateNonClientOrderPasswordRequestDto updateNonClientOrderPasswordRequestDto) {
-        return ResponseEntity.ok(orderService.nonClientFindOrderPassword(request, orderId,
-            updateNonClientOrderPasswordRequestDto));
+        @PathVariable long orderId,
+        @RequestBody UpdateNonClientOrderPasswordRequestDto updateNonClientOrderPasswordRequestDto) {
+        try{
+            orderService.nonClientFindOrderPassword(request, orderId,
+                updateNonClientOrderPasswordRequestDto);
+
+        } catch (FeignException.NotFound e){
+            log.warn("비회원 주문 비밀번호 변경 실패. 입력한 정보와 일치하는 주문을 찾을 수 없음.");
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok("비회원 주문 비밀번호 변경에 성공");
     }
 
     @GetMapping("/client/order/phoneNumberList")
