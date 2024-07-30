@@ -1,5 +1,7 @@
 package com.nhnacademy.codequestweb.client.order;
 
+import com.nhnacademy.codequestweb.request.order.nonclient.FindNonClientOrderIdRequestDto;
+import com.nhnacademy.codequestweb.request.order.nonclient.UpdateNonClientOrderPasswordRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentOrderApproveRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PaymentOrderShowRequestDto;
 import com.nhnacademy.codequestweb.response.order.client.ClientOrderCreateForm;
@@ -9,10 +11,13 @@ import com.nhnacademy.codequestweb.response.order.client.OrderCouponDiscountInfo
 import com.nhnacademy.codequestweb.response.order.common.OrderResponseDto;
 import com.nhnacademy.codequestweb.response.order.common.ProductOrderDetailOptionResponseDto;
 import com.nhnacademy.codequestweb.response.order.common.ProductOrderDetailResponseDto;
+import com.nhnacademy.codequestweb.response.order.nonclient.FindNonClientOrderIdInfoResponseDto;
 import com.nhnacademy.codequestweb.response.order.nonclient.NonClientOrderForm;
 import com.nhnacademy.codequestweb.response.order.nonclient.NonClientOrderGetResponseDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -111,6 +116,19 @@ public interface OrderClient {
     // 비회원 임시 주문 가져오기
     @GetMapping("/api/non-client/orders/temporary")
     ResponseEntity<NonClientOrderForm> getNonClientTemporalOrder(@RequestHeader HttpHeaders headers, String orderCode);
+
+    // 비회원 주문 아이디 조회
+    @PostMapping("/api/non-client/orders/find-orderId")
+    ResponseEntity<List<FindNonClientOrderIdInfoResponseDto>> findNonClientOrderId(
+        @RequestBody FindNonClientOrderIdRequestDto findNonClientOrderIdRequestDto,
+        @RequestHeader HttpHeaders headers);
+
+    // 비회원 주문 비밀번호 변경하기
+    @PutMapping("/api/non-client/orders/{orderId}/password")
+    ResponseEntity<String> updateNonClientOrderPassword(@RequestHeader HttpHeaders headers,
+        @PathVariable long orderId,
+        @RequestBody UpdateNonClientOrderPasswordRequestDto updateNonClientOrderPasswordRequestDto);
+
 
 
     // @ 그 외 컨트롤러 @

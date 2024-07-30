@@ -4,11 +4,18 @@
     <meta charset="UTF-8">
     <title>비회원 주문 조회</title>
     <style>
+        .non-client-order-menu{
+            width: 40%;
+            margin-left: 30%;
+            margin-right: 30%;
+            padding: 10px;
+        }
+
         .non-client-order-container {
             width: 40%;
             margin-left: 30%;
             margin-right: 30%;
-            padding: 24px;
+            padding: 10px;
             background-color: #ffffff;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -97,7 +104,23 @@
 </head>
 <body>
 
-<div class="non-client-order-container">
+
+<div class="non-client-order-menu">
+    <div class="btn-group" role="group">
+        <input type="radio" class="btn-check" id="find-order-btn" name="btnradio" onclick="menuToFindNonClientOrder()" checked>
+        <label class="btn btn-outline-primary" for="find-order-btn">조회</label>
+
+        <input type="radio" class="btn-check" id="find-order-id" name="btnradio" onclick="menuToFindNonClientOrderId()">
+        <label class="btn btn-outline-primary" for="find-order-id">아이디 찾기</label>
+
+        <input type="radio" class="btn-check" id="find-order-password" name="btnradio" onclick="menuToFindNonClientOrderPassword()">
+        <label class="btn btn-outline-primary" for="find-order-password">비밀번호 찾기</label>
+    </div>
+</div>
+
+
+<!-- 비회원 주문 조회 메뉴 -->
+<div class="non-client-order-container" id="non-client-order-find-container">
     <div class="non-client-order-header">
         <div class="non-client-order-title">비회원 주문 조회</div>
         <div class="non-client-order-description">주문번호와 주문 비밀번호를 입력하세요.</div>
@@ -117,15 +140,97 @@
     </div>
 </div>
 
-<div id="findOrderModal" class="modal">
+<div id="findOrderModal" class="modal" style="display: none">
     <div class="modal-content">
-        <span class="close">&times;</span>
+        <span class="close" onclick="closeFindOrderModal()">&times;</span>
         <h3>주문 조회</h3>
         <div id="findOrderModalContent">
-
+            <!--내용 들어감-->
         </div>
     </div>
 </div>
+
+
+<!-- 비회원 주문 아이디 조회 -->
+<div class="non-client-order-container" id="non-client-order-id-find-container" style="display: none">
+    <div class="non-client-order-header">
+        <div class="non-client-order-title">비회원 주문 아이디 조회</div>
+        <div class="non-client-order-description">주문자 이름, 휴대폰 번호, 이메일 주소를 통해 주문 아이디를 찾을 수 있습니다.</div>
+    </div>
+    <div class="non-client-order-content">
+        <div class="input-group">
+            <label for="ordererNameTofindOrderId" class="label">주문자 이름</label>
+            <input id="ordererNameTofindOrderId" class="input" placeholder="주문자 이름을 입력하세요" required/>
+        </div>
+        <div class="input-group">
+            <label for="ordererPhoneNumberTofindOrderId" class="label">휴대폰 번호</label>
+            <input id="ordererPhoneNumberTofindOrderId" class="input" placeholder="휴대폰 번호를 입력하세요" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');" />
+        </div>
+      <div class="input-group">
+        <label for="ordererEmailTofindOrderId" class="label">이메일 주소</label>
+        <input id="ordererEmailTofindOrderId" class="input" type="email" placeholder="이메일 주소를 입력하세요"/>
+      </div>
+    </div>
+    <div class="non-client-order-footer">
+        <button id="tryToFindOrderId" class="button">주문 아이디 조회하기</button>
+    </div>
+</div>
+
+<div id="findOrderIdModal" class="modal" style="display: none">
+  <div class="modal-content">
+    <span class="close" onclick="closeFindOrderIdModal()">&times;</span>
+    <h3>주문 아이디 조회</h3>
+    <div id="findOrderIdModalContent">
+      <!--내용 들어감-->
+    </div>
+  </div>
+</div>
+
+
+<!-- 비회원 주문 비밀번호 조회(수정) -->
+<div class="non-client-order-container" id="non-client-order-password-find-container" style="display: none">
+    <div class="non-client-order-header">
+        <div class="non-client-order-title">비회원 주문 비밀번호 변경</div>
+        <div class="non-client-order-description">아래의 정보를 입력해, 주문 비밀번호를 변경할 수 있습니다</div>
+      <div class="non-client-order-description">변경한 비밀번호로 주문 내역 조회하세요.</div>
+    </div>
+  <div class="non-client-order-content">
+    <div class="input-group">
+      <label for="ordererNameTofindOrderPassword" class="label">주문자 이름</label>
+      <input id="ordererNameTofindOrderPassword" class="input" placeholder="주문자 이름을 입력하세요" required/>
+    </div>
+    <div class="input-group">
+      <label for="orderIdTofindOrderPassword" class="label">주문번호</label>
+      <input id="orderIdTofindOrderPassword" class="input" placeholder="주문번호를 입력하세요" required/>
+    </div>
+    <div class="input-group">
+      <label for="ordererPhoneNumberTofindOrderPassword" class="label">휴대폰 번호</label>
+      <input id="ordererPhoneNumberTofindOrderPassword" class="input" placeholder="휴대폰 번호를 입력하세요" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');" />
+    </div>
+    <div class="input-group">
+      <label for="ordererEmailTofindOrderPassword" class="label">이메일 주소</label>
+      <input id="ordererEmailTofindOrderPassword" class="input" type="email" placeholder="이메일 주소를 입력하세요"/>
+    </div>
+    <div class="input-group">
+      <label for="newOrderPasswordTofindOrderPassword" class="label">새로운 주문 비밀번호</label>
+      <input id="newOrderPasswordTofindOrderPassword" class="input" type="password" placeholder="새로운 주문 비밀번호를 입력하세요"/>
+    </div>
+  </div>
+  <div class="non-client-order-footer">
+    <button id="tryToFindOrderPassword" class="button">주문 비밀번호 변경하기</button>
+  </div>
+</div>
+
+<div id="findOrderPasswordModal" class="modal" style="display: none">
+  <div class="modal-content">
+    <span class="close" onclick="closeFindOrderPasswordModal()">&times;</span>
+    <h3>주문 비밀번호 변경</h3>
+    <div id="findOrderPasswordModalContent">
+      <!--내용 들어감-->
+    </div>
+  </div>
+</div>
+
 
 <script>
 
@@ -133,9 +238,37 @@
         openNonClientOrderFindModal();
     };
 
+    document.getElementById('tryToFindOrderId').onclick = function() {
+      openNonClientOrderIdFindModal();
+    };
+
+    document.getElementById('tryToFindOrderPassword').onclick = function() {
+      openNonClientOrderPasswordFindModal();
+    };
+
+    function menuToFindNonClientOrder(){
+        document.getElementById("non-client-order-find-container").style.display = 'block';
+        document.getElementById("non-client-order-id-find-container").style.display = 'none';
+        document.getElementById("non-client-order-password-find-container").style.display = 'none';
+    }
+
+    function menuToFindNonClientOrderId(){
+        document.getElementById("non-client-order-find-container").style.display = 'none';
+        document.getElementById("non-client-order-id-find-container").style.display = 'block';
+        document.getElementById("non-client-order-password-find-container").style.display = 'none';
+    }
+
+    function menuToFindNonClientOrderPassword(){
+        document.getElementById("non-client-order-find-container").style.display = 'none';
+        document.getElementById("non-client-order-id-find-container").style.display = 'none';
+        document.getElementById("non-client-order-password-find-container").style.display = 'block';
+    }
+
     function openNonClientOrderFindModal() {
+
         const inputOrderIdStr = document.getElementById('orderIdStr').value;
         const orderPassword = document.getElementById('orderPassword').value;
+
         const modal = document.getElementById('findOrderModal');
         const modalContent = document.getElementById('findOrderModalContent');
 
@@ -203,22 +336,180 @@
             modal.style.display = 'block'; // Open modal'
         })
         .catch(error => {
-            modalContent.innerHTML = `<p>${error.message}</p><p>비회원 주문 조회에 실패했습니다. 다시 시도하세요</p>`;
+            modalContent.innerHTML = `<p>비회원 주문 조회에 실패했습니다. 다시 시도하세요</p>`;
             modal.style.display = 'block'; // Open modal
         });
+
     }
 
-    document.getElementsByClassName('close')[0].onclick = function() {
-        const modal = document.getElementById('findOrderModal');
-        modal.style.display = 'none'; // Close modal
-    };
+    function openNonClientOrderIdFindModal() {
 
-    window.onclick = function(event) {
-        const modal = document.getElementById('findOrderModal');
-        if (event.target === modal) {
-            modal.style.display = 'none'; // Close modal
+      const modal = document.getElementById("findOrderIdModal");
+      const content = document.getElementById("findOrderIdModalContent");
+      content.innerHTML = "";
+
+      const ordererName = document.getElementById("ordererNameTofindOrderId").value;
+      const phoneNumber = document.getElementById("ordererPhoneNumberTofindOrderId").value;
+      const email = document.getElementById("ordererEmailTofindOrderId").value;
+
+      // 필수 입력값 확인
+      if(isEmpty(ordererName)){
+        alert("주문자 이름을 입력해 주세요");
+        return;
+      }
+      else if(isEmpty(phoneNumber)){
+        alert("휴대폰 번호를 입력해 주세요");
+        return;
+      }
+      else if(isEmpty(email)){
+        alert("이메일 주소를 입력해 주세요");
+        return;
+      }
+      else if(!isValidEmail(email)){
+        alert("이메일 주소 형식이 올바르지 않습니다.");
+        return;
+      }
+
+      fetch(`/non-client/order/orderId?ordererName=${ordererName}&phoneNumber=${phoneNumber}&email=${email}`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('API 호출 오류가 발생했습니다.');
         }
-    };
+        return response.json();
+      })
+      .then(data => {
+        let table = `
+          <div>최근 주문 내역 중 최대 10건만 조회됩니다.</div>
+          <table class = "table table-striped">
+            <thead>
+              <tr>
+                <th>주문일시</th>
+                <th>주문아이디</th>
+              </tr>
+            </thead>
+            <tbody>
+        `;
+
+        data.forEach((obj) => {
+          let orderDateTime = obj.orderDateTime.replace('T', ' ');
+
+          table += `
+            <tr>
+              <td>${orderDateTime}</td>
+              <td>${obj.orderId}</td>
+            </tr>
+          `;
+        })
+
+        table += `
+            </tbody>
+           </table>
+        `;
+
+        content.innerHTML = table;
+        modal.style.display = 'block';
+      })
+      .catch(error =>{
+        const errorDiv = document.createElement('div');
+        errorDiv.innerText = "주문 아이디 조회에 실패했습니다. 다시 시도하세요";
+        content.append(errorDiv);
+        modal.style.display = 'block';
+      })
+
+    }
+
+    function openNonClientOrderPasswordFindModal() {
+      const modal = document.getElementById("findOrderPasswordModal");
+      const content = document.getElementById("findOrderPasswordModalContent");
+      content.innerHTML = "";
+
+      const ordererName = document.getElementById("ordererNameTofindOrderPassword").value;
+      const orderId = document.getElementById("orderIdTofindOrderPassword").value;
+      const phoneNumber=  document.getElementById("ordererPhoneNumberTofindOrderPassword").value;
+      const email = document.getElementById("ordererEmailTofindOrderPassword").value;
+      const newPassword = document.getElementById("newOrderPasswordTofindOrderPassword").value;
+
+      if(isEmpty(ordererName)){
+        alert("주문자 이름을 입력하세요.");
+        return;
+      }
+      else if(isEmpty(orderId)){
+        alert("주문 아이디를 입력하세요");
+        return;
+      }
+      else if(isEmpty(phoneNumber)){
+        alert("핸드폰 번호를 입력하세요");
+        return;
+      }
+      else if(isEmpty(email)){
+        alert("이메일 주소를 입력하세요");
+        return;
+      }
+      else if(!isValidEmail(email)){
+        alert("이메일 형식이 올바르지 않습니다.");
+        return;
+      }
+      else if(isEmpty(newPassword)){
+        alert("새로운 비밀번호를 입력새 주세요.");
+        return;
+      }
+
+      fetch(`/non-client/order/${orderId}/password`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          "ordererName": ordererName,
+          "phoneNumber": phoneNumber,
+          "email": email,
+          "newPassword": newPassword
+        })
+      })
+      .then(response => {
+        if(!response.ok){
+          throw new Error("API 호출 오류가 발생했습니다.");
+        }
+        content.innerText = "비회원 주문 비밀번호가 변경되었습니다";
+        modal.style.display = 'block';
+      })
+      .catch(error => {
+        content.innerHTML = `<p>주문 비밀번호 변경에 실패했습니다. 주문 정보를 정확히 입력해 주세요.</p>`;
+        modal.style.display = 'block';
+      })
+
+    }
+
+    function closeFindOrderModal(){
+        document.getElementById("findOrderModal").style.display = 'none';
+    }
+
+    function closeFindOrderIdModal(){
+      document.getElementById("findOrderIdModal").style.display = 'none';
+      // 입력 칸 비우기
+      document.getElementById("ordererNameTofindOrderId").value = null;
+      document.getElementById("ordererPhoneNumberTofindOrderId").value = null;
+      document.getElementById("ordererEmailTofindOrderId").value = null;
+    }
+
+    function closeFindOrderPasswordModal(){
+      document.getElementById("findOrderPasswordModal").style.display = 'none';
+      // 입력 칸 비우기
+      document.getElementById("ordererNameTofindOrderPassword").value = null;
+      document.getElementById("orderIdTofindOrderPassword").value = null;
+      document.getElementById("ordererPhoneNumberTofindOrderPassword").value = null
+      document.getElementById("ordererEmailTofindOrderPassword").value = null;
+      document.getElementById("newOrderPasswordTofindOrderPassword").value = null;
+    }
+
+    function isEmpty(value) {
+      return value === null || value === "" || value === undefined;
+    }
+
+    function isValidEmail(email) {
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailPattern.test(email);
+    }
 
 </script>
 
