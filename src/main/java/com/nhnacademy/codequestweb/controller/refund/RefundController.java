@@ -77,7 +77,7 @@ public class RefundController {
     }
 
     @GetMapping("/refund/policy/policies")
-    public String refundPolicies(HttpServletRequest req, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "6") int size){
+    public String refundPolicyList(HttpServletRequest req, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "6") int size){
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
 
@@ -91,11 +91,11 @@ public class RefundController {
         return "index";
     }
     @PostMapping("/refund/policy/register")
-    public String refundPolicyRegister(HttpServletRequest req, @ModelAttribute
+    public String refundPolicySave(HttpServletRequest req, @ModelAttribute
         RefundPolicyRegisterRequestDto requestDto){
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
-        refundPolicyService.savePolicy(requestDto);
+        refundPolicyService.saveRefundPolicy(requestDto);
 
         return "redirect:/refund/policy/policies";
 

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 public class RefundPolicyService {
     private final RefundPolicyClient refundPolicyClient;
 
-    public void savePolicy (RefundPolicyRegisterRequestDto requestDto){
+    public void saveRefundPolicy (RefundPolicyRegisterRequestDto requestDto){
         refundPolicyClient.saveRefundPolicy(requestDto);
     }
 

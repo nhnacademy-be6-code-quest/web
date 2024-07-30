@@ -45,7 +45,6 @@
           <th class="text-muted-foreground">환불 정책 타입</th>
           <th class="text-muted-foreground">반품 비용</th>
           <th class="text-muted-foreground">정책 시작 시간</th>
-          <th class="text-muted-foreground">정책 종료 시간</th>
           <th class="text-muted-foreground">상태</th>
         </tr>
         </thead>
@@ -54,7 +53,6 @@
           <td th:text="${refund.refundPolicyType}"></td>
           <td th:text="${refund.refundShippingFee}" class="text-green-500"></td>
           <td th:text="${refund.refundPolicyIssuedDate}" class="text-muted-foreground"></td>
-          <td th:text="${refund.refundPolicyExpirationDate}" class="text-primary"></td>
           <td th:text="${refund.refundPolicyStatus}" class="text-primary"></td>
         </tr>
         </tbody>
