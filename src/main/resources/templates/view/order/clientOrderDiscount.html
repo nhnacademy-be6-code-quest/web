@@ -108,12 +108,6 @@
             </label>
             <button type="button" class="btn btn-outline-primary" onclick="applyPoints()" style="font-size: small; padding: 0; height: 30px; width: 90px">적용하기</button>
         </div>
-        <div id="exceed-remaining-point-message" style="color: red; display: none;">
-            사용할 포인트는 잔여 포인트보다 많을 수 없습니다.
-        </div>
-        <div id="negative-amount-message" style="color: red; display: none;">
-            결제 금액이 0원 미만일 수 없습니다.
-        </div>
     </div>
 
     <!-- 쿠폰선택 Modal -->
@@ -152,6 +146,7 @@
 
 
 <script th:inline="javascript">
+
     <!-- 쿠폰적용 -->
     function handleSelectCoupon(index){
         // 상품 주문 금액(할인 적용 전)
@@ -214,38 +209,30 @@
     <!-- 포인트 적용 -->
     function applyPoints() {
 
-        const exceedMessage = document.getElementById('exceed-remaining-point-message');
-        const negativeAmountMessage = document.getElementById('negative-amount-message');
-
         const originProductTotalAmount = [[${clientOrderForm}]].productTotalAmount;
         const originShippingFee = [[${clientOrderForm}]].shippingFee;
 
-        let inputUsedPointAmount = parseInt(document.getElementById('inputUsedPointAmount').value);
-        const remainingPoints = parseInt(document.getElementById('remaining-points').text);
-        const couponDiscountAmount = parseInt(document.getElementById("couponDiscountAmount").value);
+        let inputUsedPointAmount = parseInt(document.getElementById('inputUsedPointAmount').value); // 사용자가 입력한 사용 포인트
+        const remainingPoints = parseInt(document.getElementById('remaining-points').text); // 가용포인트
+        const couponDiscountAmount = parseInt(document.getElementById("couponDiscountAmount").value); // 쿠폰 할인 금액
         const payAmount = originProductTotalAmount + originShippingFee - couponDiscountAmount // 결제금액 = 포인트 사용 가능 최대치
 
-        exceedMessage.style.display = 'none';
-        negativeAmountMessage.style.display = 'none';
-
-        if (inputUsedPointAmount > remainingPoints) {
-            exceedMessage.style.display = 'block';
-            document.getElementById('inputUsedPointAmount').value = remainingPoints
-        } else {
-            exceedMessage.style.display = 'none';
+        if(inputUsedPointAmount > remainingPoints){
+            document.getElementById('inputUsedPointAmount').value = 0;
+            alert("보유 포인트보다 더 많은 포인트를 사용할 수 없습니다");
         }
-
-        inputUsedPointAmount = parseInt(document.getElementById('inputUsedPointAmount').value);
-
-        if(inputUsedPointAmount > payAmount){
-            negativeAmountMessage.style.display = 'block';
-            document.getElementById('inputUsedPointAmount').value = payAmount;
-        } else {
-            negativeAmountMessage.style.display = 'none';
+        else if(inputUsedPointAmount > payAmount){
+            document.getElementById('inputUsedPointAmount').value = 0;
+            alert("남은 결제 금액보다 더 많은 포인트를 사용할 수 없습니다");
         }
-
-        document.getElementById("usedPointDiscountAmount").value = document.getElementById('inputUsedPointAmount').value
-        document.getElementById("payAmount").value = payAmount - document.getElementById('inputUsedPointAmount').value
+        else if(1 <= payAmount - inputUsedPointAmount && payAmount - inputUsedPointAmount <= 200){
+            document.getElementById('inputUsedPointAmount').value = 0;
+            alert("결제 시스템 상 1원 ~ 200원은 결제 불가능합니다.");
+        }
+        else{
+            document.getElementById("usedPointDiscountAmount").value = inputUsedPointAmount;
+            document.getElementById("payAmount").value = payAmount - document.getElementById('inputUsedPointAmount').value
+        }
 
     }
 </script>

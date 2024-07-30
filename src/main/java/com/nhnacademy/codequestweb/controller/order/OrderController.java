@@ -61,6 +61,13 @@ public class OrderController {
     // 회원 결제수단 선택 페이지
     @PostMapping("/client/order-pay-method")
     public String viewClientOrderPayMethodForm(@ModelAttribute ClientOrderDiscountForm clientOrderDiscountForm, Model model, HttpServletRequest req){
+        long payamount = clientOrderDiscountForm.getPayAmount();
+
+        if(1 <= payamount && payamount <= 200){
+            model.addAttribute("alterMessage", "1원 ~ 200원은 결제할 수 없습니다.");
+            return "index";
+        }
+
         req.getSession().setAttribute("clientOrderDiscountForm", clientOrderDiscountForm);
 
         return orderService.viewClientOrderPayMethod(req, model);
