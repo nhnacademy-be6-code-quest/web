@@ -2,42 +2,30 @@ package com.nhnacademy.codequestweb.controller.refund;
 
 import com.nhnacademy.codequestweb.request.refund.PaymentCancelRequestDto;
 import com.nhnacademy.codequestweb.request.refund.RefundAfterRequestDto;
+import com.nhnacademy.codequestweb.request.refund.RefundPolicyRegisterRequestDto;
 import com.nhnacademy.codequestweb.request.refund.RefundRequestDto;
 import com.nhnacademy.codequestweb.response.refund.RefundAdminResponseDto;
+import com.nhnacademy.codequestweb.response.refund.RefundPolicyListResponseDto;
 import com.nhnacademy.codequestweb.response.refund.RefundPolicyResponseDto;
 import com.nhnacademy.codequestweb.response.refund.RefundSuccessResponseDto;
+import com.nhnacademy.codequestweb.service.refund.RefundPolicyService;
 import com.nhnacademy.codequestweb.service.refund.RefundService;
-
+import com.nhnacademy.codequestweb.utils.CookieUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-/*
-        <상품 개수 별로>
-        1. 상품 이름
-        2. 상품 개수
-        3. 개당 가격
-
-        <주문 관련 정보>
-        1. + 상품 총 금액
-        2. - 쿠폰으로 할인 받은 금액
-        3. - 포인트로 할인 받은 금액
-        4. - 쌓인 포인트 금액
-        5. - 배송비
-        6. - 반품비
-        7. (계산) 환불 예상 금액
-        8. 환불 수단 ("포인트")
-*/
 
 @Controller
 @RequiredArgsConstructor
@@ -45,6 +33,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class RefundController {
 
     private final RefundService refundService;
+    private final RefundPolicyService refundPolicyService;
 
     @PostMapping("/client/payment/cancel")
     public String paymentCancel(@ModelAttribute PaymentCancelRequestDto paymentCancelRequestDto,
@@ -85,5 +74,30 @@ public class RefundController {
         refundService.refundSure(refundAfterRequestDto);
         redirectAttributes.addFlashAttribute("alterMessage", "환불 완료");
         return "redirect:/admin/orders";
+    }
+
+    @GetMapping("/refund/policy/policies")
+    public String refundPolicies(HttpServletRequest req, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "6") int size){
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("access", CookieUtils.getCookieValue(req, "access"));
+
+        Page<RefundPolicyListResponseDto> policies = refundPolicyService.findPolices(page, size);
+        List<String> refundPolicyTypes = List.of("반품", "단순변심","파본","파손");
+        req.setAttribute("refundTypes",refundPolicyTypes);
+        req.setAttribute("view", "adminPage");
+        req.setAttribute("adminPage", "refundPolicy");
+        req.setAttribute("activeSection", "refund");
+        req.setAttribute("policies", policies);
+        return "index";
+    }
+    @PostMapping("/refund/policy/register")
+    public String refundPolicyRegister(HttpServletRequest req, @ModelAttribute
+        RefundPolicyRegisterRequestDto requestDto){
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("access", CookieUtils.getCookieValue(req, "access"));
+        refundPolicyService.savePolicy(requestDto);
+
+        return "redirect:/refund/policy/policies";
+
     }
 }
