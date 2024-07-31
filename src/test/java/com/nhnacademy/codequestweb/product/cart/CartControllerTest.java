@@ -185,6 +185,24 @@ class CartControllerTest {
         verify(cartService, times(1)).getGuestCartList(any());
     }
 
+    @DisplayName("비회원 장바구니 조회 테스트 - 조회 실패")
+    @Test
+    void getExistingGuestCartTest2() throws Exception{
+        String cartJson = objectMapper.writeValueAsString(requestDtoList);
+        String encryptedCart = SecretKeyUtils.encrypt(cartJson, SecretKeyUtils.getSecretKey());
+
+        when(mapper.readValue(eq(cartJson), any(TypeReference.class)))
+                .thenReturn(requestDtoList);
+
+        when(cartService.getGuestCartList(requestDtoList)).thenThrow(FeignException.class);
+
+        mockMvc.perform(get("/cart/all")
+                        .cookie(new Cookie(CART, encryptedCart)))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/"));
+
+        verify(cartService, times(1)).getGuestCartList(any());
+    }
 
 
     @DisplayName("회원 장바구니 조회 성공 테스트")
@@ -246,6 +264,18 @@ class CartControllerTest {
                 .andDo(print());
     }
 
+    @DisplayName("회원 장바구니 조회 테스트 - 응답 코드가 redirection 이고 리디렉션 URI 가 존재하지 않음 (실제 서비스에선 당장 발생할 일은 없음)")
+    @Test
+    void getClientCart3() throws Exception{
+        when(cartService.getClientCartList(any()))
+                .thenThrow(FeignException.class);
+
+        mockMvc.perform(get("/cart/all")
+                        .cookie(testAccessCookie))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/"))
+                .andDo(print());
+    }
 
     @DisplayName("비회원 장바구니 물품 추가 성공 테스트")
     @Test

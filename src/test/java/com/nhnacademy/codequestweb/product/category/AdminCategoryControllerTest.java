@@ -1,9 +1,12 @@
 package com.nhnacademy.codequestweb.product.category;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nhnacademy.codequestweb.config.CategoryConfig;
 import com.nhnacademy.codequestweb.controller.product.admin.AdminCategoryController;
 import com.nhnacademy.codequestweb.request.product.product_category.CategoryRegisterRequestDto;
 import com.nhnacademy.codequestweb.request.product.product_category.CategoryUpdateRequestDto;
 import com.nhnacademy.codequestweb.response.product.product_category.CategoryGetResponseDto;
+import com.nhnacademy.codequestweb.response.product.product_category.CategoryNodeResponseDto;
 import com.nhnacademy.codequestweb.response.product.product_category.CategoryRegisterResponseDto;
 import com.nhnacademy.codequestweb.response.product.product_category.CategoryUpdateResponseDto;
 import com.nhnacademy.codequestweb.service.product.CategoryService;
@@ -21,6 +24,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -47,6 +51,9 @@ class AdminCategoryControllerTest {
 
     @Mock
     private CategoryService categoryService;
+
+    @Mock
+    private CategoryConfig categoryConfig;
 
     private MockMvc mockMvc;
 
@@ -432,4 +439,20 @@ class AdminCategoryControllerTest {
         ;
     }
 
+    @Test
+    void updateCategoryConfigTest()  throws Exception {
+
+        CategoryNodeResponseDto responseDto = new CategoryNodeResponseDto();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        String requestBody = objectMapper.writeValueAsString(responseDto);
+
+        mockMvc.perform(post("/category/update")
+                        .content(requestBody)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        verify(categoryConfig, times(1)).update(any());
+    }
 }
