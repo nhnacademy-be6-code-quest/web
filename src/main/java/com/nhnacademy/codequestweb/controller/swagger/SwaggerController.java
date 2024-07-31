@@ -34,6 +34,20 @@ public class SwaggerController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/swagger/coupon/json")
+    public ResponseEntity<String> swaggerCouponJson() {
+        String url = "http://localhost:8006/api-docs";
+        String response = restTemplate.getForObject(url, String.class);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/swagger/point/json")
+    public ResponseEntity<String> swaggerPointJson() {
+        String url = "http://localhost:8010/api-docs";
+        String response = restTemplate.getForObject(url, String.class);
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/swagger/{path}")
     public String swaggerAuth(@PathVariable String path, Model model) {
         if (path.equals("auth")) {
@@ -42,7 +56,13 @@ public class SwaggerController {
             model.addAttribute("path", "/swagger/client/json");
         } else if (path.equals("product")) {
             model.addAttribute("path", "/swagger/product/json");
+        } else if (path.equals("coupon")) {
+            model.addAttribute("path", "/swagger/coupon/json");
+        } else if (path.equals("point")) {
+            model.addAttribute("path", "/swagger/point/json");
         }
+
+
         return "swagger/swagger";
     }
 }

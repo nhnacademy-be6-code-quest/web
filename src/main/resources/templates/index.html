@@ -56,7 +56,7 @@
     <div th:replace="~{view/mypage/mypage :: mypageFragment ('mypage', 'profile', 'delivaryaddress','clientPhoneNumber', 'coupons','pointUsed','pointReward', 'orders')}"></div>
 </div>
 <div th:if="${view != null} and ${#strings.equals(view, 'adminPage')}">
-    <div th:replace="~{view/adminPage/adminPage :: adminPageFragment ('couponPolicy', 'adminCoupons','pointUsed', 'pointReward','pointPolicy', 'adminFindOrder', 'adminShippingPolicy')}"></div>
+    <div th:replace="~{view/adminPage/adminPage :: adminPageFragment ('couponPolicy', 'adminCoupons','pointUsed', 'pointReward','pointPolicy', 'adminFindOrder', 'adminShippingPolicy', 'refundPolicy')}"></div>
 </div>
 <div th:if="${view != null} and ${#strings.equals(view, 'bookProductRegisterForm')}">
     <section th:replace="~{view/product/bookProductRegisterForm.html :: bookProductRegisterFragment}"></section>
