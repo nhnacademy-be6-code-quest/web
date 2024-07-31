@@ -91,6 +91,10 @@ public class OrderService {
         ClientOrderForm clientOrderForm = (ClientOrderForm) req.getSession()
             .getAttribute(CLIENT_ORDER_FORM);
 
+        if(clientOrderForm == null){
+            log.info("clientOrderForm is null");
+        }
+
         ClientOrderDiscountForm clientOrderDiscountForm = ClientOrderDiscountForm.builder()
             .payAmount(clientOrderForm.getProductTotalAmount() + clientOrderForm.getShippingFee())
             .build();
@@ -113,8 +117,6 @@ public class OrderService {
         model.addAttribute("couponList", couponList);
         model.addAttribute("couponDiscountInfoList", couponDiscountInfoList);
 
-        req.setAttribute("couponDiscountInfoList", couponDiscountInfoList);
-
         return INDEX;
     }
 
@@ -130,6 +132,16 @@ public class OrderService {
             .getAttribute(CLIENT_ORDER_DISCOUNT_FORM);
         ClientOrderPayMethodForm clientOrderPayMethodForm = (ClientOrderPayMethodForm) req.getSession()
             .getAttribute(CLIENT_ORDER_PAYMENT_METHOD_FORM);
+
+        if(clientOrderForm == null){
+            log.info("clientOrderForm is null");
+        }
+        if(clientOrderDiscountForm == null){
+            log.info("clientOrderDiscountForm is null");
+        }
+        if(clientOrderPayMethodForm == null){
+            log.info("clientOrderPayMethodForm is null");
+        }
 
         // 포인트 할인 적용하기
         ClientOrderCreateForm clientOrderCreateForm = ClientOrderCreateForm.builder()
@@ -190,12 +202,17 @@ public class OrderService {
 
         HttpHeaders headers = getHeader(req);
 
-        log.info("적립 포인트 계산 및 결제수단 뷰");
-
         ClientOrderForm clientOrderForm = (ClientOrderForm) req.getSession()
             .getAttribute(CLIENT_ORDER_FORM);
         ClientOrderDiscountForm clientOrderDiscountForm = (ClientOrderDiscountForm) req.getSession()
             .getAttribute(CLIENT_ORDER_DISCOUNT_FORM);
+
+        if(clientOrderForm == null){
+            log.info("clientOrderForm is null");
+        }
+        if(clientOrderDiscountForm == null){
+            log.info("clientOrderDiscountForm is null");
+        }
 
         // 및 포인트 적립률
         Long pointAccumulationRate = orderPointClient.findPoint(headers).getPointAccumulationRate();
