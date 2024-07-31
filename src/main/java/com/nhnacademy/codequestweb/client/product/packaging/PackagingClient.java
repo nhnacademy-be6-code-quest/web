@@ -56,7 +56,7 @@ public interface PackagingClient {
             @RequestParam(name = "page") int page, @RequestParam(name = "size") int size
     );
 
-    @GetMapping("/api/product/packaging/single/byProduct/{productId}")
+    @GetMapping("/api/product/admin/packaging/single/byProduct/{productId}")
     ResponseEntity<PackagingGetResponseDto> getPackagingByProductId(
             @RequestHeader HttpHeaders headers,
             @PathVariable("productId") Long productId
