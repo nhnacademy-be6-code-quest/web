@@ -52,6 +52,16 @@ class PackagingServiceTest {
     }
 
     @Test
+    void roleCheckTest(){
+        when(packagingClient.roleCheck(any())).thenReturn(ResponseEntity.ok().build());
+
+        ResponseEntity<Void> roleCheckResponse = packagingService.roleCheck(headers);
+        assertNotNull(roleCheckResponse);
+
+        verify(packagingClient, times(1)).roleCheck(any());
+    }
+
+    @Test
     void savePackagingTest(){
         PackagingRegisterRequestDto requestDto = PackagingRegisterRequestDto.builder().build();
 
@@ -121,10 +131,32 @@ class PackagingServiceTest {
     }
 
     @Test
+    void getPackagingPageForAdminTest(){
+        List<PackagingGetResponseDto> responseDtoList = Arrays.asList(
+                PackagingGetResponseDto.builder().build(),
+                PackagingGetResponseDto.builder().build(),
+                PackagingGetResponseDto.builder().build()
+        );
+
+        Page<PackagingGetResponseDto> responseDtoPage = new PageImpl<>(responseDtoList, pageRequest, 2);
+
+        when(packagingClient.getPackagingPageForAdmin(any(), anyInt(), anyInt(), anyInt()))
+                .thenReturn(ResponseEntity.ok(responseDtoPage));
+
+        ResponseEntity<Page<PackagingGetResponseDto>> response = packagingService.getPackagingPageForAdmin(headers,0, 1, 1);
+
+        assertNotNull(response);
+        assertEquals(responseDtoPage, response.getBody());
+
+        verify(packagingClient, times(1)).getPackagingPageForAdmin(any(), anyInt(), anyInt(), anyInt());
+    }
+
+    @Test
     void getSinglePackagingTest(){
         PackagingGetResponseDto responseDto = PackagingGetResponseDto.builder().build();
-        when(packagingClient.getPackagingByProductId(any(), eq(1L))).thenReturn(ResponseEntity.ok(responseDto));
-        HttpHeaders headers = new HttpHeaders();
+        when(packagingClient.getPackagingByProductId(any(), eq(1L)))
+                .thenReturn(ResponseEntity.ok(responseDto));
+
         ResponseEntity<PackagingGetResponseDto> response = packagingService.getPackagingByProductIdForAdmin(headers,  1L);
         assertNotNull(response);
         assertEquals(responseDto, response.getBody());
