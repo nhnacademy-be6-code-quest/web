@@ -105,12 +105,6 @@
 <div th:if="${view != null} and ${#strings.equals(view, 'clientOrder')}">
     <section th:replace="~{view/order/clientOrder.html :: clientOrderFragment}"></section>
 </div>
-<div th:if="${view != null} and ${#strings.equals(view, 'clientOrderDiscount')}">
-    <section th:replace="~{view/order/clientOrderDiscount.html :: clientOrderDiscountFragment}"></section>
-</div>
-<div th:if="${view != null} and ${#strings.equals(view, 'clientOrderPayMethod')}">
-    <section th:replace="~{view/order/clientOrderPayMethod.html :: clientOrderPayMethodFragment}"></section>
-</div>
 <div th:if="${view != null} and ${#strings.equals(view, 'nonClientFindOrder')}">
     <section th:replace="~{view/order/nonClientFindOrder.html :: nonClientFindOrderFragment}"></section>
 </div>

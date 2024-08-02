@@ -20,9 +20,7 @@ public class ClientOrderCreateForm {
     Long orderTotalAmount;
     Long couponDiscountAmount; // 쿠폰 할인 금액
     Long usedPointDiscountAmount; // 포인트 사용 금액
-    String orderedPersonName; // 주문자 이름
     String phoneNumber; // 주문자 핸드폰 번호
-    String addressNickname; // 배송지 별칭
     String addressZipCode; // 배송지 우편번호
     String deliveryAddress; // 주소(주소,상세주소)
     Boolean useDesignatedDeliveryDate; // 배송날짜 지정 여부

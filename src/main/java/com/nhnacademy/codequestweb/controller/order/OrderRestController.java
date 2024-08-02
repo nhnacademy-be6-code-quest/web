@@ -2,10 +2,12 @@ package com.nhnacademy.codequestweb.controller.order;
 
 import com.nhnacademy.codequestweb.request.mypage.ClientRegisterAddressRequestDto;
 import com.nhnacademy.codequestweb.request.mypage.ClientRegisterPhoneNumberRequestDto;
+import com.nhnacademy.codequestweb.request.order.client.CouponDiscountInfoRequestDto;
 import com.nhnacademy.codequestweb.request.order.nonclient.FindNonClientOrderIdRequestDto;
 import com.nhnacademy.codequestweb.request.order.nonclient.UpdateNonClientOrderPasswordRequestDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientDeliveryAddressResponseDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientPhoneNumberResponseDto;
+import com.nhnacademy.codequestweb.response.order.client.OrderCouponDiscountInfo;
 import com.nhnacademy.codequestweb.response.order.nonclient.FindNonClientOrderIdInfoResponseDto;
 import com.nhnacademy.codequestweb.response.order.nonclient.NonClientOrderGetResponseDto;
 import com.nhnacademy.codequestweb.service.order.OrderService;
@@ -76,11 +78,11 @@ public class OrderRestController {
     public ResponseEntity<String> nonClientFindOrderPassword(HttpServletRequest request,
         @PathVariable long orderId,
         @RequestBody UpdateNonClientOrderPasswordRequestDto updateNonClientOrderPasswordRequestDto) {
-        try{
+        try {
             orderService.nonClientFindOrderPassword(request, orderId,
                 updateNonClientOrderPasswordRequestDto);
 
-        } catch (FeignException.NotFound e){
+        } catch (FeignException.NotFound e) {
             log.warn("비회원 주문 비밀번호 변경 실패. 입력한 정보와 일치하는 주문을 찾을 수 없음.");
             return ResponseEntity.notFound().build();
         }
@@ -145,6 +147,12 @@ public class OrderRestController {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok("주문화면에서 주소지 등록 성공!");
+    }
+
+    @PostMapping("/client/order/coupon-info")
+    public ResponseEntity<List<OrderCouponDiscountInfo>> getCouponDiscountInfoList(
+        HttpServletRequest request, @RequestBody CouponDiscountInfoRequestDto requestDto) {
+        return ResponseEntity.ok(orderService.getOrderCouponDiscountInfoList(request, requestDto));
     }
 
 }

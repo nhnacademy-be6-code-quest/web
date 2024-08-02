@@ -1,9 +1,7 @@
 package com.nhnacademy.codequestweb.controller.order;
 
 import com.nhnacademy.codequestweb.request.order.field.OrderItemDto;
-import com.nhnacademy.codequestweb.response.order.client.ClientOrderDiscountForm;
 import com.nhnacademy.codequestweb.response.order.client.ClientOrderForm;
-import com.nhnacademy.codequestweb.response.order.client.ClientOrderPayMethodForm;
 import com.nhnacademy.codequestweb.response.order.nonclient.NonClientOrderForm;
 import com.nhnacademy.codequestweb.service.order.AdminOrderService;
 import com.nhnacademy.codequestweb.service.order.OrderService;
@@ -51,33 +49,10 @@ public class OrderController {
         return orderService.viewClientOrder(req, model, orderItemDtoStringList);
     }
 
-    // 회원 쿠폰 및 포인트 적용 페이지
-    @PostMapping("/client/order-discount")
-    public String viewClientOrderDiscountForm(@ModelAttribute ClientOrderForm clientOrderForm, Model model, HttpServletRequest req){
-        req.getSession().setAttribute("clientOrderForm", clientOrderForm);
-        return orderService.viewClientOrderDiscount(req, model);
-    }
-
-    // 회원 결제수단 선택 페이지
-    @PostMapping("/client/order-pay-method")
-    public String viewClientOrderPayMethodForm(@ModelAttribute ClientOrderDiscountForm clientOrderDiscountForm, Model model, HttpServletRequest req){
-        long payamount = clientOrderDiscountForm.getPayAmount();
-
-        if(1 <= payamount && payamount <= 200){
-            model.addAttribute("alterMessage", "1원 ~ 200원은 결제할 수 없습니다.");
-            return "index";
-        }
-
-        req.getSession().setAttribute("clientOrderDiscountForm", clientOrderDiscountForm);
-
-        return orderService.viewClientOrderPayMethod(req, model);
-    }
-
     // 회원 주문 진행
     @PostMapping("/client/order/process")
-    public String processClientOrderPayMethodForm(@ModelAttribute ClientOrderPayMethodForm clientOrderPayMethodForm, HttpServletRequest req){
-        req.getSession().setAttribute("clientOrderPayMethodForm", clientOrderPayMethodForm);
-        return String.format("redirect:/client/order/payment?orderCode=%s&method=%s", orderService.saveClientTemporalOrder(req), clientOrderPayMethodForm.getPaymentMethod());
+    public String processClientOrderPayMethodForm(@ModelAttribute ClientOrderForm clientOrderForm, HttpServletRequest req){
+        return String.format("redirect:/client/order/payment?orderCode=%s&method=%s", orderService.saveClientTemporalOrder(req), clientOrderForm.getPaymentMethod());
     }
 
     // 비회원 주문 진행

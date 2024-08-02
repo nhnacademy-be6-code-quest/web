@@ -8,6 +8,7 @@ import com.nhnacademy.codequestweb.request.payment.PaymentOrderApproveRequestDto
 import com.nhnacademy.codequestweb.request.point.PointRewardOrderRequestDto;
 import com.nhnacademy.codequestweb.request.product.common.InventoryDecreaseRequestDto;
 import com.nhnacademy.codequestweb.response.payment.PaymentGradeResponseDto;
+import com.nhnacademy.codequestweb.response.payment.PaymentMethodResponseDto;
 import com.nhnacademy.codequestweb.response.payment.PaymentsResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -113,6 +114,10 @@ public class PaymentService /*implements PaymentService*/ {
 
     public PostProcessRequiredPaymentResponseDto getPostProcessRequiredPaymentResponseDto(HttpHeaders headers, String orderCode) {
         return paymentClient.getPostProcessRequiredPaymentResponseDto(headers, orderCode).getBody();
+    }
+
+    public List<PaymentMethodResponseDto> getPaymentMethodList(HttpHeaders headers) {
+        return paymentClient.getAllPaymentMethod(headers).getBody();
     }
 
 }

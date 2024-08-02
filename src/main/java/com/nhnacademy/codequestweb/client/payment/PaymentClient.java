@@ -3,7 +3,9 @@ package com.nhnacademy.codequestweb.client.payment;
 import com.nhnacademy.codequestweb.request.payment.PostProcessRequiredPaymentResponseDto;
 import com.nhnacademy.codequestweb.request.payment.ApprovePaymentRequestDto;
 import com.nhnacademy.codequestweb.response.payment.PaymentGradeResponseDto;
+import com.nhnacademy.codequestweb.response.payment.PaymentMethodResponseDto;
 import com.nhnacademy.codequestweb.response.payment.PaymentsResponseDto;
+import java.util.List;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -35,4 +37,7 @@ public interface PaymentClient {
 
     @GetMapping("/api/order/payment/post-process")
     ResponseEntity<PostProcessRequiredPaymentResponseDto> getPostProcessRequiredPaymentResponseDto(@RequestHeader HttpHeaders headers, @RequestParam("orderCode") String orderCode);
+
+    @GetMapping("/api/payment/method")
+    ResponseEntity<List<PaymentMethodResponseDto>> getAllPaymentMethod(@RequestHeader HttpHeaders headers);
 }
