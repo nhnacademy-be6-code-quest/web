@@ -60,7 +60,29 @@
     </div>
   </div>
 </div>
+<div class="pagination">
+  <div class="pagination-content">
+    <!-- 이전 페이지 링크 -->
+    <span th:if="${currentPage >=1}">
+      <a th:href="@{|/admin/refund/policy/policies?page=${currentPage - 1}&size=${pageSize}|}"
+         class="pagination-link">&laquo; Previous</a>
+    </span>
 
+    <!-- 페이지 번호 링크 -->
+    <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}" class="pagination-item">
+      <a th:href="@{|/admin/refund/policy/policies?page=${i}&size=${pageSize}}"
+         th:classappend="${i == currentPage} ? 'pagination-link active' : 'pagination-link'">
+        [[${i + 1}]]
+      </a>
+    </span>
+
+    <!-- 다음 페이지 링크 -->
+    <span th:if="${policies.hasNext()}">
+      <a th:href="@{|/admin/refund/policy/policies?page=${currentPage + 1}&size=${pageSize}|}"
+         class="pagination-link">Next &raquo;</a>
+    </span>
+  </div>
+</div>
 <!-- 등록 모달 -->
 <div id="registerModal" class="modal">
   <div class="modal-content">

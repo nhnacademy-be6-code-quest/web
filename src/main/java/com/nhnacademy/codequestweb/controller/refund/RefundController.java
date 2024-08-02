@@ -76,7 +76,7 @@ public class RefundController {
         return "redirect:/admin/orders";
     }
 
-    @GetMapping("/refund/policy/policies")
+    @GetMapping("/admin/refund/policy/policies")
     public String refundPolicyList(HttpServletRequest req, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "6") int size){
         HttpHeaders headers = new HttpHeaders();
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
@@ -87,6 +87,9 @@ public class RefundController {
         req.setAttribute("view", "adminPage");
         req.setAttribute("adminPage", "refundPolicy");
         req.setAttribute("activeSection", "refund");
+        req.setAttribute("totalPages", policies.getTotalPages());
+        req.setAttribute("currentPage", policies.   getNumber());
+        req.setAttribute("pageSize", policies.getSize());
         req.setAttribute("policies", policies);
         return "index";
     }
@@ -97,7 +100,7 @@ public class RefundController {
         headers.set("access", CookieUtils.getCookieValue(req, "access"));
         refundPolicyService.saveRefundPolicy(requestDto);
 
-        return "redirect:/refund/policy/policies";
+        return "redirect:/admin/refund/policy/policies";
 
     }
 }

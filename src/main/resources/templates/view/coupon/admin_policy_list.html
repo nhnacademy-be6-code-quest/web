@@ -116,11 +116,27 @@
 
     </div>
     <div class="pagination">
-        <a th:href="@{/admin/coupon/policy(page=${couponPolicies.number - 1}, size=${couponPolicies.size})}" th:if="${!couponPolicies.first}">&laquo; Previous</a>
-        <span th:each="i : ${#numbers.sequence(1, couponPolicies.totalPages)}">
-            <a th:href="@{/admin/coupon/policy(page=${i - 1}, size=${couponPolicies.size})}" th:text="${i}" th:classappend="${couponPolicies.number + 1 == i} ? 'active'"></a>
-        </span>
-        <a th:href="@{/admin/coupon/policy(page=${couponPolicies.number + 1}, size=${couponPolicies.size})}" th:if="${!couponPolicies.last}">Next &raquo;</a>
+        <div class="pagination-content">
+            <!-- 이전 페이지 링크 -->
+            <span th:if="${currentPage >=1}">
+      <a th:href="@{|/admin/coupon/policy?page=${currentPage - 1}&size=${pageSize}|}"
+         class="pagination-link">&laquo; Previous</a>
+    </span>
+
+            <!-- 페이지 번호 링크 -->
+            <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}" class="pagination-item">
+      <a th:href="@{|/admin/coupon/policy?page=${i}&size=${pageSize}}"
+         th:classappend="${i == currentPage} ? 'pagination-link active' : 'pagination-link'">
+        [[${i + 1}]]
+      </a>
+    </span>
+
+            <!-- 다음 페이지 링크 -->
+            <span th:if="${couponPolicies.hasNext()}">
+      <a th:href="@{|/admin/coupon/policy?page=${currentPage + 1}&size=${pageSize}|}"
+         class="pagination-link">Next &raquo;</a>
+    </span>
+        </div>
     </div>
 
 </div>

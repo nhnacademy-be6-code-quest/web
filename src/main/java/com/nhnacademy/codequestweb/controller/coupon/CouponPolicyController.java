@@ -38,7 +38,9 @@ public class CouponPolicyController {
         headers.set(ACCESS, CookieUtils.getCookieValue(req, ACCESS));
         Page<ProductGetResponseDto> books = couponPolicyService.getAllBooks(headers, page, sort, desc);
         model.addAttribute("books", books);
-
+        req.setAttribute("totalPages", books.getTotalPages());
+        req.setAttribute("currentPage", books.   getNumber());
+        req.setAttribute("pageSize", books.getSize());
         return "view/coupon/productAdd";
     }
 
@@ -54,11 +56,14 @@ public class CouponPolicyController {
         req.setAttribute("adminPage", "couponPolicy");
         req.setAttribute("activeSection", "coupon");
         req.setAttribute("couponPolicies", couponPolicies);
+        req.setAttribute("totalPages", couponPolicies.getTotalPages());
+        req.setAttribute("currentPage", couponPolicies.   getNumber());
+        req.setAttribute("pageSize", couponPolicies.getSize());
         return "index";
     }
 
     @GetMapping("/admin/coupon/policy/register")
-    public String viewRegisterPolicy(HttpServletRequest req, Model model) {
+    public String viewRegisterPolicy(HttpServletRequest req) {
         List<DiscountType> discountTypes = List.of(DiscountType.AMOUNTDISCOUNT,
             DiscountType.PERCENTAGEDISCOUNT);
         req.setAttribute("view", "couponPolicy");

@@ -109,23 +109,28 @@
         </tbody>
     </table>
 </div>
-<div>
-    <!-- 이전 페이지 링크 -->
-    <span th:if="${couponPayments.hasPrevious()}">
-        <a th:href="@{/admin/coupon/client(size=${couponPayments.size}, page=${couponPayments.number - 1})}">Previous</a>
+<div class="pagination">
+    <div class="pagination-content">
+        <!-- 이전 페이지 링크 -->
+        <span th:if="${currentPage >=1}">
+      <a th:href="@{|/admin/coupon/client?page=${currentPage - 1}&size=${pageSize}|}"
+         class="pagination-link">&laquo; Previous</a>
     </span>
 
-    <!-- 페이지 번호 링크 -->
-    <span th:each="i : ${#numbers.sequence(0, couponPayments.totalPages - 1)}">
-        <a th:href="@{/admin/coupon/client(size=${couponPayments.size}, page=${i})}"
-           th:text="${i + 1}"
-           th:classappend="${i == couponPayments.number} ? ' active' : ''">Page Number</a>
+        <!-- 페이지 번호 링크 -->
+        <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}" class="pagination-item">
+      <a th:href="@{|/admin/coupon/client?page=${i}&size=${pageSize}|}"
+         th:classappend="${i == currentPage} ? 'pagination-link active' : 'pagination-link'">
+        [[${i + 1}]]
+      </a>
     </span>
 
-    <!-- 다음 페이지 링크 -->
-    <span th:if="${couponPayments.hasNext()}">
-        <a th:href="@{/admin/coupon/client(size=${couponPayments.size}, page=${couponPayments.number + 1})}">Next</a>
+        <!-- 다음 페이지 링크 -->
+        <span th:if="${couponPayments.hasNext()}">
+      <a th:href="@{|/admin/coupon/client?page=${currentPage + 1}&size=${pageSize}|}"
+         class="pagination-link">Next &raquo;</a>
     </span>
+    </div>
 </div>
 
 <script>
