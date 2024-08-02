@@ -32,10 +32,6 @@ public class ClientOrderForm {
     Long couponDiscountAmount = 0L; // 쿠폰 할인 금액
     Long usedPointDiscountAmount = 0L; // 포인트 사용 금액
 
-    // 적립금 정보
-    Long pointAccumulationRate; // 적립률
-    Long expectedAccumulatingPoint; // 예상 적립금
-
     // 결제 수단 정보
     String paymentMethod; // 결제 수단 리스트
 

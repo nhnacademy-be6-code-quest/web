@@ -94,6 +94,9 @@
         <label>
           <input hidden="hidden" th:field="*{totalQuantity}">
         </label>
+        <label>
+          <input hidden="hidden" th:field="*{orderTotalAmount}">
+        </label>
         <table class="table table-striped" id="order-item-table" th:border="1">
           <thead>
           <tr>
@@ -299,13 +302,11 @@
       <div>
         <h4>예상 적립금</h4>
         <div>
-          (결제 금액의 <span th:text="${pointAccumulationRate}"></span>%가 적립될 예정입니다)
+          (결제 금액의 <span id="pointAccumulationRate" th:text="${pointAccumulationRate}"></span>%가 적립될 예정입니다)
         </div>
         <div>
           <span> 적립 예정 포인트: </span>
-          <label>
-            <input class="readonly-input" th:field="*{expectedAccumulatingPoint}" readonly>
-          </label>
+          <span id="expectedAccumulatingPoint"></span>
         </div>
       </div>
 

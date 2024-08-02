@@ -41,6 +41,12 @@ function loadExternalScript(url, callback) {
   document.head.appendChild(script);
 }
 
+function updateExpectedAccumulatingPoint(){
+  const rate = parseInt(document.getElementById("pointAccumulationRate").textContent);
+  const payAmount = parseInt(document.getElementById("payAmount").value);
+  document.getElementById("expectedAccumulatingPoint").textContent = (rate * 0.01 * payAmount).toString();
+}
+
 <!--포장여부 선택 관련-->
 function handleOnChangeUsedPackaging(checked, index) {
 
@@ -63,11 +69,17 @@ function handleOnChangeUsedPackaging(checked, index) {
   }
   document.getElementById("orderDetailDtoItemList" + index + ".optionProductId").value = null;
   document.getElementById("orderDetailDtoItemList" + index + ".optionProductName").value = null;
-  document.getElementById(
-      "orderDetailDtoItemList" + index + ".optionProductSinglePrice").value = 0;
+  document.getElementById("orderDetailDtoItemList" + index + ".optionProductSinglePrice").value = 0;
   updateProductTotalAmountClient();
   updateShippingFee();
   updatePayAmountClient();
+  updateExpectedAccumulatingPoint();
+
+  const productTotalAmount = parseInt(document.getElementById("productTotalAmount").value);
+  const shippingFee = parseInt(document.getElementById("shippingFee").value)
+
+  document.getElementById("orderTotalAmount").value = productTotalAmount + shippingFee;
+
 }
 
 <!--포장 옵션 상품선택 변경 관련-->
@@ -79,9 +91,13 @@ function handleOnPackageProductSelectChange(selectElement, index) {
       + ".optionProductName").value = selectedOption.dataset.optionProductName;
   document.getElementById("orderDetailDtoItemList" + index
       + ".optionProductSinglePrice").value = selectedOption.dataset.optionProductPrice;
+
   updateProductTotalAmountClient();
   updateShippingFee();
   updatePayAmountClient();
+  updateExpectedAccumulatingPoint();
+
+  document.getElementById("orderTotalAmount").value = productTotalAmount + shippingFee;
 }
 
 <!--캘린더 관련-->
@@ -397,6 +413,7 @@ function updateShippingFee() {
     document.getElementById("shippingFee").value = originShippingFee;
   }
   updatePayAmountClient();
+  updateExpectedAccumulatingPoint();
 }
 
 function updateProductTotalAmountClient() {
@@ -523,6 +540,7 @@ function applyPoints(){
 
     // 결제 금액
     document.getElementById("payAmount").value = productTotalPrice + shippingFee - couponDiscountAmount - usedPointDiscountAmount;
+    updateExpectedAccumulatingPoint();
   }
 }
 
@@ -632,6 +650,8 @@ function selectCoupon(btn){
   //  쿠폰모달창 닫기
   document.getElementById("couponSelectModalClose").click();
 
+  updateExpectedAccumulatingPoint()
+
 }
 
 function cancelApplicatedCoupon(){
@@ -648,4 +668,6 @@ function cancelApplicatedCoupon(){
   document.getElementById("payAmount").value = productTotalPrice + shippingFee - usedPoint;
 
   document.getElementById("selectedCouponInfo").hidden = true;
+
+  updateExpectedAccumulatingPoint()
 }

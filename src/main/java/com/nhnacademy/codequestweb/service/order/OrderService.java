@@ -363,7 +363,6 @@ public class OrderService {
 
         // 회원 적립률
         Long pointAccumulationRate = orderPointClient.findPoint(headers).getPointAccumulationRate();
-        clientOrderForm.setPointAccumulationRate(pointAccumulationRate);
 
         model.addAttribute("view", "clientOrder");
 
