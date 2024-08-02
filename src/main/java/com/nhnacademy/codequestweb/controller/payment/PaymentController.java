@@ -11,10 +11,10 @@ import com.nhnacademy.codequestweb.service.payment.PaymentService;
 import com.nhnacademy.codequestweb.service.product.CartService;
 import com.nhnacademy.codequestweb.test.PaymentMethodProvider;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
-import com.nhnacademy.codequestweb.utils.SecretKeyUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
@@ -187,10 +187,10 @@ public class PaymentController {
     private boolean clearCartCookie(HttpServletRequest request, HttpServletResponse response,
         PostProcessRequiredPaymentResponseDto postProcessRequiredPaymentResponseDto, Model model) {
 
-        String encryptedCart = CookieUtils.getCookieValue(request, "cart");
-        if (encryptedCart != null) {
+        String encodedCart = CookieUtils.getCookieValue(request, "cart");
+        if (encodedCart != null) {
             try {
-                String cartJson = SecretKeyUtils.decrypt(encryptedCart, SecretKeyUtils.getSecretKey());
+                String cartJson = new String(Base64.getDecoder().decode(encodedCart.getBytes()));
                 List<CartRequestDto> cartListOfCookie = objectMapper.readValue(cartJson, TYPE_REFERENCE);
                 List<CartRequestDto> cartRequestDtoToDelete = new ArrayList<>();
 
@@ -201,7 +201,6 @@ public class PaymentController {
                 }
                 cartListOfCookie.removeAll(cartRequestDtoToDelete);
 
-                CookieUtils.deleteCookieValue(response, "cart");
                 CookieUtils.setCartCookieValue(cartListOfCookie, objectMapper, response);
                 return true;
             } catch (Exception e) {

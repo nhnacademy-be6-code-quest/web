@@ -26,13 +26,13 @@ import com.nhnacademy.codequestweb.request.product.cart.CartRequestDto;
 import com.nhnacademy.codequestweb.response.product.common.CartGetResponseDto;
 import com.nhnacademy.codequestweb.response.product.common.SaveCartResponseDto;
 import com.nhnacademy.codequestweb.service.product.CartService;
-import com.nhnacademy.codequestweb.utils.SecretKeyUtils;
 import feign.FeignException;
 import feign.Request;
 import jakarta.servlet.http.Cookie;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -168,14 +168,14 @@ class CartControllerTest {
     @Test
     void getExistingGuestCartTest() throws Exception{
         String cartJson = objectMapper.writeValueAsString(requestDtoList);
-        String encryptedCart = SecretKeyUtils.encrypt(cartJson, SecretKeyUtils.getSecretKey());
+        String encodedCart = Base64.getEncoder().encodeToString(cartJson.getBytes());
 
         when(mapper.readValue(eq(cartJson), any(TypeReference.class))).thenReturn(requestDtoList);
 
         when(cartService.getGuestCartList(requestDtoList)).thenReturn(ResponseEntity.ok(responseDtoList));
 
         mockMvc.perform(get("/cart/all")
-                        .cookie(new Cookie(CART, encryptedCart)))
+                        .cookie(new Cookie(CART, encodedCart)))
                 .andExpect(status().isOk())
                 .andExpect(view().name(INDEX))
                 .andExpect(model().attribute(VIEW, CART))
@@ -189,7 +189,7 @@ class CartControllerTest {
     @Test
     void getExistingGuestCartTest2() throws Exception{
         String cartJson = objectMapper.writeValueAsString(requestDtoList);
-        String encryptedCart = SecretKeyUtils.encrypt(cartJson, SecretKeyUtils.getSecretKey());
+        String encodedCart = Base64.getEncoder().encodeToString(cartJson.getBytes());
 
         when(mapper.readValue(eq(cartJson), any(TypeReference.class)))
                 .thenReturn(requestDtoList);
@@ -197,9 +197,10 @@ class CartControllerTest {
         when(cartService.getGuestCartList(requestDtoList)).thenThrow(FeignException.class);
 
         mockMvc.perform(get("/cart/all")
-                        .cookie(new Cookie(CART, encryptedCart)))
+                        .cookie(new Cookie(CART, encodedCart)))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/"));
+                .andExpect(redirectedUrl("/"))
+                .andDo(print());
 
         verify(cartService, times(1)).getGuestCartList(any());
     }

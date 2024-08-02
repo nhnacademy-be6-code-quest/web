@@ -8,16 +8,13 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import jakarta.servlet.http.HttpServletResponse;
 
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-
+@Slf4j
 public class CookieUtils {
     private static final String AUTHORIZATION = "access";
 
@@ -57,10 +54,13 @@ public class CookieUtils {
         resp.addCookie(cookie);
     }
 
-    public static void setCartCookieValue(List<CartRequestDto> cartListOfCookie, ObjectMapper objectMapper, HttpServletResponse resp) throws JsonProcessingException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException, InvalidKeyException {
+    public static void setCartCookieValue(
+            List<CartRequestDto> cartListOfCookie, ObjectMapper objectMapper, HttpServletResponse resp)
+            throws JsonProcessingException, IllegalArgumentException {
+        deleteCookieValue(resp,"cart");
         String updatedCartJson = objectMapper.writeValueAsString(cartListOfCookie);
-        String encryptedUpdatedCartJson = SecretKeyUtils.encrypt(updatedCartJson, SecretKeyUtils.getSecretKey());
-        CookieUtils.setCookieValue(resp,"cart", encryptedUpdatedCartJson);
+        String encodedUpdateCartJson = Base64.getEncoder().encodeToString(updatedCartJson.getBytes());
+        CookieUtils.setCookieValue(resp,"cart", encodedUpdateCartJson);
     }
 
 

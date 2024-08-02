@@ -4,10 +4,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhnacademy.codequestweb.request.product.cart.CartRequestDto;
 import com.nhnacademy.codequestweb.service.product.CartService;
-import com.nhnacademy.codequestweb.utils.SecretKeyUtils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.Base64;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -42,9 +42,10 @@ class CartControllerAdviceTest {
     }
 
     @Test
-    void testAddAttributesWithValidEncryptedCart() throws Exception {
-        String encryptedCart = SecretKeyUtils.encrypt("[]", SecretKeyUtils.getSecretKey());
-        when(request.getCookies()).thenReturn(new Cookie[]{new Cookie("cart", encryptedCart)});
+    void testAddAttributesWithValidEncodedCart() throws Exception {
+        String encodedCart = Base64.getEncoder().encodeToString("[]".getBytes());
+
+        when(request.getCookies()).thenReturn(new Cookie[]{new Cookie("cart", encodedCart)});
         when(objectMapper.readValue(anyString(), (TypeReference<List<CartRequestDto>>) any())).thenReturn(new ArrayList<CartRequestDto>());
 
         cartControllerAdvice.addAttributes(request, response, model);
@@ -65,7 +66,7 @@ class CartControllerAdviceTest {
 
         cartControllerAdvice.addAttributes(request, response, model);
 
-        verify(response).addCookie(any(Cookie.class));
+        verify(response, times(2)).addCookie(any(Cookie.class));
         verify(model).addAttribute(eq("cart"), any(List.class));
     }
 
@@ -76,14 +77,16 @@ class CartControllerAdviceTest {
 
         cartControllerAdvice.addAttributes(request, response, model);
 
-        verify(response).addCookie(any(Cookie.class));
+        verify(response,times(2)).addCookie(any(Cookie.class));
         verify(model).addAttribute(eq("cart"), any(List.class));
     }
 
     @Test
     void testAddAttributesWithExceptionDuringDecryption() throws Exception {
-        String encryptedCart = SecretKeyUtils.encrypt("[]", SecretKeyUtils.getSecretKey());
-        when(request.getCookies()).thenReturn(new Cookie[]{new Cookie("cart", encryptedCart)});
+        String encodedCart = Base64.getEncoder().encodeToString("[]".getBytes());
+
+        when(request.getCookies()).thenReturn(new Cookie[]{new Cookie("cart", encodedCart)});
+        when(objectMapper.writeValueAsString(any())).thenReturn("string");
         when(objectMapper.readValue(anyString(), (TypeReference<List<CartRequestDto>>) any())).thenThrow(new RuntimeException("Decryption error"));
 
         cartControllerAdvice.addAttributes(request, response, model);

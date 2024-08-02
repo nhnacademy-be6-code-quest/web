@@ -9,15 +9,16 @@ import com.nhnacademy.codequestweb.response.product.common.CartGetResponseDto;
 import com.nhnacademy.codequestweb.response.product.common.SaveCartResponseDto;
 import com.nhnacademy.codequestweb.service.product.CartService;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
-import com.nhnacademy.codequestweb.utils.SecretKeyUtils;
 import feign.FeignException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -63,17 +64,19 @@ public class CartController {
     }
 
     private List<CartRequestDto> getCartRequestDtoFromCookie(HttpServletRequest req){
-        String encryptedCart = CookieUtils.getCookieValue(req, "cart");
-        if (encryptedCart != null) {
+        String encodedCart = CookieUtils.getCookieValue(req, "cart");
+        if (encodedCart != null) {
             try {
-                String cartJson = SecretKeyUtils.decrypt(encryptedCart, SecretKeyUtils.getSecretKey());
+                String cartJson = new String(Base64.getDecoder().decode(encodedCart.getBytes()));
                 return objectMapper.readValue(cartJson, TYPE_REFERENCE);
             } catch (Exception e) {
-                log.warn("cart controller advice may have some problem with processing corrupted cookie. check the log with cart controller advice class");
-                return emptyList;
+                if(CookieUtils.isGuest(req)){
+                    return emptyList;
+                }else {
+                    return cartService.restoreClientCartList(CookieUtils.setHeader(req)).getBody();
+                }
             }
         }else{
-            log.warn("cart controller advice may have some problem with processing deleted cookie. check the log with cart controller advice class");
             return emptyList;
         }
     }
@@ -179,7 +182,8 @@ public class CartController {
         try {
             ResponseEntity<SaveCartResponseDto> response;
 
-            cartListOfCookie.removeAll(cartRequestDtoToDelete);
+            Optional.of(cartListOfCookie)
+                    .ifPresent(list -> list.removeAll(cartRequestDtoToDelete));
 
             if (CookieUtils.isGuest(req)) {
                 response = cartService.addGuestCartItem(cartDto);
@@ -192,9 +196,14 @@ public class CartController {
                     quantity = saveCartResponseDto.savedCartQuantity();
                 }
             }
-            cartListOfCookie.add(CartRequestDto.builder()
+
+            CartRequestDto requestDto = CartRequestDto.builder()
                     .productId(cartDto.productId())
-                    .quantity(quantity).build());
+                    .quantity(quantity)
+                    .build();
+
+            Optional.of(cartListOfCookie)
+                    .ifPresent(list -> list.add(requestDto));
 
 
             CookieUtils.deleteCookieValue(resp, "cart");
@@ -221,7 +230,8 @@ public class CartController {
         }
 
         try {
-            cartListOfCookie.removeAll(cartRequestDtoToDelete);
+            Optional.of(cartListOfCookie)
+                    .ifPresent(list -> list.removeAll(cartRequestDtoToDelete));
             if (CookieUtils.isGuest(req)) {
                 response = cartService.updateGuestCartItem(cartRequestDto);
             }else {
@@ -236,9 +246,14 @@ public class CartController {
 
                 redirectAttributes.addFlashAttribute(ALTER_MESSAGE, "물건을 장바구니에 담았습니다.");
             }
-            cartListOfCookie.add(CartRequestDto.builder()
+
+            CartRequestDto requestDto = CartRequestDto.builder()
                     .productId(cartRequestDto.productId())
-                    .quantity(quantity).build());
+                    .quantity(quantity)
+                    .build();
+
+            Optional.of(cartListOfCookie)
+                    .ifPresent(list -> list.add(requestDto));
 
             CookieUtils.deleteCookieValue(resp, "cart");
             CookieUtils.setCartCookieValue(cartListOfCookie, objectMapper, resp);
@@ -262,12 +277,14 @@ public class CartController {
 
         try {
             if (CookieUtils.isGuest(req)) {
-                cartListOfCookie.removeAll(cartRequestDtoToDelete);
+                Optional.of(cartListOfCookie)
+                        .ifPresent(list -> list.removeAll(cartRequestDtoToDelete));
                 redirectAttributes.addFlashAttribute(ALTER_MESSAGE, "장바구니에서 물건을 제거했습니다.");
             }else{
                 ResponseEntity<Void> response = cartService.deleteClientCartItem(CookieUtils.setHeader(req), productId);
                 if (response.getStatusCode().is2xxSuccessful()) {
-                    cartListOfCookie.removeAll(cartRequestDtoToDelete);
+                    Optional.of(cartListOfCookie)
+                            .ifPresent(list -> list.removeAll(cartRequestDtoToDelete));
                     redirectAttributes.addFlashAttribute(ALTER_MESSAGE, "장바구니에서 물건을 제거했습니다.");
                 }
             }
