@@ -70,7 +70,7 @@ class CouponPolicyControllerTest {
 
     @Test
     void testViewRegisterPolicy() {
-        String result = couponPolicyController.viewRegisterPolicy(request, model);
+        String result = couponPolicyController.viewRegisterPolicy(request);
 
         assertEquals("view/coupon/admin_policy_register", result);
         verify(request).setAttribute("view", "couponPolicy");

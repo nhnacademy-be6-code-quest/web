@@ -44,6 +44,9 @@ public class CouponController {
 
         Page<ClientCouponPaymentResponseDto> coupons = couponService.getClient(headers, page, size);
         model.addAttribute("couponPayments",coupons);
+        req.setAttribute("totalPages", coupons.getTotalPages());
+        req.setAttribute("currentPage", coupons.   getNumber());
+        req.setAttribute("pageSize", coupons.getSize());
         return "view/coupon/coupon_client";
     }
 

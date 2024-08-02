@@ -76,6 +76,9 @@ public class AdminController {
         req.setAttribute(ADMIN_PAGE, "pointReward");
         req.setAttribute(ACTIVE_SECTION, POINT);
         Page<PointAccumulationAdminPageResponseDto> dto = pointAccumulationService.userPoint(headers, page, size);
+        req.setAttribute("totalPages", dto.getTotalPages());
+        req.setAttribute("currentPage", dto.   getNumber());
+        req.setAttribute("pageSize", dto.getSize());
         req.setAttribute(POINTS, dto);
         return INDEX;
     }
@@ -89,6 +92,9 @@ public class AdminController {
         req.setAttribute(ADMIN_PAGE, "pointUsed");
         req.setAttribute(ACTIVE_SECTION, POINT);
         Page<PointUsageAdminPageResponseDto> dto = pointUsageService.userUsePoint(headers, page, size);
+        req.setAttribute("totalPages", dto.getTotalPages());
+        req.setAttribute("currentPage", dto.   getNumber());
+        req.setAttribute("pageSize", dto.getSize());
         req.setAttribute(POINTS, dto);
         return INDEX;
     }
@@ -102,6 +108,9 @@ public class AdminController {
         req.setAttribute(ADMIN_PAGE, "pointPolicy");
         req.setAttribute(ACTIVE_SECTION, POINT);
         Page<PointPolicyAdminListResponseDto> dto = pointPolicyService.findPointPolicies(headers, page, size);
+        req.setAttribute("totalPages", dto.getTotalPages());
+        req.setAttribute("currentPage", dto.   getNumber());
+        req.setAttribute("pageSize", dto.getSize());
         req.setAttribute(POINTS, dto);
         List<String> pointPolicyTypes = List.of("회원가입", "사진리뷰", "리뷰");
         req.setAttribute("pointTypes",pointPolicyTypes);

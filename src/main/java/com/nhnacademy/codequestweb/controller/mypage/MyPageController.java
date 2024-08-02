@@ -234,6 +234,9 @@ public class MyPageController {
         req.setAttribute(MYPAGE, "pointReward");
         req.setAttribute(ACTIVE_SECTION, "coupon");
         Page<PointAccumulationMyPageResponseDto> dto = pointAccumulationService.clientPoint(headers, page, size);
+        req.setAttribute("totalPages", dto.getTotalPages());
+        req.setAttribute("currentPage", dto.   getNumber());
+        req.setAttribute("pageSize", dto.getSize());
         req.setAttribute("points", dto);
         return INDEX;
     }
@@ -247,6 +250,9 @@ public class MyPageController {
         req.setAttribute(MYPAGE, "pointUsed");
         req.setAttribute(ACTIVE_SECTION, "point");
         Page<PointUsageMyPageResponseDto> dto = pointUsageService.clientUsePoint(headers, page, size);
+        req.setAttribute("totalPages", dto.getTotalPages());
+        req.setAttribute("currentPage", dto.   getNumber());
+        req.setAttribute("pageSize", dto.getSize());
         req.setAttribute("points", dto);
         return INDEX;
     }
