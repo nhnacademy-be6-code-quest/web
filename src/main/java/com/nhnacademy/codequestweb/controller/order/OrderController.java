@@ -52,7 +52,7 @@ public class OrderController {
     // 회원 주문 진행
     @PostMapping("/client/order/process")
     public String processClientOrderPayMethodForm(@ModelAttribute ClientOrderForm clientOrderForm, HttpServletRequest req){
-        return String.format("redirect:/client/order/payment?orderCode=%s&method=%s", orderService.saveClientTemporalOrder(req), clientOrderForm.getPaymentMethod());
+        return String.format("redirect:/client/order/payment?orderCode=%s&method=%s", orderService.saveClientTemporalOrder(clientOrderForm, req), clientOrderForm.getPaymentMethod());
     }
 
     // 비회원 주문 진행

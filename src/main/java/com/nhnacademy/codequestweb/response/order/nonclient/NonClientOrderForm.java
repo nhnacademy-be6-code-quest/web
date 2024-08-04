@@ -1,12 +1,11 @@
 package com.nhnacademy.codequestweb.response.order.nonclient;
 
-import lombok.Builder;
+import com.nhnacademy.codequestweb.response.order.common.OrderDetailDtoItem;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @NoArgsConstructor
 @Getter
@@ -34,32 +33,6 @@ public class NonClientOrderForm {
             this.orderDetailDtoItemList = new ArrayList<>();
         }
         this.orderDetailDtoItemList.add(orderDetailDtoItem);
-    }
-
-    @NoArgsConstructor
-    @Getter
-    @Setter
-    public static class OrderDetailDtoItem{
-        Long productId; // 상품 아이디
-        String productName; // 상품 이름
-        Long quantity; // 수량
-        Long productSinglePrice; // 상품 단품 가격
-        Boolean packableProduct; // 포장가능 상품 여부
-
-        Boolean usePackaging; // 포장 선택 여부
-        Long optionProductId; // 옵션 상품 아이디
-        String optionProductName; // 옵션 상품 이름
-        Long optionProductSinglePrice; // 옵션 상품 단품 가격
-        Long optionQuantity = 1L;
-
-        @Builder
-        public OrderDetailDtoItem(Long productId, String productName, Long quantity, Long productSinglePrice, Boolean packableProduct){
-            this.productId = productId;
-            this.productName = productName;
-            this.quantity = quantity;
-            this.packableProduct = packableProduct;
-            this.productSinglePrice = productSinglePrice;
-        }
     }
 
 }

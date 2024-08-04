@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhnacademy.codequestweb.client.auth.UserClient;
-import com.nhnacademy.codequestweb.client.coupon.CouponClient;
 import com.nhnacademy.codequestweb.client.order.OrderClient;
 import com.nhnacademy.codequestweb.client.point.OrderPointClient;
 import com.nhnacademy.codequestweb.request.mypage.ClientRegisterAddressRequestDto;
@@ -13,15 +12,12 @@ import com.nhnacademy.codequestweb.request.order.client.CouponDiscountInfoReques
 import com.nhnacademy.codequestweb.request.order.field.OrderItemDto;
 import com.nhnacademy.codequestweb.request.order.nonclient.FindNonClientOrderIdRequestDto;
 import com.nhnacademy.codequestweb.request.order.nonclient.UpdateNonClientOrderPasswordRequestDto;
-import com.nhnacademy.codequestweb.response.coupon.CouponOrderResponseDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientDeliveryAddressResponseDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientPhoneNumberResponseDto;
-import com.nhnacademy.codequestweb.response.order.client.ClientOrderCreateForm;
-import com.nhnacademy.codequestweb.response.order.client.ClientOrderDiscountForm;
 import com.nhnacademy.codequestweb.response.order.client.ClientOrderForm;
 import com.nhnacademy.codequestweb.response.order.client.ClientOrderGetResponseDto;
-import com.nhnacademy.codequestweb.response.order.client.ClientOrderPayMethodForm;
 import com.nhnacademy.codequestweb.response.order.client.OrderCouponDiscountInfo;
+import com.nhnacademy.codequestweb.response.order.common.OrderDetailDtoItem;
 import com.nhnacademy.codequestweb.response.order.nonclient.FindNonClientOrderIdInfoResponseDto;
 import com.nhnacademy.codequestweb.response.order.nonclient.NonClientOrderForm;
 import com.nhnacademy.codequestweb.response.order.nonclient.NonClientOrderGetResponseDto;
@@ -53,9 +49,6 @@ import org.springframework.ui.Model;
 public class OrderService {
 
     private static final String INDEX = "index";
-    private static final String CLIENT_ORDER_FORM = "clientOrderForm";
-    private static final String CLIENT_ORDER_DISCOUNT_FORM = "clientOrderDiscountForm";
-    private static final String CLIENT_ORDER_PAYMENT_METHOD_FORM = "clientOrderPayMethodForm";
     private static final String PACKAGE_LIST = "packageList";
     private static final String SHIPPING_POLICY = "shippingPolicy";
 
@@ -82,74 +75,18 @@ public class OrderService {
         return processCreatingClientOrder(req, model, new ArrayList<>(List.of(orderItemDto)));
     }
 
-    public String saveClientTemporalOrder(HttpServletRequest req) {
+    public String saveClientTemporalOrder(ClientOrderForm clientOrderForm, HttpServletRequest req) {
 
         HttpHeaders headers = getHeader(req);
 
         log.info("주문 서비스 레디스에 저장할 회원 주문 데이터 dto 생성");
 
-        ClientOrderForm clientOrderForm = (ClientOrderForm) req.getSession()
-            .getAttribute(CLIENT_ORDER_FORM);
-        ClientOrderDiscountForm clientOrderDiscountForm = (ClientOrderDiscountForm) req.getSession()
-            .getAttribute(CLIENT_ORDER_DISCOUNT_FORM);
-        ClientOrderPayMethodForm clientOrderPayMethodForm = (ClientOrderPayMethodForm) req.getSession()
-            .getAttribute(CLIENT_ORDER_PAYMENT_METHOD_FORM);
+        clientOrderForm.setOrderTotalAmount(clientOrderForm.getProductTotalAmount() + clientOrderForm.getShippingFee());
+        clientOrderForm.setOrderCode(UUID.randomUUID().toString());
 
-        if(clientOrderForm == null){
-            log.info("clientOrderForm is null");
-        }
-        if(clientOrderDiscountForm == null){
-            log.info("clientOrderDiscountForm is null");
-        }
-        if(clientOrderPayMethodForm == null){
-            log.info("clientOrderPayMethodForm is null");
-        }
+        orderClient.saveClientTemporalOrder(headers, clientOrderForm);
 
-        // 포인트 할인 적용하기
-        ClientOrderCreateForm clientOrderCreateForm = ClientOrderCreateForm.builder()
-            .couponId(clientOrderDiscountForm.getCouponId())
-            .shippingFee(clientOrderForm.getShippingFee())
-            .productTotalAmount(clientOrderForm.getProductTotalAmount())
-            .orderTotalAmount(
-                clientOrderForm.getShippingFee() + clientOrderForm.getProductTotalAmount())
-            .payAmount(clientOrderDiscountForm.getPayAmount() == null ? 0
-                : clientOrderDiscountForm.getPayAmount())
-            .couponDiscountAmount(clientOrderDiscountForm.getCouponDiscountAmount() == null ? 0
-                : clientOrderDiscountForm.getCouponDiscountAmount())
-            .usedPointDiscountAmount(
-                clientOrderDiscountForm.getUsedPointDiscountAmount() == null ? 0
-                    : clientOrderDiscountForm.getUsedPointDiscountAmount())
-            .phoneNumber(clientOrderForm.getPhoneNumber())
-            .addressZipCode(clientOrderForm.getAddressZipCode())
-            .deliveryAddress(clientOrderForm.getDeliveryAddress())
-            .useDesignatedDeliveryDate(clientOrderForm.getUseDesignatedDeliveryDate() != null
-                && clientOrderForm.getUseDesignatedDeliveryDate())
-            .designatedDeliveryDate(clientOrderForm.getDesignatedDeliveryDate())
-            .accumulatePoint(clientOrderPayMethodForm.getExpectedAccumulatingPoint())
-            .orderCode(UUID.randomUUID().toString())
-            .build();
-
-        for (ClientOrderForm.OrderDetailDtoItem item : clientOrderForm.getOrderDetailDtoItemList()) {
-            clientOrderCreateForm.addOrderDetailDtoItem(
-                ClientOrderCreateForm.OrderDetailDtoItem.builder()
-                    .productId(item.getProductId())
-                    .productName(item.getProductName())
-                    .quantity(item.getQuantity())
-                    .categoryIdList(item.getCategoryIdList())
-                    .productSinglePrice(item.getProductSinglePrice())
-                    .packableProduct(item.getPackableProduct())
-                    .usePackaging(item.getUsePackaging())
-                    .optionProductId(item.getOptionProductId())
-                    .optionProductName(item.getOptionProductName())
-                    .optionProductSinglePrice(item.getOptionProductSinglePrice())
-                    .optionQuantity(item.getOptionQuantity())
-                    .build()
-            );
-        }
-
-        orderClient.saveClientTemporalOrder(headers, clientOrderCreateForm);
-
-        return clientOrderCreateForm.getOrderCode();
+        return clientOrderForm.getOrderCode();
     }
 
     public void saveNonClientTemporalOrder(HttpServletRequest request,
@@ -180,7 +117,7 @@ public class OrderService {
         // 폼에 추가
         assert book != null;
         nonClientOrderForm.addOrderDetailDtoItem(
-            NonClientOrderForm.OrderDetailDtoItem.builder()
+            OrderDetailDtoItem.builder()
                 .productId(orderItemDto.getProductId())
                 .productName(book.title())
                 .quantity(orderItemDto.getQuantity())
@@ -223,7 +160,7 @@ public class OrderService {
             assert book != null;
             // 폼에 추가
             nonClientOrderForm.addOrderDetailDtoItem(
-                NonClientOrderForm.OrderDetailDtoItem.builder()
+                OrderDetailDtoItem.builder()
                     .productId(orderItemDto.getProductId())
                     .productName(book.title())
                     .quantity(orderItemDto.getQuantity())
@@ -339,7 +276,7 @@ public class OrderService {
 
             // 폼에 추가
             clientOrderForm.addOrderDetailDtoItem(
-                ClientOrderForm.OrderDetailDtoItem.builder()
+                OrderDetailDtoItem.builder()
                     .productId(orderItemDto.getProductId())
                     .productName(book.title())
                     .quantity(orderItemDto.getQuantity())
@@ -366,7 +303,7 @@ public class OrderService {
 
         model.addAttribute("view", "clientOrder");
 
-        model.addAttribute(CLIENT_ORDER_FORM, clientOrderForm);
+        model.addAttribute("clientOrderForm", clientOrderForm);
         model.addAttribute(PACKAGE_LIST, packagingService.getPackagingList(0).getBody());
         model.addAttribute(SHIPPING_POLICY, shippingPolicy);
         model.addAttribute("itemList", clientOrderForm.getOrderDetailDtoItemList());

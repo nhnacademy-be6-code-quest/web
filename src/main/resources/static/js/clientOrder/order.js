@@ -44,7 +44,7 @@ function loadExternalScript(url, callback) {
 function updateExpectedAccumulatingPoint(){
   const rate = parseInt(document.getElementById("pointAccumulationRate").textContent);
   const payAmount = parseInt(document.getElementById("payAmount").value);
-  document.getElementById("expectedAccumulatingPoint").textContent = (rate * 0.01 * payAmount).toString();
+  document.getElementById("accumulatePoint").value = (rate * 0.01 * payAmount).toString();
 }
 
 <!--포장여부 선택 관련-->
@@ -78,8 +78,6 @@ function handleOnChangeUsedPackaging(checked, index) {
   const productTotalAmount = parseInt(document.getElementById("productTotalAmount").value);
   const shippingFee = parseInt(document.getElementById("shippingFee").value)
 
-  document.getElementById("orderTotalAmount").value = productTotalAmount + shippingFee;
-
 }
 
 <!--포장 옵션 상품선택 변경 관련-->
@@ -97,7 +95,6 @@ function handleOnPackageProductSelectChange(selectElement, index) {
   updatePayAmountClient();
   updateExpectedAccumulatingPoint();
 
-  document.getElementById("orderTotalAmount").value = productTotalAmount + shippingFee;
 }
 
 <!--캘린더 관련-->
