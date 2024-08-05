@@ -69,7 +69,7 @@ public class PaymentController {
         model.addAttribute("successUrl",
             "https://localhost:8080/client/order/" + orderCode + "/payment/success?method="+name);
         model.addAttribute("failUrl",
-            "https://localhost:8080p/client/order/" + orderCode + "/payment/fail");
+            "https://localhost:8080/client/order/" + orderCode + "/payment/fail");
 
 
         return paymentMethodProvider.getName(name);
