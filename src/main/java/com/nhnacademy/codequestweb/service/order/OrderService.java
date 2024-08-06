@@ -4,33 +4,30 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhnacademy.codequestweb.client.auth.UserClient;
-import com.nhnacademy.codequestweb.client.coupon.CouponClient;
 import com.nhnacademy.codequestweb.client.order.OrderClient;
 import com.nhnacademy.codequestweb.client.point.OrderPointClient;
 import com.nhnacademy.codequestweb.request.mypage.ClientRegisterAddressRequestDto;
 import com.nhnacademy.codequestweb.request.mypage.ClientRegisterPhoneNumberRequestDto;
+import com.nhnacademy.codequestweb.request.order.client.CouponDiscountInfoRequestDto;
 import com.nhnacademy.codequestweb.request.order.field.OrderItemDto;
 import com.nhnacademy.codequestweb.request.order.nonclient.FindNonClientOrderIdRequestDto;
 import com.nhnacademy.codequestweb.request.order.nonclient.UpdateNonClientOrderPasswordRequestDto;
-import com.nhnacademy.codequestweb.response.coupon.CouponOrderResponseDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientDeliveryAddressResponseDto;
 import com.nhnacademy.codequestweb.response.mypage.ClientPhoneNumberResponseDto;
-import com.nhnacademy.codequestweb.response.mypage.ClientPrivacyResponseDto;
-import com.nhnacademy.codequestweb.response.order.client.ClientOrderCreateForm;
-import com.nhnacademy.codequestweb.response.order.client.ClientOrderDiscountForm;
 import com.nhnacademy.codequestweb.response.order.client.ClientOrderForm;
 import com.nhnacademy.codequestweb.response.order.client.ClientOrderGetResponseDto;
-import com.nhnacademy.codequestweb.response.order.client.ClientOrderPayMethodForm;
 import com.nhnacademy.codequestweb.response.order.client.OrderCouponDiscountInfo;
+import com.nhnacademy.codequestweb.response.order.common.OrderDetailDtoItem;
 import com.nhnacademy.codequestweb.response.order.nonclient.FindNonClientOrderIdInfoResponseDto;
 import com.nhnacademy.codequestweb.response.order.nonclient.NonClientOrderForm;
 import com.nhnacademy.codequestweb.response.order.nonclient.NonClientOrderGetResponseDto;
+import com.nhnacademy.codequestweb.response.payment.PaymentMethodResponseDto;
 import com.nhnacademy.codequestweb.response.product.book.BookProductGetResponseDto;
 import com.nhnacademy.codequestweb.response.product.common.CartGetResponseDto;
 import com.nhnacademy.codequestweb.response.product.packaging.PackagingGetResponseDto;
 import com.nhnacademy.codequestweb.response.product.product_category.ProductCategory;
 import com.nhnacademy.codequestweb.response.shipping.ShippingPolicyGetResponseDto;
-import com.nhnacademy.codequestweb.service.mypage.MyPageService;
+import com.nhnacademy.codequestweb.service.payment.PaymentService;
 import com.nhnacademy.codequestweb.service.product.BookProductService;
 import com.nhnacademy.codequestweb.service.product.PackagingService;
 import com.nhnacademy.codequestweb.service.shipping.ShippingPolicyService;
@@ -52,21 +49,17 @@ import org.springframework.ui.Model;
 public class OrderService {
 
     private static final String INDEX = "index";
-    private static final String CLIENT_ORDER_FORM = "clientOrderForm";
-    private static final String CLIENT_ORDER_DISCOUNT_FORM = "clientOrderDiscountForm";
-    private static final String CLIENT_ORDER_PAYMENT_METHOD_FORM = "clientOrderPayMethodForm";
     private static final String PACKAGE_LIST = "packageList";
     private static final String SHIPPING_POLICY = "shippingPolicy";
 
 
     private final UserClient userClient;
     private final OrderClient orderClient;
-    private final CouponClient couponClient;
-    private final MyPageService myPageService;
     private final BookProductService bookProductService;
     private final ShippingPolicyService shippingPolicyService;
     private final OrderPointClient orderPointClient;
     private final PackagingService packagingService;
+    private final PaymentService paymentService;
 
     public String viewClientOrder(HttpServletRequest req, Model model,
         List<String> orderItemDtoStringList) {
@@ -82,138 +75,24 @@ public class OrderService {
         return processCreatingClientOrder(req, model, new ArrayList<>(List.of(orderItemDto)));
     }
 
-    public String viewClientOrderDiscount(HttpServletRequest req, Model model) {
-
-        log.info("쿠폰 당 할인 정보 계산, 포인트 및 쿠폰 할인정보 뷰");
-
-        HttpHeaders headers = getHeader(req);
-
-        ClientOrderForm clientOrderForm = (ClientOrderForm) req.getSession()
-            .getAttribute(CLIENT_ORDER_FORM);
-
-        ClientOrderDiscountForm clientOrderDiscountForm = ClientOrderDiscountForm.builder()
-            .payAmount(clientOrderForm.getProductTotalAmount() + clientOrderForm.getShippingFee())
-            .build();
-
-        // 가용 포인트
-        Long usablePoint = orderPointClient.findPoint(headers).getTotalPoint();
-
-        // 쿠폰 리스트
-        List<CouponOrderResponseDto> couponList = couponClient.findClientCoupon(headers);
-
-        // 쿠폰 할인 후 상품 정보 리스트
-        List<OrderCouponDiscountInfo> couponDiscountInfoList = orderClient.getCouponDiscountInfoList(
-            headers, clientOrderForm).getBody();
-
-        model.addAttribute("view", "clientOrderDiscount");
-
-        model.addAttribute(CLIENT_ORDER_FORM, clientOrderForm);
-        model.addAttribute(CLIENT_ORDER_DISCOUNT_FORM, clientOrderDiscountForm); // 바인딩 객체
-        model.addAttribute("usablePoint", usablePoint);
-        model.addAttribute("couponList", couponList);
-        model.addAttribute("couponDiscountInfoList", couponDiscountInfoList);
-
-        req.setAttribute("couponDiscountInfoList", couponDiscountInfoList);
-
-        return INDEX;
-    }
-
-    public String saveClientTemporalOrder(HttpServletRequest req) {
+    public String saveClientTemporalOrder(ClientOrderForm clientOrderForm, HttpServletRequest req) {
 
         HttpHeaders headers = getHeader(req);
 
         log.info("주문 서비스 레디스에 저장할 회원 주문 데이터 dto 생성");
 
-        ClientOrderForm clientOrderForm = (ClientOrderForm) req.getSession()
-            .getAttribute(CLIENT_ORDER_FORM);
-        ClientOrderDiscountForm clientOrderDiscountForm = (ClientOrderDiscountForm) req.getSession()
-            .getAttribute(CLIENT_ORDER_DISCOUNT_FORM);
-        ClientOrderPayMethodForm clientOrderPayMethodForm = (ClientOrderPayMethodForm) req.getSession()
-            .getAttribute(CLIENT_ORDER_PAYMENT_METHOD_FORM);
+        clientOrderForm.setOrderTotalAmount(clientOrderForm.getProductTotalAmount() + clientOrderForm.getShippingFee());
+        clientOrderForm.setOrderCode(UUID.randomUUID().toString());
 
-        // 포인트 할인 적용하기
-        ClientOrderCreateForm clientOrderCreateForm = ClientOrderCreateForm.builder()
-            .couponId(clientOrderDiscountForm.getCouponId())
-            .shippingFee(clientOrderForm.getShippingFee())
-            .productTotalAmount(clientOrderForm.getProductTotalAmount())
-            .orderTotalAmount(
-                clientOrderForm.getShippingFee() + clientOrderForm.getProductTotalAmount())
-            .payAmount(clientOrderDiscountForm.getPayAmount() == null ? 0
-                : clientOrderDiscountForm.getPayAmount())
-            .couponDiscountAmount(clientOrderDiscountForm.getCouponDiscountAmount() == null ? 0
-                : clientOrderDiscountForm.getCouponDiscountAmount())
-            .usedPointDiscountAmount(
-                clientOrderDiscountForm.getUsedPointDiscountAmount() == null ? 0
-                    : clientOrderDiscountForm.getUsedPointDiscountAmount())
-            .orderedPersonName(clientOrderForm.getOrderedPersonName())
-            .phoneNumber(clientOrderForm.getPhoneNumber())
-            .addressNickname(clientOrderForm.getAddressNickname())
-            .addressZipCode(clientOrderForm.getAddressZipCode())
-            .deliveryAddress(clientOrderForm.getDeliveryAddress())
-            .useDesignatedDeliveryDate(clientOrderForm.getUseDesignatedDeliveryDate() != null
-                && clientOrderForm.getUseDesignatedDeliveryDate())
-            .designatedDeliveryDate(clientOrderForm.getDesignatedDeliveryDate())
-            .accumulatePoint(clientOrderPayMethodForm.getExpectedAccumulatingPoint())
-            .orderCode(UUID.randomUUID().toString())
-            .build();
+        orderClient.saveClientTemporalOrder(headers, clientOrderForm);
 
-        for (ClientOrderForm.OrderDetailDtoItem item : clientOrderForm.getOrderDetailDtoItemList()) {
-            clientOrderCreateForm.addOrderDetailDtoItem(
-                ClientOrderCreateForm.OrderDetailDtoItem.builder()
-                    .productId(item.getProductId())
-                    .productName(item.getProductName())
-                    .quantity(item.getQuantity())
-                    .categoryIdList(item.getCategoryIdList())
-                    .productSinglePrice(item.getProductSinglePrice())
-                    .packableProduct(item.getPackableProduct())
-                    .usePackaging(item.getUsePackaging())
-                    .optionProductId(item.getOptionProductId())
-                    .optionProductName(item.getOptionProductName())
-                    .optionProductSinglePrice(item.getOptionProductSinglePrice())
-                    .optionQuantity(item.getOptionQuantity())
-                    .build()
-            );
-        }
-
-        orderClient.saveClientTemporalOrder(headers, clientOrderCreateForm);
-
-        return clientOrderCreateForm.getOrderCode();
+        return clientOrderForm.getOrderCode();
     }
 
     public void saveNonClientTemporalOrder(HttpServletRequest request,
         NonClientOrderForm nonClientOrderForm) {
         nonClientOrderForm.setOrderCode(UUID.randomUUID().toString());
         orderClient.saveNonClientTemporalOrder(getHeader(request), nonClientOrderForm);
-    }
-
-    public String viewClientOrderPayMethod(HttpServletRequest req, Model model) {
-
-        HttpHeaders headers = getHeader(req);
-
-        log.info("적립 포인트 계산 및 결제수단 뷰");
-
-        ClientOrderForm clientOrderForm = (ClientOrderForm) req.getSession()
-            .getAttribute(CLIENT_ORDER_FORM);
-        ClientOrderDiscountForm clientOrderDiscountForm = (ClientOrderDiscountForm) req.getSession()
-            .getAttribute(CLIENT_ORDER_DISCOUNT_FORM);
-
-        // 및 포인트 적립률
-        Long pointAccumulationRate = orderPointClient.findPoint(headers).getPointAccumulationRate();
-
-        // ** 바인딩 객체 **
-        Long expectedAccumulatingPoint = Math.round(
-            clientOrderDiscountForm.getPayAmount() * pointAccumulationRate * 0.01);
-        ClientOrderPayMethodForm clientOrderPayMethodForm = ClientOrderPayMethodForm.builder()
-            .expectedAccumulatingPoint(expectedAccumulatingPoint).build();
-
-        model.addAttribute("view", "clientOrderPayMethod");
-
-        model.addAttribute(CLIENT_ORDER_FORM, clientOrderForm);
-        model.addAttribute(CLIENT_ORDER_DISCOUNT_FORM, clientOrderDiscountForm);
-        model.addAttribute("pointAccumulationRate", pointAccumulationRate);
-        model.addAttribute(CLIENT_ORDER_PAYMENT_METHOD_FORM, clientOrderPayMethodForm);
-
-        return INDEX;
     }
 
     public String viewNonClientOrder(HttpServletRequest req, Model model,
@@ -238,7 +117,7 @@ public class OrderService {
         // 폼에 추가
         assert book != null;
         nonClientOrderForm.addOrderDetailDtoItem(
-            NonClientOrderForm.OrderDetailDtoItem.builder()
+            OrderDetailDtoItem.builder()
                 .productId(orderItemDto.getProductId())
                 .productName(book.title())
                 .quantity(orderItemDto.getQuantity())
@@ -281,7 +160,7 @@ public class OrderService {
             assert book != null;
             // 폼에 추가
             nonClientOrderForm.addOrderDetailDtoItem(
-                NonClientOrderForm.OrderDetailDtoItem.builder()
+                OrderDetailDtoItem.builder()
                     .productId(orderItemDto.getProductId())
                     .productName(book.title())
                     .quantity(orderItemDto.getQuantity())
@@ -369,27 +248,21 @@ public class OrderService {
 
         HttpHeaders headers = getHeader(request);
 
-        ClientPrivacyResponseDto orderedPerson = myPageService.getPrivacy(headers).getBody();
+        // ** 바인딩할 객체 **
+        ClientOrderForm clientOrderForm = new ClientOrderForm();
 
-        // 주소목록
-        List<ClientDeliveryAddressResponseDto> deliveryAddressList = myPageService.getDeliveryAddresses(
-            headers).getBody();
-
-        // 핸드폰 번호
-        List<ClientPhoneNumberResponseDto> phoneNumberList = myPageService.getPhoneNumbers(headers)
-            .getBody();
-
-        // 배송비 정책
+        // 배송비
         ShippingPolicyGetResponseDto shippingPolicy = shippingPolicyService.getShippingPolicy(
             headers, "회원배송비");
+        clientOrderForm.setShippingFee(shippingPolicy.shippingFee());
 
-        // ** 바인딩할 객체 **
-        assert orderedPerson != null;
-        ClientOrderForm clientOrderForm = ClientOrderForm.builder()
-            .orderedPersonName(orderedPerson.getClientName())
-            .build();
+        // 결제금액 계산
+        long productTotalAmount = 0L; // 상품 총 금액 미리 계산(옵션 상품 선택 전)
 
+        // 수량
         long totalQuantity = 0;
+
+        // 책 주문 정보
         for (OrderItemDto orderItemDto : orderItemDtoList) {
 
             totalQuantity += orderItemDto.getQuantity();
@@ -398,10 +271,12 @@ public class OrderService {
             BookProductGetResponseDto book = bookProductService.getSingleBookInfo(headers,
                 orderItemDto.getProductId()).getBody();
 
-            // 폼에 추가
             assert book != null;
+            productTotalAmount += book.productPriceSales();
+
+            // 폼에 추가
             clientOrderForm.addOrderDetailDtoItem(
-                ClientOrderForm.OrderDetailDtoItem.builder()
+                OrderDetailDtoItem.builder()
                     .productId(orderItemDto.getProductId())
                     .productName(book.title())
                     .quantity(orderItemDto.getQuantity())
@@ -410,18 +285,31 @@ public class OrderService {
                     .productSinglePrice(book.productPriceSales())
                     .build()
             );
+
         }
 
-        clientOrderForm.updateTotalQuantity(totalQuantity);
+        clientOrderForm.setProductTotalAmount(productTotalAmount);
+        clientOrderForm.setOrderTotalAmount(productTotalAmount + shippingPolicy.shippingFee());
+        clientOrderForm.setTotalQuantity(totalQuantity);
+
+        // 결제 수단 정보
+        List<PaymentMethodResponseDto> paymentMethodList = paymentService.getPaymentMethodList(headers);
+
+        // 가용 포인트
+        Long usablePoint = orderPointClient.findPoint(headers).getTotalPoint();
+
+        // 회원 적립률
+        Long pointAccumulationRate = orderPointClient.findPoint(headers).getPointAccumulationRate();
 
         model.addAttribute("view", "clientOrder");
 
-        model.addAttribute(CLIENT_ORDER_FORM, clientOrderForm);
+        model.addAttribute("clientOrderForm", clientOrderForm);
         model.addAttribute(PACKAGE_LIST, packagingService.getPackagingList(0).getBody());
         model.addAttribute(SHIPPING_POLICY, shippingPolicy);
-        model.addAttribute("deliveryAddressList", deliveryAddressList);
-        model.addAttribute("phoneNumberList", phoneNumberList);
-        model.addAttribute("orderedPerson", orderedPerson);
+        model.addAttribute("itemList", clientOrderForm.getOrderDetailDtoItemList());
+        model.addAttribute("usablePoint", usablePoint);
+        model.addAttribute("pointAccumulationRate", pointAccumulationRate);
+        model.addAttribute("paymentMethodList", paymentMethodList);
 
         return INDEX;
     }
@@ -437,5 +325,11 @@ public class OrderService {
         HttpHeaders headers = getHeader(request);
         return orderClient.updateNonClientOrderPassword(headers, orderId,
             updateNonClientOrderPasswordRequestDto).getBody();
+    }
+
+    public List<OrderCouponDiscountInfo> getOrderCouponDiscountInfoList(HttpServletRequest request, CouponDiscountInfoRequestDto requestDto){
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("access", CookieUtils.getCookieValue(request, "access"));
+        return orderClient.getCouponDiscountInfoList(headers, requestDto).getBody();
     }
 }
