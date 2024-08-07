@@ -44,7 +44,7 @@ function loadExternalScript(url, callback) {
 function updateExpectedAccumulatingPoint(){
   const rate = parseInt(document.getElementById("pointAccumulationRate").textContent);
   const payAmount = parseInt(document.getElementById("payAmount").value);
-  document.getElementById("accumulatePoint").value = (rate * 0.01 * payAmount).toString();
+  document.getElementById("accumulatePoint").value = (Math.round(rate * 0.01 * payAmount)).toString();
 }
 
 <!--포장여부 선택 관련-->
