@@ -40,7 +40,6 @@ public class PaymentController {
     private final PaymentService paymentService;
     private final ObjectMapper objectMapper;
     private static final TypeReference<List<CartRequestDto>> TYPE_REFERENCE = new TypeReference<List<CartRequestDto>>() {};
-    private final CartService cartService;
     private final PaymentMethodProvider paymentMethodProvider;
 
     @GetMapping("/client/order/payment")
@@ -71,8 +70,7 @@ public class PaymentController {
         model.addAttribute("failUrl",
             "https://book-store.shop/client/order/" + orderCode + "/payment/fail");
 
-
-        return paymentMethodProvider.getName(name);
+        return paymentMethodProvider.getViewPath(name);
     }
 
     @GetMapping("/client/order/{orderCode}/payment/success")

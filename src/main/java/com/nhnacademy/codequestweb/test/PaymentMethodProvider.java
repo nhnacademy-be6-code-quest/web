@@ -7,17 +7,17 @@ import org.springframework.stereotype.Component;
 @Component
 public class PaymentMethodProvider {
 
-    private final Map<String, String> method;
+    private final Map<String, String> viewPath;
 
     public PaymentMethodProvider() {
-        this.method = new HashMap<>();
-        method.put("toss", "view/payment/tossPage");
-        method.put("naver", "view/payment/naverPage");
-        method.put("kakao", "view/payment/kakaoPage");
+        this.viewPath = new HashMap<>();
+        viewPath.put("toss", "view/payment/tossPage");
+        viewPath.put("naver", "view/payment/naverPage");
+        viewPath.put("kakao", "view/payment/kakaoPage");
     }
 
-    public String getName(String methodName) {
-        return method.get(methodName);
+    public String getViewPath(String methodName) {
+        return viewPath.get(methodName);
     }
 
 
