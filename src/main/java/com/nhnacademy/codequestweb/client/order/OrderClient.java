@@ -3,8 +3,7 @@ package com.nhnacademy.codequestweb.client.order;
 import com.nhnacademy.codequestweb.request.order.client.CouponDiscountInfoRequestDto;
 import com.nhnacademy.codequestweb.request.order.nonclient.FindNonClientOrderIdRequestDto;
 import com.nhnacademy.codequestweb.request.order.nonclient.UpdateNonClientOrderPasswordRequestDto;
-import com.nhnacademy.codequestweb.request.payment.PaymentOrderApproveRequestDto;
-import com.nhnacademy.codequestweb.request.payment.PaymentOrderShowRequestDto;
+import com.nhnacademy.codequestweb.request.payment.*;
 import com.nhnacademy.codequestweb.response.order.client.ClientOrderForm;
 import com.nhnacademy.codequestweb.response.order.client.ClientOrderGetResponseDto;
 import com.nhnacademy.codequestweb.response.order.client.OrderCouponDiscountInfo;
@@ -135,6 +134,9 @@ public interface OrderClient {
     // 주문상태 변경 - 회원, 비회원 구분 없이 바꿔주는!
     @PutMapping("/api/order/{orderId}")
     ResponseEntity<String> updateOrderStatus(@RequestHeader HttpHeaders headers, @PathVariable(name = "orderId") Long orderId, @RequestParam(name = "status", required = true) String status);
+
+    @GetMapping("/api/order/{orderCode}/payment-view-request")
+    ResponseEntity<? extends PaymentViewRequestDto> getPaymentViewRequestDto(@RequestHeader HttpHeaders headers, @PathVariable String orderCode, @RequestParam String pgName);
 
     // 결제 서비스의 '결제 요청'에 필요한 주문 정보 제공
     @GetMapping("/api/order/{orderCode}/payment-request")

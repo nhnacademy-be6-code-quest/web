@@ -3,20 +3,14 @@ package com.nhnacademy.codequestweb.controller.payment;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nhnacademy.codequestweb.request.payment.PaymentOrderApproveRequestDto;
-import com.nhnacademy.codequestweb.request.payment.PaymentOrderShowRequestDto;
 import com.nhnacademy.codequestweb.request.payment.PostProcessRequiredPaymentResponseDto;
 import com.nhnacademy.codequestweb.request.product.cart.CartRequestDto;
 import com.nhnacademy.codequestweb.response.payment.PaymentsResponseDto;
 import com.nhnacademy.codequestweb.service.payment.PaymentService;
-import com.nhnacademy.codequestweb.service.product.CartService;
-import com.nhnacademy.codequestweb.test.PaymentMethodProvider;
+import com.nhnacademy.codequestweb.service.payment.pg.PGServiceProvider;
 import com.nhnacademy.codequestweb.utils.CookieUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.parser.ParseException;
@@ -25,9 +19,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
+import java.util.Objects;
 
 @Controller
 @RequiredArgsConstructor
@@ -40,43 +38,12 @@ public class PaymentController {
     private final PaymentService paymentService;
     private final ObjectMapper objectMapper;
     private static final TypeReference<List<CartRequestDto>> TYPE_REFERENCE = new TypeReference<List<CartRequestDto>>() {};
-    private final PaymentMethodProvider paymentMethodProvider;
+    private final PGServiceProvider PGServiceProvider;
 
-    @GetMapping("/client/order/payment")
-    public String savePayment(@RequestHeader HttpHeaders headers, Model model,
-        @RequestParam("orderCode") String orderCode, HttpServletRequest req, @RequestParam("method") String name) {
-
-        headers.set("access", CookieUtils.getCookieValue(req, "access"));
-
-        log.info("결제 요청");
-
-        // 결제 요청 정보
-        PaymentOrderShowRequestDto paymentOrderShowRequestDto = paymentService.findPaymentOrderShowRequestDtoByOrderId(
-            headers, orderCode);
-        model.addAttribute("paymentOrderShowRequestDto", paymentOrderShowRequestDto);
-
-        log.info("결제 요청 정보: {}", paymentOrderShowRequestDto);
-
-        // 쿠폰 및 포인트 할인 후 실 결제 금액이 0원일때?
-        long amount= paymentOrderShowRequestDto.getOrderTotalAmount() - paymentOrderShowRequestDto.getDiscountAmountByPoint() - paymentOrderShowRequestDto.getDiscountAmountByCoupon();
-        if (amount == 0) {
-            log.error("결제1"+orderCode);
-            return "redirect:/client/order/"+orderCode+"/payment/success?amount="+amount+"&paymentKey=point&method=point" ;
-
-        }
-
-        model.addAttribute("successUrl",
-            "https://book-store.shop/client/order/" + orderCode + "/payment/success?method="+name);
-        model.addAttribute("failUrl",
-            "https://book-store.shop/client/order/" + orderCode + "/payment/fail");
-
-        return paymentMethodProvider.getViewPath(name);
-    }
-
-    @GetMapping("/client/order/{orderCode}/payment/success")
+    @GetMapping("/client/order/{orderCode}/payment/{pgName}/success")
     public String paymentResult(HttpServletRequest request, Model model,
-        @RequestParam("method") String name,
         @PathVariable(value = "orderCode") String orderCode,
+        @PathVariable(value = "pgName") String pgName,
         @RequestParam long amount, @RequestParam(required = false) String paymentKey, @RequestParam(required = false) String paymentId) throws ParseException {
 
 
@@ -101,7 +68,7 @@ public class PaymentController {
             return "index";
         }
         // 결제 승인하기
-        PaymentsResponseDto paymentsResponseDto = paymentService.approvePayment(headers, name,
+        PaymentsResponseDto paymentsResponseDto = paymentService.approvePayment(headers, pgName,
             orderCode, amount, paymentKey);
 
         log.info("결제 승인 성공");
