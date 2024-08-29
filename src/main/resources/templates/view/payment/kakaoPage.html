@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>카카오 결제하기</title>
+</head>
+<body>
+<script th:inline="javascript">
+    let redirectUrl = `[[${redirectUrl}]]`;
+    redirectUrl = redirectUrl.replace(/(^"|"$)/g, '');
+    console.log(redirectUrl);
+    window.location.replace(redirectUrl)
+</script>
+</body>
+</html>``

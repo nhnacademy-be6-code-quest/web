@@ -5,10 +5,14 @@ import com.nhnacademy.codequestweb.response.order.client.ClientOrderForm;
 import com.nhnacademy.codequestweb.response.order.nonclient.NonClientOrderForm;
 import com.nhnacademy.codequestweb.service.order.AdminOrderService;
 import com.nhnacademy.codequestweb.service.order.OrderService;
+import com.nhnacademy.codequestweb.service.payment.PaymentService;
+import com.nhnacademy.codequestweb.service.payment.pg.PGServiceProvider;
+import com.nhnacademy.codequestweb.utils.CookieUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +28,8 @@ public class OrderController {
 
     private final OrderService orderService;
     private final AdminOrderService adminOrderService;
+    private final PGServiceProvider pgServiceProvider;
+    private final PaymentService paymentService;
 
     // 비회원 단건 주문 - 바로 주문
     @PostMapping("/non-client/order")
@@ -51,15 +57,29 @@ public class OrderController {
 
     // 회원 주문 진행
     @PostMapping("/client/order/process")
-    public String processClientOrderPayMethodForm(@ModelAttribute ClientOrderForm clientOrderForm, HttpServletRequest req){
-        return String.format("redirect:/client/order/payment?orderCode=%s&method=%s", orderService.saveClientTemporalOrder(clientOrderForm, req), clientOrderForm.getPaymentMethod());
+    public String processClientOrderPayMethodForm(@ModelAttribute ClientOrderForm clientOrderForm, HttpServletRequest req, Model model){
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("access", CookieUtils.getCookieValue(req, "access"));
+        String paymentMethod = clientOrderForm.getPaymentMethod();
+        orderService.saveClientTemporalOrder(clientOrderForm, req); // 임시 저장
+        long amount = clientOrderForm.getOrderTotalAmount() - clientOrderForm.getCouponDiscountAmount() - clientOrderForm.getUsedPointDiscountAmount();
+        if(amount == 0){
+            log.info("0원 결제 시도");
+            return String.format("/client/order/%s/payment/success?amount=0&paymentKey=point&method=point", clientOrderForm.getOrderCode());
+        }
+        pgServiceProvider.setPaymentViewModel(paymentMethod, headers, clientOrderForm.getOrderCode(), model); // model 설정
+        return pgServiceProvider.getPaymentViewPath(paymentMethod); // 결제창 경로
     }
 
     // 비회원 주문 진행
     @PostMapping("/non-client/order/process")
-    public String tryNonClientOrder(HttpServletRequest request, @ModelAttribute NonClientOrderForm nonClientOrderForm){
-        orderService.saveNonClientTemporalOrder(request, nonClientOrderForm);
-        return String.format("redirect:/client/order/payment?orderCode=%s&method=%s", nonClientOrderForm.getOrderCode(), nonClientOrderForm.getPaymentMethod());
+    public String tryNonClientOrder(HttpServletRequest req, @ModelAttribute NonClientOrderForm nonClientOrderForm, Model model){
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("access", CookieUtils.getCookieValue(req, "access"));
+        String paymentMethod = nonClientOrderForm.getPaymentMethod();
+        orderService.saveNonClientTemporalOrder(req, nonClientOrderForm);
+        pgServiceProvider.setPaymentViewModel(paymentMethod, headers, nonClientOrderForm.getOrderCode(), model); // model 설정
+        return pgServiceProvider.getPaymentViewPath(paymentMethod); // 결제창 경로
     }
 
     // 비회원 단건 주문 내역 조회 view

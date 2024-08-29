@@ -57,6 +57,10 @@ public class PaymentService /*implements PaymentService*/ {
         return paymentClient.approvePayment(headers, approvePaymentRequestDto).getBody();
     }
 
+    public PaymentViewRequestDto getPaymentViewRequest(HttpHeaders headers, String orderCode, String pgName) {
+        return orderClient.getPaymentViewRequestDto(headers, orderCode, pgName).getBody();
+    }
+
     public PaymentOrderShowRequestDto findPaymentOrderShowRequestDtoByOrderId(HttpHeaders headers, String orderCode) {
         return orderClient.getPaymentOrderShowRequestDto(headers, orderCode).getBody();
     }
