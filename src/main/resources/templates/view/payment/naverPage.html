@@ -17,6 +17,11 @@
     "chainId": "by9qbU1YS0NCZ3l", // chainId
   });
 
+  let returnUrl = `[[${returnUrl}]]`;
+  returnUrl = returnUrl.replace(/(^"|"$)/g, '');
+
+  console.log(returnUrl);
+
   // 페이지 로드 시 결제 창 띄우기
   window.onload = function() {
     oPay.open({
@@ -25,7 +30,7 @@
       totalPayAmount: `[[${totalPayAmount}]]`, // 결제 총 금액
       taxScopeAmount:  `[[${taxScopeAmount}]]`, // 과세 금액
       taxExScopeAmount: `[[${taxExScopeAmount}]]`, // 면세 금액
-      returnUrl: `[[${returnUrl}]]` // 성공 url
+      returnUrl: returnUrl // 성공 url
     });
   };
 

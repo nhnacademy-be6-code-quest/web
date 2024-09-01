@@ -14,7 +14,7 @@ import lombok.Setter;
  */
 @Getter
 @Builder
-public class PaymentsResponseDto {
+public class PaymentApproveResponseDto {
 
     String orderName;
 

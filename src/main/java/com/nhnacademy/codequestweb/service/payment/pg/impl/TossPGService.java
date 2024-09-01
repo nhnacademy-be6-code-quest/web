@@ -1,7 +1,7 @@
 package com.nhnacademy.codequestweb.service.payment.pg.impl;
 
-import com.nhnacademy.codequestweb.request.payment.PaymentViewRequestDto;
-import com.nhnacademy.codequestweb.request.payment.TossPaymentViewRequestDto;
+import com.nhnacademy.codequestweb.request.payment.viewRequest.PaymentViewRequestDto;
+import com.nhnacademy.codequestweb.request.payment.viewRequest.impl.TossPaymentViewRequestDto;
 import com.nhnacademy.codequestweb.service.payment.PaymentService;
 import com.nhnacademy.codequestweb.service.payment.pg.PGService;
 import lombok.RequiredArgsConstructor;
@@ -33,10 +33,10 @@ public class TossPGService implements PGService {
     }
 
     private String getSuccessUrl(String orderCode) {
-        return String.format("https://localhost:8080/client/order/%s/payment/toss/success", orderCode);
+        return String.format("https://localhost:8080/order/%s/payment/toss/success", orderCode);
     }
 
     private String getFailUrl(String orderCode) {
-        return String.format("https://localhost:8080/client/order/%s/payment/toss/fail", orderCode);
+        return String.format("https://localhost:8080/order/%s/payment/toss/fail", orderCode);
     }
 }

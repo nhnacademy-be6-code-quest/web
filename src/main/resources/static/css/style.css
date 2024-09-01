@@ -122,6 +122,13 @@ CSS STRUCTURE:
   --secondary-font: 'Montserrat', sans-serif;
 }
 
+/* 웹 폰트를 로드합니다 (예: Google Fonts) */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+
+/* 모든 요소에 대해 전역적으로 폰트를 적용합니다 */
+* {
+  font-family: 'Montserrat', sans-serif !important;
+}
 
 body {
   --bs-link-color: #333;

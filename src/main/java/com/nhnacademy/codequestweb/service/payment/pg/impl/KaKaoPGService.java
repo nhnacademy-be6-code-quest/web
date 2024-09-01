@@ -1,8 +1,7 @@
 package com.nhnacademy.codequestweb.service.payment.pg.impl;
 
-import com.nhnacademy.codequestweb.request.payment.KakaoPaymentViewRequestDto;
-import com.nhnacademy.codequestweb.request.payment.NaverPaymentViewRequestDto;
-import com.nhnacademy.codequestweb.request.payment.PaymentViewRequestDto;
+import com.nhnacademy.codequestweb.request.payment.viewRequest.impl.KakaoPaymentViewRequestDto;
+import com.nhnacademy.codequestweb.request.payment.viewRequest.PaymentViewRequestDto;
 import com.nhnacademy.codequestweb.service.payment.PaymentService;
 import com.nhnacademy.codequestweb.service.payment.pg.PGService;
 import lombok.RequiredArgsConstructor;
