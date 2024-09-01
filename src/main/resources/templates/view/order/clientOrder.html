@@ -71,7 +71,6 @@
     h4 {
       margin-bottom: 15px;
     }
-
   </style>
 </head>
 <body>
@@ -87,7 +86,6 @@
   <div class="order-container">
 
     <div class="sub-container left-sub-container">
-
       <div>
         <h4>주문 상품 목록</h4>
         <button type="button" style="border-radius: 10px; border: none; background-color: #e9b775; float: right" onclick="openPackagingPage()">포장지 조회하기</button>
@@ -311,10 +309,23 @@
 
       <div>
         <h4>결제수단</h4>
-        <div th:each="paymentMethod : ${paymentMethodList}">
-          <label>
-            <input type="radio" th:field="*{paymentMethod}" th:value="${paymentMethod.paymentMethodTypeName}"/>
-            [[${paymentMethod.paymentMethodTypeName}]]
+        <div>
+          <label style="margin: 10px">
+            <input type="radio" th:field="*{paymentMethod}" th:value="toss"/>
+            <img th:src="@{/img/payment/toss.png}" width="70px" alt="toss"/>
+            토스페이먼츠
+          </label>
+          <hr style="margin: 0; width: 300px"/>
+          <label style="margin: 10px">
+            <input type="radio" th:field="*{paymentMethod}" th:value="naver"/>
+            <img th:src="@{/img/payment/naver.svg}" width="60px" alt="naver" style="margin-right: 10px"/>
+            네이버페이
+          </label>
+          <hr style="margin: 0; width: 300px"/>
+          <label style="margin: 10px">
+            <input type="radio" th:field="*{paymentMethod}" th:value="kakao"/>
+            <img th:src="@{/img/payment/kakao.png}" width="60px" alt="kakao" style="margin-right: 10px"/>
+            카카오페이
           </label>
         </div>
       </div>
@@ -564,8 +575,6 @@
     modal.style.display = 'none';
 
   }
-
-
 
 
 </script>

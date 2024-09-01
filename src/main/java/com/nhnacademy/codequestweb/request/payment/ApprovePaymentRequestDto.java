@@ -2,12 +2,13 @@ package com.nhnacademy.codequestweb.request.payment;
 
 import lombok.*;
 
-@NoArgsConstructor
-@Setter
+import java.util.Map;
+
+@AllArgsConstructor
+@Builder
 @Getter
 public class ApprovePaymentRequestDto {
-    String orderCode; // 토스 오더 아이디
-    long amount;
-    String paymentKey;
-    String methodType;
+    String orderCode;
+    String pgName;
+    Map<String, String[]> reqParamMap;
 }

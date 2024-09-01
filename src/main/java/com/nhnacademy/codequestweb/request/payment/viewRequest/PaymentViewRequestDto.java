@@ -1,7 +1,10 @@
-package com.nhnacademy.codequestweb.request.payment;
+package com.nhnacademy.codequestweb.request.payment.viewRequest;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.nhnacademy.codequestweb.request.payment.viewRequest.impl.KakaoPaymentViewRequestDto;
+import com.nhnacademy.codequestweb.request.payment.viewRequest.impl.NaverPaymentViewRequestDto;
+import com.nhnacademy.codequestweb.request.payment.viewRequest.impl.TossPaymentViewRequestDto;
 
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
